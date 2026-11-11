@@ -43,7 +43,16 @@ Two things can be claimed for the method: it handles events, so it works with co
 
 ## Still unread
 
-- 2607.03728, "The Objective Decides": known only from a search summary. Read before writing the claims section.
-- IntPhys 2 (2506.09849) full text, for any analysis of rarity.
-- Shang et al. 2015 and Kaiser et al. 2018 full texts.
-- The later sections of 2609.19674 and 2606.24945, read only through a summary.
+- Shang et al. 2015: the publisher refused access on 2026-11-11. Cite it only for what the search summary says, and say that.
+- Kaiser et al. 2018 Sections VI-B onwards; the later sections of 2609.19674 and 2606.24945; Appendices C to F of 2607.03728.
+
+## What the reading of 2026-11-11 changed
+
+Read: 2607.03728 (about 80 percent word for word), IntPhys 2 (full text), Kaiser et al. 2018 (Sections I to V). See `docs/reading-list.md`, entries 9 to 11.
+
+- The verdict table stands. None of the three uses an invariant to detect a violation, and none has a rare-but-lawful condition, in the text read.
+- IntPhys 2 names the prediction difficulty of a video as a confound of single-video surprise and does not control for it. That is the gap the improbable condition fills, now with a source.
+- 2607.03728 shows that a decodable invariant can be causally inert in the model's predictions. It strengthens point 3 above: our score reads the representation; it says nothing about whether the model uses the invariant.
+- Kaiser et al. find conserved quantities as a null space of a Koopman-generator regression and use them for control. One more root of the learner, not a detector.
+
+Searches behind "not found": the full texts listed above, read on 2026-11-11, plus the eight papers of the first reading.

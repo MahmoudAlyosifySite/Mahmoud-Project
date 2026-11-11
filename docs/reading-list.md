@@ -85,13 +85,37 @@ Coverage: the first third word for word (theory and first experiments); the rest
 - Action-conditioned predictors are outside the analysis. The uniqueness result does not cover SIGReg's full constraint.
 - **Code:** `github.com/galilai-group/prh-proof`.
 
+### 9. The Objective Decides: When a Learned Dynamics Model Uses a Conserved Quantity (arXiv 2607.03728)
+
+Liao and Cao, UNSW, v1 4 July 2026. Coverage, 2026-11-11: the HTML word for word from the start through most of Appendix B (about 80 percent); Appendices B (end) to F only through a summary.
+
+- Systems: pendulum, LC circuit, two-body spring, central force, 1-D wave, Kepler; MLP, GRU and Transformer predictors; and Poseidon-B (158M parameters) on Navier-Stokes.
+- "Decodable" is a cross-validated ridge probe with R2 near 1. "Used" is a single-step activation interchange: overwrite the probe direction with a donor's value and measure the correlation tau between the change of the read-out and the change of the invariant.
+- Main claim (abstract): invariants are "linearly decodable at R2≈1 yet causally inert on next-state prediction", and the same direction becomes load-bearing once the objective rewards the invariant. Pendulum: decode R2 1.00, next-state tau -0.01, invariant-target tau +0.97.
+- Not found in what was read: any use of an invariant to detect a violation, an anomaly or a surprise; any rare-but-lawful condition. Their out-of-distribution result predicts generalisation from the gap between objectives; it is not a detector.
+- For us: supports wording the claim as "the representation makes lawfulness readable", not "the model uses conservation". Our score reads the latent; it does not test use.
+
+### 10. IntPhys 2 (arXiv 2506.09849)
+
+Bordes, Garrido, Kao, Williams, Rabbat, Dupoux (FAIR at Meta), v1 11 June 2025. Coverage, 2026-11-11: the full HTML text, Sections 1 to 6 and Appendix A, word for word; figures as text only.
+
+- Four videos per scene, two possible and two impossible; the possible video of one scenario is the impossible one of another. Principles: permanence, immutability, spatio-temporal continuity, solidity. 1,416 videos.
+- Scoring: surprise from prediction error over windows, paired and single-video protocols. Predictive models are near chance (V-JEPA 2 overall 57.5 percent; humans 96.4).
+- Not found in the full text: any lawful but rare or out-of-distribution condition. The Hard split adds visual clutter, which is difficulty, not rarity. Section 3 names "the general prediction difficulty of the video" as a confound for single-video scoring but adds no control for it.
+- No mention of conservation, energy, momentum or invariants.
+
+### 11. Kaiser, Kutz and Brunton, Discovering conservation laws from data for control (arXiv 1811.00961)
+
+Coverage, 2026-11-11: abstract and Sections I to V word for word in the HTML version; VI-B onwards through a summary.
+
+- Conserved quantities are the null space of a Koopman-generator regression on a function library (eigenvalue zero), found by SVD; a second method uses a Lie-Poisson bracket. One example, the rigid body (finds angular momentum and energy).
+- Used as intrinsic coordinates for control (MPC on the conserved quantity). Not used to detect violations in what was read.
+- Same family of learner as ours (a library, a null-space or eigen-problem); ours uses long-lag differences between events and a generalised eigenproblem with a variance constraint.
+
 ## Prior art found by search, not read in full
 
-- **Shang et al., AIChE Journal 61:3666 to 3682, 2015.** Slow Feature Analysis for process monitoring, with separate indices for a deviation of the operating point and for an anomaly in the dynamics, so that a normal change of operating point is not flagged as a fault. The same separation as ours, in another field.
-- **Kaiser, Kutz and Brunton, arXiv 1811.00961.** Conserved quantities from data through Koopman theory.
+- **Shang et al., AIChE Journal 61:3666 to 3682, 2015.** Slow Feature Analysis for process monitoring, with separate indices for a deviation of the operating point and for an anomaly in the dynamics, so that a normal change of operating point is not flagged as a fault. The same separation as ours, in another field. **Still not read: on 2026-11-11 the publisher's page returned 403 and no open copy was reached.** Describe it in the paper only as above, from the search summary, and say so.
 - **Kauf et al., arXiv 2212.01488; Michaelov et al., arXiv 2506.06808; "Shades of Zero", arXiv 2502.20469.** Language models separate impossible from improbable events poorly.
-- **"The Objective Decides", arXiv 2607.03728.** Per a search summary: a conserved quantity can be decodable from a learned dynamics model and still have no effect on its predictions.
-- **IntPhys 2, arXiv 2506.09849.** Per a search summary: four clips per scene, two possible and two impossible.
 
 ## Cited from memory, still to verify
 
@@ -103,6 +127,5 @@ Coverage: the first third word for word (theory and first experiments); the rest
 
 ## Next to read
 
-1. arXiv 2607.03728 in full, before writing the claims.
-2. IntPhys 2 in full, for any analysis of rare lawful events.
-3. Shang et al. 2015, to state exactly how our score differs from theirs.
+1. Shang et al. 2015 (needs library access), to state exactly how our score differs from theirs.
+2. The later sections of 2609.19674 and 2606.24945 (read only through a summary so far), and Appendices C to F of 2607.03728.
