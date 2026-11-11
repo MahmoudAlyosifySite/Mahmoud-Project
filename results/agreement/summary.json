@@ -1,0 +1,199 @@
+{
+  "rows": [
+    {
+      "mode": "control",
+      "alpha": 0.0,
+      "seeds": [
+        1,
+        2
+      ],
+      "k_a": 4,
+      "k_b": 4,
+      "steps": 10638,
+      "canonical_correlations": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "n_at_least_0.9": 4,
+      "r2_energy_a": 0.9999948615764525,
+      "r2_energy_b": 0.9999946677672229,
+      "r2_count_a": 1.0,
+      "r2_count_b": 1.0
+    },
+    {
+      "mode": "control",
+      "alpha": 0.0,
+      "seeds": [
+        1,
+        3
+      ],
+      "k_a": 4,
+      "k_b": 4,
+      "steps": 10640,
+      "canonical_correlations": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "n_at_least_0.9": 4,
+      "r2_energy_a": 0.9999948614617664,
+      "r2_energy_b": 0.9999951490592209,
+      "r2_count_a": 1.0,
+      "r2_count_b": 1.0
+    },
+    {
+      "mode": "control",
+      "alpha": 0.0,
+      "seeds": [
+        2,
+        3
+      ],
+      "k_a": 4,
+      "k_b": 4,
+      "steps": 10638,
+      "canonical_correlations": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "n_at_least_0.9": 4,
+      "r2_energy_a": 0.9999946677672229,
+      "r2_energy_b": 0.9999951490131392,
+      "r2_count_a": 1.0,
+      "r2_count_b": 1.0
+    },
+    {
+      "mode": "control",
+      "alpha": 0.3,
+      "seeds": [
+        1,
+        2
+      ],
+      "k_a": 4,
+      "k_b": 4,
+      "steps": 10643,
+      "canonical_correlations": [
+        0.99994,
+        0.9999,
+        0.99959,
+        0.98153
+      ],
+      "n_at_least_0.9": 4,
+      "r2_energy_a": 0.9861499282144134,
+      "r2_energy_b": 0.9860101165815143,
+      "r2_count_a": 0.9995878644666794,
+      "r2_count_b": 0.9998828669402247
+    },
+    {
+      "mode": "control",
+      "alpha": 0.3,
+      "seeds": [
+        1,
+        3
+      ],
+      "k_a": 4,
+      "k_b": 4,
+      "steps": 10639,
+      "canonical_correlations": [
+        0.99985,
+        0.99981,
+        0.99965,
+        0.97321
+      ],
+      "n_at_least_0.9": 4,
+      "r2_energy_a": 0.9861466684755861,
+      "r2_energy_b": 0.9789817444620044,
+      "r2_count_a": 0.9995880654457864,
+      "r2_count_b": 0.9997225151754733
+    },
+    {
+      "mode": "control",
+      "alpha": 0.3,
+      "seeds": [
+        2,
+        3
+      ],
+      "k_a": 4,
+      "k_b": 4,
+      "steps": 10636,
+      "canonical_correlations": [
+        0.9999,
+        0.99981,
+        0.99977,
+        0.97515
+      ],
+      "n_at_least_0.9": 4,
+      "r2_energy_a": 0.9859973091511466,
+      "r2_energy_b": 0.9789864623613439,
+      "r2_count_a": 0.9998829072199439,
+      "r2_count_b": 0.9997224012224469
+    },
+    {
+      "mode": "control",
+      "alpha": 1.0,
+      "seeds": [
+        1,
+        2
+      ],
+      "k_a": 3,
+      "k_b": 3,
+      "steps": 10627,
+      "canonical_correlations": [
+        0.9995,
+        0.9988,
+        0.99625
+      ],
+      "n_at_least_0.9": 3,
+      "r2_energy_a": 0.263396374272289,
+      "r2_energy_b": 0.2686831572723005,
+      "r2_count_a": 0.9965226019173777,
+      "r2_count_b": 0.998360282553875
+    },
+    {
+      "mode": "control",
+      "alpha": 1.0,
+      "seeds": [
+        1,
+        3
+      ],
+      "k_a": 3,
+      "k_b": 3,
+      "steps": 10623,
+      "canonical_correlations": [
+        0.99898,
+        0.99874,
+        0.99701
+      ],
+      "n_at_least_0.9": 3,
+      "r2_energy_a": 0.26338808128545466,
+      "r2_energy_b": 0.2626153464322325,
+      "r2_count_a": 0.9965186424479471,
+      "r2_count_b": 0.9979667230341407
+    },
+    {
+      "mode": "control",
+      "alpha": 1.0,
+      "seeds": [
+        2,
+        3
+      ],
+      "k_a": 3,
+      "k_b": 3,
+      "steps": 10619,
+      "canonical_correlations": [
+        0.99903,
+        0.99866,
+        0.99802
+      ],
+      "n_at_least_0.9": 3,
+      "r2_energy_a": 0.26854878937073823,
+      "r2_energy_b": 0.26249574687245847,
+      "r2_count_a": 0.9983586308590582,
+      "r2_count_b": 0.99796547494475
+    }
+  ]
+}
