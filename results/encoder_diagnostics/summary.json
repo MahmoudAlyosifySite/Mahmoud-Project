@@ -1,0 +1,84 @@
+{
+  "config": {
+    "scenario": {
+      "T": 120,
+      "t_event_low": 40,
+      "t_event_high": 80,
+      "ball_counts": [
+        2,
+        3
+      ],
+      "improbable_scale": 3.0,
+      "energy_factors": [
+        0.5,
+        1.6
+      ],
+      "teleport_min_dist": 0.3,
+      "gain_factor": 1.6,
+      "rare_sigmas": [
+        3.0,
+        4.0
+      ],
+      "rough_jitter_deg": 12.0,
+      "settle": 20
+    },
+    "checkpoints": "dim512_lam1_steps20000_pca16_span1",
+    "dim": 512,
+    "size": 48,
+    "n": 100
+  },
+  "encoders": [
+    {
+      "latent": "pixel JEPA seed 1",
+      "seed": 1,
+      "linear_count": 0.2843848817334752,
+      "linear_occupancy": 0.5123184832831886,
+      "mlp_count": 0.2593803560461131,
+      "mlp_occupancy": 0.5257220442105526,
+      "roughness": 0.21428637653002347,
+      "clean_share": 0.998655462184874
+    },
+    {
+      "latent": "pixel JEPA seed 2",
+      "seed": 2,
+      "linear_count": 0.27714693787488864,
+      "linear_occupancy": 0.505966314295557,
+      "mlp_count": 0.19650549260702965,
+      "mlp_occupancy": 0.5168098199846485,
+      "roughness": 0.21645354954795618,
+      "clean_share": 1.0
+    },
+    {
+      "latent": "pixel JEPA seed 3",
+      "seed": 3,
+      "linear_count": 0.18916666561037754,
+      "linear_occupancy": 0.5329437553252856,
+      "mlp_count": 0.18241850518378855,
+      "mlp_occupancy": 0.5527224500007424,
+      "roughness": 0.21075250920067695,
+      "clean_share": 0.9981512605042017
+    }
+  ],
+  "references": [
+    {
+      "latent": "ideal frame latent",
+      "roughness": 4.739054181639527e-15,
+      "clean_share": 0.9068067226890756
+    },
+    {
+      "latent": "Stage B mixer alpha 0.3, noise 0",
+      "roughness": 0.0030470190359173773,
+      "clean_share": 0.9076470588235294
+    },
+    {
+      "latent": "Stage B mixer alpha 0, noise 0.003",
+      "roughness": 0.3880395349720236,
+      "clean_share": 0.998655462184874
+    },
+    {
+      "latent": "Stage B mixer alpha 0, noise 0.01",
+      "roughness": 1.0568143917576642,
+      "clean_share": 1.0
+    }
+  ]
+}

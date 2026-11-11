@@ -1,1 +1,95 @@
+\begin{table}[t]\centering\small
+\caption{Stage C, primary run: latents of a pixel JEPA trained by us (\texttt{dim512\_lam1\_steps20000\_pca16\_span1}). The encoder gate is not met (Table~\ref{tab:stageCenc}); these AUROCs are reported, not read as a test of H2.}\label{tab:stageC0}
+\begin{tabular}{llccc}\toprule
+Family & Score & imp.\ vs poss. & imp.\ vs improb. & improb.\ vs poss.\\\midrule
+energy & \texttt{inv} & 0.50 $\pm$ 0.00 & 0.50 $\pm$ 0.00 & 0.50 $\pm$ 0.00\\
+ & \texttt{inv\_rel} & 0.50 $\pm$ 0.00 & 0.50 $\pm$ 0.00 & 0.50 $\pm$ 0.00\\
+ & \texttt{pe\_max} & 0.60 $\pm$ 0.01 & 0.06 $\pm$ 0.01 & 0.96 $\pm$ 0.01\\
+ & \texttt{pe\_mean} & 0.56 $\pm$ 0.04 & 0.01 $\pm$ 0.00 & 1.00 $\pm$ 0.00\\
+ & \texttt{pe\_rel} & 0.56 $\pm$ 0.02 & 0.64 $\pm$ 0.03 & 0.48 $\pm$ 0.04\\
+ & \texttt{oracle\_pe} & 1.00 $\pm$ 0.00 & 1.00 $\pm$ 0.00 & 0.50 $\pm$ 0.00\\
+\midrule
+permanence & \texttt{inv} & 0.50 $\pm$ 0.00 & 0.50 $\pm$ 0.00 & 0.50 $\pm$ 0.00\\
+ & \texttt{inv\_rel} & 0.50 $\pm$ 0.00 & 0.50 $\pm$ 0.00 & 0.50 $\pm$ 0.00\\
+ & \texttt{pe\_max} & 1.00 $\pm$ 0.00 & 1.00 $\pm$ 0.00 & 0.95 $\pm$ 0.00\\
+ & \texttt{pe\_mean} & 1.00 $\pm$ 0.00 & 0.83 $\pm$ 0.02 & 1.00 $\pm$ 0.00\\
+ & \texttt{pe\_rel} & 1.00 $\pm$ 0.00 & 1.00 $\pm$ 0.00 & 0.48 $\pm$ 0.03\\
+ & \texttt{oracle\_pe} & 1.00 $\pm$ 0.00 & 1.00 $\pm$ 0.00 & 0.50 $\pm$ 0.00\\
+\midrule
+stochastic & \texttt{inv} & 0.50 $\pm$ 0.00 & 0.50 $\pm$ 0.00 & 0.50 $\pm$ 0.00\\
+ & \texttt{inv\_rel} & 0.50 $\pm$ 0.00 & 0.50 $\pm$ 0.00 & 0.50 $\pm$ 0.00\\
+ & \texttt{pe\_max} & 0.67 $\pm$ 0.03 & 0.56 $\pm$ 0.02 & 0.62 $\pm$ 0.02\\
+ & \texttt{pe\_mean} & 0.76 $\pm$ 0.02 & 0.73 $\pm$ 0.02 & 0.55 $\pm$ 0.00\\
+ & \texttt{pe\_rel} & 0.52 $\pm$ 0.04 & 0.33 $\pm$ 0.02 & 0.63 $\pm$ 0.03\\
+ & \texttt{oracle\_pe} & 0.93 $\pm$ 0.01 & 0.44 $\pm$ 0.04 & 0.92 $\pm$ 0.01\\
+\midrule
+continuity & \texttt{inv} & 0.50 $\pm$ 0.00 & 0.50 $\pm$ 0.00 & 0.50 $\pm$ 0.00\\
+ & \texttt{inv\_rel} & 0.50 $\pm$ 0.00 & 0.50 $\pm$ 0.00 & 0.50 $\pm$ 0.00\\
+ & \texttt{pe\_max} & 1.00 $\pm$ 0.00 & 1.00 $\pm$ 0.00 & 0.96 $\pm$ 0.00\\
+ & \texttt{pe\_mean} & 1.00 $\pm$ 0.00 & 0.92 $\pm$ 0.01 & 1.00 $\pm$ 0.00\\
+ & \texttt{pe\_rel} & 1.00 $\pm$ 0.00 & 1.00 $\pm$ 0.00 & 0.52 $\pm$ 0.01\\
+ & \texttt{oracle\_pe} & 1.00 $\pm$ 0.00 & 1.00 $\pm$ 0.00 & 0.50 $\pm$ 0.00\\
+\bottomrule
+\end{tabular}
+\par\smallskip\footnotesize Mean $\pm$ standard deviation over seeds 1, 2, 3. 0.5 is chance; below 0.5 the score ranks the lawful clips above the impossible ones.
+\end{table}
 
+\begin{table}[t]\centering\small
+\caption{Stage C: the go rule on learned latents, for the primary run and each declared secondary option.}\label{tab:stageCverdict}
+\begin{tabular}{llcccccc}\toprule
+Run & Family & best PE score & best PE & \texttt{inv} & gain & H1 & H2\\\midrule
+dim512\_lam1\_steps20000\_pca16\_span1 & energy & \texttt{pe\_rel} & 0.64 & 0.50 & -0.14 & yes & no\\
+ & permanence & \texttt{pe\_max} & 1.00 & 0.50 & -0.50 & no & no\\
+ & stochastic & \texttt{pe\_mean} & 0.73 & 0.50 & -0.23 & no & no\\
+& \multicolumn{7}{l}{\emph{NO-GO}: H2 in 0 of 3 conservation families}\\\midrule
+dim512\_lam1\_steps20000\_pca16\_span2 & energy & \texttt{pe\_rel} & 0.64 & 0.50 & -0.14 & yes & no\\
+ & permanence & \texttt{pe\_max} & 1.00 & 0.50 & -0.50 & no & no\\
+ & stochastic & \texttt{pe\_mean} & 0.73 & 0.50 & -0.23 & no & no\\
+& \multicolumn{7}{l}{\emph{NO-GO}: H2 in 0 of 3 conservation families}\\\midrule
+dim512\_lam1\_steps20000\_pca16\_span4 & energy & \texttt{pe\_rel} & 0.64 & 0.50 & -0.14 & yes & no\\
+ & permanence & \texttt{pe\_max} & 1.00 & 0.50 & -0.50 & no & no\\
+ & stochastic & \texttt{pe\_mean} & 0.73 & 0.50 & -0.23 & no & no\\
+& \multicolumn{7}{l}{\emph{NO-GO}: H2 in 0 of 3 conservation families}\\\midrule
+dim512\_lam1\_steps20000\_pca16\_span8 & energy & \texttt{pe\_rel} & 0.64 & 0.50 & -0.14 & yes & no\\
+ & permanence & \texttt{pe\_max} & 1.00 & 0.50 & -0.50 & no & no\\
+ & stochastic & \texttt{pe\_mean} & 0.73 & 0.50 & -0.23 & no & no\\
+& \multicolumn{7}{l}{\emph{NO-GO}: H2 in 0 of 3 conservation families}\\\midrule
+dim512\_lam1\_steps20000\_pca32\_span1 & energy & \texttt{pe\_rel} & 0.64 & 0.50 & -0.14 & yes & no\\
+ & permanence & \texttt{pe\_max} & 1.00 & 0.50 & -0.50 & no & no\\
+ & stochastic & \texttt{pe\_mean} & 0.73 & 0.50 & -0.23 & no & no\\
+& \multicolumn{7}{l}{\emph{NO-GO}: H2 in 0 of 3 conservation families}\\\midrule
+dim512\_lam1\_steps20000\_pca8\_span1 & energy & \texttt{pe\_rel} & 0.64 & 0.50 & -0.14 & yes & no\\
+ & permanence & \texttt{pe\_max} & 1.00 & 0.50 & -0.50 & no & no\\
+ & stochastic & \texttt{pe\_mean} & 0.73 & 0.50 & -0.23 & no & no\\
+& \multicolumn{7}{l}{\emph{NO-GO}: H2 in 0 of 3 conservation families}\\\bottomrule
+\end{tabular}
+\par\smallskip\footnotesize AUROC impossible vs improbable, mean over seeds. The best PE score is chosen per family after the fact, in the baseline's favour. H1: best PE $\le 0.70$. H2: \texttt{inv} beats it by at least 0.15 on average and in every seed.
+\end{table}
+
+\begin{table}[t]\centering\small
+\caption{Stage C: is the encoder any good? Per seed and world.}\label{tab:stageCenc}
+\begin{tabular}{llcccccccc}\toprule
+Run & seed/world & probe & count & occup. & slots & std min & kept & R$^2_E$ & R$^2_N$\\\midrule
+dim512\_lam1\_steps20000\_pca16\_span1 & 1/specular & 0.51 & 0.43 & 0.59 & 0.08 & 0.78 & 0 & 0.00 & 0.00\\
+ & 1/rough & 0.50 & 0.41 & 0.59 & 0.09 & 0.86 & 0 & 0.00 & 0.00\\
+ & 2/specular & 0.47 & 0.36 & 0.59 & 0.11 & 0.83 & 0 & 0.00 & 0.00\\
+ & 2/rough & 0.47 & 0.34 & 0.60 & 0.11 & 0.83 & 0 & 0.00 & 0.00\\
+ & 3/specular & 0.53 & 0.44 & 0.61 & 0.08 & 0.87 & 0 & 0.00 & 0.00\\
+ & 3/rough & 0.52 & 0.42 & 0.62 & 0.10 & 0.84 & 0 & 0.00 & 0.00\\
+\bottomrule
+\end{tabular}
+\par\smallskip\footnotesize probe: the Stage C gate, mean of the count and occupancy read-outs. slots: the old slot-indexed read-out, not gating. kept: invariants kept. R$^2_E$, R$^2_N$: kept invariants against true energy and ball count (diagnostic only). Primary run; the secondary options reuse the same encoders.
+\end{table}
+
+\begin{table}[t]\centering\small
+\caption{Stage C: invariants kept by the selection rule, per option, seed and world.}\label{tab:stageCkept}
+\begin{tabular}{lcccccc}\toprule
+Option & 1/spec & 1/roug & 2/spec & 2/roug & 3/spec & 3/roug\\\midrule
+\texttt{dim512\_lam1\_steps20000\_pca16\_span1} & 0 & 0 & 0 & 0 & 0 & 0\\
+\texttt{dim512\_lam1\_steps20000\_pca16\_span2} & 0 & 0 & 0 & 0 & 0 & 0\\
+\texttt{dim512\_lam1\_steps20000\_pca16\_span4} & 0 & 0 & 0 & 0 & 0 & 0\\
+\texttt{dim512\_lam1\_steps20000\_pca16\_span8} & 0 & 0 & 0 & 0 & 0 & 0\\
+\texttt{dim512\_lam1\_steps20000\_pca32\_span1} & 0 & 0 & 0 & 0 & 0 & 0\\
+\texttt{dim512\_lam1\_steps20000\_pca8\_span1} & 0 & 0 & 0 & 0 & 0 & 0\\
+\bottomrule\end{tabular}
+\end{table}

@@ -1,0 +1,3173 @@
+{
+  "config": {
+    "scenario": {
+      "T": 120,
+      "t_event_low": 40,
+      "t_event_high": 80,
+      "ball_counts": [
+        2,
+        3
+      ],
+      "improbable_scale": 3.0,
+      "energy_factors": [
+        0.5,
+        1.6
+      ],
+      "teleport_min_dist": 0.3,
+      "gain_factor": 1.6,
+      "rare_sigmas": [
+        3.0,
+        4.0
+      ],
+      "rough_jitter_deg": 12.0,
+      "settle": 20
+    },
+    "pilot": {
+      "n_train": 400,
+      "n_val": 100,
+      "n_test": 200,
+      "alpha": null,
+      "noise": 0.0,
+      "span": 1,
+      "pca_dim": 16,
+      "lag_low": 30,
+      "lag_high": 90,
+      "max_invariants": 16,
+      "min_correlation": 0.9,
+      "window": 12,
+      "hidden": [
+        128,
+        128
+      ],
+      "predictor_iters": 150
+    },
+    "model": {
+      "steps": 20000,
+      "batch": 256,
+      "lr": 0.0003,
+      "lam": 1.0,
+      "dim": 512,
+      "size": 48
+    },
+    "families": [
+      "energy",
+      "permanence",
+      "continuity",
+      "stochastic"
+    ]
+  },
+  "runs": {
+    "1": {
+      "families": {
+        "energy": {
+          "aurocs": {
+            "inv": {
+              "impossible_vs_possible": 0.5,
+              "impossible_vs_improbable": 0.5,
+              "improbable_vs_possible": 0.5
+            },
+            "inv_rel": {
+              "impossible_vs_possible": 0.5,
+              "impossible_vs_improbable": 0.5,
+              "improbable_vs_possible": 0.5
+            },
+            "pe_max": {
+              "impossible_vs_possible": 0.591,
+              "impossible_vs_improbable": 0.059825,
+              "improbable_vs_possible": 0.966225
+            },
+            "pe_mean": {
+              "impossible_vs_possible": 0.5048,
+              "impossible_vs_improbable": 0.0058,
+              "improbable_vs_possible": 0.999325
+            },
+            "pe_rel": {
+              "impossible_vs_possible": 0.588575,
+              "impossible_vs_improbable": 0.5898,
+              "improbable_vs_possible": 0.532875
+            },
+            "oracle_pe": {
+              "impossible_vs_possible": 1.0,
+              "impossible_vs_improbable": 1.0,
+              "improbable_vs_possible": 0.5
+            }
+          },
+          "medians": {
+            "possible": {
+              "inv": 0.0,
+              "inv_rel": 0.0,
+              "pe_max": 1.0916239619255066,
+              "pe_mean": 0.2554239976077767,
+              "pe_rel": 1.7870090783869625,
+              "oracle_pe": 0.0
+            },
+            "improbable": {
+              "inv": 0.0,
+              "inv_rel": 0.0,
+              "pe_max": 15.006754398345947,
+              "pe_mean": 3.977820752535836,
+              "pe_rel": 2.0371985590653594,
+              "oracle_pe": 0.0
+            },
+            "impossible": {
+              "inv": 0.0,
+              "inv_rel": 0.0,
+              "pe_max": 1.4196974039077759,
+              "pe_mean": 0.24389752477281174,
+              "pe_rel": 2.818428161634886,
+              "oracle_pe": 2.628392166925509e-05
+            }
+          }
+        },
+        "permanence": {
+          "aurocs": {
+            "inv": {
+              "impossible_vs_possible": 0.5,
+              "impossible_vs_improbable": 0.5,
+              "improbable_vs_possible": 0.5
+            },
+            "inv_rel": {
+              "impossible_vs_possible": 0.5,
+              "impossible_vs_improbable": 0.5,
+              "improbable_vs_possible": 0.5
+            },
+            "pe_max": {
+              "impossible_vs_possible": 1.0,
+              "impossible_vs_improbable": 1.0,
+              "improbable_vs_possible": 0.954825
+            },
+            "pe_mean": {
+              "impossible_vs_possible": 1.0,
+              "impossible_vs_improbable": 0.85155,
+              "improbable_vs_possible": 0.9993
+            },
+            "pe_rel": {
+              "impossible_vs_possible": 1.0,
+              "impossible_vs_improbable": 1.0,
+              "improbable_vs_possible": 0.4939
+            },
+            "oracle_pe": {
+              "impossible_vs_possible": 1.0,
+              "impossible_vs_improbable": 1.0,
+              "improbable_vs_possible": 0.5
+            }
+          },
+          "medians": {
+            "possible": {
+              "inv": 0.0,
+              "inv_rel": 0.0,
+              "pe_max": 1.046252727508545,
+              "pe_mean": 0.21538114711894826,
+              "pe_rel": 2.2593855313018274,
+              "oracle_pe": 0.0
+            },
+            "improbable": {
+              "inv": 0.0,
+              "inv_rel": 0.0,
+              "pe_max": 14.639543533325195,
+              "pe_mean": 4.358500929707188,
+              "pe_rel": 1.870545430689329,
+              "oracle_pe": 0.0
+            },
+            "impossible": {
+              "inv": 0.0,
+              "inv_rel": 0.0,
+              "pe_max": 885.7652282714844,
+              "pe_mean": 12.792065705804124,
+              "pe_rel": 1765.4905184572126,
+              "oracle_pe": 1.597345790682866
+            }
+          }
+        },
+        "continuity": {
+          "aurocs": {
+            "inv": {
+              "impossible_vs_possible": 0.5,
+              "impossible_vs_improbable": 0.5,
+              "improbable_vs_possible": 0.5
+            },
+            "inv_rel": {
+              "impossible_vs_possible": 0.5,
+              "impossible_vs_improbable": 0.5,
+              "improbable_vs_possible": 0.5
+            },
+            "pe_max": {
+              "impossible_vs_possible": 1.0,
+              "impossible_vs_improbable": 1.0,
+              "improbable_vs_possible": 0.957175
+            },
+            "pe_mean": {
+              "impossible_vs_possible": 1.0,
+              "impossible_vs_improbable": 0.9145,
+              "improbable_vs_possible": 0.9998
+            },
+            "pe_rel": {
+              "impossible_vs_possible": 1.0,
+              "impossible_vs_improbable": 1.0,
+              "improbable_vs_possible": 0.5209
+            },
+            "oracle_pe": {
+              "impossible_vs_possible": 1.0,
+              "impossible_vs_improbable": 1.0,
+              "improbable_vs_possible": 0.5
+            }
+          },
+          "medians": {
+            "possible": {
+              "inv": 0.0,
+              "inv_rel": 0.0,
+              "pe_max": 0.9486287832260132,
+              "pe_mean": 0.2215653632972705,
+              "pe_rel": 1.726974863551134,
+              "oracle_pe": 0.0
+            },
+            "improbable": {
+              "inv": 0.0,
+              "inv_rel": 0.0,
+              "pe_max": 18.419474601745605,
+              "pe_mean": 5.209220987507852,
+              "pe_rel": 1.8364506460992414,
+              "oracle_pe": 0.0
+            },
+            "impossible": {
+              "inv": 0.0,
+              "inv_rel": 0.0,
+              "pe_max": 1402.0968017578125,
+              "pe_mean": 20.5365335482441,
+              "pe_rel": 2489.6746777353633,
+              "oracle_pe": 0.29230527481452395
+            }
+          }
+        },
+        "stochastic": {
+          "aurocs": {
+            "inv": {
+              "impossible_vs_possible": 0.5,
+              "impossible_vs_improbable": 0.5,
+              "improbable_vs_possible": 0.5
+            },
+            "inv_rel": {
+              "impossible_vs_possible": 0.5,
+              "impossible_vs_improbable": 0.5,
+              "improbable_vs_possible": 0.5
+            },
+            "pe_max": {
+              "impossible_vs_possible": 0.69855,
+              "impossible_vs_improbable": 0.554075,
+              "improbable_vs_possible": 0.6533
+            },
+            "pe_mean": {
+              "impossible_vs_possible": 0.7558,
+              "impossible_vs_improbable": 0.727225,
+              "improbable_vs_possible": 0.54365
+            },
+            "pe_rel": {
+              "impossible_vs_possible": 0.5798,
+              "impossible_vs_improbable": 0.338775,
+              "improbable_vs_possible": 0.6718
+            },
+            "oracle_pe": {
+              "impossible_vs_possible": 0.9372,
+              "impossible_vs_improbable": 0.432525,
+              "improbable_vs_possible": 0.93015
+            }
+          },
+          "medians": {
+            "possible": {
+              "inv": 0.0,
+              "inv_rel": 0.0,
+              "pe_max": 0.9690210819244385,
+              "pe_mean": 0.23577666749893608,
+              "pe_rel": 1.630564565953267,
+              "oracle_pe": 9.73678531995064e-06
+            },
+            "improbable": {
+              "inv": 0.0,
+              "inv_rel": 0.0,
+              "pe_max": 2.0265676975250244,
+              "pe_mean": 0.2605615263268099,
+              "pe_rel": 4.6126822536661285,
+              "oracle_pe": 5.4837666132212775e-05
+            },
+            "impossible": {
+              "inv": 0.0,
+              "inv_rel": 0.0,
+              "pe_max": 2.4405243396759033,
+              "pe_mean": 0.4134539300733704,
+              "pe_rel": 2.3025622458894843,
+              "oracle_pe": 4.5588552541224124e-05
+            }
+          }
+        }
+      },
+      "worlds": {
+        "specular": {
+          "invariants_kept": 0,
+          "slowness_val": [
+            1.24614,
+            1.22925,
+            1.21832,
+            1.46961,
+            1.46363,
+            1.49312,
+            1.63761,
+            1.64183,
+            1.66305,
+            1.69145,
+            1.66322,
+            1.54949,
+            1.55466,
+            1.78252,
+            1.77,
+            1.76238
+          ],
+          "r2": {
+            "energy": 0.0,
+            "count": 0.0
+          },
+          "probe_r2": 0.5089082710186701,
+          "probe_r2_count": 0.4258471742770139,
+          "probe_r2_occupancy": 0.5919693677603264,
+          "probe_r2_slots": 0.08031841193548635,
+          "latent_std_min": 0.7822368064253857,
+          "latent_std_median": 1.0024744862531954,
+          "train_log": [
+            {
+              "step": 500,
+              "loss": 3.8655686378479004,
+              "prediction": 0.7012839317321777,
+              "sigreg": 3.1642847061157227
+            },
+            {
+              "step": 1000,
+              "loss": 3.4216160774230957,
+              "prediction": 0.5000938177108765,
+              "sigreg": 2.9215221405029297
+            },
+            {
+              "step": 1500,
+              "loss": 2.7752180099487305,
+              "prediction": 0.44189023971557617,
+              "sigreg": 2.3333277702331543
+            },
+            {
+              "step": 2000,
+              "loss": 3.152226448059082,
+              "prediction": 0.3965410590171814,
+              "sigreg": 2.755685329437256
+            },
+            {
+              "step": 2500,
+              "loss": 2.861999988555908,
+              "prediction": 0.40470752120018005,
+              "sigreg": 2.4572925567626953
+            },
+            {
+              "step": 3000,
+              "loss": 2.5891056060791016,
+              "prediction": 0.3429400622844696,
+              "sigreg": 2.2461655139923096
+            },
+            {
+              "step": 3500,
+              "loss": 2.5351436138153076,
+              "prediction": 0.3282821774482727,
+              "sigreg": 2.2068614959716797
+            },
+            {
+              "step": 4000,
+              "loss": 2.4649877548217773,
+              "prediction": 0.30863869190216064,
+              "sigreg": 2.1563491821289062
+            },
+            {
+              "step": 4500,
+              "loss": 2.7222812175750732,
+              "prediction": 0.3366757929325104,
+              "sigreg": 2.3856053352355957
+            },
+            {
+              "step": 5000,
+              "loss": 2.54835844039917,
+              "prediction": 0.27019548416137695,
+              "sigreg": 2.278162956237793
+            },
+            {
+              "step": 5500,
+              "loss": 2.0368971824645996,
+              "prediction": 0.2709655165672302,
+              "sigreg": 1.7659316062927246
+            },
+            {
+              "step": 6000,
+              "loss": 2.2391843795776367,
+              "prediction": 0.25920188426971436,
+              "sigreg": 1.9799823760986328
+            },
+            {
+              "step": 6500,
+              "loss": 2.3206942081451416,
+              "prediction": 0.2472071349620819,
+              "sigreg": 2.0734870433807373
+            },
+            {
+              "step": 7000,
+              "loss": 2.3209519386291504,
+              "prediction": 0.23126468062400818,
+              "sigreg": 2.0896873474121094
+            },
+            {
+              "step": 7500,
+              "loss": 2.202752113342285,
+              "prediction": 0.21092040836811066,
+              "sigreg": 1.991831660270691
+            },
+            {
+              "step": 8000,
+              "loss": 2.1406803131103516,
+              "prediction": 0.2134479284286499,
+              "sigreg": 1.9272325038909912
+            },
+            {
+              "step": 8500,
+              "loss": 2.2152791023254395,
+              "prediction": 0.2007335126399994,
+              "sigreg": 2.0145456790924072
+            },
+            {
+              "step": 9000,
+              "loss": 2.0730061531066895,
+              "prediction": 0.2031032145023346,
+              "sigreg": 1.8699029684066772
+            },
+            {
+              "step": 9500,
+              "loss": 2.038728952407837,
+              "prediction": 0.2139686495065689,
+              "sigreg": 1.8247603178024292
+            },
+            {
+              "step": 10000,
+              "loss": 2.2478227615356445,
+              "prediction": 0.18726924061775208,
+              "sigreg": 2.060553550720215
+            },
+            {
+              "step": 10500,
+              "loss": 2.0614004135131836,
+              "prediction": 0.17507830262184143,
+              "sigreg": 1.886322021484375
+            },
+            {
+              "step": 11000,
+              "loss": 2.2258453369140625,
+              "prediction": 0.16559606790542603,
+              "sigreg": 2.0602493286132812
+            },
+            {
+              "step": 11500,
+              "loss": 1.9621914625167847,
+              "prediction": 0.1604839563369751,
+              "sigreg": 1.8017075061798096
+            },
+            {
+              "step": 12000,
+              "loss": 1.847611427307129,
+              "prediction": 0.17576150596141815,
+              "sigreg": 1.6718499660491943
+            },
+            {
+              "step": 12500,
+              "loss": 1.8591331243515015,
+              "prediction": 0.14724217355251312,
+              "sigreg": 1.7118909358978271
+            },
+            {
+              "step": 13000,
+              "loss": 1.8936421871185303,
+              "prediction": 0.14113515615463257,
+              "sigreg": 1.752506971359253
+            },
+            {
+              "step": 13500,
+              "loss": 1.813316822052002,
+              "prediction": 0.15914541482925415,
+              "sigreg": 1.654171347618103
+            },
+            {
+              "step": 14000,
+              "loss": 1.8642044067382812,
+              "prediction": 0.13521915674209595,
+              "sigreg": 1.7289851903915405
+            },
+            {
+              "step": 14500,
+              "loss": 1.7614092826843262,
+              "prediction": 0.13417431712150574,
+              "sigreg": 1.627234935760498
+            },
+            {
+              "step": 15000,
+              "loss": 1.9260900020599365,
+              "prediction": 0.12906387448310852,
+              "sigreg": 1.7970261573791504
+            },
+            {
+              "step": 15500,
+              "loss": 1.8194186687469482,
+              "prediction": 0.12364289164543152,
+              "sigreg": 1.6957757472991943
+            },
+            {
+              "step": 16000,
+              "loss": 1.741137146949768,
+              "prediction": 0.1348968744277954,
+              "sigreg": 1.6062402725219727
+            },
+            {
+              "step": 16500,
+              "loss": 1.8097586631774902,
+              "prediction": 0.13582777976989746,
+              "sigreg": 1.6739308834075928
+            },
+            {
+              "step": 17000,
+              "loss": 1.848844289779663,
+              "prediction": 0.1268429160118103,
+              "sigreg": 1.722001314163208
+            },
+            {
+              "step": 17500,
+              "loss": 1.7124383449554443,
+              "prediction": 0.116901695728302,
+              "sigreg": 1.5955365896224976
+            },
+            {
+              "step": 18000,
+              "loss": 1.903597116470337,
+              "prediction": 0.12402945011854172,
+              "sigreg": 1.7795677185058594
+            },
+            {
+              "step": 18500,
+              "loss": 1.7017543315887451,
+              "prediction": 0.11974096298217773,
+              "sigreg": 1.5820133686065674
+            },
+            {
+              "step": 19000,
+              "loss": 1.8364444971084595,
+              "prediction": 0.11732259392738342,
+              "sigreg": 1.7191219329833984
+            },
+            {
+              "step": 19500,
+              "loss": 1.6418274641036987,
+              "prediction": 0.11580987274646759,
+              "sigreg": 1.5260175466537476
+            },
+            {
+              "step": 20000,
+              "loss": 1.7898986339569092,
+              "prediction": 0.12429998070001602,
+              "sigreg": 1.6655986309051514
+            }
+          ]
+        },
+        "rough": {
+          "invariants_kept": 0,
+          "slowness_val": [
+            1.07656,
+            1.72198,
+            1.87505,
+            1.71114,
+            1.54703,
+            1.94037,
+            1.73642,
+            1.64059,
+            1.79862,
+            1.86908,
+            1.64372,
+            1.83169,
+            1.69196,
+            1.83978,
+            1.94893,
+            1.78336
+          ],
+          "r2": {
+            "energy": 0.0,
+            "count": 0.0
+          },
+          "probe_r2": 0.5009990268350747,
+          "probe_r2_count": 0.4129900710338308,
+          "probe_r2_occupancy": 0.5890079826363186,
+          "probe_r2_slots": 0.08760547798760374,
+          "latent_std_min": 0.8581116988410981,
+          "latent_std_median": 1.0038527772404449,
+          "train_log": [
+            {
+              "step": 500,
+              "loss": 4.421411037445068,
+              "prediction": 0.7249122858047485,
+              "sigreg": 3.6964988708496094
+            },
+            {
+              "step": 1000,
+              "loss": 3.527658462524414,
+              "prediction": 0.5029813051223755,
+              "sigreg": 3.024677276611328
+            },
+            {
+              "step": 1500,
+              "loss": 2.9354567527770996,
+              "prediction": 0.4340122938156128,
+              "sigreg": 2.5014445781707764
+            },
+            {
+              "step": 2000,
+              "loss": 2.5559024810791016,
+              "prediction": 0.3796839714050293,
+              "sigreg": 2.1762185096740723
+            },
+            {
+              "step": 2500,
+              "loss": 2.697868824005127,
+              "prediction": 0.3937636613845825,
+              "sigreg": 2.304105281829834
+            },
+            {
+              "step": 3000,
+              "loss": 2.701857566833496,
+              "prediction": 0.3261943459510803,
+              "sigreg": 2.3756632804870605
+            },
+            {
+              "step": 3500,
+              "loss": 2.5165953636169434,
+              "prediction": 0.36746737360954285,
+              "sigreg": 2.149127960205078
+            },
+            {
+              "step": 4000,
+              "loss": 2.195263385772705,
+              "prediction": 0.30823302268981934,
+              "sigreg": 1.8870303630828857
+            },
+            {
+              "step": 4500,
+              "loss": 2.255404472351074,
+              "prediction": 0.2705872058868408,
+              "sigreg": 1.984817385673523
+            },
+            {
+              "step": 5000,
+              "loss": 2.24432373046875,
+              "prediction": 0.26854631304740906,
+              "sigreg": 1.9757773876190186
+            },
+            {
+              "step": 5500,
+              "loss": 2.2124886512756348,
+              "prediction": 0.27631521224975586,
+              "sigreg": 1.936173439025879
+            },
+            {
+              "step": 6000,
+              "loss": 2.452235221862793,
+              "prediction": 0.241592139005661,
+              "sigreg": 2.2106430530548096
+            },
+            {
+              "step": 6500,
+              "loss": 2.1035706996917725,
+              "prediction": 0.24297545850276947,
+              "sigreg": 1.8605952262878418
+            },
+            {
+              "step": 7000,
+              "loss": 2.0428011417388916,
+              "prediction": 0.2256755530834198,
+              "sigreg": 1.817125678062439
+            },
+            {
+              "step": 7500,
+              "loss": 2.237497091293335,
+              "prediction": 0.23352792859077454,
+              "sigreg": 2.003969192504883
+            },
+            {
+              "step": 8000,
+              "loss": 1.9778703451156616,
+              "prediction": 0.2221442461013794,
+              "sigreg": 1.7557260990142822
+            },
+            {
+              "step": 8500,
+              "loss": 2.162081718444824,
+              "prediction": 0.21460503339767456,
+              "sigreg": 1.9474767446517944
+            },
+            {
+              "step": 9000,
+              "loss": 1.9774351119995117,
+              "prediction": 0.2010633647441864,
+              "sigreg": 1.776371717453003
+            },
+            {
+              "step": 9500,
+              "loss": 1.98136568069458,
+              "prediction": 0.18852245807647705,
+              "sigreg": 1.792843222618103
+            },
+            {
+              "step": 10000,
+              "loss": 2.1117117404937744,
+              "prediction": 0.17824344336986542,
+              "sigreg": 1.933468222618103
+            },
+            {
+              "step": 10500,
+              "loss": 2.083278179168701,
+              "prediction": 0.17931723594665527,
+              "sigreg": 1.903960943222046
+            },
+            {
+              "step": 11000,
+              "loss": 1.9987080097198486,
+              "prediction": 0.17747262120246887,
+              "sigreg": 1.8212354183197021
+            },
+            {
+              "step": 11500,
+              "loss": 1.9402424097061157,
+              "prediction": 0.17734871804714203,
+              "sigreg": 1.7628936767578125
+            },
+            {
+              "step": 12000,
+              "loss": 1.8958805799484253,
+              "prediction": 0.1665269136428833,
+              "sigreg": 1.729353666305542
+            },
+            {
+              "step": 12500,
+              "loss": 1.8986636400222778,
+              "prediction": 0.17663057148456573,
+              "sigreg": 1.7220330238342285
+            },
+            {
+              "step": 13000,
+              "loss": 1.7461689710617065,
+              "prediction": 0.1413569152355194,
+              "sigreg": 1.6048120260238647
+            },
+            {
+              "step": 13500,
+              "loss": 1.9128968715667725,
+              "prediction": 0.1478063464164734,
+              "sigreg": 1.7650904655456543
+            },
+            {
+              "step": 14000,
+              "loss": 1.885697364807129,
+              "prediction": 0.1391044408082962,
+              "sigreg": 1.7465928792953491
+            },
+            {
+              "step": 14500,
+              "loss": 1.7407480478286743,
+              "prediction": 0.13252316415309906,
+              "sigreg": 1.608224868774414
+            },
+            {
+              "step": 15000,
+              "loss": 1.8512322902679443,
+              "prediction": 0.1470302790403366,
+              "sigreg": 1.7042020559310913
+            },
+            {
+              "step": 15500,
+              "loss": 1.912370204925537,
+              "prediction": 0.13056349754333496,
+              "sigreg": 1.7818067073822021
+            },
+            {
+              "step": 16000,
+              "loss": 1.7631304264068604,
+              "prediction": 0.123069629073143,
+              "sigreg": 1.6400607824325562
+            },
+            {
+              "step": 16500,
+              "loss": 1.9197653532028198,
+              "prediction": 0.13258405029773712,
+              "sigreg": 1.7871812582015991
+            },
+            {
+              "step": 17000,
+              "loss": 1.7584877014160156,
+              "prediction": 0.12630614638328552,
+              "sigreg": 1.6321815252304077
+            },
+            {
+              "step": 17500,
+              "loss": 1.6577529907226562,
+              "prediction": 0.117847740650177,
+              "sigreg": 1.539905309677124
+            },
+            {
+              "step": 18000,
+              "loss": 1.7104665040969849,
+              "prediction": 0.12259264290332794,
+              "sigreg": 1.5878738164901733
+            },
+            {
+              "step": 18500,
+              "loss": 1.7730209827423096,
+              "prediction": 0.12248117476701736,
+              "sigreg": 1.650539755821228
+            },
+            {
+              "step": 19000,
+              "loss": 1.7020869255065918,
+              "prediction": 0.1356019824743271,
+              "sigreg": 1.5664849281311035
+            },
+            {
+              "step": 19500,
+              "loss": 1.7900749444961548,
+              "prediction": 0.11760639399290085,
+              "sigreg": 1.6724685430526733
+            },
+            {
+              "step": 20000,
+              "loss": 1.7788532972335815,
+              "prediction": 0.11462218314409256,
+              "sigreg": 1.6642310619354248
+            }
+          ]
+        }
+      }
+    },
+    "2": {
+      "families": {
+        "energy": {
+          "aurocs": {
+            "inv": {
+              "impossible_vs_possible": 0.5,
+              "impossible_vs_improbable": 0.5,
+              "improbable_vs_possible": 0.5
+            },
+            "inv_rel": {
+              "impossible_vs_possible": 0.5,
+              "impossible_vs_improbable": 0.5,
+              "improbable_vs_possible": 0.5
+            },
+            "pe_max": {
+              "impossible_vs_possible": 0.586225,
+              "impossible_vs_improbable": 0.044125,
+              "improbable_vs_possible": 0.956475
+            },
+            "pe_mean": {
+              "impossible_vs_possible": 0.571925,
+              "impossible_vs_improbable": 0.00905,
+              "improbable_vs_possible": 1.0
+            },
+            "pe_rel": {
+              "impossible_vs_possible": 0.533525,
+              "impossible_vs_improbable": 0.65375,
+              "improbable_vs_possible": 0.4484
+            },
+            "oracle_pe": {
+              "impossible_vs_possible": 1.0,
+              "impossible_vs_improbable": 1.0,
+              "improbable_vs_possible": 0.5
+            }
+          },
+          "medians": {
+            "possible": {
+              "inv": 0.0,
+              "inv_rel": 0.0,
+              "pe_max": 1.1341682076454163,
+              "pe_mean": 0.2447259036539975,
+              "pe_rel": 2.369359668154333,
+              "oracle_pe": 0.0
+            },
+            "improbable": {
+              "inv": 0.0,
+              "inv_rel": 0.0,
+              "pe_max": 13.736787796020508,
+              "pe_mean": 4.160370461011337,
+              "pe_rel": 1.6970838648297053,
+              "oracle_pe": 0.0
+            },
+            "impossible": {
+              "inv": 0.0,
+              "inv_rel": 0.0,
+              "pe_max": 1.5946770310401917,
+              "pe_mean": 0.24147689206746675,
+              "pe_rel": 2.388190511596325,
+              "oracle_pe": 2.9717909009163728e-05
+            }
+          }
+        },
+        "permanence": {
+          "aurocs": {
+            "inv": {
+              "impossible_vs_possible": 0.5,
+              "impossible_vs_improbable": 0.5,
+              "improbable_vs_possible": 0.5
+            },
+            "inv_rel": {
+              "impossible_vs_possible": 0.5,
+              "impossible_vs_improbable": 0.5,
+              "improbable_vs_possible": 0.5
+            },
+            "pe_max": {
+              "impossible_vs_possible": 1.0,
+              "impossible_vs_improbable": 1.0,
+              "improbable_vs_possible": 0.95035
+            },
+            "pe_mean": {
+              "impossible_vs_possible": 1.0,
+              "impossible_vs_improbable": 0.835375,
+              "improbable_vs_possible": 0.99985
+            },
+            "pe_rel": {
+              "impossible_vs_possible": 1.0,
+              "impossible_vs_improbable": 1.0,
+              "improbable_vs_possible": 0.513925
+            },
+            "oracle_pe": {
+              "impossible_vs_possible": 1.0,
+              "impossible_vs_improbable": 1.0,
+              "improbable_vs_possible": 0.5
+            }
+          },
+          "medians": {
+            "possible": {
+              "inv": 0.0,
+              "inv_rel": 0.0,
+              "pe_max": 0.9383334517478943,
+              "pe_mean": 0.22194550723090012,
+              "pe_rel": 1.735488616012463,
+              "oracle_pe": 0.0
+            },
+            "improbable": {
+              "inv": 0.0,
+              "inv_rel": 0.0,
+              "pe_max": 12.033761978149414,
+              "pe_mean": 3.726082006248377,
+              "pe_rel": 1.688324862422611,
+              "oracle_pe": 0.0
+            },
+            "impossible": {
+              "inv": 0.0,
+              "inv_rel": 0.0,
+              "pe_max": 857.9943237304688,
+              "pe_mean": 12.247565378166609,
+              "pe_rel": 1612.7122861043358,
+              "oracle_pe": 1.617104042449923
+            }
+          }
+        },
+        "continuity": {
+          "aurocs": {
+            "inv": {
+              "impossible_vs_possible": 0.5,
+              "impossible_vs_improbable": 0.5,
+              "improbable_vs_possible": 0.5
+            },
+            "inv_rel": {
+              "impossible_vs_possible": 0.5,
+              "impossible_vs_improbable": 0.5,
+              "improbable_vs_possible": 0.5
+            },
+            "pe_max": {
+              "impossible_vs_possible": 1.0,
+              "impossible_vs_improbable": 1.0,
+              "improbable_vs_possible": 0.959625
+            },
+            "pe_mean": {
+              "impossible_vs_possible": 1.0,
+              "impossible_vs_improbable": 0.92,
+              "improbable_vs_possible": 0.99945
+            },
+            "pe_rel": {
+              "impossible_vs_possible": 1.0,
+              "impossible_vs_improbable": 1.0,
+              "improbable_vs_possible": 0.512575
+            },
+            "oracle_pe": {
+              "impossible_vs_possible": 1.0,
+              "impossible_vs_improbable": 1.0,
+              "improbable_vs_possible": 0.5
+            }
+          },
+          "medians": {
+            "possible": {
+              "inv": 0.0,
+              "inv_rel": 0.0,
+              "pe_max": 0.9303393661975861,
+              "pe_mean": 0.23914827201199734,
+              "pe_rel": 1.8177778417993429,
+              "oracle_pe": 0.0
+            },
+            "improbable": {
+              "inv": 0.0,
+              "inv_rel": 0.0,
+              "pe_max": 13.956984043121338,
+              "pe_mean": 4.350424765025155,
+              "pe_rel": 1.7872814704922262,
+              "oracle_pe": 0.0
+            },
+            "impossible": {
+              "inv": 0.0,
+              "inv_rel": 0.0,
+              "pe_max": 1209.6596069335938,
+              "pe_mean": 18.06894449479247,
+              "pe_rel": 2317.2545928907284,
+              "oracle_pe": 0.2839585929013809
+            }
+          }
+        },
+        "stochastic": {
+          "aurocs": {
+            "inv": {
+              "impossible_vs_possible": 0.5,
+              "impossible_vs_improbable": 0.5,
+              "improbable_vs_possible": 0.5
+            },
+            "inv_rel": {
+              "impossible_vs_possible": 0.5,
+              "impossible_vs_improbable": 0.5,
+              "improbable_vs_possible": 0.5
+            },
+            "pe_max": {
+              "impossible_vs_possible": 0.688575,
+              "impossible_vs_improbable": 0.58685,
+              "improbable_vs_possible": 0.609625
+            },
+            "pe_mean": {
+              "impossible_vs_possible": 0.7834,
+              "impossible_vs_improbable": 0.749825,
+              "improbable_vs_possible": 0.5489
+            },
+            "pe_rel": {
+              "impossible_vs_possible": 0.51405,
+              "impossible_vs_improbable": 0.357025,
+              "improbable_vs_possible": 0.613025
+            },
+            "oracle_pe": {
+              "impossible_vs_possible": 0.9243,
+              "impossible_vs_improbable": 0.4997,
+              "improbable_vs_possible": 0.910675
+            }
+          },
+          "medians": {
+            "possible": {
+              "inv": 0.0,
+              "inv_rel": 0.0,
+              "pe_max": 1.1376503705978394,
+              "pe_mean": 0.22743164927903878,
+              "pe_rel": 2.5430972427692105,
+              "oracle_pe": 1.0691894131387531e-05
+            },
+            "improbable": {
+              "inv": 0.0,
+              "inv_rel": 0.0,
+              "pe_max": 1.9149793982505798,
+              "pe_mean": 0.2542668548491547,
+              "pe_rel": 4.26607997680034,
+              "oracle_pe": 4.852057630506315e-05
+            },
+            "impossible": {
+              "inv": 0.0,
+              "inv_rel": 0.0,
+              "pe_max": 2.4002435207366943,
+              "pe_mean": 0.41131012081721074,
+              "pe_rel": 2.3880689963863766,
+              "oracle_pe": 4.928511350014949e-05
+            }
+          }
+        }
+      },
+      "worlds": {
+        "specular": {
+          "invariants_kept": 0,
+          "slowness_val": [
+            1.61714,
+            1.60036,
+            1.24006,
+            1.41496,
+            1.77354,
+            1.86244,
+            1.90407,
+            1.67505,
+            1.65482,
+            2.10098,
+            1.74198,
+            1.65698,
+            2.1182,
+            1.66233,
+            2.2034,
+            1.73797
+          ],
+          "r2": {
+            "energy": 0.0,
+            "count": 0.0
+          },
+          "probe_r2": 0.47120560094867764,
+          "probe_r2_count": 0.3550501736278896,
+          "probe_r2_occupancy": 0.5873610282694657,
+          "probe_r2_slots": 0.10502206100026108,
+          "latent_std_min": 0.8345461692972358,
+          "latent_std_median": 1.0036425606953636,
+          "train_log": [
+            {
+              "step": 500,
+              "loss": 4.28214168548584,
+              "prediction": 0.7148726582527161,
+              "sigreg": 3.5672690868377686
+            },
+            {
+              "step": 1000,
+              "loss": 3.1609983444213867,
+              "prediction": 0.4986933767795563,
+              "sigreg": 2.6623048782348633
+            },
+            {
+              "step": 1500,
+              "loss": 2.8293099403381348,
+              "prediction": 0.4453830420970917,
+              "sigreg": 2.3839268684387207
+            },
+            {
+              "step": 2000,
+              "loss": 2.7997636795043945,
+              "prediction": 0.3864659368991852,
+              "sigreg": 2.413297653198242
+            },
+            {
+              "step": 2500,
+              "loss": 2.7308175563812256,
+              "prediction": 0.3555993437767029,
+              "sigreg": 2.375218152999878
+            },
+            {
+              "step": 3000,
+              "loss": 2.335477113723755,
+              "prediction": 0.3748433291912079,
+              "sigreg": 1.9606337547302246
+            },
+            {
+              "step": 3500,
+              "loss": 2.488929271697998,
+              "prediction": 0.3116636872291565,
+              "sigreg": 2.1772656440734863
+            },
+            {
+              "step": 4000,
+              "loss": 2.47021746635437,
+              "prediction": 0.2875373959541321,
+              "sigreg": 2.182680130004883
+            },
+            {
+              "step": 4500,
+              "loss": 2.3061587810516357,
+              "prediction": 0.28430864214897156,
+              "sigreg": 2.021850109100342
+            },
+            {
+              "step": 5000,
+              "loss": 2.45955753326416,
+              "prediction": 0.29273658990859985,
+              "sigreg": 2.166821002960205
+            },
+            {
+              "step": 5500,
+              "loss": 2.5468802452087402,
+              "prediction": 0.33212098479270935,
+              "sigreg": 2.214759349822998
+            },
+            {
+              "step": 6000,
+              "loss": 2.3613035678863525,
+              "prediction": 0.251787394285202,
+              "sigreg": 2.109516143798828
+            },
+            {
+              "step": 6500,
+              "loss": 2.2143900394439697,
+              "prediction": 0.23178939521312714,
+              "sigreg": 1.9826006889343262
+            },
+            {
+              "step": 7000,
+              "loss": 2.176809787750244,
+              "prediction": 0.2352716326713562,
+              "sigreg": 1.9415382146835327
+            },
+            {
+              "step": 7500,
+              "loss": 2.1034514904022217,
+              "prediction": 0.2258751541376114,
+              "sigreg": 1.877576231956482
+            },
+            {
+              "step": 8000,
+              "loss": 2.2297966480255127,
+              "prediction": 0.21671311557292938,
+              "sigreg": 2.0130834579467773
+            },
+            {
+              "step": 8500,
+              "loss": 2.1768038272857666,
+              "prediction": 0.22823746502399445,
+              "sigreg": 1.9485664367675781
+            },
+            {
+              "step": 9000,
+              "loss": 2.00654935836792,
+              "prediction": 0.20671796798706055,
+              "sigreg": 1.7998313903808594
+            },
+            {
+              "step": 9500,
+              "loss": 2.115776777267456,
+              "prediction": 0.20373769104480743,
+              "sigreg": 1.912039041519165
+            },
+            {
+              "step": 10000,
+              "loss": 2.1460676193237305,
+              "prediction": 0.17085492610931396,
+              "sigreg": 1.975212574005127
+            },
+            {
+              "step": 10500,
+              "loss": 1.788952112197876,
+              "prediction": 0.1842157542705536,
+              "sigreg": 1.604736328125
+            },
+            {
+              "step": 11000,
+              "loss": 1.8057465553283691,
+              "prediction": 0.16627579927444458,
+              "sigreg": 1.6394708156585693
+            },
+            {
+              "step": 11500,
+              "loss": 1.9480022192001343,
+              "prediction": 0.17481279373168945,
+              "sigreg": 1.7731894254684448
+            },
+            {
+              "step": 12000,
+              "loss": 2.092419147491455,
+              "prediction": 0.15524926781654358,
+              "sigreg": 1.9371699094772339
+            },
+            {
+              "step": 12500,
+              "loss": 1.7668523788452148,
+              "prediction": 0.15189796686172485,
+              "sigreg": 1.6149543523788452
+            },
+            {
+              "step": 13000,
+              "loss": 1.927872657775879,
+              "prediction": 0.15310826897621155,
+              "sigreg": 1.7747644186019897
+            },
+            {
+              "step": 13500,
+              "loss": 1.9430493116378784,
+              "prediction": 0.16485270857810974,
+              "sigreg": 1.7781965732574463
+            },
+            {
+              "step": 14000,
+              "loss": 1.7952662706375122,
+              "prediction": 0.13345159590244293,
+              "sigreg": 1.6618146896362305
+            },
+            {
+              "step": 14500,
+              "loss": 1.936172366142273,
+              "prediction": 0.14483177661895752,
+              "sigreg": 1.7913405895233154
+            },
+            {
+              "step": 15000,
+              "loss": 1.7507187128067017,
+              "prediction": 0.13557137548923492,
+              "sigreg": 1.615147352218628
+            },
+            {
+              "step": 15500,
+              "loss": 1.8628655672073364,
+              "prediction": 0.13010236620903015,
+              "sigreg": 1.7327631711959839
+            },
+            {
+              "step": 16000,
+              "loss": 1.91958749294281,
+              "prediction": 0.12124764919281006,
+              "sigreg": 1.79833984375
+            },
+            {
+              "step": 16500,
+              "loss": 1.8402384519577026,
+              "prediction": 0.12018446624279022,
+              "sigreg": 1.720054030418396
+            },
+            {
+              "step": 17000,
+              "loss": 1.8001365661621094,
+              "prediction": 0.12262295931577682,
+              "sigreg": 1.677513599395752
+            },
+            {
+              "step": 17500,
+              "loss": 1.8444418907165527,
+              "prediction": 0.11915214359760284,
+              "sigreg": 1.7252897024154663
+            },
+            {
+              "step": 18000,
+              "loss": 1.7787128686904907,
+              "prediction": 0.12014355510473251,
+              "sigreg": 1.6585693359375
+            },
+            {
+              "step": 18500,
+              "loss": 1.85808527469635,
+              "prediction": 0.11050949990749359,
+              "sigreg": 1.7475757598876953
+            },
+            {
+              "step": 19000,
+              "loss": 1.7770313024520874,
+              "prediction": 0.11842808872461319,
+              "sigreg": 1.6586031913757324
+            },
+            {
+              "step": 19500,
+              "loss": 1.8658078908920288,
+              "prediction": 0.1238945871591568,
+              "sigreg": 1.7419133186340332
+            },
+            {
+              "step": 20000,
+              "loss": 1.827958583831787,
+              "prediction": 0.10965704917907715,
+              "sigreg": 1.71830153465271
+            }
+          ]
+        },
+        "rough": {
+          "invariants_kept": 0,
+          "slowness_val": [
+            1.28709,
+            1.68648,
+            1.55971,
+            1.72982,
+            1.73145,
+            1.81994,
+            1.861,
+            1.74645,
+            1.85772,
+            1.7738,
+            1.74632,
+            2.09429,
+            1.89115,
+            1.81832,
+            1.68779,
+            1.77992
+          ],
+          "r2": {
+            "energy": 0.0,
+            "count": 0.0
+          },
+          "probe_r2": 0.47181722732272785,
+          "probe_r2_count": 0.3447790296340564,
+          "probe_r2_occupancy": 0.5988554250113993,
+          "probe_r2_slots": 0.11147697762424591,
+          "latent_std_min": 0.8270592798547611,
+          "latent_std_median": 1.0041871826229452,
+          "train_log": [
+            {
+              "step": 500,
+              "loss": 3.738992214202881,
+              "prediction": 0.7192897200584412,
+              "sigreg": 3.019702434539795
+            },
+            {
+              "step": 1000,
+              "loss": 3.1215577125549316,
+              "prediction": 0.5098534822463989,
+              "sigreg": 2.6117043495178223
+            },
+            {
+              "step": 1500,
+              "loss": 2.812178373336792,
+              "prediction": 0.44935113191604614,
+              "sigreg": 2.3628273010253906
+            },
+            {
+              "step": 2000,
+              "loss": 2.4972667694091797,
+              "prediction": 0.4058401882648468,
+              "sigreg": 2.0914266109466553
+            },
+            {
+              "step": 2500,
+              "loss": 2.6985936164855957,
+              "prediction": 0.366187185049057,
+              "sigreg": 2.332406520843506
+            },
+            {
+              "step": 3000,
+              "loss": 2.5887980461120605,
+              "prediction": 0.3331668972969055,
+              "sigreg": 2.2556312084198
+            },
+            {
+              "step": 3500,
+              "loss": 2.46211576461792,
+              "prediction": 0.3131505250930786,
+              "sigreg": 2.148965358734131
+            },
+            {
+              "step": 4000,
+              "loss": 2.6090962886810303,
+              "prediction": 0.31440475583076477,
+              "sigreg": 2.294691562652588
+            },
+            {
+              "step": 4500,
+              "loss": 2.5317935943603516,
+              "prediction": 0.3076432943344116,
+              "sigreg": 2.2241501808166504
+            },
+            {
+              "step": 5000,
+              "loss": 2.353361129760742,
+              "prediction": 0.29101794958114624,
+              "sigreg": 2.062343120574951
+            },
+            {
+              "step": 5500,
+              "loss": 2.1181929111480713,
+              "prediction": 0.2524172365665436,
+              "sigreg": 1.8657755851745605
+            },
+            {
+              "step": 6000,
+              "loss": 2.2314682006835938,
+              "prediction": 0.24896106123924255,
+              "sigreg": 1.9825071096420288
+            },
+            {
+              "step": 6500,
+              "loss": 2.326570510864258,
+              "prediction": 0.2608320116996765,
+              "sigreg": 2.0657384395599365
+            },
+            {
+              "step": 7000,
+              "loss": 2.044227361679077,
+              "prediction": 0.25021737813949585,
+              "sigreg": 1.7940099239349365
+            },
+            {
+              "step": 7500,
+              "loss": 2.202996253967285,
+              "prediction": 0.2103528380393982,
+              "sigreg": 1.9926433563232422
+            },
+            {
+              "step": 8000,
+              "loss": 2.154677391052246,
+              "prediction": 0.21415947377681732,
+              "sigreg": 1.9405179023742676
+            },
+            {
+              "step": 8500,
+              "loss": 1.9674268960952759,
+              "prediction": 0.22410547733306885,
+              "sigreg": 1.743321418762207
+            },
+            {
+              "step": 9000,
+              "loss": 2.1775755882263184,
+              "prediction": 0.20894216001033783,
+              "sigreg": 1.9686335325241089
+            },
+            {
+              "step": 9500,
+              "loss": 2.035332441329956,
+              "prediction": 0.1871226578950882,
+              "sigreg": 1.8482098579406738
+            },
+            {
+              "step": 10000,
+              "loss": 2.005099296569824,
+              "prediction": 0.20322871208190918,
+              "sigreg": 1.8018707036972046
+            },
+            {
+              "step": 10500,
+              "loss": 1.998557686805725,
+              "prediction": 0.17064307630062103,
+              "sigreg": 1.8279145956039429
+            },
+            {
+              "step": 11000,
+              "loss": 2.0573644638061523,
+              "prediction": 0.17462211847305298,
+              "sigreg": 1.8827424049377441
+            },
+            {
+              "step": 11500,
+              "loss": 1.9206513166427612,
+              "prediction": 0.1657690703868866,
+              "sigreg": 1.7548822164535522
+            },
+            {
+              "step": 12000,
+              "loss": 2.011488437652588,
+              "prediction": 0.1699541211128235,
+              "sigreg": 1.8415343761444092
+            },
+            {
+              "step": 12500,
+              "loss": 2.019270420074463,
+              "prediction": 0.15459540486335754,
+              "sigreg": 1.8646749258041382
+            },
+            {
+              "step": 13000,
+              "loss": 1.8586440086364746,
+              "prediction": 0.12702065706253052,
+              "sigreg": 1.7316234111785889
+            },
+            {
+              "step": 13500,
+              "loss": 2.0301942825317383,
+              "prediction": 0.15142083168029785,
+              "sigreg": 1.8787734508514404
+            },
+            {
+              "step": 14000,
+              "loss": 1.905313491821289,
+              "prediction": 0.14819103479385376,
+              "sigreg": 1.7571223974227905
+            },
+            {
+              "step": 14500,
+              "loss": 1.6983805894851685,
+              "prediction": 0.13364329934120178,
+              "sigreg": 1.564737319946289
+            },
+            {
+              "step": 15000,
+              "loss": 1.8661060333251953,
+              "prediction": 0.14853882789611816,
+              "sigreg": 1.7175672054290771
+            },
+            {
+              "step": 15500,
+              "loss": 1.7802503108978271,
+              "prediction": 0.12724941968917847,
+              "sigreg": 1.653000831604004
+            },
+            {
+              "step": 16000,
+              "loss": 1.969042181968689,
+              "prediction": 0.1324063539505005,
+              "sigreg": 1.8366358280181885
+            },
+            {
+              "step": 16500,
+              "loss": 1.7422925233840942,
+              "prediction": 0.12186788022518158,
+              "sigreg": 1.6204246282577515
+            },
+            {
+              "step": 17000,
+              "loss": 1.9395523071289062,
+              "prediction": 0.13181644678115845,
+              "sigreg": 1.807735800743103
+            },
+            {
+              "step": 17500,
+              "loss": 1.6582478284835815,
+              "prediction": 0.12237492948770523,
+              "sigreg": 1.5358729362487793
+            },
+            {
+              "step": 18000,
+              "loss": 1.6572527885437012,
+              "prediction": 0.12801750004291534,
+              "sigreg": 1.5292352437973022
+            },
+            {
+              "step": 18500,
+              "loss": 1.7990859746932983,
+              "prediction": 0.12025753408670425,
+              "sigreg": 1.678828477859497
+            },
+            {
+              "step": 19000,
+              "loss": 1.691511631011963,
+              "prediction": 0.12146160751581192,
+              "sigreg": 1.5700500011444092
+            },
+            {
+              "step": 19500,
+              "loss": 1.5912206172943115,
+              "prediction": 0.11677201092243195,
+              "sigreg": 1.474448561668396
+            },
+            {
+              "step": 20000,
+              "loss": 1.6251401901245117,
+              "prediction": 0.11707359552383423,
+              "sigreg": 1.5080665349960327
+            }
+          ]
+        }
+      }
+    },
+    "3": {
+      "families": {
+        "energy": {
+          "aurocs": {
+            "inv": {
+              "impossible_vs_possible": 0.5,
+              "impossible_vs_improbable": 0.5,
+              "improbable_vs_possible": 0.5
+            },
+            "inv_rel": {
+              "impossible_vs_possible": 0.5,
+              "impossible_vs_improbable": 0.5,
+              "improbable_vs_possible": 0.5
+            },
+            "pe_max": {
+              "impossible_vs_possible": 0.61285,
+              "impossible_vs_improbable": 0.07095,
+              "improbable_vs_possible": 0.9467
+            },
+            "pe_mean": {
+              "impossible_vs_possible": 0.594275,
+              "impossible_vs_improbable": 0.008975,
+              "improbable_vs_possible": 0.999975
+            },
+            "pe_rel": {
+              "impossible_vs_possible": 0.5553,
+              "impossible_vs_improbable": 0.668575,
+              "improbable_vs_possible": 0.469375
+            },
+            "oracle_pe": {
+              "impossible_vs_possible": 1.0,
+              "impossible_vs_improbable": 1.0,
+              "improbable_vs_possible": 0.5
+            }
+          },
+          "medians": {
+            "possible": {
+              "inv": 0.0,
+              "inv_rel": 0.0,
+              "pe_max": 1.0646145343780518,
+              "pe_mean": 0.22192232541234816,
+              "pe_rel": 2.5321158959527152,
+              "oracle_pe": 0.0
+            },
+            "improbable": {
+              "inv": 0.0,
+              "inv_rel": 0.0,
+              "pe_max": 15.236997127532959,
+              "pe_mean": 4.774699212130853,
+              "pe_rel": 1.8441270740232176,
+              "oracle_pe": 0.0
+            },
+            "impossible": {
+              "inv": 0.0,
+              "inv_rel": 0.0,
+              "pe_max": 2.052439570426941,
+              "pe_mean": 0.26555856651926446,
+              "pe_rel": 2.965999515923678,
+              "oracle_pe": 2.9782111600048684e-05
+            }
+          }
+        },
+        "permanence": {
+          "aurocs": {
+            "inv": {
+              "impossible_vs_possible": 0.5,
+              "impossible_vs_improbable": 0.5,
+              "improbable_vs_possible": 0.5
+            },
+            "inv_rel": {
+              "impossible_vs_possible": 0.5,
+              "impossible_vs_improbable": 0.5,
+              "improbable_vs_possible": 0.5
+            },
+            "pe_max": {
+              "impossible_vs_possible": 1.0,
+              "impossible_vs_improbable": 1.0,
+              "improbable_vs_possible": 0.9542
+            },
+            "pe_mean": {
+              "impossible_vs_possible": 1.0,
+              "impossible_vs_improbable": 0.807025,
+              "improbable_vs_possible": 0.999875
+            },
+            "pe_rel": {
+              "impossible_vs_possible": 1.0,
+              "impossible_vs_improbable": 1.0,
+              "improbable_vs_possible": 0.4421
+            },
+            "oracle_pe": {
+              "impossible_vs_possible": 1.0,
+              "impossible_vs_improbable": 1.0,
+              "improbable_vs_possible": 0.5
+            }
+          },
+          "medians": {
+            "possible": {
+              "inv": 0.0,
+              "inv_rel": 0.0,
+              "pe_max": 1.1171213388442993,
+              "pe_mean": 0.2209784811583616,
+              "pe_rel": 2.656683784915324,
+              "oracle_pe": 0.0
+            },
+            "improbable": {
+              "inv": 0.0,
+              "inv_rel": 0.0,
+              "pe_max": 15.855310440063477,
+              "pe_mean": 5.000346292378539,
+              "pe_rel": 1.7954980052822207,
+              "oracle_pe": 0.0
+            },
+            "impossible": {
+              "inv": 0.0,
+              "inv_rel": 0.0,
+              "pe_max": 853.3173828125,
+              "pe_mean": 12.244710797096714,
+              "pe_rel": 1653.6105266971576,
+              "oracle_pe": 1.598462123918195
+            }
+          }
+        },
+        "continuity": {
+          "aurocs": {
+            "inv": {
+              "impossible_vs_possible": 0.5,
+              "impossible_vs_improbable": 0.5,
+              "improbable_vs_possible": 0.5
+            },
+            "inv_rel": {
+              "impossible_vs_possible": 0.5,
+              "impossible_vs_improbable": 0.5,
+              "improbable_vs_possible": 0.5
+            },
+            "pe_max": {
+              "impossible_vs_possible": 1.0,
+              "impossible_vs_improbable": 1.0,
+              "improbable_vs_possible": 0.959525
+            },
+            "pe_mean": {
+              "impossible_vs_possible": 1.0,
+              "impossible_vs_improbable": 0.92975,
+              "improbable_vs_possible": 0.999925
+            },
+            "pe_rel": {
+              "impossible_vs_possible": 1.0,
+              "impossible_vs_improbable": 1.0,
+              "improbable_vs_possible": 0.5377
+            },
+            "oracle_pe": {
+              "impossible_vs_possible": 1.0,
+              "impossible_vs_improbable": 1.0,
+              "improbable_vs_possible": 0.5
+            }
+          },
+          "medians": {
+            "possible": {
+              "inv": 0.0,
+              "inv_rel": 0.0,
+              "pe_max": 0.8717260360717773,
+              "pe_mean": 0.224621455390322,
+              "pe_rel": 1.8218329649363743,
+              "oracle_pe": 0.0
+            },
+            "improbable": {
+              "inv": 0.0,
+              "inv_rel": 0.0,
+              "pe_max": 14.406892776489258,
+              "pe_mean": 4.1852726653470835,
+              "pe_rel": 1.9156145203467303,
+              "oracle_pe": 0.0
+            },
+            "impossible": {
+              "inv": 0.0,
+              "inv_rel": 0.0,
+              "pe_max": 1283.6951904296875,
+              "pe_mean": 18.518093931125634,
+              "pe_rel": 2793.434687231963,
+              "oracle_pe": 0.27548418151707466
+            }
+          }
+        },
+        "stochastic": {
+          "aurocs": {
+            "inv": {
+              "impossible_vs_possible": 0.5,
+              "impossible_vs_improbable": 0.5,
+              "improbable_vs_possible": 0.5
+            },
+            "inv_rel": {
+              "impossible_vs_possible": 0.5,
+              "impossible_vs_improbable": 0.5,
+              "improbable_vs_possible": 0.5
+            },
+            "pe_max": {
+              "impossible_vs_possible": 0.62835,
+              "impossible_vs_improbable": 0.5314,
+              "improbable_vs_possible": 0.6088
+            },
+            "pe_mean": {
+              "impossible_vs_possible": 0.740225,
+              "impossible_vs_improbable": 0.708325,
+              "improbable_vs_possible": 0.543225
+            },
+            "pe_rel": {
+              "impossible_vs_possible": 0.474425,
+              "impossible_vs_improbable": 0.3075,
+              "improbable_vs_possible": 0.60465
+            },
+            "oracle_pe": {
+              "impossible_vs_possible": 0.928,
+              "impossible_vs_improbable": 0.393625,
+              "improbable_vs_possible": 0.9278
+            }
+          },
+          "medians": {
+            "possible": {
+              "inv": 0.0,
+              "inv_rel": 0.0,
+              "pe_max": 1.493243932723999,
+              "pe_mean": 0.24071240775539715,
+              "pe_rel": 3.0208509432692114,
+              "oracle_pe": 1.1326703329963818e-05
+            },
+            "improbable": {
+              "inv": 0.0,
+              "inv_rel": 0.0,
+              "pe_max": 2.238898277282715,
+              "pe_mean": 0.26101973861203354,
+              "pe_rel": 4.661843194897145,
+              "oracle_pe": 5.9398397678469896e-05
+            },
+            "impossible": {
+              "inv": 0.0,
+              "inv_rel": 0.0,
+              "pe_max": 2.4878824949264526,
+              "pe_mean": 0.39329364387539484,
+              "pe_rel": 2.2104092599415353,
+              "oracle_pe": 4.932815984724255e-05
+            }
+          }
+        }
+      },
+      "worlds": {
+        "specular": {
+          "invariants_kept": 0,
+          "slowness_val": [
+            1.07976,
+            1.17161,
+            1.22899,
+            1.39252,
+            1.32931,
+            1.43137,
+            1.44815,
+            1.44989,
+            1.59153,
+            1.53293,
+            1.46144,
+            1.50441,
+            1.71095,
+            1.61105,
+            1.36893,
+            1.52453
+          ],
+          "r2": {
+            "energy": 0.0,
+            "count": 0.0
+          },
+          "probe_r2": 0.5259680515126038,
+          "probe_r2_count": 0.4382258469437509,
+          "probe_r2_occupancy": 0.6137102560814568,
+          "probe_r2_slots": 0.0759065370123907,
+          "latent_std_min": 0.8656552537997768,
+          "latent_std_median": 1.0026181224885744,
+          "train_log": [
+            {
+              "step": 500,
+              "loss": 3.9474496841430664,
+              "prediction": 0.6935719847679138,
+              "sigreg": 3.253877639770508
+            },
+            {
+              "step": 1000,
+              "loss": 3.281911849975586,
+              "prediction": 0.5410045385360718,
+              "sigreg": 2.7409074306488037
+            },
+            {
+              "step": 1500,
+              "loss": 3.025876522064209,
+              "prediction": 0.4310714602470398,
+              "sigreg": 2.5948050022125244
+            },
+            {
+              "step": 2000,
+              "loss": 2.5754685401916504,
+              "prediction": 0.40425169467926025,
+              "sigreg": 2.1712169647216797
+            },
+            {
+              "step": 2500,
+              "loss": 2.851569414138794,
+              "prediction": 0.37804725766181946,
+              "sigreg": 2.473522186279297
+            },
+            {
+              "step": 3000,
+              "loss": 2.5102860927581787,
+              "prediction": 0.3275000751018524,
+              "sigreg": 2.182785987854004
+            },
+            {
+              "step": 3500,
+              "loss": 2.501871109008789,
+              "prediction": 0.3478894531726837,
+              "sigreg": 2.1539816856384277
+            },
+            {
+              "step": 4000,
+              "loss": 2.514826774597168,
+              "prediction": 0.322858989238739,
+              "sigreg": 2.191967725753784
+            },
+            {
+              "step": 4500,
+              "loss": 2.3398971557617188,
+              "prediction": 0.270957350730896,
+              "sigreg": 2.068939685821533
+            },
+            {
+              "step": 5000,
+              "loss": 2.549370765686035,
+              "prediction": 0.3102320432662964,
+              "sigreg": 2.239138603210449
+            },
+            {
+              "step": 5500,
+              "loss": 2.4262936115264893,
+              "prediction": 0.26105278730392456,
+              "sigreg": 2.16524076461792
+            },
+            {
+              "step": 6000,
+              "loss": 2.298842668533325,
+              "prediction": 0.2502373158931732,
+              "sigreg": 2.048605442047119
+            },
+            {
+              "step": 6500,
+              "loss": 2.080528736114502,
+              "prediction": 0.24676217138767242,
+              "sigreg": 1.8337664604187012
+            },
+            {
+              "step": 7000,
+              "loss": 2.1596662998199463,
+              "prediction": 0.2587690055370331,
+              "sigreg": 1.9008973836898804
+            },
+            {
+              "step": 7500,
+              "loss": 2.303189277648926,
+              "prediction": 0.20610707998275757,
+              "sigreg": 2.0970821380615234
+            },
+            {
+              "step": 8000,
+              "loss": 2.3700661659240723,
+              "prediction": 0.21338891983032227,
+              "sigreg": 2.15667724609375
+            },
+            {
+              "step": 8500,
+              "loss": 2.3948774337768555,
+              "prediction": 0.23876963555812836,
+              "sigreg": 2.1561079025268555
+            },
+            {
+              "step": 9000,
+              "loss": 1.8949652910232544,
+              "prediction": 0.20404160022735596,
+              "sigreg": 1.6909236907958984
+            },
+            {
+              "step": 9500,
+              "loss": 2.108403205871582,
+              "prediction": 0.19941353797912598,
+              "sigreg": 1.908989667892456
+            },
+            {
+              "step": 10000,
+              "loss": 2.1770730018615723,
+              "prediction": 0.1751527339220047,
+              "sigreg": 2.001920223236084
+            },
+            {
+              "step": 10500,
+              "loss": 2.0450778007507324,
+              "prediction": 0.19090576469898224,
+              "sigreg": 1.8541721105575562
+            },
+            {
+              "step": 11000,
+              "loss": 2.031879186630249,
+              "prediction": 0.1783393919467926,
+              "sigreg": 1.8535397052764893
+            },
+            {
+              "step": 11500,
+              "loss": 2.0487709045410156,
+              "prediction": 0.1470297873020172,
+              "sigreg": 1.9017410278320312
+            },
+            {
+              "step": 12000,
+              "loss": 2.0591514110565186,
+              "prediction": 0.16032075881958008,
+              "sigreg": 1.8988306522369385
+            },
+            {
+              "step": 12500,
+              "loss": 2.0979886054992676,
+              "prediction": 0.15331336855888367,
+              "sigreg": 1.9446752071380615
+            },
+            {
+              "step": 13000,
+              "loss": 1.8043006658554077,
+              "prediction": 0.15349948406219482,
+              "sigreg": 1.650801181793213
+            },
+            {
+              "step": 13500,
+              "loss": 1.8268842697143555,
+              "prediction": 0.13732488453388214,
+              "sigreg": 1.6895593404769897
+            },
+            {
+              "step": 14000,
+              "loss": 1.8425514698028564,
+              "prediction": 0.14419561624526978,
+              "sigreg": 1.6983559131622314
+            },
+            {
+              "step": 14500,
+              "loss": 1.8691612482070923,
+              "prediction": 0.15808549523353577,
+              "sigreg": 1.711075782775879
+            },
+            {
+              "step": 15000,
+              "loss": 1.76076078414917,
+              "prediction": 0.13634267449378967,
+              "sigreg": 1.6244181394577026
+            },
+            {
+              "step": 15500,
+              "loss": 1.8635174036026,
+              "prediction": 0.12952125072479248,
+              "sigreg": 1.7339961528778076
+            },
+            {
+              "step": 16000,
+              "loss": 1.800520658493042,
+              "prediction": 0.13088703155517578,
+              "sigreg": 1.6696336269378662
+            },
+            {
+              "step": 16500,
+              "loss": 1.877838134765625,
+              "prediction": 0.12999701499938965,
+              "sigreg": 1.7478411197662354
+            },
+            {
+              "step": 17000,
+              "loss": 1.8644815683364868,
+              "prediction": 0.12098826467990875,
+              "sigreg": 1.7434933185577393
+            },
+            {
+              "step": 17500,
+              "loss": 1.7533951997756958,
+              "prediction": 0.131190687417984,
+              "sigreg": 1.6222045421600342
+            },
+            {
+              "step": 18000,
+              "loss": 1.7682533264160156,
+              "prediction": 0.13099604845046997,
+              "sigreg": 1.6372573375701904
+            },
+            {
+              "step": 18500,
+              "loss": 1.7285985946655273,
+              "prediction": 0.11644664406776428,
+              "sigreg": 1.6121519804000854
+            },
+            {
+              "step": 19000,
+              "loss": 1.910007357597351,
+              "prediction": 0.11215884983539581,
+              "sigreg": 1.7978484630584717
+            },
+            {
+              "step": 19500,
+              "loss": 1.9168254137039185,
+              "prediction": 0.1287892758846283,
+              "sigreg": 1.7880361080169678
+            },
+            {
+              "step": 20000,
+              "loss": 1.6871373653411865,
+              "prediction": 0.1172662079334259,
+              "sigreg": 1.569871187210083
+            }
+          ]
+        },
+        "rough": {
+          "invariants_kept": 0,
+          "slowness_val": [
+            1.37052,
+            1.49726,
+            1.83803,
+            1.5799,
+            1.78124,
+            1.93048,
+            1.60347,
+            1.74714,
+            1.73532,
+            1.74352,
+            1.69509,
+            1.77,
+            1.76303,
+            1.87516,
+            1.91136,
+            1.89401
+          ],
+          "r2": {
+            "energy": 0.0,
+            "count": 0.0
+          },
+          "probe_r2": 0.519587237512674,
+          "probe_r2_count": 0.4217512798095797,
+          "probe_r2_occupancy": 0.6174231952157684,
+          "probe_r2_slots": 0.09500009134711747,
+          "latent_std_min": 0.8369801215626322,
+          "latent_std_median": 1.0016750966089274,
+          "train_log": [
+            {
+              "step": 500,
+              "loss": 4.070263385772705,
+              "prediction": 0.7478052377700806,
+              "sigreg": 3.322458267211914
+            },
+            {
+              "step": 1000,
+              "loss": 3.6048898696899414,
+              "prediction": 0.5550958514213562,
+              "sigreg": 3.0497939586639404
+            },
+            {
+              "step": 1500,
+              "loss": 2.872373104095459,
+              "prediction": 0.44735968112945557,
+              "sigreg": 2.425013542175293
+            },
+            {
+              "step": 2000,
+              "loss": 2.5854086875915527,
+              "prediction": 0.3523632287979126,
+              "sigreg": 2.2330455780029297
+            },
+            {
+              "step": 2500,
+              "loss": 2.414196252822876,
+              "prediction": 0.3507843017578125,
+              "sigreg": 2.0634119510650635
+            },
+            {
+              "step": 3000,
+              "loss": 2.7882866859436035,
+              "prediction": 0.3554738759994507,
+              "sigreg": 2.4328129291534424
+            },
+            {
+              "step": 3500,
+              "loss": 2.50193190574646,
+              "prediction": 0.32642436027526855,
+              "sigreg": 2.1755075454711914
+            },
+            {
+              "step": 4000,
+              "loss": 2.592907667160034,
+              "prediction": 0.3078727126121521,
+              "sigreg": 2.2850348949432373
+            },
+            {
+              "step": 4500,
+              "loss": 2.326171875,
+              "prediction": 0.3110601007938385,
+              "sigreg": 2.0151116847991943
+            },
+            {
+              "step": 5000,
+              "loss": 2.5082056522369385,
+              "prediction": 0.279470294713974,
+              "sigreg": 2.2287354469299316
+            },
+            {
+              "step": 5500,
+              "loss": 2.3392348289489746,
+              "prediction": 0.32804179191589355,
+              "sigreg": 2.011193037033081
+            },
+            {
+              "step": 6000,
+              "loss": 2.2060189247131348,
+              "prediction": 0.23818793892860413,
+              "sigreg": 1.967831015586853
+            },
+            {
+              "step": 6500,
+              "loss": 2.091959238052368,
+              "prediction": 0.26934266090393066,
+              "sigreg": 1.8226165771484375
+            },
+            {
+              "step": 7000,
+              "loss": 2.008664846420288,
+              "prediction": 0.2445082813501358,
+              "sigreg": 1.7641565799713135
+            },
+            {
+              "step": 7500,
+              "loss": 1.9930740594863892,
+              "prediction": 0.2298395335674286,
+              "sigreg": 1.7632344961166382
+            },
+            {
+              "step": 8000,
+              "loss": 2.1510488986968994,
+              "prediction": 0.22566336393356323,
+              "sigreg": 1.9253854751586914
+            },
+            {
+              "step": 8500,
+              "loss": 2.093066692352295,
+              "prediction": 0.22455038130283356,
+              "sigreg": 1.8685163259506226
+            },
+            {
+              "step": 9000,
+              "loss": 1.9343444108963013,
+              "prediction": 0.2021888792514801,
+              "sigreg": 1.7321555614471436
+            },
+            {
+              "step": 9500,
+              "loss": 1.9236971139907837,
+              "prediction": 0.18988677859306335,
+              "sigreg": 1.733810305595398
+            },
+            {
+              "step": 10000,
+              "loss": 2.111473560333252,
+              "prediction": 0.19123181700706482,
+              "sigreg": 1.9202417135238647
+            },
+            {
+              "step": 10500,
+              "loss": 1.9292629957199097,
+              "prediction": 0.17699989676475525,
+              "sigreg": 1.752263069152832
+            },
+            {
+              "step": 11000,
+              "loss": 1.8946733474731445,
+              "prediction": 0.17158037424087524,
+              "sigreg": 1.723093032836914
+            },
+            {
+              "step": 11500,
+              "loss": 1.9786710739135742,
+              "prediction": 0.16695210337638855,
+              "sigreg": 1.8117189407348633
+            },
+            {
+              "step": 12000,
+              "loss": 1.9015483856201172,
+              "prediction": 0.16108573973178864,
+              "sigreg": 1.7404626607894897
+            },
+            {
+              "step": 12500,
+              "loss": 1.7549865245819092,
+              "prediction": 0.16916294395923615,
+              "sigreg": 1.5858235359191895
+            },
+            {
+              "step": 13000,
+              "loss": 1.895566463470459,
+              "prediction": 0.14488478004932404,
+              "sigreg": 1.7506816387176514
+            },
+            {
+              "step": 13500,
+              "loss": 1.774633765220642,
+              "prediction": 0.14455176889896393,
+              "sigreg": 1.6300820112228394
+            },
+            {
+              "step": 14000,
+              "loss": 1.7744667530059814,
+              "prediction": 0.15976090729236603,
+              "sigreg": 1.6147058010101318
+            },
+            {
+              "step": 14500,
+              "loss": 1.738932728767395,
+              "prediction": 0.1565300077199936,
+              "sigreg": 1.5824027061462402
+            },
+            {
+              "step": 15000,
+              "loss": 1.991045594215393,
+              "prediction": 0.13424000144004822,
+              "sigreg": 1.8568055629730225
+            },
+            {
+              "step": 15500,
+              "loss": 1.840611219406128,
+              "prediction": 0.13599395751953125,
+              "sigreg": 1.7046172618865967
+            },
+            {
+              "step": 16000,
+              "loss": 1.7228379249572754,
+              "prediction": 0.14205564558506012,
+              "sigreg": 1.5807822942733765
+            },
+            {
+              "step": 16500,
+              "loss": 1.803619623184204,
+              "prediction": 0.12674731016159058,
+              "sigreg": 1.6768722534179688
+            },
+            {
+              "step": 17000,
+              "loss": 1.7925549745559692,
+              "prediction": 0.13327094912528992,
+              "sigreg": 1.659283995628357
+            },
+            {
+              "step": 17500,
+              "loss": 1.779302954673767,
+              "prediction": 0.11747264862060547,
+              "sigreg": 1.6618303060531616
+            },
+            {
+              "step": 18000,
+              "loss": 1.7530382871627808,
+              "prediction": 0.12424799054861069,
+              "sigreg": 1.628790259361267
+            },
+            {
+              "step": 18500,
+              "loss": 1.7890022993087769,
+              "prediction": 0.11110161244869232,
+              "sigreg": 1.6779006719589233
+            },
+            {
+              "step": 19000,
+              "loss": 1.853948712348938,
+              "prediction": 0.11854301393032074,
+              "sigreg": 1.735405683517456
+            },
+            {
+              "step": 19500,
+              "loss": 1.597658634185791,
+              "prediction": 0.12117399275302887,
+              "sigreg": 1.4764846563339233
+            },
+            {
+              "step": 20000,
+              "loss": 1.8725286722183228,
+              "prediction": 0.11907236278057098,
+              "sigreg": 1.7534563541412354
+            }
+          ]
+        }
+      }
+    }
+  },
+  "summary": {
+    "energy": {
+      "inv": {
+        "impossible_vs_possible": {
+          "mean": 0.5,
+          "std": 0.0,
+          "per_seed": [
+            0.5,
+            0.5,
+            0.5
+          ]
+        },
+        "impossible_vs_improbable": {
+          "mean": 0.5,
+          "std": 0.0,
+          "per_seed": [
+            0.5,
+            0.5,
+            0.5
+          ]
+        },
+        "improbable_vs_possible": {
+          "mean": 0.5,
+          "std": 0.0,
+          "per_seed": [
+            0.5,
+            0.5,
+            0.5
+          ]
+        }
+      },
+      "inv_rel": {
+        "impossible_vs_possible": {
+          "mean": 0.5,
+          "std": 0.0,
+          "per_seed": [
+            0.5,
+            0.5,
+            0.5
+          ]
+        },
+        "impossible_vs_improbable": {
+          "mean": 0.5,
+          "std": 0.0,
+          "per_seed": [
+            0.5,
+            0.5,
+            0.5
+          ]
+        },
+        "improbable_vs_possible": {
+          "mean": 0.5,
+          "std": 0.0,
+          "per_seed": [
+            0.5,
+            0.5,
+            0.5
+          ]
+        }
+      },
+      "pe_max": {
+        "impossible_vs_possible": {
+          "mean": 0.5966916666666666,
+          "std": 0.01159077099343363,
+          "per_seed": [
+            0.591,
+            0.586225,
+            0.61285
+          ]
+        },
+        "impossible_vs_improbable": {
+          "mean": 0.0583,
+          "std": 0.011004222674349456,
+          "per_seed": [
+            0.059825,
+            0.044125,
+            0.07095
+          ]
+        },
+        "improbable_vs_possible": {
+          "mean": 0.9564666666666666,
+          "std": 0.007971050049327816,
+          "per_seed": [
+            0.966225,
+            0.956475,
+            0.9467
+          ]
+        }
+      },
+      "pe_mean": {
+        "impossible_vs_possible": {
+          "mean": 0.557,
+          "std": 0.03802201664825262,
+          "per_seed": [
+            0.5048,
+            0.571925,
+            0.594275
+          ]
+        },
+        "impossible_vs_improbable": {
+          "mean": 0.007941666666666666,
+          "std": 0.001514696522593076,
+          "per_seed": [
+            0.0058,
+            0.00905,
+            0.008975
+          ]
+        },
+        "improbable_vs_possible": {
+          "mean": 0.9997666666666666,
+          "std": 0.00031247222098752396,
+          "per_seed": [
+            0.999325,
+            1.0,
+            0.999975
+          ]
+        }
+      },
+      "pe_rel": {
+        "impossible_vs_possible": {
+          "mean": 0.5591333333333334,
+          "std": 0.02263693822543634,
+          "per_seed": [
+            0.588575,
+            0.533525,
+            0.5553
+          ]
+        },
+        "impossible_vs_improbable": {
+          "mean": 0.637375,
+          "std": 0.03418070240159889,
+          "per_seed": [
+            0.5898,
+            0.65375,
+            0.668575
+          ]
+        },
+        "improbable_vs_possible": {
+          "mean": 0.48355,
+          "std": 0.03591382626046222,
+          "per_seed": [
+            0.532875,
+            0.4484,
+            0.469375
+          ]
+        }
+      },
+      "oracle_pe": {
+        "impossible_vs_possible": {
+          "mean": 1.0,
+          "std": 0.0,
+          "per_seed": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "impossible_vs_improbable": {
+          "mean": 1.0,
+          "std": 0.0,
+          "per_seed": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "improbable_vs_possible": {
+          "mean": 0.5,
+          "std": 0.0,
+          "per_seed": [
+            0.5,
+            0.5,
+            0.5
+          ]
+        }
+      }
+    },
+    "permanence": {
+      "inv": {
+        "impossible_vs_possible": {
+          "mean": 0.5,
+          "std": 0.0,
+          "per_seed": [
+            0.5,
+            0.5,
+            0.5
+          ]
+        },
+        "impossible_vs_improbable": {
+          "mean": 0.5,
+          "std": 0.0,
+          "per_seed": [
+            0.5,
+            0.5,
+            0.5
+          ]
+        },
+        "improbable_vs_possible": {
+          "mean": 0.5,
+          "std": 0.0,
+          "per_seed": [
+            0.5,
+            0.5,
+            0.5
+          ]
+        }
+      },
+      "inv_rel": {
+        "impossible_vs_possible": {
+          "mean": 0.5,
+          "std": 0.0,
+          "per_seed": [
+            0.5,
+            0.5,
+            0.5
+          ]
+        },
+        "impossible_vs_improbable": {
+          "mean": 0.5,
+          "std": 0.0,
+          "per_seed": [
+            0.5,
+            0.5,
+            0.5
+          ]
+        },
+        "improbable_vs_possible": {
+          "mean": 0.5,
+          "std": 0.0,
+          "per_seed": [
+            0.5,
+            0.5,
+            0.5
+          ]
+        }
+      },
+      "pe_max": {
+        "impossible_vs_possible": {
+          "mean": 1.0,
+          "std": 0.0,
+          "per_seed": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "impossible_vs_improbable": {
+          "mean": 1.0,
+          "std": 0.0,
+          "per_seed": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "improbable_vs_possible": {
+          "mean": 0.953125,
+          "std": 0.001978741182334539,
+          "per_seed": [
+            0.954825,
+            0.95035,
+            0.9542
+          ]
+        }
+      },
+      "pe_mean": {
+        "impossible_vs_possible": {
+          "mean": 1.0,
+          "std": 0.0,
+          "per_seed": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "impossible_vs_improbable": {
+          "mean": 0.8313166666666666,
+          "std": 0.01840238133744895,
+          "per_seed": [
+            0.85155,
+            0.835375,
+            0.807025
+          ]
+        },
+        "improbable_vs_possible": {
+          "mean": 0.999675,
+          "std": 0.0002653613888015201,
+          "per_seed": [
+            0.9993,
+            0.99985,
+            0.999875
+          ]
+        }
+      },
+      "pe_rel": {
+        "impossible_vs_possible": {
+          "mean": 1.0,
+          "std": 0.0,
+          "per_seed": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "impossible_vs_improbable": {
+          "mean": 1.0,
+          "std": 0.0,
+          "per_seed": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "improbable_vs_possible": {
+          "mean": 0.4833083333333333,
+          "std": 0.03026378703261631,
+          "per_seed": [
+            0.4939,
+            0.513925,
+            0.4421
+          ]
+        }
+      },
+      "oracle_pe": {
+        "impossible_vs_possible": {
+          "mean": 1.0,
+          "std": 0.0,
+          "per_seed": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "impossible_vs_improbable": {
+          "mean": 1.0,
+          "std": 0.0,
+          "per_seed": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "improbable_vs_possible": {
+          "mean": 0.5,
+          "std": 0.0,
+          "per_seed": [
+            0.5,
+            0.5,
+            0.5
+          ]
+        }
+      }
+    },
+    "continuity": {
+      "inv": {
+        "impossible_vs_possible": {
+          "mean": 0.5,
+          "std": 0.0,
+          "per_seed": [
+            0.5,
+            0.5,
+            0.5
+          ]
+        },
+        "impossible_vs_improbable": {
+          "mean": 0.5,
+          "std": 0.0,
+          "per_seed": [
+            0.5,
+            0.5,
+            0.5
+          ]
+        },
+        "improbable_vs_possible": {
+          "mean": 0.5,
+          "std": 0.0,
+          "per_seed": [
+            0.5,
+            0.5,
+            0.5
+          ]
+        }
+      },
+      "inv_rel": {
+        "impossible_vs_possible": {
+          "mean": 0.5,
+          "std": 0.0,
+          "per_seed": [
+            0.5,
+            0.5,
+            0.5
+          ]
+        },
+        "impossible_vs_improbable": {
+          "mean": 0.5,
+          "std": 0.0,
+          "per_seed": [
+            0.5,
+            0.5,
+            0.5
+          ]
+        },
+        "improbable_vs_possible": {
+          "mean": 0.5,
+          "std": 0.0,
+          "per_seed": [
+            0.5,
+            0.5,
+            0.5
+          ]
+        }
+      },
+      "pe_max": {
+        "impossible_vs_possible": {
+          "mean": 1.0,
+          "std": 0.0,
+          "per_seed": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "impossible_vs_improbable": {
+          "mean": 1.0,
+          "std": 0.0,
+          "per_seed": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "improbable_vs_possible": {
+          "mean": 0.9587749999999998,
+          "std": 0.0011321071798494262,
+          "per_seed": [
+            0.957175,
+            0.959625,
+            0.959525
+          ]
+        }
+      },
+      "pe_mean": {
+        "impossible_vs_possible": {
+          "mean": 1.0,
+          "std": 0.0,
+          "per_seed": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "impossible_vs_improbable": {
+          "mean": 0.9214166666666667,
+          "std": 0.006305861470797527,
+          "per_seed": [
+            0.9145,
+            0.92,
+            0.92975
+          ]
+        },
+        "improbable_vs_possible": {
+          "mean": 0.9997250000000001,
+          "std": 0.00020103896803025706,
+          "per_seed": [
+            0.9998,
+            0.99945,
+            0.999925
+          ]
+        }
+      },
+      "pe_rel": {
+        "impossible_vs_possible": {
+          "mean": 1.0,
+          "std": 0.0,
+          "per_seed": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "impossible_vs_improbable": {
+          "mean": 1.0,
+          "std": 0.0,
+          "per_seed": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "improbable_vs_possible": {
+          "mean": 0.5237250000000001,
+          "std": 0.010449940191216383,
+          "per_seed": [
+            0.5209,
+            0.512575,
+            0.5377
+          ]
+        }
+      },
+      "oracle_pe": {
+        "impossible_vs_possible": {
+          "mean": 1.0,
+          "std": 0.0,
+          "per_seed": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "impossible_vs_improbable": {
+          "mean": 1.0,
+          "std": 0.0,
+          "per_seed": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "improbable_vs_possible": {
+          "mean": 0.5,
+          "std": 0.0,
+          "per_seed": [
+            0.5,
+            0.5,
+            0.5
+          ]
+        }
+      }
+    },
+    "stochastic": {
+      "inv": {
+        "impossible_vs_possible": {
+          "mean": 0.5,
+          "std": 0.0,
+          "per_seed": [
+            0.5,
+            0.5,
+            0.5
+          ]
+        },
+        "impossible_vs_improbable": {
+          "mean": 0.5,
+          "std": 0.0,
+          "per_seed": [
+            0.5,
+            0.5,
+            0.5
+          ]
+        },
+        "improbable_vs_possible": {
+          "mean": 0.5,
+          "std": 0.0,
+          "per_seed": [
+            0.5,
+            0.5,
+            0.5
+          ]
+        }
+      },
+      "inv_rel": {
+        "impossible_vs_possible": {
+          "mean": 0.5,
+          "std": 0.0,
+          "per_seed": [
+            0.5,
+            0.5,
+            0.5
+          ]
+        },
+        "impossible_vs_improbable": {
+          "mean": 0.5,
+          "std": 0.0,
+          "per_seed": [
+            0.5,
+            0.5,
+            0.5
+          ]
+        },
+        "improbable_vs_possible": {
+          "mean": 0.5,
+          "std": 0.0,
+          "per_seed": [
+            0.5,
+            0.5,
+            0.5
+          ]
+        }
+      },
+      "pe_max": {
+        "impossible_vs_possible": {
+          "mean": 0.6718250000000001,
+          "std": 0.03101001854240016,
+          "per_seed": [
+            0.69855,
+            0.688575,
+            0.62835
+          ]
+        },
+        "impossible_vs_improbable": {
+          "mean": 0.5574416666666666,
+          "std": 0.022762197584787126,
+          "per_seed": [
+            0.554075,
+            0.58685,
+            0.5314
+          ]
+        },
+        "improbable_vs_possible": {
+          "mean": 0.6239083333333334,
+          "std": 0.020785775718558646,
+          "per_seed": [
+            0.6533,
+            0.609625,
+            0.6088
+          ]
+        }
+      },
+      "pe_mean": {
+        "impossible_vs_possible": {
+          "mean": 0.7598083333333334,
+          "std": 0.017852548059653042,
+          "per_seed": [
+            0.7558,
+            0.7834,
+            0.740225
+          ]
+        },
+        "impossible_vs_improbable": {
+          "mean": 0.7284583333333333,
+          "std": 0.01696473466406775,
+          "per_seed": [
+            0.727225,
+            0.749825,
+            0.708325
+          ]
+        },
+        "improbable_vs_possible": {
+          "mean": 0.5452583333333334,
+          "std": 0.0025808859374684594,
+          "per_seed": [
+            0.54365,
+            0.5489,
+            0.543225
+          ]
+        }
+      },
+      "pe_rel": {
+        "impossible_vs_possible": {
+          "mean": 0.5227583333333333,
+          "std": 0.04345763422256465,
+          "per_seed": [
+            0.5798,
+            0.51405,
+            0.474425
+          ]
+        },
+        "impossible_vs_improbable": {
+          "mean": 0.3344333333333333,
+          "std": 0.020450247893091387,
+          "per_seed": [
+            0.338775,
+            0.357025,
+            0.3075
+          ]
+        },
+        "improbable_vs_possible": {
+          "mean": 0.629825,
+          "std": 0.02987708849045811,
+          "per_seed": [
+            0.6718,
+            0.613025,
+            0.60465
+          ]
+        }
+      },
+      "oracle_pe": {
+        "impossible_vs_possible": {
+          "mean": 0.9298333333333333,
+          "std": 0.005423610933276429,
+          "per_seed": [
+            0.9372,
+            0.9243,
+            0.928
+          ]
+        },
+        "impossible_vs_improbable": {
+          "mean": 0.44195,
+          "std": 0.043814756836785776,
+          "per_seed": [
+            0.432525,
+            0.4997,
+            0.393625
+          ]
+        },
+        "improbable_vs_possible": {
+          "mean": 0.922875,
+          "std": 0.00867988575193629,
+          "per_seed": [
+            0.93015,
+            0.910675,
+            0.9278
+          ]
+        }
+      }
+    }
+  },
+  "verdict": {
+    "families": {
+      "energy": {
+        "best_pe": "pe_rel",
+        "best_pe_auroc": 0.637375,
+        "inv_auroc": 0.5,
+        "gain": -0.13737500000000002,
+        "h1": true,
+        "h2": false
+      },
+      "permanence": {
+        "best_pe": "pe_max",
+        "best_pe_auroc": 1.0,
+        "inv_auroc": 0.5,
+        "gain": -0.5,
+        "h1": false,
+        "h2": false
+      },
+      "stochastic": {
+        "best_pe": "pe_mean",
+        "best_pe_auroc": 0.7284583333333333,
+        "inv_auroc": 0.5,
+        "gain": -0.22845833333333332,
+        "h1": false,
+        "h2": false
+      }
+    },
+    "h2_families": 0,
+    "go": false
+  }
+}

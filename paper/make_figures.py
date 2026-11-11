@@ -197,7 +197,7 @@ def stage_b(idx) -> list[str]:
     rows = b["rows"]
     alphas = sorted({r["alpha"] for r in rows})
     noises = sorted({r["noise"] for r in rows})
-    fig, axes = plt.subplots(1, 3, figsize=(7.2, 2.4))
+    fig, axes = plt.subplots(1, 3, figsize=(7.2, 2.9))
     for noise, ls in zip(noises, ("-", "--", ":")):
         for span, marker in ((1, "o"), (4, "s")):
             sel = [next(r for r in rows if r["alpha"] == a and r["noise"] == noise and r["span"] == span) for a in alphas]
@@ -215,9 +215,13 @@ def stage_b(idx) -> list[str]:
         ax.set_title(t, fontsize=8)
         ax.set_ylim(0, 1.05)
         ax.axhline(0.5, color="black", lw=0.5, ls=":")
-    axes[0].legend(fontsize=5.5, loc="lower left")
-    axes[1].legend(fontsize=5.5, loc="lower left")
-    fig.tight_layout()
+    handles, labels = [], []
+    for ax in axes[:2]:
+        h, lab = ax.get_legend_handles_labels()
+        handles += h
+        labels += lab
+    fig.legend(handles, labels, fontsize=6.5, loc="lower center", ncol=4, frameon=False)
+    fig.tight_layout(rect=(0, 0.16, 1, 1))
     fig.savefig(FIG / "stageB.pdf")
     plt.close(fig)
 
@@ -258,13 +262,20 @@ def stage_c(idx) -> list[str]:
         if 0 in seeds:
             continue  # seed 0 is exploration only
         entries.append((tag, s))
+    # the primary run (pca 16, span 1) first, then the declared secondary options
+    entries.sort(key=lambda e: (not e[0].endswith("_pca16_span1"), e[0]))
     for k, (tag, s) in enumerate(entries):
         seeds = sorted(int(x) for x in s["runs"])
         label = f"tab:stageC{k}"
         nice = tag.replace("_", "\\_")
-        tex.append(auroc_table(s["summary"], FAMILIES, ["inv", "inv_rel", "pe_max", "pe_mean", "pe_rel", "oracle_pe"],
-                               f"Stage C: latents of a pixel JEPA trained by us (\\texttt{{{nice}}}).", label, seeds))
-        appendix.append((f"Table~\\ref{{{label}}}", f"pilot\\_pixels/{nice}", ", ".join(map(str, seeds))))
+        role = "primary run" if tag.endswith("_pca16_span1") else "declared secondary option"
+        if k == 0:
+            tex.append(auroc_table(s["summary"], FAMILIES, ["inv", "inv_rel", "pe_max", "pe_mean", "pe_rel", "oracle_pe"],
+                                   f"Stage C, {role}: latents of a pixel JEPA trained by us (\\texttt{{{nice}}}). "
+                                   "The encoder gate is not met (Table~\\ref{tab:stageCenc}); these AUROCs are reported, "
+                                   "not read as a test of H2.", label, seeds))
+        appendix.append((f"Tables~\\ref{{{label if k == 0 else 'tab:stageCverdict'}}}, \\ref{{tab:stageCenc}}",
+                         f"pilot\\_pixels/{nice}", ", ".join(map(str, seeds))))
         mtag = tag.replace("dim", "d").replace("_lam", "l").replace("_steps", "s").replace("_pca", "p").replace("_span", "sp")
         for fam, d in s["verdict"]["families"].items():
             put(macro_name("C", mtag, fam, "inv"), d["inv_auroc"])
@@ -280,6 +291,13 @@ def stage_c(idx) -> list[str]:
             if vals:
                 put(macro_name("C", mtag, key, "min"), min(vals))
                 put(macro_name("C", mtag, key, "max"), max(vals))
+        slow = [min(w["slowness_val"]) for w in probes if w["slowness_val"]]
+        if slow:
+            put(macro_name("C", mtag, "slowbest", "min"), min(slow))
+            put(macro_name("C", mtag, "slowbest", "max"), max(slow))
+        for fam in s["summary"]:
+            for sc_ in ("pe_max", "pe_mean", "pe_rel", "oracle_pe", "inv"):
+                put(macro_name("C", mtag, fam, sc_, "all"), s["summary"][fam][sc_][KEY]["mean"])
         r2e = [w["r2"]["energy"] for w in probes]
         r2c = [w["r2"]["count"] for w in probes]
         kept = [w["invariants_kept"] for w in probes]
@@ -297,7 +315,7 @@ def stage_c(idx) -> list[str]:
                  "\\caption{Stage C: is the encoder any good? Per seed and world.}\\label{tab:stageCenc}",
                  "\\begin{tabular}{llcccccccc}\\toprule",
                  "Run & seed/world & probe & count & occup. & slots & std min & kept & R$^2_E$ & R$^2_N$\\\\\\midrule"]
-        for t, s in entries:
+        for t, s in entries[:1]:  # the secondary options reuse these encoders
             first = True
             for seed in sorted(s["runs"], key=int):
                 for world, w in s["runs"][seed]["worlds"].items():
@@ -310,10 +328,65 @@ def stage_c(idx) -> list[str]:
         lines += ["\\end{tabular}",
                   "\\par\\smallskip\\footnotesize probe: the Stage C gate, mean of the count and occupancy read-outs. "
                   "slots: the old slot-indexed read-out, not gating. kept: invariants kept. R$^2_E$, R$^2_N$: kept "
-                  "invariants against true energy and ball count (diagnostic only).",
+                  "invariants against true energy and ball count (diagnostic only). Primary run; the secondary "
+                  "options reuse the same encoders.",
                   "\\end{table}"]
         tex.append("\n".join(lines))
+        # invariants kept, per option
+        lines = ["\\begin{table}[t]\\centering\\small",
+                 "\\caption{Stage C: invariants kept by the selection rule, per option, seed and world.}\\label{tab:stageCkept}",
+                 "\\begin{tabular}{l" + "c" * 6 + "}\\toprule"]
+        heads = [f"{seed}/{world[:4]}" for seed in sorted(entries[0][1]["runs"], key=int) for world in entries[0][1]["runs"][seed]["worlds"]]
+        lines.append("Option & " + " & ".join(heads) + "\\\\\\midrule")
+        all_kept = []
+        for t, s in entries:
+            ks = [str(w["invariants_kept"]) for seed in sorted(s["runs"], key=int) for w in s["runs"][seed]["worlds"].values()]
+            all_kept += [int(k) for k in ks]
+            lines.append(f"\\texttt{{{t.replace('_', chr(92) + '_')}}} & " + " & ".join(ks) + "\\\\")
+        lines += ["\\bottomrule\\end{tabular}", "\\end{table}"]
+        tex.append("\n".join(lines))
+        put("CKeptAllMax", str(max(all_kept)))
+        put("CNOptions", str(len(entries)))
     return tex
+
+
+def diagnostics(idx) -> list[str]:
+    p = RES / "encoder_diagnostics" / "summary.json"
+    if not p.exists():
+        return []
+    d = load(p)
+    lines = ["\\begin{table}[t]\\centering\\small",
+             "\\caption{Why the learned latent hides energy. Read-outs of the frame from the frozen Stage C encoders, "
+             "and two label-free properties of the latent next to the Stage B reference latents.}\\label{tab:diag}",
+             "\\begin{tabular}{lcccccc}\\toprule",
+             "Latent & lin.\\ count & MLP count & lin.\\ occup. & MLP occup. & roughness & clean steps\\\\\\midrule"]
+    for r in d["encoders"]:
+        lines.append(f"{r['latent']} & {r['linear_count']:.2f} & {r['mlp_count']:.2f} & {r['linear_occupancy']:.2f} & "
+                     f"{r['mlp_occupancy']:.2f} & {r['roughness']:.3f} & {r['clean_share']:.3f}\\\\")
+    lines.append("\\midrule")
+    for r in d["references"]:
+        lines.append(f"{r['latent']} & & & & & {r['roughness']:.3f} & {r['clean_share']:.3f}\\\\")
+    lines += ["\\bottomrule\\end{tabular}",
+              "\\par\\smallskip\\footnotesize Read-outs are $R^2$ on fresh lawful clips (diagnostic). Roughness: median "
+              "norm of the standardised latent's second difference over that of its first difference. Clean steps: the "
+              "share of steps the event detector trusts. Both are label-free.",
+              "\\end{table}"]
+    enc = d["encoders"]
+    put("DRoughMin", min(r["roughness"] for r in enc), "{:.3f}")
+    put("DRoughMax", max(r["roughness"] for r in enc), "{:.3f}")
+    put("DCleanMin", min(r["clean_share"] for r in enc), "{:.3f}")
+    put("DMlpOccMax", max(r["mlp_occupancy"] for r in enc))
+    put("DLinOccMax", max(r["linear_occupancy"] for r in enc))
+    put("DMlpCountMax", max(r["mlp_count"] for r in enc))
+    put("DLinCountMax", max(r["linear_count"] for r in enc))
+    for r in d["references"]:
+        key = {"ideal frame latent": "Ideal"}.get(r["latent"], r["latent"].replace("Stage B mixer alpha ", "A").replace(", noise ", "N"))
+        put(macro_name("DRef", key, "rough"), r["roughness"], "{:.3f}")
+        put(macro_name("DRef", key, "clean"), r["clean_share"], "{:.3f}")
+    seeds = ", ".join(str(r["seed"]) for r in enc)
+    appendix.append(("Table~\\ref{tab:diag}", f"encoder\\_diagnostics/{d['config']['checkpoints'].replace('_', chr(92) + '_')}", seeds))
+    appendix.append(("Table~\\ref{tab:diag} (references)", "encoder\\_diagnostics/reference\\_latents", "none"))
+    return ["\n".join(lines)]
 
 
 def agreement(idx) -> list[str]:
@@ -358,7 +431,7 @@ def main() -> None:
     FIG.mkdir(parents=True, exist_ok=True)
     GEN.mkdir(parents=True, exist_ok=True)
     idx = ledger_index()
-    blocks = {"stageA": stage_a(idx), "stageB": stage_b(idx), "stageC": stage_c(idx), "agreement": agreement(idx)}
+    blocks = {"stageA": stage_a(idx), "stageB": stage_b(idx), "stageC": stage_c(idx), "agreement": agreement(idx), "diagnostics": diagnostics(idx)}
     blocks["stageA_sens"] = blocks["stageA"][1:]
     blocks["stageA"] = blocks["stageA"][:1]
     for name, tex in blocks.items():
