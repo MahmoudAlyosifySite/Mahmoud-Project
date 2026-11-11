@@ -1,0 +1,2413 @@
+{
+  "config": {
+    "scenario": {
+      "T": 120,
+      "t_event_low": 40,
+      "t_event_high": 80,
+      "ball_counts": [
+        2,
+        3
+      ],
+      "improbable_scale": 2.0,
+      "energy_factors": [
+        0.5,
+        1.6
+      ],
+      "teleport_min_dist": 0.3,
+      "gain_factor": 1.6,
+      "rare_sigmas": [
+        3.0,
+        4.0
+      ],
+      "rough_jitter_deg": 12.0,
+      "settle": 20
+    },
+    "pilot": {
+      "n_train": 300,
+      "n_val": 100,
+      "n_test": 200,
+      "alpha": null,
+      "noise": 0.0,
+      "span": 1,
+      "pca_dim": null,
+      "lag_low": 30,
+      "lag_high": 90,
+      "max_invariants": 16,
+      "min_correlation": 0.9,
+      "window": 12,
+      "hidden": [
+        128,
+        128
+      ],
+      "predictor_iters": 150
+    },
+    "families": [
+      "energy",
+      "permanence",
+      "continuity",
+      "stochastic"
+    ]
+  },
+  "runs": {
+    "1": {
+      "families": {
+        "energy": {
+          "aurocs": {
+            "inv": {
+              "impossible_vs_possible": 1.0,
+              "impossible_vs_improbable": 0.9998,
+              "improbable_vs_possible": 0.7667
+            },
+            "inv_rel": {
+              "impossible_vs_possible": 0.999975,
+              "impossible_vs_improbable": 0.999825,
+              "improbable_vs_possible": 0.75685
+            },
+            "pe_max": {
+              "impossible_vs_possible": 0.54265,
+              "impossible_vs_improbable": 0.144475,
+              "improbable_vs_possible": 0.91025
+            },
+            "pe_mean": {
+              "impossible_vs_possible": 0.558275,
+              "impossible_vs_improbable": 0.136075,
+              "improbable_vs_possible": 0.901225
+            },
+            "pe_rel": {
+              "impossible_vs_possible": 0.513475,
+              "impossible_vs_improbable": 0.2812,
+              "improbable_vs_possible": 0.7442
+            },
+            "oracle_pe": {
+              "impossible_vs_possible": 1.0,
+              "impossible_vs_improbable": 1.0,
+              "improbable_vs_possible": 0.5
+            }
+          },
+          "medians": {
+            "possible": {
+              "inv": 0.015944857264909122,
+              "inv_rel": 0.29794494403300675,
+              "pe_max": 0.0003440162796408379,
+              "pe_mean": 9.616063708906468e-06,
+              "pe_rel": 26.83339682514213,
+              "oracle_pe": 0.0
+            },
+            "improbable": {
+              "inv": 0.029142432572956574,
+              "inv_rel": 0.5173852263598031,
+              "pe_max": 0.0010906471704887183,
+              "pe_mean": 3.157871856281696e-05,
+              "pe_rel": 74.46683860619825,
+              "oracle_pe": 0.0
+            },
+            "impossible": {
+              "inv": 23.748213261282245,
+              "inv_rel": 438.77812464831254,
+              "pe_max": 0.00036416980187496835,
+              "pe_mean": 1.125442901440007e-05,
+              "pe_rel": 28.527268345426585,
+              "oracle_pe": 2.628392166925509e-05
+            }
+          }
+        },
+        "permanence": {
+          "aurocs": {
+            "inv": {
+              "impossible_vs_possible": 1.0,
+              "impossible_vs_improbable": 1.0,
+              "improbable_vs_possible": 0.7738
+            },
+            "inv_rel": {
+              "impossible_vs_possible": 1.0,
+              "impossible_vs_improbable": 1.0,
+              "improbable_vs_possible": 0.761325
+            },
+            "pe_max": {
+              "impossible_vs_possible": 1.0,
+              "impossible_vs_improbable": 1.0,
+              "improbable_vs_possible": 0.89285
+            },
+            "pe_mean": {
+              "impossible_vs_possible": 1.0,
+              "impossible_vs_improbable": 1.0,
+              "improbable_vs_possible": 0.8751
+            },
+            "pe_rel": {
+              "impossible_vs_possible": 1.0,
+              "impossible_vs_improbable": 1.0,
+              "improbable_vs_possible": 0.77545
+            },
+            "oracle_pe": {
+              "impossible_vs_possible": 1.0,
+              "impossible_vs_improbable": 1.0,
+              "improbable_vs_possible": 0.5
+            }
+          },
+          "medians": {
+            "possible": {
+              "inv": 0.016945622994752496,
+              "inv_rel": 0.3153507525406266,
+              "pe_max": 0.00028135443349258356,
+              "pe_mean": 1.0218199743215507e-05,
+              "pe_rel": 23.453007598982367,
+              "oracle_pe": 0.0
+            },
+            "improbable": {
+              "inv": 0.03164719292457645,
+              "inv_rel": 0.5508168009569139,
+              "pe_max": 0.0010825698687481299,
+              "pe_mean": 2.835881697015531e-05,
+              "pe_rel": 106.08304559231678,
+              "oracle_pe": 0.0
+            },
+            "impossible": {
+              "inv": 39.059928259523915,
+              "inv_rel": 715.499650684908,
+              "pe_max": 1.6065682467233249,
+              "pe_mean": 0.027015924587561684,
+              "pe_rel": 151710.36584853998,
+              "oracle_pe": 1.597345790682866
+            }
+          }
+        },
+        "continuity": {
+          "aurocs": {
+            "inv": {
+              "impossible_vs_possible": 0.56815,
+              "impossible_vs_improbable": 0.235625,
+              "improbable_vs_possible": 0.802525
+            },
+            "inv_rel": {
+              "impossible_vs_possible": 0.566525,
+              "impossible_vs_improbable": 0.24,
+              "improbable_vs_possible": 0.795575
+            },
+            "pe_max": {
+              "impossible_vs_possible": 1.0,
+              "impossible_vs_improbable": 1.0,
+              "improbable_vs_possible": 0.906775
+            },
+            "pe_mean": {
+              "impossible_vs_possible": 1.0,
+              "impossible_vs_improbable": 1.0,
+              "improbable_vs_possible": 0.886975
+            },
+            "pe_rel": {
+              "impossible_vs_possible": 0.999875,
+              "impossible_vs_improbable": 0.998525,
+              "improbable_vs_possible": 0.759125
+            },
+            "oracle_pe": {
+              "impossible_vs_possible": 1.0,
+              "impossible_vs_improbable": 1.0,
+              "improbable_vs_possible": 0.5
+            }
+          },
+          "medians": {
+            "possible": {
+              "inv": 0.01444035830823189,
+              "inv_rel": 0.2738587711130728,
+              "pe_max": 0.00031463506133852444,
+              "pe_mean": 1.0512305822625935e-05,
+              "pe_rel": 24.76592810216649,
+              "oracle_pe": 0.0
+            },
+            "improbable": {
+              "inv": 0.03321138699899849,
+              "inv_rel": 0.6099044534983097,
+              "pe_max": 0.001209610624303044,
+              "pe_mean": 3.495248495184986e-05,
+              "pe_rel": 96.98852527384926,
+              "oracle_pe": 0.0
+            },
+            "impossible": {
+              "inv": 0.017625718840993065,
+              "inv_rel": 0.3231802452561345,
+              "pe_max": 0.29712708861117165,
+              "pe_mean": 0.004906603197573826,
+              "pe_rel": 20063.33659253005,
+              "oracle_pe": 0.29230527481452395
+            }
+          }
+        },
+        "stochastic": {
+          "aurocs": {
+            "inv": {
+              "impossible_vs_possible": 1.0,
+              "impossible_vs_improbable": 1.0,
+              "improbable_vs_possible": 0.559425
+            },
+            "inv_rel": {
+              "impossible_vs_possible": 1.0,
+              "impossible_vs_improbable": 1.0,
+              "improbable_vs_possible": 0.561275
+            },
+            "pe_max": {
+              "impossible_vs_possible": 0.65305,
+              "impossible_vs_improbable": 0.6277,
+              "improbable_vs_possible": 0.5395
+            },
+            "pe_mean": {
+              "impossible_vs_possible": 0.632175,
+              "impossible_vs_improbable": 0.57635,
+              "improbable_vs_possible": 0.567525
+            },
+            "pe_rel": {
+              "impossible_vs_possible": 0.568475,
+              "impossible_vs_improbable": 0.585,
+              "improbable_vs_possible": 0.4838
+            },
+            "oracle_pe": {
+              "impossible_vs_possible": 0.9372,
+              "impossible_vs_improbable": 0.432525,
+              "improbable_vs_possible": 0.93015
+            }
+          },
+          "medians": {
+            "possible": {
+              "inv": 0.017078528158155484,
+              "inv_rel": 0.3089199169448731,
+              "pe_max": 0.0002990284403951121,
+              "pe_mean": 9.945809800843904e-06,
+              "pe_rel": 27.571445207285624,
+              "oracle_pe": 9.73678531995064e-06
+            },
+            "improbable": {
+              "inv": 0.01894150900088703,
+              "inv_rel": 0.33600086578361865,
+              "pe_max": 0.00032606788614754454,
+              "pe_mean": 1.1990983020330521e-05,
+              "pe_rel": 21.561068518637704,
+              "oracle_pe": 5.4837666132212775e-05
+            },
+            "impossible": {
+              "inv": 47.62592886173725,
+              "inv_rel": 861.9834491263041,
+              "pe_max": 0.0004665848128014136,
+              "pe_mean": 1.4885937003988314e-05,
+              "pe_rel": 34.758173494636665,
+              "oracle_pe": 4.5588552541224124e-05
+            }
+          }
+        }
+      },
+      "worlds": {
+        "specular": {
+          "invariants_kept": 4,
+          "slowness_val": [
+            0.0,
+            0.0,
+            0.0,
+            4e-05,
+            0.39539,
+            0.76074,
+            1.04425,
+            1.02328,
+            0.98469,
+            1.44875,
+            1.11542,
+            1.17071,
+            1.2219,
+            1.21965,
+            1.31722,
+            1.24387
+          ],
+          "r2": {
+            "energy": 0.9999870735387821,
+            "count": 1.0
+          }
+        },
+        "rough": {
+          "invariants_kept": 4,
+          "slowness_val": [
+            0.0,
+            0.0,
+            0.0,
+            2e-05,
+            0.92599,
+            1.09696,
+            1.01458,
+            1.15002,
+            1.02025,
+            1.57859,
+            1.32463,
+            1.26957,
+            1.03249,
+            1.50916,
+            1.30904,
+            1.18616
+          ],
+          "r2": {
+            "energy": 0.999986787996697,
+            "count": 1.0
+          }
+        }
+      }
+    },
+    "2": {
+      "families": {
+        "energy": {
+          "aurocs": {
+            "inv": {
+              "impossible_vs_possible": 1.0,
+              "impossible_vs_improbable": 1.0,
+              "improbable_vs_possible": 0.8327
+            },
+            "inv_rel": {
+              "impossible_vs_possible": 1.0,
+              "impossible_vs_improbable": 1.0,
+              "improbable_vs_possible": 0.82105
+            },
+            "pe_max": {
+              "impossible_vs_possible": 0.562725,
+              "impossible_vs_improbable": 0.1579,
+              "improbable_vs_possible": 0.892575
+            },
+            "pe_mean": {
+              "impossible_vs_possible": 0.566675,
+              "impossible_vs_improbable": 0.13425,
+              "improbable_vs_possible": 0.9055
+            },
+            "pe_rel": {
+              "impossible_vs_possible": 0.475925,
+              "impossible_vs_improbable": 0.3525,
+              "improbable_vs_possible": 0.6339
+            },
+            "oracle_pe": {
+              "impossible_vs_possible": 1.0,
+              "impossible_vs_improbable": 1.0,
+              "improbable_vs_possible": 0.5
+            }
+          },
+          "medians": {
+            "possible": {
+              "inv": 0.020049558840994165,
+              "inv_rel": 0.3625401867782144,
+              "pe_max": 0.0003402418450864686,
+              "pe_mean": 8.610066876218519e-06,
+              "pe_rel": 59.11212012712181,
+              "oracle_pe": 0.0
+            },
+            "improbable": {
+              "inv": 0.04230684217182721,
+              "inv_rel": 0.7181892174404584,
+              "pe_max": 0.0010658108983858552,
+              "pe_mean": 3.1286954650214286e-05,
+              "pe_rel": 106.13046402894965,
+              "oracle_pe": 0.0
+            },
+            "impossible": {
+              "inv": 28.749414393713874,
+              "inv_rel": 523.303501596786,
+              "pe_max": 0.00038167749937775787,
+              "pe_mean": 9.838321408062435e-06,
+              "pe_rel": 54.32461833368143,
+              "oracle_pe": 2.9717909009163728e-05
+            }
+          }
+        },
+        "permanence": {
+          "aurocs": {
+            "inv": {
+              "impossible_vs_possible": 1.0,
+              "impossible_vs_improbable": 1.0,
+              "improbable_vs_possible": 0.781175
+            },
+            "inv_rel": {
+              "impossible_vs_possible": 1.0,
+              "impossible_vs_improbable": 1.0,
+              "improbable_vs_possible": 0.77185
+            },
+            "pe_max": {
+              "impossible_vs_possible": 1.0,
+              "impossible_vs_improbable": 1.0,
+              "improbable_vs_possible": 0.8672
+            },
+            "pe_mean": {
+              "impossible_vs_possible": 1.0,
+              "impossible_vs_improbable": 1.0,
+              "improbable_vs_possible": 0.893425
+            },
+            "pe_rel": {
+              "impossible_vs_possible": 1.0,
+              "impossible_vs_improbable": 1.0,
+              "improbable_vs_possible": 0.67545
+            },
+            "oracle_pe": {
+              "impossible_vs_possible": 1.0,
+              "impossible_vs_improbable": 1.0,
+              "improbable_vs_possible": 0.5
+            }
+          },
+          "medians": {
+            "possible": {
+              "inv": 0.022359760457761155,
+              "inv_rel": 0.4077532425037663,
+              "pe_max": 0.0003097015026399285,
+              "pe_mean": 7.885612403068838e-06,
+              "pe_rel": 57.0187372565555,
+              "oracle_pe": 0.0
+            },
+            "improbable": {
+              "inv": 0.04252591157064735,
+              "inv_rel": 0.7150771267376559,
+              "pe_max": 0.0009919400345674027,
+              "pe_mean": 2.9572803201546703e-05,
+              "pe_rel": 123.04247664964603,
+              "oracle_pe": 0.0
+            },
+            "impossible": {
+              "inv": 37.907728659286846,
+              "inv_rel": 661.5694010196034,
+              "pe_max": 1.6171825565435962,
+              "pe_mean": 0.027321545547198355,
+              "pe_rel": 261899.93458711432,
+              "oracle_pe": 1.617104042449923
+            }
+          }
+        },
+        "continuity": {
+          "aurocs": {
+            "inv": {
+              "impossible_vs_possible": 0.563425,
+              "impossible_vs_improbable": 0.26625,
+              "improbable_vs_possible": 0.78465
+            },
+            "inv_rel": {
+              "impossible_vs_possible": 0.5639,
+              "impossible_vs_improbable": 0.284725,
+              "improbable_vs_possible": 0.770925
+            },
+            "pe_max": {
+              "impossible_vs_possible": 1.0,
+              "impossible_vs_improbable": 1.0,
+              "improbable_vs_possible": 0.897975
+            },
+            "pe_mean": {
+              "impossible_vs_possible": 1.0,
+              "impossible_vs_improbable": 1.0,
+              "improbable_vs_possible": 0.9098
+            },
+            "pe_rel": {
+              "impossible_vs_possible": 1.0,
+              "impossible_vs_improbable": 0.999825,
+              "improbable_vs_possible": 0.663025
+            },
+            "oracle_pe": {
+              "impossible_vs_possible": 1.0,
+              "impossible_vs_improbable": 1.0,
+              "improbable_vs_possible": 0.5
+            }
+          },
+          "medians": {
+            "possible": {
+              "inv": 0.022923757176787303,
+              "inv_rel": 0.415054287228098,
+              "pe_max": 0.00034642532948884943,
+              "pe_mean": 9.622873032703304e-06,
+              "pe_rel": 55.00576065520722,
+              "oracle_pe": 0.0
+            },
+            "improbable": {
+              "inv": 0.04731566655659432,
+              "inv_rel": 0.758147770739144,
+              "pe_max": 0.0011467183407086249,
+              "pe_mean": 3.371459078473142e-05,
+              "pe_rel": 104.43296128765769,
+              "oracle_pe": 0.0
+            },
+            "impossible": {
+              "inv": 0.026967144490386945,
+              "inv_rel": 0.4834775169151748,
+              "pe_max": 0.28407766408812096,
+              "pe_mean": 0.0047589764340383095,
+              "pe_rel": 39129.49884213587,
+              "oracle_pe": 0.2839585929013809
+            }
+          }
+        },
+        "stochastic": {
+          "aurocs": {
+            "inv": {
+              "impossible_vs_possible": 1.0,
+              "impossible_vs_improbable": 1.0,
+              "improbable_vs_possible": 0.4926
+            },
+            "inv_rel": {
+              "impossible_vs_possible": 1.0,
+              "impossible_vs_improbable": 1.0,
+              "improbable_vs_possible": 0.492625
+            },
+            "pe_max": {
+              "impossible_vs_possible": 0.64985,
+              "impossible_vs_improbable": 0.639725,
+              "improbable_vs_possible": 0.51745
+            },
+            "pe_mean": {
+              "impossible_vs_possible": 0.596425,
+              "impossible_vs_improbable": 0.561025,
+              "improbable_vs_possible": 0.53625
+            },
+            "pe_rel": {
+              "impossible_vs_possible": 0.643225,
+              "impossible_vs_improbable": 0.6259,
+              "improbable_vs_possible": 0.515975
+            },
+            "oracle_pe": {
+              "impossible_vs_possible": 0.9243,
+              "impossible_vs_improbable": 0.4997,
+              "improbable_vs_possible": 0.910675
+            }
+          },
+          "medians": {
+            "possible": {
+              "inv": 0.03230483897607349,
+              "inv_rel": 0.5491389596602256,
+              "pe_max": 0.00031658797983832453,
+              "pe_mean": 1.049684370706189e-05,
+              "pe_rel": 22.41048644754857,
+              "oracle_pe": 1.0691894131387531e-05
+            },
+            "improbable": {
+              "inv": 0.03174406684369077,
+              "inv_rel": 0.5478160804437595,
+              "pe_max": 0.0003328156307947337,
+              "pe_mean": 1.1604560369026313e-05,
+              "pe_rel": 24.159184790192633,
+              "oracle_pe": 4.852057630506315e-05
+            },
+            "impossible": {
+              "inv": 50.89731802312433,
+              "inv_rel": 865.2128193156311,
+              "pe_max": 0.0004359892040386947,
+              "pe_mean": 1.3237382483566834e-05,
+              "pe_rel": 42.013616393027704,
+              "oracle_pe": 4.928511350014949e-05
+            }
+          }
+        }
+      },
+      "worlds": {
+        "specular": {
+          "invariants_kept": 4,
+          "slowness_val": [
+            0.0,
+            0.0,
+            0.0,
+            1e-05,
+            0.89102,
+            0.92135,
+            0.96664,
+            1.18198,
+            1.41481,
+            1.15825,
+            1.16526,
+            1.64223,
+            1.27723,
+            1.47832,
+            1.53348,
+            1.69006
+          ],
+          "r2": {
+            "energy": 0.9999962628476412,
+            "count": 1.0
+          }
+        },
+        "rough": {
+          "invariants_kept": 4,
+          "slowness_val": [
+            0.0,
+            0.0,
+            0.0,
+            6e-05,
+            0.81025,
+            0.79475,
+            0.91514,
+            1.34279,
+            1.22319,
+            1.26603,
+            1.32742,
+            1.45263,
+            1.51912,
+            1.3116,
+            1.15225,
+            1.22394
+          ],
+          "r2": {
+            "energy": 0.9999669670703741,
+            "count": 1.0
+          }
+        }
+      }
+    },
+    "3": {
+      "families": {
+        "energy": {
+          "aurocs": {
+            "inv": {
+              "impossible_vs_possible": 1.0,
+              "impossible_vs_improbable": 1.0,
+              "improbable_vs_possible": 0.8115
+            },
+            "inv_rel": {
+              "impossible_vs_possible": 1.0,
+              "impossible_vs_improbable": 1.0,
+              "improbable_vs_possible": 0.808425
+            },
+            "pe_max": {
+              "impossible_vs_possible": 0.574475,
+              "impossible_vs_improbable": 0.16865,
+              "improbable_vs_possible": 0.8814
+            },
+            "pe_mean": {
+              "impossible_vs_possible": 0.566025,
+              "impossible_vs_improbable": 0.21705,
+              "improbable_vs_possible": 0.829725
+            },
+            "pe_rel": {
+              "impossible_vs_possible": 0.512175,
+              "impossible_vs_improbable": 0.27355,
+              "improbable_vs_possible": 0.75655
+            },
+            "oracle_pe": {
+              "impossible_vs_possible": 1.0,
+              "impossible_vs_improbable": 1.0,
+              "improbable_vs_possible": 0.5
+            }
+          },
+          "medians": {
+            "possible": {
+              "inv": 0.006645661721419399,
+              "inv_rel": 0.12903824910711442,
+              "pe_max": 0.0003068548638124058,
+              "pe_mean": 1.256521339875915e-05,
+              "pe_rel": 19.97216510814708,
+              "oracle_pe": 0.0
+            },
+            "improbable": {
+              "inv": 0.013536173805882026,
+              "inv_rel": 0.25523115502509597,
+              "pe_max": 0.0011072246531860473,
+              "pe_mean": 3.4293671071987223e-05,
+              "pe_rel": 69.5786524709479,
+              "oracle_pe": 0.0
+            },
+            "impossible": {
+              "inv": 29.378436487121434,
+              "inv_rel": 564.0745831591596,
+              "pe_max": 0.0003934750450413155,
+              "pe_mean": 1.3979482628609731e-05,
+              "pe_rel": 21.172100988270273,
+              "oracle_pe": 2.9782111600048684e-05
+            }
+          }
+        },
+        "permanence": {
+          "aurocs": {
+            "inv": {
+              "impossible_vs_possible": 1.0,
+              "impossible_vs_improbable": 1.0,
+              "improbable_vs_possible": 0.809525
+            },
+            "inv_rel": {
+              "impossible_vs_possible": 1.0,
+              "impossible_vs_improbable": 1.0,
+              "improbable_vs_possible": 0.805125
+            },
+            "pe_max": {
+              "impossible_vs_possible": 1.0,
+              "impossible_vs_improbable": 1.0,
+              "improbable_vs_possible": 0.898375
+            },
+            "pe_mean": {
+              "impossible_vs_possible": 1.0,
+              "impossible_vs_improbable": 1.0,
+              "improbable_vs_possible": 0.85355
+            },
+            "pe_rel": {
+              "impossible_vs_possible": 1.0,
+              "impossible_vs_improbable": 1.0,
+              "improbable_vs_possible": 0.76745
+            },
+            "oracle_pe": {
+              "impossible_vs_possible": 1.0,
+              "impossible_vs_improbable": 1.0,
+              "improbable_vs_possible": 0.5
+            }
+          },
+          "medians": {
+            "possible": {
+              "inv": 0.007059782276454974,
+              "inv_rel": 0.13675067295792315,
+              "pe_max": 0.0003258556580390086,
+              "pe_mean": 1.258239824499415e-05,
+              "pe_rel": 16.33889282914813,
+              "oracle_pe": 0.0
+            },
+            "improbable": {
+              "inv": 0.013737424314215579,
+              "inv_rel": 0.265892026682653,
+              "pe_max": 0.0011842510232056432,
+              "pe_mean": 3.4290202316382884e-05,
+              "pe_rel": 77.63164391363284,
+              "oracle_pe": 0.0
+            },
+            "impossible": {
+              "inv": 41.28593523803037,
+              "inv_rel": 791.977937654292,
+              "pe_max": 1.604868869490316,
+              "pe_mean": 0.02702486578048842,
+              "pe_rel": 102624.41205815718,
+              "oracle_pe": 1.598462123918195
+            }
+          }
+        },
+        "continuity": {
+          "aurocs": {
+            "inv": {
+              "impossible_vs_possible": 0.559775,
+              "impossible_vs_improbable": 0.250675,
+              "improbable_vs_possible": 0.7884
+            },
+            "inv_rel": {
+              "impossible_vs_possible": 0.559375,
+              "impossible_vs_improbable": 0.25485,
+              "improbable_vs_possible": 0.784275
+            },
+            "pe_max": {
+              "impossible_vs_possible": 1.0,
+              "impossible_vs_improbable": 1.0,
+              "improbable_vs_possible": 0.888475
+            },
+            "pe_mean": {
+              "impossible_vs_possible": 1.0,
+              "impossible_vs_improbable": 1.0,
+              "improbable_vs_possible": 0.82945
+            },
+            "pe_rel": {
+              "impossible_vs_possible": 0.9997,
+              "impossible_vs_improbable": 0.999425,
+              "improbable_vs_possible": 0.769175
+            },
+            "oracle_pe": {
+              "impossible_vs_possible": 1.0,
+              "impossible_vs_improbable": 1.0,
+              "improbable_vs_possible": 0.5
+            }
+          },
+          "medians": {
+            "possible": {
+              "inv": 0.006986689748743001,
+              "inv_rel": 0.13544082134707486,
+              "pe_max": 0.0003069951627707036,
+              "pe_mean": 1.1556858708884065e-05,
+              "pe_rel": 20.48381217272678,
+              "oracle_pe": 0.0
+            },
+            "improbable": {
+              "inv": 0.012125450361853524,
+              "inv_rel": 0.23068962759791237,
+              "pe_max": 0.0010504101580219578,
+              "pe_mean": 2.947002516389812e-05,
+              "pe_rel": 73.41014532240717,
+              "oracle_pe": 0.0
+            },
+            "impossible": {
+              "inv": 0.007510197916412649,
+              "inv_rel": 0.14556650732490822,
+              "pe_max": 0.2752872502007109,
+              "pe_mean": 0.004618728004676898,
+              "pe_rel": 14750.647911110973,
+              "oracle_pe": 0.27548418151707466
+            }
+          }
+        },
+        "stochastic": {
+          "aurocs": {
+            "inv": {
+              "impossible_vs_possible": 1.0,
+              "impossible_vs_improbable": 1.0,
+              "improbable_vs_possible": 0.529425
+            },
+            "inv_rel": {
+              "impossible_vs_possible": 1.0,
+              "impossible_vs_improbable": 1.0,
+              "improbable_vs_possible": 0.529175
+            },
+            "pe_max": {
+              "impossible_vs_possible": 0.628025,
+              "impossible_vs_improbable": 0.616875,
+              "improbable_vs_possible": 0.51405
+            },
+            "pe_mean": {
+              "impossible_vs_possible": 0.616475,
+              "impossible_vs_improbable": 0.572875,
+              "improbable_vs_possible": 0.54835
+            },
+            "pe_rel": {
+              "impossible_vs_possible": 0.608125,
+              "impossible_vs_improbable": 0.613,
+              "improbable_vs_possible": 0.50045
+            },
+            "oracle_pe": {
+              "impossible_vs_possible": 0.928,
+              "impossible_vs_improbable": 0.393625,
+              "improbable_vs_possible": 0.9278
+            }
+          },
+          "medians": {
+            "possible": {
+              "inv": 0.014462278776340938,
+              "inv_rel": 0.2726237350938003,
+              "pe_max": 0.00031008659744258585,
+              "pe_mean": 9.324791952606715e-06,
+              "pe_rel": 25.16901626459997,
+              "oracle_pe": 1.1326703329963818e-05
+            },
+            "improbable": {
+              "inv": 0.015506091831844166,
+              "inv_rel": 0.2842817559596603,
+              "pe_max": 0.00032485977022990214,
+              "pe_mean": 1.1608698904045551e-05,
+              "pe_rel": 26.221155456222313,
+              "oracle_pe": 5.9398397678469896e-05
+            },
+            "impossible": {
+              "inv": 51.980386036814856,
+              "inv_rel": 959.3444865326627,
+              "pe_max": 0.00044598907622209443,
+              "pe_mean": 1.350658105952596e-05,
+              "pe_rel": 42.966923530199004,
+              "oracle_pe": 4.932815984724255e-05
+            }
+          }
+        }
+      },
+      "worlds": {
+        "specular": {
+          "invariants_kept": 4,
+          "slowness_val": [
+            0.0,
+            0.0,
+            0.0,
+            2e-05,
+            0.69837,
+            1.02524,
+            1.05101,
+            1.07228,
+            1.16681,
+            1.1519,
+            1.3162,
+            1.27098,
+            1.27539,
+            1.45783,
+            1.24516,
+            1.04724
+          ],
+          "r2": {
+            "energy": 0.999998875746764,
+            "count": 1.0
+          }
+        },
+        "rough": {
+          "invariants_kept": 4,
+          "slowness_val": [
+            0.0,
+            0.0,
+            0.0,
+            6e-05,
+            0.58413,
+            0.76686,
+            0.71998,
+            1.11308,
+            1.07332,
+            0.83438,
+            1.29619,
+            1.03073,
+            1.18466,
+            1.71067,
+            1.2155,
+            0.94095
+          ],
+          "r2": {
+            "energy": 0.9999982217542114,
+            "count": 1.0
+          }
+        }
+      }
+    },
+    "4": {
+      "families": {
+        "energy": {
+          "aurocs": {
+            "inv": {
+              "impossible_vs_possible": 1.0,
+              "impossible_vs_improbable": 1.0,
+              "improbable_vs_possible": 0.7718
+            },
+            "inv_rel": {
+              "impossible_vs_possible": 1.0,
+              "impossible_vs_improbable": 1.0,
+              "improbable_vs_possible": 0.7566
+            },
+            "pe_max": {
+              "impossible_vs_possible": 0.6148,
+              "impossible_vs_improbable": 0.18125,
+              "improbable_vs_possible": 0.91485
+            },
+            "pe_mean": {
+              "impossible_vs_possible": 0.594725,
+              "impossible_vs_improbable": 0.160275,
+              "improbable_vs_possible": 0.91485
+            },
+            "pe_rel": {
+              "impossible_vs_possible": 0.5747,
+              "impossible_vs_improbable": 0.3171,
+              "improbable_vs_possible": 0.744625
+            },
+            "oracle_pe": {
+              "impossible_vs_possible": 1.0,
+              "impossible_vs_improbable": 1.0,
+              "improbable_vs_possible": 0.5
+            }
+          },
+          "medians": {
+            "possible": {
+              "inv": 0.01728583570444822,
+              "inv_rel": 0.318395632662935,
+              "pe_max": 0.00031362726587310307,
+              "pe_mean": 8.42926440994672e-06,
+              "pe_rel": 41.023175628749826,
+              "oracle_pe": 0.0
+            },
+            "improbable": {
+              "inv": 0.031474490648028805,
+              "inv_rel": 0.5475928982897913,
+              "pe_max": 0.0010696838440126231,
+              "pe_mean": 3.1719306529276577e-05,
+              "pe_rel": 108.64593513683627,
+              "oracle_pe": 0.0
+            },
+            "impossible": {
+              "inv": 26.570365560378498,
+              "inv_rel": 456.66634927839834,
+              "pe_max": 0.00041949821498231627,
+              "pe_mean": 1.0293306052354935e-05,
+              "pe_rel": 51.17094619047258,
+              "oracle_pe": 2.827622850009113e-05
+            }
+          }
+        },
+        "permanence": {
+          "aurocs": {
+            "inv": {
+              "impossible_vs_possible": 1.0,
+              "impossible_vs_improbable": 1.0,
+              "improbable_vs_possible": 0.7869
+            },
+            "inv_rel": {
+              "impossible_vs_possible": 1.0,
+              "impossible_vs_improbable": 1.0,
+              "improbable_vs_possible": 0.7766
+            },
+            "pe_max": {
+              "impossible_vs_possible": 1.0,
+              "impossible_vs_improbable": 1.0,
+              "improbable_vs_possible": 0.91225
+            },
+            "pe_mean": {
+              "impossible_vs_possible": 1.0,
+              "impossible_vs_improbable": 1.0,
+              "improbable_vs_possible": 0.91145
+            },
+            "pe_rel": {
+              "impossible_vs_possible": 1.0,
+              "impossible_vs_improbable": 1.0,
+              "improbable_vs_possible": 0.742175
+            },
+            "oracle_pe": {
+              "impossible_vs_possible": 1.0,
+              "impossible_vs_improbable": 1.0,
+              "improbable_vs_possible": 0.5
+            }
+          },
+          "medians": {
+            "possible": {
+              "inv": 0.017702366913025284,
+              "inv_rel": 0.31729453014275893,
+              "pe_max": 0.0003184179981022855,
+              "pe_mean": 8.77718711970424e-06,
+              "pe_rel": 36.753259417044276,
+              "oracle_pe": 0.0
+            },
+            "improbable": {
+              "inv": 0.03306693623906204,
+              "inv_rel": 0.5592465766514361,
+              "pe_max": 0.0012166735960497835,
+              "pe_mean": 3.351111152256804e-05,
+              "pe_rel": 124.60676700777523,
+              "oracle_pe": 0.0
+            },
+            "impossible": {
+              "inv": 43.29871015131168,
+              "inv_rel": 757.5836785390918,
+              "pe_max": 1.5833462017100315,
+              "pe_mean": 0.026674414124120877,
+              "pe_rel": 251570.9769421977,
+              "oracle_pe": 1.574248804443536
+            }
+          }
+        },
+        "continuity": {
+          "aurocs": {
+            "inv": {
+              "impossible_vs_possible": 0.5693,
+              "impossible_vs_improbable": 0.299675,
+              "improbable_vs_possible": 0.7534
+            },
+            "inv_rel": {
+              "impossible_vs_possible": 0.5687,
+              "impossible_vs_improbable": 0.309075,
+              "improbable_vs_possible": 0.746075
+            },
+            "pe_max": {
+              "impossible_vs_possible": 1.0,
+              "impossible_vs_improbable": 1.0,
+              "improbable_vs_possible": 0.87185
+            },
+            "pe_mean": {
+              "impossible_vs_possible": 1.0,
+              "impossible_vs_improbable": 1.0,
+              "improbable_vs_possible": 0.884625
+            },
+            "pe_rel": {
+              "impossible_vs_possible": 1.0,
+              "impossible_vs_improbable": 1.0,
+              "improbable_vs_possible": 0.696625
+            },
+            "oracle_pe": {
+              "impossible_vs_possible": 1.0,
+              "impossible_vs_improbable": 1.0,
+              "improbable_vs_possible": 0.5
+            }
+          },
+          "medians": {
+            "possible": {
+              "inv": 0.015844809761374815,
+              "inv_rel": 0.29590007476404256,
+              "pe_max": 0.00031556094644179895,
+              "pe_mean": 8.238469645522777e-06,
+              "pe_rel": 41.41141170662708,
+              "oracle_pe": 0.0
+            },
+            "improbable": {
+              "inv": 0.028541222075899094,
+              "inv_rel": 0.49792940302721256,
+              "pe_max": 0.0009196357124210989,
+              "pe_mean": 2.620077072677381e-05,
+              "pe_rel": 88.57834894988747,
+              "oracle_pe": 0.0
+            },
+            "impossible": {
+              "inv": 0.018889834063384618,
+              "inv_rel": 0.3407797057220814,
+              "pe_max": 0.3156350516967781,
+              "pe_mean": 0.005186693771627877,
+              "pe_rel": 31845.669039547185,
+              "oracle_pe": 0.3151886819225108
+            }
+          }
+        },
+        "stochastic": {
+          "aurocs": {
+            "inv": {
+              "impossible_vs_possible": 1.0,
+              "impossible_vs_improbable": 1.0,
+              "improbable_vs_possible": 0.495825
+            },
+            "inv_rel": {
+              "impossible_vs_possible": 1.0,
+              "impossible_vs_improbable": 1.0,
+              "improbable_vs_possible": 0.49975
+            },
+            "pe_max": {
+              "impossible_vs_possible": 0.688575,
+              "impossible_vs_improbable": 0.67635,
+              "improbable_vs_possible": 0.518
+            },
+            "pe_mean": {
+              "impossible_vs_possible": 0.6776,
+              "impossible_vs_improbable": 0.646725,
+              "improbable_vs_possible": 0.538675
+            },
+            "pe_rel": {
+              "impossible_vs_possible": 0.6314,
+              "impossible_vs_improbable": 0.619,
+              "improbable_vs_possible": 0.50965
+            },
+            "oracle_pe": {
+              "impossible_vs_possible": 0.9373,
+              "impossible_vs_improbable": 0.44825,
+              "improbable_vs_possible": 0.9298
+            }
+          },
+          "medians": {
+            "possible": {
+              "inv": 0.033180069966762926,
+              "inv_rel": 0.5718457102967966,
+              "pe_max": 0.0003076597499521257,
+              "pe_mean": 9.086207982696131e-06,
+              "pe_rel": 33.905502737909615,
+              "oracle_pe": 9.517709491063604e-06
+            },
+            "improbable": {
+              "inv": 0.03358127558553214,
+              "inv_rel": 0.5496431772857315,
+              "pe_max": 0.00031777692203203143,
+              "pe_mean": 9.787902875631638e-06,
+              "pe_rel": 36.26972898672171,
+              "oracle_pe": 5.527483054280794e-05
+            },
+            "impossible": {
+              "inv": 50.52227780174056,
+              "inv_rel": 814.3173881660346,
+              "pe_max": 0.0005327809946720105,
+              "pe_mean": 1.411499852664569e-05,
+              "pe_rel": 56.46255877915527,
+              "oracle_pe": 5.064095836520391e-05
+            }
+          }
+        }
+      },
+      "worlds": {
+        "specular": {
+          "invariants_kept": 4,
+          "slowness_val": [
+            0.0,
+            0.0,
+            0.0,
+            3e-05,
+            0.52626,
+            1.05513,
+            0.69022,
+            1.02715,
+            1.08205,
+            1.07019,
+            1.30638,
+            1.13529,
+            1.32282,
+            1.1642,
+            1.34881,
+            1.03851
+          ],
+          "r2": {
+            "energy": 0.9999968619098716,
+            "count": 1.0
+          }
+        },
+        "rough": {
+          "invariants_kept": 4,
+          "slowness_val": [
+            0.0,
+            0.0,
+            0.0,
+            6e-05,
+            0.67154,
+            0.79553,
+            0.8508,
+            0.94809,
+            0.95093,
+            1.19639,
+            1.14479,
+            1.42941,
+            1.41037,
+            1.49635,
+            1.32255,
+            1.38367
+          ],
+          "r2": {
+            "energy": 0.9999924463197193,
+            "count": 1.0
+          }
+        }
+      }
+    },
+    "5": {
+      "families": {
+        "energy": {
+          "aurocs": {
+            "inv": {
+              "impossible_vs_possible": 1.0,
+              "impossible_vs_improbable": 1.0,
+              "improbable_vs_possible": 0.719175
+            },
+            "inv_rel": {
+              "impossible_vs_possible": 1.0,
+              "impossible_vs_improbable": 1.0,
+              "improbable_vs_possible": 0.714475
+            },
+            "pe_max": {
+              "impossible_vs_possible": 0.523175,
+              "impossible_vs_improbable": 0.153275,
+              "improbable_vs_possible": 0.871725
+            },
+            "pe_mean": {
+              "impossible_vs_possible": 0.59715,
+              "impossible_vs_improbable": 0.186,
+              "improbable_vs_possible": 0.8693
+            },
+            "pe_rel": {
+              "impossible_vs_possible": 0.408675,
+              "impossible_vs_improbable": 0.225275,
+              "improbable_vs_possible": 0.70815
+            },
+            "oracle_pe": {
+              "impossible_vs_possible": 1.0,
+              "impossible_vs_improbable": 1.0,
+              "improbable_vs_possible": 0.5
+            }
+          },
+          "medians": {
+            "possible": {
+              "inv": 0.010938907352485271,
+              "inv_rel": 0.207020104001602,
+              "pe_max": 0.0003121510328223222,
+              "pe_mean": 8.96803870215163e-06,
+              "pe_rel": 37.046331428479625,
+              "oracle_pe": 0.0
+            },
+            "improbable": {
+              "inv": 0.01851423970776027,
+              "inv_rel": 0.34178318272863806,
+              "pe_max": 0.0009730635409213121,
+              "pe_mean": 2.6434063436440675e-05,
+              "pe_rel": 82.36961319093065,
+              "oracle_pe": 0.0
+            },
+            "impossible": {
+              "inv": 25.026795892573936,
+              "inv_rel": 476.1495193101521,
+              "pe_max": 0.00034346624914158834,
+              "pe_mean": 1.1465274746681558e-05,
+              "pe_rel": 23.770028020709432,
+              "oracle_pe": 2.6971424766517403e-05
+            }
+          }
+        },
+        "permanence": {
+          "aurocs": {
+            "inv": {
+              "impossible_vs_possible": 1.0,
+              "impossible_vs_improbable": 1.0,
+              "improbable_vs_possible": 0.75425
+            },
+            "inv_rel": {
+              "impossible_vs_possible": 1.0,
+              "impossible_vs_improbable": 1.0,
+              "improbable_vs_possible": 0.746975
+            },
+            "pe_max": {
+              "impossible_vs_possible": 1.0,
+              "impossible_vs_improbable": 1.0,
+              "improbable_vs_possible": 0.900425
+            },
+            "pe_mean": {
+              "impossible_vs_possible": 1.0,
+              "impossible_vs_improbable": 1.0,
+              "improbable_vs_possible": 0.891225
+            },
+            "pe_rel": {
+              "impossible_vs_possible": 1.0,
+              "impossible_vs_improbable": 1.0,
+              "improbable_vs_possible": 0.7318
+            },
+            "oracle_pe": {
+              "impossible_vs_possible": 1.0,
+              "impossible_vs_improbable": 1.0,
+              "improbable_vs_possible": 0.5
+            }
+          },
+          "medians": {
+            "possible": {
+              "inv": 0.009732227810961575,
+              "inv_rel": 0.18529705635090454,
+              "pe_max": 0.0003161896126567465,
+              "pe_mean": 9.754880964822222e-06,
+              "pe_rel": 29.525811746590175,
+              "oracle_pe": 0.0
+            },
+            "improbable": {
+              "inv": 0.01940955008388344,
+              "inv_rel": 0.3496852387629016,
+              "pe_max": 0.001046750133851869,
+              "pe_mean": 3.29573285231598e-05,
+              "pe_rel": 83.63536043401999,
+              "oracle_pe": 0.0
+            },
+            "impossible": {
+              "inv": 39.022754800747336,
+              "inv_rel": 754.2642129739888,
+              "pe_max": 1.6081274771210516,
+              "pe_mean": 0.02703339899236355,
+              "pe_rel": 165519.6984838936,
+              "oracle_pe": 1.6070951543334622
+            }
+          }
+        },
+        "continuity": {
+          "aurocs": {
+            "inv": {
+              "impossible_vs_possible": 0.560475,
+              "impossible_vs_improbable": 0.2598,
+              "improbable_vs_possible": 0.77445
+            },
+            "inv_rel": {
+              "impossible_vs_possible": 0.561425,
+              "impossible_vs_improbable": 0.26875,
+              "improbable_vs_possible": 0.768125
+            },
+            "pe_max": {
+              "impossible_vs_possible": 1.0,
+              "impossible_vs_improbable": 1.0,
+              "improbable_vs_possible": 0.8932
+            },
+            "pe_mean": {
+              "impossible_vs_possible": 1.0,
+              "impossible_vs_improbable": 1.0,
+              "improbable_vs_possible": 0.887425
+            },
+            "pe_rel": {
+              "impossible_vs_possible": 1.0,
+              "impossible_vs_improbable": 0.999525,
+              "improbable_vs_possible": 0.71795
+            },
+            "oracle_pe": {
+              "impossible_vs_possible": 1.0,
+              "impossible_vs_improbable": 1.0,
+              "improbable_vs_possible": 0.5
+            }
+          },
+          "medians": {
+            "possible": {
+              "inv": 0.009905999088063791,
+              "inv_rel": 0.18843095337231802,
+              "pe_max": 0.0003217002727623733,
+              "pe_mean": 9.488077887012172e-06,
+              "pe_rel": 28.46208716949728,
+              "oracle_pe": 0.0
+            },
+            "improbable": {
+              "inv": 0.020639134607795442,
+              "inv_rel": 0.368346334791587,
+              "pe_max": 0.0010322964853575257,
+              "pe_mean": 2.844921997648665e-05,
+              "pe_rel": 72.68758639828486,
+              "oracle_pe": 0.0
+            },
+            "impossible": {
+              "inv": 0.012171198668301459,
+              "inv_rel": 0.22706565666606932,
+              "pe_max": 0.24553116533798838,
+              "pe_mean": 0.004149596054601733,
+              "pe_rel": 15618.554062568674,
+              "oracle_pe": 0.2455474170870895
+            }
+          }
+        },
+        "stochastic": {
+          "aurocs": {
+            "inv": {
+              "impossible_vs_possible": 1.0,
+              "impossible_vs_improbable": 1.0,
+              "improbable_vs_possible": 0.488275
+            },
+            "inv_rel": {
+              "impossible_vs_possible": 1.0,
+              "impossible_vs_improbable": 1.0,
+              "improbable_vs_possible": 0.488825
+            },
+            "pe_max": {
+              "impossible_vs_possible": 0.647675,
+              "impossible_vs_improbable": 0.6384,
+              "improbable_vs_possible": 0.5173
+            },
+            "pe_mean": {
+              "impossible_vs_possible": 0.647875,
+              "impossible_vs_improbable": 0.646375,
+              "improbable_vs_possible": 0.506075
+            },
+            "pe_rel": {
+              "impossible_vs_possible": 0.56765,
+              "impossible_vs_improbable": 0.55585,
+              "improbable_vs_possible": 0.508325
+            },
+            "oracle_pe": {
+              "impossible_vs_possible": 0.92585,
+              "impossible_vs_improbable": 0.4205,
+              "improbable_vs_possible": 0.92935
+            }
+          },
+          "medians": {
+            "possible": {
+              "inv": 0.018286258274467882,
+              "inv_rel": 0.33809007704989014,
+              "pe_max": 0.00033457084787858035,
+              "pe_mean": 8.931644013525691e-06,
+              "pe_rel": 71.43421691284794,
+              "oracle_pe": 1.1333255461157671e-05
+            },
+            "improbable": {
+              "inv": 0.01694134260352969,
+              "inv_rel": 0.31621691281712383,
+              "pe_max": 0.0003466576818167025,
+              "pe_mean": 8.964909840539871e-06,
+              "pe_rel": 69.88052857099494,
+              "oracle_pe": 5.4390934257791e-05
+            },
+            "impossible": {
+              "inv": 43.41505944567113,
+              "inv_rel": 797.8356523685961,
+              "pe_max": 0.000471505225293791,
+              "pe_mean": 1.2206216207438246e-05,
+              "pe_rel": 83.66671723944665,
+              "oracle_pe": 4.460677765736324e-05
+            }
+          }
+        }
+      },
+      "worlds": {
+        "specular": {
+          "invariants_kept": 4,
+          "slowness_val": [
+            0.0,
+            0.0,
+            0.0,
+            7e-05,
+            0.90648,
+            0.76998,
+            0.69747,
+            1.08024,
+            0.98592,
+            0.97231,
+            0.94847,
+            1.03637,
+            1.2664,
+            1.0488,
+            1.15919,
+            1.60849
+          ],
+          "r2": {
+            "energy": 0.9999745678310397,
+            "count": 1.0
+          }
+        },
+        "rough": {
+          "invariants_kept": 4,
+          "slowness_val": [
+            0.0,
+            0.0,
+            0.0,
+            1e-05,
+            0.88992,
+            0.78604,
+            1.02357,
+            0.85717,
+            1.18247,
+            0.94919,
+            1.10247,
+            1.49089,
+            1.31452,
+            1.10991,
+            1.30707,
+            1.29353
+          ],
+          "r2": {
+            "energy": 0.9999753746819001,
+            "count": 1.0
+          }
+        }
+      }
+    }
+  },
+  "summary": {
+    "energy": {
+      "inv": {
+        "impossible_vs_possible": {
+          "mean": 1.0,
+          "std": 0.0,
+          "per_seed": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "impossible_vs_improbable": {
+          "mean": 0.9999600000000001,
+          "std": 7.99999999999912e-05,
+          "per_seed": [
+            0.9998,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "improbable_vs_possible": {
+          "mean": 0.780375,
+          "std": 0.03927504933160491,
+          "per_seed": [
+            0.7667,
+            0.8327,
+            0.8115,
+            0.7718,
+            0.719175
+          ]
+        }
+      },
+      "inv_rel": {
+        "impossible_vs_possible": {
+          "mean": 0.999995,
+          "std": 1.0000000000021104e-05,
+          "per_seed": [
+            0.999975,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "impossible_vs_improbable": {
+          "mean": 0.9999649999999999,
+          "std": 7.000000000001448e-05,
+          "per_seed": [
+            0.999825,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "improbable_vs_possible": {
+          "mean": 0.77148,
+          "std": 0.03874826254169338,
+          "per_seed": [
+            0.75685,
+            0.82105,
+            0.808425,
+            0.7566,
+            0.714475
+          ]
+        }
+      },
+      "pe_max": {
+        "impossible_vs_possible": {
+          "mean": 0.563565,
+          "std": 0.031027562746693483,
+          "per_seed": [
+            0.54265,
+            0.562725,
+            0.574475,
+            0.6148,
+            0.523175
+          ]
+        },
+        "impossible_vs_improbable": {
+          "mean": 0.16111,
+          "std": 0.012734879269156814,
+          "per_seed": [
+            0.144475,
+            0.1579,
+            0.16865,
+            0.18125,
+            0.153275
+          ]
+        },
+        "improbable_vs_possible": {
+          "mean": 0.89416,
+          "std": 0.016465863172029607,
+          "per_seed": [
+            0.91025,
+            0.892575,
+            0.8814,
+            0.91485,
+            0.871725
+          ]
+        }
+      },
+      "pe_mean": {
+        "impossible_vs_possible": {
+          "mean": 0.57657,
+          "std": 0.016105623241588617,
+          "per_seed": [
+            0.558275,
+            0.566675,
+            0.566025,
+            0.594725,
+            0.59715
+          ]
+        },
+        "impossible_vs_improbable": {
+          "mean": 0.16673,
+          "std": 0.031431772937586575,
+          "per_seed": [
+            0.136075,
+            0.13425,
+            0.21705,
+            0.160275,
+            0.186
+          ]
+        },
+        "improbable_vs_possible": {
+          "mean": 0.88412,
+          "std": 0.031216876044857532,
+          "per_seed": [
+            0.901225,
+            0.9055,
+            0.829725,
+            0.91485,
+            0.8693
+          ]
+        }
+      },
+      "pe_rel": {
+        "impossible_vs_possible": {
+          "mean": 0.49699,
+          "std": 0.05437730592811674,
+          "per_seed": [
+            0.513475,
+            0.475925,
+            0.512175,
+            0.5747,
+            0.408675
+          ]
+        },
+        "impossible_vs_improbable": {
+          "mean": 0.28992499999999993,
+          "std": 0.042843902716722705,
+          "per_seed": [
+            0.2812,
+            0.3525,
+            0.27355,
+            0.3171,
+            0.225275
+          ]
+        },
+        "improbable_vs_possible": {
+          "mean": 0.7174849999999999,
+          "std": 0.04483288859754631,
+          "per_seed": [
+            0.7442,
+            0.6339,
+            0.75655,
+            0.744625,
+            0.70815
+          ]
+        }
+      },
+      "oracle_pe": {
+        "impossible_vs_possible": {
+          "mean": 1.0,
+          "std": 0.0,
+          "per_seed": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "impossible_vs_improbable": {
+          "mean": 1.0,
+          "std": 0.0,
+          "per_seed": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "improbable_vs_possible": {
+          "mean": 0.5,
+          "std": 0.0,
+          "per_seed": [
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5
+          ]
+        }
+      }
+    },
+    "permanence": {
+      "inv": {
+        "impossible_vs_possible": {
+          "mean": 1.0,
+          "std": 0.0,
+          "per_seed": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "impossible_vs_improbable": {
+          "mean": 1.0,
+          "std": 0.0,
+          "per_seed": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "improbable_vs_possible": {
+          "mean": 0.78113,
+          "std": 0.01797684204747877,
+          "per_seed": [
+            0.7738,
+            0.781175,
+            0.809525,
+            0.7869,
+            0.75425
+          ]
+        }
+      },
+      "inv_rel": {
+        "impossible_vs_possible": {
+          "mean": 1.0,
+          "std": 0.0,
+          "per_seed": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "impossible_vs_improbable": {
+          "mean": 1.0,
+          "std": 0.0,
+          "per_seed": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "improbable_vs_possible": {
+          "mean": 0.7723749999999999,
+          "std": 0.019276676321399393,
+          "per_seed": [
+            0.761325,
+            0.77185,
+            0.805125,
+            0.7766,
+            0.746975
+          ]
+        }
+      },
+      "pe_max": {
+        "impossible_vs_possible": {
+          "mean": 1.0,
+          "std": 0.0,
+          "per_seed": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "impossible_vs_improbable": {
+          "mean": 1.0,
+          "std": 0.0,
+          "per_seed": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "improbable_vs_possible": {
+          "mean": 0.8942200000000001,
+          "std": 0.014918473447373912,
+          "per_seed": [
+            0.89285,
+            0.8672,
+            0.898375,
+            0.91225,
+            0.900425
+          ]
+        }
+      },
+      "pe_mean": {
+        "impossible_vs_possible": {
+          "mean": 1.0,
+          "std": 0.0,
+          "per_seed": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "impossible_vs_improbable": {
+          "mean": 1.0,
+          "std": 0.0,
+          "per_seed": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "improbable_vs_possible": {
+          "mean": 0.8849499999999999,
+          "std": 0.019475285620498602,
+          "per_seed": [
+            0.8751,
+            0.893425,
+            0.85355,
+            0.91145,
+            0.891225
+          ]
+        }
+      },
+      "pe_rel": {
+        "impossible_vs_possible": {
+          "mean": 1.0,
+          "std": 0.0,
+          "per_seed": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "impossible_vs_improbable": {
+          "mean": 1.0,
+          "std": 0.0,
+          "per_seed": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "improbable_vs_possible": {
+          "mean": 0.738465,
+          "std": 0.03531882500876833,
+          "per_seed": [
+            0.77545,
+            0.67545,
+            0.76745,
+            0.742175,
+            0.7318
+          ]
+        }
+      },
+      "oracle_pe": {
+        "impossible_vs_possible": {
+          "mean": 1.0,
+          "std": 0.0,
+          "per_seed": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "impossible_vs_improbable": {
+          "mean": 1.0,
+          "std": 0.0,
+          "per_seed": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "improbable_vs_possible": {
+          "mean": 0.5,
+          "std": 0.0,
+          "per_seed": [
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5
+          ]
+        }
+      }
+    },
+    "continuity": {
+      "inv": {
+        "impossible_vs_possible": {
+          "mean": 0.564225,
+          "std": 0.003890147812101769,
+          "per_seed": [
+            0.56815,
+            0.563425,
+            0.559775,
+            0.5693,
+            0.560475
+          ]
+        },
+        "impossible_vs_improbable": {
+          "mean": 0.262405,
+          "std": 0.021285601941218396,
+          "per_seed": [
+            0.235625,
+            0.26625,
+            0.250675,
+            0.299675,
+            0.2598
+          ]
+        },
+        "improbable_vs_possible": {
+          "mean": 0.780685,
+          "std": 0.016343650143098413,
+          "per_seed": [
+            0.802525,
+            0.78465,
+            0.7884,
+            0.7534,
+            0.77445
+          ]
+        }
+      },
+      "inv_rel": {
+        "impossible_vs_possible": {
+          "mean": 0.563985,
+          "std": 0.003361420830541758,
+          "per_seed": [
+            0.566525,
+            0.5639,
+            0.559375,
+            0.5687,
+            0.561425
+          ]
+        },
+        "impossible_vs_improbable": {
+          "mean": 0.27148,
+          "std": 0.023932464352840892,
+          "per_seed": [
+            0.24,
+            0.284725,
+            0.25485,
+            0.309075,
+            0.26875
+          ]
+        },
+        "improbable_vs_possible": {
+          "mean": 0.772995,
+          "std": 0.016672030470221682,
+          "per_seed": [
+            0.795575,
+            0.770925,
+            0.784275,
+            0.746075,
+            0.768125
+          ]
+        }
+      },
+      "pe_max": {
+        "impossible_vs_possible": {
+          "mean": 1.0,
+          "std": 0.0,
+          "per_seed": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "impossible_vs_improbable": {
+          "mean": 1.0,
+          "std": 0.0,
+          "per_seed": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "improbable_vs_possible": {
+          "mean": 0.8916550000000001,
+          "std": 0.011604259993640257,
+          "per_seed": [
+            0.906775,
+            0.897975,
+            0.888475,
+            0.87185,
+            0.8932
+          ]
+        }
+      },
+      "pe_mean": {
+        "impossible_vs_possible": {
+          "mean": 1.0,
+          "std": 0.0,
+          "per_seed": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "impossible_vs_improbable": {
+          "mean": 1.0,
+          "std": 0.0,
+          "per_seed": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "improbable_vs_possible": {
+          "mean": 0.879655,
+          "std": 0.026712990285626955,
+          "per_seed": [
+            0.886975,
+            0.9098,
+            0.82945,
+            0.884625,
+            0.887425
+          ]
+        }
+      },
+      "pe_rel": {
+        "impossible_vs_possible": {
+          "mean": 0.999915,
+          "std": 0.00011789826122550674,
+          "per_seed": [
+            0.999875,
+            1.0,
+            0.9997,
+            1.0,
+            1.0
+          ]
+        },
+        "impossible_vs_improbable": {
+          "mean": 0.99946,
+          "std": 0.0005107837115648815,
+          "per_seed": [
+            0.998525,
+            0.999825,
+            0.999425,
+            1.0,
+            0.999525
+          ]
+        },
+        "improbable_vs_possible": {
+          "mean": 0.72118,
+          "std": 0.03934139804328262,
+          "per_seed": [
+            0.759125,
+            0.663025,
+            0.769175,
+            0.696625,
+            0.71795
+          ]
+        }
+      },
+      "oracle_pe": {
+        "impossible_vs_possible": {
+          "mean": 1.0,
+          "std": 0.0,
+          "per_seed": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "impossible_vs_improbable": {
+          "mean": 1.0,
+          "std": 0.0,
+          "per_seed": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "improbable_vs_possible": {
+          "mean": 0.5,
+          "std": 0.0,
+          "per_seed": [
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5
+          ]
+        }
+      }
+    },
+    "stochastic": {
+      "inv": {
+        "impossible_vs_possible": {
+          "mean": 1.0,
+          "std": 0.0,
+          "per_seed": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "impossible_vs_improbable": {
+          "mean": 1.0,
+          "std": 0.0,
+          "per_seed": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "improbable_vs_possible": {
+          "mean": 0.51311,
+          "std": 0.027376877104593196,
+          "per_seed": [
+            0.559425,
+            0.4926,
+            0.529425,
+            0.495825,
+            0.488275
+          ]
+        }
+      },
+      "inv_rel": {
+        "impossible_vs_possible": {
+          "mean": 1.0,
+          "std": 0.0,
+          "per_seed": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "impossible_vs_improbable": {
+          "mean": 1.0,
+          "std": 0.0,
+          "per_seed": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "improbable_vs_possible": {
+          "mean": 0.51433,
+          "std": 0.027416766767801033,
+          "per_seed": [
+            0.561275,
+            0.492625,
+            0.529175,
+            0.49975,
+            0.488825
+          ]
+        }
+      },
+      "pe_max": {
+        "impossible_vs_possible": {
+          "mean": 0.6534350000000001,
+          "std": 0.019629904482701896,
+          "per_seed": [
+            0.65305,
+            0.64985,
+            0.628025,
+            0.688575,
+            0.647675
+          ]
+        },
+        "impossible_vs_improbable": {
+          "mean": 0.63981,
+          "std": 0.02004910596510479,
+          "per_seed": [
+            0.6277,
+            0.639725,
+            0.616875,
+            0.67635,
+            0.6384
+          ]
+        },
+        "improbable_vs_possible": {
+          "mean": 0.5212600000000001,
+          "std": 0.009225042005324416,
+          "per_seed": [
+            0.5395,
+            0.51745,
+            0.51405,
+            0.518,
+            0.5173
+          ]
+        }
+      },
+      "pe_mean": {
+        "impossible_vs_possible": {
+          "mean": 0.63411,
+          "std": 0.027625176922510375,
+          "per_seed": [
+            0.632175,
+            0.596425,
+            0.616475,
+            0.6776,
+            0.647875
+          ]
+        },
+        "impossible_vs_improbable": {
+          "mean": 0.60067,
+          "std": 0.037804128081467506,
+          "per_seed": [
+            0.57635,
+            0.561025,
+            0.572875,
+            0.646725,
+            0.646375
+          ]
+        },
+        "improbable_vs_possible": {
+          "mean": 0.5393749999999999,
+          "std": 0.019960554852007466,
+          "per_seed": [
+            0.567525,
+            0.53625,
+            0.54835,
+            0.538675,
+            0.506075
+          ]
+        }
+      },
+      "pe_rel": {
+        "impossible_vs_possible": {
+          "mean": 0.603775,
+          "std": 0.03127130074045532,
+          "per_seed": [
+            0.568475,
+            0.643225,
+            0.608125,
+            0.6314,
+            0.56765
+          ]
+        },
+        "impossible_vs_improbable": {
+          "mean": 0.59975,
+          "std": 0.025979684370677044,
+          "per_seed": [
+            0.585,
+            0.6259,
+            0.613,
+            0.619,
+            0.55585
+          ]
+        },
+        "improbable_vs_possible": {
+          "mean": 0.5036400000000001,
+          "std": 0.011081725948605658,
+          "per_seed": [
+            0.4838,
+            0.515975,
+            0.50045,
+            0.50965,
+            0.508325
+          ]
+        }
+      },
+      "oracle_pe": {
+        "impossible_vs_possible": {
+          "mean": 0.9305299999999999,
+          "std": 0.005611381291625099,
+          "per_seed": [
+            0.9372,
+            0.9243,
+            0.928,
+            0.9373,
+            0.92585
+          ]
+        },
+        "impossible_vs_improbable": {
+          "mean": 0.43892,
+          "std": 0.03525077800559868,
+          "per_seed": [
+            0.432525,
+            0.4997,
+            0.393625,
+            0.44825,
+            0.4205
+          ]
+        },
+        "improbable_vs_possible": {
+          "mean": 0.9255550000000001,
+          "std": 0.0074831878233811485,
+          "per_seed": [
+            0.93015,
+            0.910675,
+            0.9278,
+            0.9298,
+            0.92935
+          ]
+        }
+      }
+    }
+  },
+  "verdict": {
+    "families": {
+      "energy": {
+        "best_pe": "pe_rel",
+        "best_pe_auroc": 0.28992499999999993,
+        "inv_auroc": 0.9999600000000001,
+        "gain": 0.7100350000000001,
+        "h1": true,
+        "h2": true
+      },
+      "permanence": {
+        "best_pe": "pe_max",
+        "best_pe_auroc": 1.0,
+        "inv_auroc": 1.0,
+        "gain": 0.0,
+        "h1": false,
+        "h2": false
+      },
+      "stochastic": {
+        "best_pe": "pe_max",
+        "best_pe_auroc": 0.63981,
+        "inv_auroc": 1.0,
+        "gain": 0.36018999999999995,
+        "h1": true,
+        "h2": true
+      }
+    },
+    "h2_families": 2,
+    "go": true
+  }
+}

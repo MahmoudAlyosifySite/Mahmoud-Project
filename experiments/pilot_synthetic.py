@@ -34,19 +34,30 @@ def main() -> None:
     p.add_argument("--n-train", type=int, default=300)
     p.add_argument("--n-val", type=int, default=100)
     p.add_argument("--n-test", type=int, default=200)
+    p.add_argument("--improbable-scale", type=float, default=None, help="speed multiplier of the odd ball (default: ScenarioConfig)")
+    p.add_argument("--gain-factor", type=float, default=None, help="speed gain at a rough wall (default: ScenarioConfig)")
     p.add_argument("--out", type=Path, default=ROOT / "results" / "pilot_synthetic")
     p.add_argument("--ledger", type=Path, default=ROOT / "results" / "ledger.jsonl")
     args = p.parse_args()
     if args.noise > 0 and args.alpha is None:
         p.error("--noise needs --alpha (use --alpha 0 for a rotation plus noise)")
 
-    sc = ScenarioConfig()
+    overrides = {}
+    if args.improbable_scale is not None:
+        overrides["improbable_scale"] = args.improbable_scale
+    if args.gain_factor is not None:
+        overrides["gain_factor"] = args.gain_factor
+    sc = ScenarioConfig(**overrides)
     pc = PilotConfig(
         n_train=args.n_train, n_val=args.n_val, n_test=args.n_test,
         alpha=args.alpha, noise=args.noise, span=args.span,
     )
     tag = "frames" if args.alpha is None else f"alpha{args.alpha:g}_noise{args.noise:g}"
     tag += f"_span{args.span}"
+    if args.improbable_scale is not None:
+        tag += f"_scale{args.improbable_scale:g}"
+    if args.gain_factor is not None:
+        tag += f"_gain{args.gain_factor:g}"
     out = args.out / tag
     out.mkdir(parents=True, exist_ok=True)
     config = {"scenario": asdict(sc), "pilot": asdict(pc), "families": args.families}
