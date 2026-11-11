@@ -1,96 +1,303 @@
-% Working skeleton. Plain article class; switch to the venue's template when one is chosen.
 % Rule: no number, and no sentence that depends on a number, goes in this file unless it
-% is in results/ledger.jsonl. Appendix A maps every claim to its ledger entries.
+% is in results/ledger.jsonl. Results are quoted only through the macros of
+% generated/numbers.tex and the tables in generated/, all written by paper/make_figures.py
+% from the results files. Appendix A maps every table to its ledger entries.
+% Configuration values (clip length, scenario parameters, model sizes) are settings, not
+% results; they are also stored in each ledger entry's config.
 \documentclass[11pt]{article}
 \usepackage[margin=1in]{geometry}
-\usepackage{amsmath,amssymb,booktabs,graphicx}
+\usepackage{amsmath,amssymb,booktabs,graphicx,longtable}
 \usepackage[numbers]{natbib}
 \usepackage{hyperref}
+\input{generated/numbers.tex}
 
 \title{Impossible or Merely Improbable?\\
-Conservation Laws as a Test of Physical Understanding in Latent World Models}
+A Three-Way Test of Physical Surprise in Latent World Models}
 \author{Mahmoud Alyosify\thanks{ORCID 0009-0005-1336-2726. Affiliation, contact and co-authors: to be added.}}
-\date{Working draft. No results yet.}
+\date{Working draft, 11 November 2026. All results are from one session and are not yet replicated.}
 
 \begin{document}
 \maketitle
 
 \begin{abstract}
-To be written last, from the ledger.
+%ABSTRACT%
 \end{abstract}
 
 \section{Introduction}
-% 1. World models are judged by surprise: an impossible event should be less expected than a
-%    possible one. Surprise is read off prediction error.
-% 2. Prediction error also rises for events that are only rare. Recent work finds it an
-%    unreliable measure of physical surprise \citep{hristov2026surprise}. Existing tests compare
-%    possible with impossible and have no control for rare but lawful events.
-% 3. Physics separates the two cleanly: an impossible event changes a conserved quantity, an
-%    improbable one does not.
-% 4. Contributions, each tied to a hypothesis in docs/hypotheses.md:
-%    (a) a three-way benchmark: possible, improbable, impossible;
-%    (b) a label-free way to find invariants in a frozen latent and score their violation;
-%    (c) results on learned and published world models;
-%    (d) what a latent must be like for conservation to be readable from it.
 
-\section{Related work}
-% Surprise and violation of expectation in world models: \citep{maes2026lewm,hristov2026surprise}.
-% Conservation inside learned world models, used for stability and not for detection:
-%   \citep{bao2026invariant,wang2026conservation,wang2026certified,alet2021noether}.
-% Identifiability and agreement of JEPA latents: \citep{klindt2026lejepa,balestriero2026platonic}.
-% What latents encode versus what models use: \citep{tan2026know,interno2026observer}.
-% The learner is not ours: the same criterion in \citep{bao2026invariant}; roots in
-%   \citep{wiskott2002sfa,kaiser2018conservation}.
-% The same separation in process monitoring: \citep{shang2015concurrent}.
-% Impossible versus improbable for language models: \citep{kauf2023event,michaelov2025sherlock}.
-% Benchmarks: \citep{bordes2025intphys2}. See docs/novelty.md for what may be claimed.
+A world model is often judged by its surprise. Shown an event that breaks a physical law, a model
+that has learned the law should find it less expected than a lawful event, and with latent world
+models surprise is read off prediction error
+\citep{maes2026lewm,bordes2025intphys2,hristov2026surprise}. Prediction error, however, also rises
+for events that are lawful but rare. A ball far faster than anything seen in training is hard to
+predict and breaks no law. Existing tests pair a possible clip with an impossible one; they have no
+lawful control that is just as unusual. IntPhys~2 names ``the general prediction difficulty of the
+video'' as a confound of single-video scoring \citep{bordes2025intphys2}, and Hristov et al.\ find
+that ordinary difficulty already raises the error on lawful clips \citep{hristov2026surprise}.
 
-\section{The three-way benchmark}
-% Worlds, the four families, how each improbable control is matched to its violation, and the
-% tests that prove every lawful clip conserves energy and count. Report sensitivity to the
-% scenario parameters.
+Physics separates the two cases cleanly. An impossible event changes a conserved quantity: a ball
+vanishes and the count drops, a ball speeds up in mid-flight and the energy jumps. An improbable
+event changes no conserved quantity, however unusual it is. This suggests a test and a tool. The
+test adds a third condition, \emph{improbable}, to the usual possible and impossible clips. The
+tool reads conserved quantities from a latent and asks whether one of them took a new value.
 
-\section{Learning what never changes}
+This paper makes three contributions.
+\begin{enumerate}
+\item \textbf{A three-way benchmark} of possible, improbable and impossible billiards clips, in
+  four families of violation, each with an improbable control matched to it
+  (Section~\ref{sec:benchmark}). The number that matters is the AUROC of impossible against
+  improbable.
+\item \textbf{Evidence that prediction error conflates the two} (H1). On ideal latents, every
+  prediction-error reading ranks lawful fast clips above clips whose energy jumps
+  (Section~\ref{sec:stageA}).
+\item \textbf{A label-free invariant score, assembled from known parts}, and a map of when it
+  works. On ideal latents it separates impossible from improbable where a conserved quantity is
+  broken. It fails with frame-to-frame noise in the latent far smaller than a learned encoder
+  produces, and with strong nonlinearity (Section~\ref{sec:stageB}). On the latents of a small
+  pixel JEPA trained by us, TODO-C (Section~\ref{sec:stageC}).
+\end{enumerate}
+The learner itself is not new: the same criterion finds an energy-like invariant in a DreamerV3
+latent \citep{bao2026invariant}, and its roots are Slow Feature Analysis \citep{wiskott2002sfa} and
+Koopman theory \citep{kaiser2018conservation}. What we add is its use as a detector, the handling
+of events (bounces and collisions) so that it works with contacts and several objects, and the
+three-way test.
+
+All hypotheses, thresholds and the go rule were written down before any confirmatory run
+(\texttt{docs/hypotheses.md} in the repository); the two changes made since are dated there and
+described in Section~\ref{sec:stageC}. All results come from one working session and have not yet
+been rerun by an independent session, which our own protocol requires before a finding counts.
+
+\section{Related work}\label{sec:related}
+
+\paragraph{Surprise in world models.} Violation-of-expectation tests read surprise from prediction
+error. IntPhys~2 pairs two possible with two impossible videos per scene, across permanence,
+immutability, continuity and solidity, and finds predictive models near chance
+\citep{bordes2025intphys2}; the full text has no lawful-but-rare condition. LeWorldModel tests
+surprise on a teleport and a colour change \citep{maes2026lewm}. Hristov et al.\ ask when latent
+prediction error supports surprise claims at all and find that lawful difficulty already raises it
+\citep{hristov2026surprise}; their study is diagnostic and proposes no alternative score. For
+language models, the distinction between impossible and merely improbable events is studied
+directly, and models draw it poorly \citep{kauf2023event,michaelov2025sherlock}.
+
+\paragraph{Conservation inside learned world models.} Bao corrects a learned invariant of a
+DreamerV3 latent to stabilise rollouts on a pendulum, with the same long-lag criterion we use, and
+names contacts, several interacting objects and actions as the open case
+\citep{bao2026invariant}. Wang et al.\ and Wang use conservation for stability, counterfactuals and
+certified horizons \citep{wang2026conservation,wang2026certified}; Noether Networks learn
+conserved quantities as a meta-learned loss \citep{alet2021noether}. None of these, in what we
+read, uses an invariant to detect a violation. Liao and Cao show that an invariant can be linearly
+decodable from a dynamics model at $R^2 \approx 1$ and still have no causal effect on its next-state
+prediction \citep{liao2026objective}. Our score reads the representation; it makes no claim about
+what the model uses.
+
+\paragraph{Roots of the learner.} Slow Feature Analysis finds the slowest-varying functions of a
+signal \citep{wiskott2002sfa}. Kaiser et al.\ find conserved quantities as the null space of a
+Koopman-generator regression on a function library and use them as coordinates for control
+\citep{kaiser2018conservation}. In process monitoring, Shang et al.\ use slow features to tell a
+normal change of operating point from a fault in the dynamics \citep{shang2015concurrent}, which is
+the same separation as ours in another field. We could not obtain the full text of that paper and
+describe it only from its abstract-level summary.
+
+\paragraph{When latents are linear in the state.} Klindt et al.\ give conditions under which a
+LeJEPA latent is linear in the world state and report a linear read-out below $R^2 = 0.5$ when those
+conditions fail on real trajectories \citep{klindt2026lejepa}. Balestriero and LeCun prove that
+separately trained JEPAs agree up to a rotation under their assumptions
+\citep{balestriero2026platonic}, which motivates our hypothesis H4; their analysis does not cover
+action-conditioned predictors.
+
+\section{The three-way benchmark}\label{sec:benchmark}
+
+\paragraph{World.} Two or three identical balls of radius 0.06 move in a unit box for 120 steps, at
+speeds between 0.006 and 0.014 box lengths per step, with elastic collisions. Walls are specular,
+except in the \emph{stochastic} family, where every wall bounce adds a random angle (standard
+deviation 12 degrees) while keeping the speed.
+
+\paragraph{Conditions.} \emph{Possible} clips are ordinary lawful clips. \emph{Improbable} clips are
+lawful and unlike training: one ball starts three times faster than any training ball, or, in the
+stochastic family, one rough-wall bounce takes an angle three to four standard deviations from the
+mean. \emph{Impossible} clips break one law at one step between steps 40 and 80:
+
+\begin{center}\small
+\begin{tabular}{lll}\toprule
+Family & Impossible event & Conserved quantity broken\\\midrule
+energy & a ball's speed is multiplied by 0.5 or 1.6 in mid-flight & energy\\
+permanence & a ball vanishes & count and energy\\
+stochastic & a ball gains speed (factor 1.6) at a rough wall & energy, among random bounces\\
+continuity & a ball teleports & none\\\bottomrule
+\end{tabular}
+\end{center}
+
+Unit tests check that every possible and improbable clip conserves energy and count to $10^{-12}$
+and that every impossible clip changes exactly the intended quantity at exactly one step. The
+continuity family is included on purpose: a teleport breaks no conserved quantity, so an invariant
+score should be blind to it, and we report it as an expected failure.
+
+\paragraph{Metric.} For each score and family we report the AUROC of three comparisons over 200
+clips per condition; the one that matters is impossible against improbable. 0.5 is chance, and a
+value below 0.5 means the score ranks lawful rare clips above impossible ones.
+
+\section{Learning what never changes}\label{sec:method}
+
 Let $z_t$ be the latent of frame $t$ and $u_t = (z_t,\; z_t - z_{t-1})$. Let $\phi(u)$ collect all
-monomials of $u$ up to degree two. An invariant is $I(u) = w^\top (\phi(u) - \bar\phi)$ with $w$
-solving
+monomials of $u$ up to degree two (after a PCA of $u$ when the latent is large). An invariant is
+$I(u) = w^\top (\phi(u) - \bar\phi)$ with $w$ solving
 \begin{equation}
   \min_w \; \mathbb{E}\big[\big(w^\top(\phi(u_{t_2}) - \phi(u_{t_1}))\big)^2\big]
   \quad \text{s.t.} \quad \mathrm{Var}\big[w^\top \phi(u)\big] = 1,
 \end{equation}
-where $t_1, t_2$ are two event-free steps of the same clip, a long lag apart, and the variance is
-over all clips. This is a generalised eigenproblem; its smallest eigenvalues give the invariants.
-% Explain: event detection and why invariants are read between events; validation on held-out
-% lawful clips; the level-shift statistic; what is and is not used for fitting (no labels, no
-% impossible clips, no simulator state).
+where $t_1, t_2$ are two clean steps of the same clip between 30 and 90 steps apart, and the
+variance is over all clips. This is a generalised eigenproblem; its smallest eigenvalues give the
+candidates. At lag one it is Slow Feature Analysis; the long lag, which spans bounces and
+collisions, is what separates a conserved quantity from a merely slow one.
 
-\section{Experiments}
-% Stage A: ideal latents. Stage B: bent and noisy latents. Stage C: a pixel JEPA's own latents.
-% Stage D: published world models. For each: what is fitted on what, seeds, and the go rule
-% fixed in advance.
+\paragraph{Events.} A finite difference across a bounce is not a velocity. A step is \emph{clean}
+when the latent's second difference stays below a threshold (a quarter of the median step length,
+raised for clips that curve everywhere). Invariants are read only on clean steps and compared
+across events.
+
+\paragraph{Selection.} A candidate is kept if its long-lag autocorrelation on held-out lawful clips
+is at least 0.9.
+
+\paragraph{Score.} For each clip, \texttt{inv} is the largest lasting shift of any kept invariant:
+at every split point, the median over the clean steps in the 12 steps before is compared with the
+median after, in robust units of the local spread. A spike at an event does not move a median; a
+conserved quantity that takes a new value does. \texttt{inv\_rel} divides that shift by the clip's
+median shift.
+
+\paragraph{What is fitted on what.} The event threshold, the invariants and the selection use only
+ordinary lawful clips. No labels, no improbable or impossible clips and no simulator state enter
+the fit or any choice among settings. Ground truth (energy, count) is used only for diagnostic
+$R^2$ values.
+
+\paragraph{Baselines.} Each latent comes with a predictor: in Stages A and B a residual MLP fitted to
+predict $z_{t+1}$ from $u_t$ on the same lawful clips; in Stage C the JEPA's own predictor. Three
+readings of its per-step error are scored: the largest (\texttt{pe\_max}), the mean
+(\texttt{pe\_mean}), and the largest relative to the clip's own 90th percentile (\texttt{pe\_rel}),
+which forgives clips that are hard everywhere. For each family the best of the three is chosen after
+the fact, in the baseline's favour. \texttt{oracle\_pe} is the true simulator's one-step error, a
+ceiling for prediction error rather than a competitor.
+
+\paragraph{Hypotheses and go rule (fixed in advance).} H1: the best prediction-error score has AUROC
+impossible vs improbable at most 0.70. H2: \texttt{inv} beats it by at least 0.15 as a mean over
+seeds and by more than 0 in every seed. The go rule asks H2 to hold in at least two of the three
+conservation families (energy, permanence, stochastic). \texttt{inv} with a velocity span of one
+step is the primary score; \texttt{inv\_rel}, spans of 2, 4 and 8, and PCA sizes of 8, 16 and 32 are
+declared secondary.
 
 \section{Results}
-% One table per stage: AUROC impossible vs possible, impossible vs improbable, improbable vs
-% possible, for the invariant score, each prediction-error score, and the oracle.
 
-\section{Limitations}
-% Continuity violations conserve everything and are invisible to invariants.
-% Driven, dissipative worlds have few exact invariants.
-% Invariants must be low-degree in the latent; strong nonlinearity or frame noise hides them.
-% Synthetic worlds; small models.
+\subsection{Stage A: ideal latents}\label{sec:stageA}
+
+The ideal latent of a frame holds, for each of three slots, a presence flag and the ball's position.
+It has no velocities; the learner must build them from differences. Seeds 1 to 5 were run.
+Table~\ref{tab:stageA} and Figure~\ref{fig:stageA} give the AUROCs.
+
+\begin{figure}[t]\centering
+\includegraphics[width=\linewidth]{figures/stageA.pdf}
+\caption{Stage A, ideal latents: AUROC impossible vs improbable, mean over seeds 1 to 5 (bars)
+and each seed (dots).}\label{fig:stageA}
+\end{figure}
+
+\input{generated/stageA.tex}
+
+\paragraph{The sanity conditions hold.} \texttt{oracle\_pe} reaches \AEnergyOraclepe{},
+\APermanenceOraclepe{} and \AContinuityOraclepe{} impossible vs improbable in the three
+deterministic families, as it must. In the continuity family \texttt{inv} is near chance against
+possible clips (\AContinuityInvPoss{}) and well below chance against improbable ones
+(\AContinuityInv{}): a teleport conserves everything, and the fast improbable ball shifts the
+invariants more than the teleport does.
+
+\paragraph{H1: prediction error conflates the two.} In the energy family, \texttt{pe\_max} and
+\texttt{pe\_mean} give AUROCs of \AEnergyPemax{} and \AEnergyPemean{}: they rank nearly every lawful
+fast clip above every clip whose energy jumps. The best reading, \texttt{pe\_rel}, reaches
+\AEnergyPerel{}. In the stochastic family the best reading is \AStochasticBestpe{}. Even the true
+simulator's error is no help there (\AStochasticOraclepe{}), because a rough wall makes every bounce
+unpredictable. Permanence is the exception: a vanishing ball is easy for every score
+(\APermanencePemax{} for \texttt{pe\_max}), so H2 cannot hold there by construction and the go rule
+rests on the other two families.
+
+\paragraph{H2 on ideal latents.} \texttt{inv} reaches \AEnergyInv{} in the energy family and
+\AStochasticInv{} in the stochastic family; the go rule gives \AGo{} (\ANfam{} of 3 families). The
+kept invariants explain true energy and count with $R^2$ at least \ARtwoEnergyMin{} and
+\ARtwoCountMin{} in every seed and world. This is a sanity check and proves little: on these
+latents energy is a degree-two polynomial by construction.
+
+\paragraph{Sensitivity.} Table~\ref{tab:sensitivity} moves the speed of the improbable ball (scale 2
+and 4 instead of 3) and the gain at the rough wall (1.2 and 2.0 instead of 1.6). The verdict is GO
+in every case. Two results qualify H1. A larger gain makes the stochastic violation easier for
+prediction error: at gain 2.0 its best reading reaches \SensGainTwoStochasticBestpe{}, above the
+0.70 ceiling of H1. A larger speed scale makes the improbable clips easier to tell apart: at scale 4
+the best prediction-error reading in the energy family reaches \SensScaleFourEnergyBestpe{}. H1 is
+therefore a statement about these scenario parameters, not a law.
+
+\input{generated/stageA_sens.tex}
+
+\subsection{Stage B: where it breaks}\label{sec:stageB}
+
+Stage B bends the ideal latent with a random nonlinearity, $z \mapsto A s + \alpha \tanh(B s)$ with
+$s$ the standardised latent and $A$ a random rotation, and adds independent Gaussian noise to every
+frame, in units of each dimension's spread. Seeds 1 to 3 were run on the energy and stochastic
+families (Table~\ref{tab:stageB}, Figure~\ref{fig:stageB}).
+
+\begin{figure}[t]\centering
+\includegraphics[width=\linewidth]{figures/stageB.pdf}
+\caption{Stage B: bent and noisy ideal latents, mean over seeds 1 to 3. Left: how well the kept
+invariants explain true energy (diagnostic). Middle and right: AUROC impossible vs improbable.}
+\label{fig:stageB}
+\end{figure}
+
+\input{generated/stageB.tex}
+
+\paragraph{Nonlinearity.} Without noise, an energy invariant is still found at $\alpha = 0.1$
+($R^2$ \BAZeroOneNZeroSOneRtwo{}) and $\alpha = 0.3$ (\BAZeroThreeNZeroSOneRtwo{}), and \texttt{inv}
+stays above the best prediction error in the energy family (\BAZeroThreeNZeroSOneInv{} against
+\BAZeroThreeNZeroSOnePe{} at $\alpha = 0.3$). At $\alpha = 1$ the energy invariant is lost ($R^2$
+\BAOneNZeroSOneRtwo{}) and \texttt{inv} falls to \BAOneNZeroSOneInv{}, below chance.
+
+\paragraph{Noise.} Noise is far more damaging. With per-frame noise of 0.003 standard deviations, on
+an unbent latent, the energy invariant is already lost ($R^2$ \BAZeroNZeroZeroZeroThreeSOneRtwo{})
+and \texttt{inv} in the energy family is \BAZeroNZeroZeroZeroThreeSOneInv{}, below chance. A
+velocity built from a difference of two noisy frames is dominated by the noise once the per-step
+motion is small, and these balls move about one percent of the box per step. A longer velocity
+baseline (span 4) does not rescue it (\BAZeroNZeroZeroZeroThreeSFourInv{}).
+
+\paragraph{What a latent must be like.} For low-degree invariants to be readable, the latent must
+be close to linear in the state and nearly free of frame-to-frame noise relative to the per-step
+motion. This also gives a label-free check of any encoder: does its latent keep a candidate whose
+long-lag autocorrelation on lawful clips is high? The kept count in Table~\ref{tab:stageB} shows the
+check failing exactly where energy is lost (one fewer invariant is kept).
+
+\subsection{Stage C: a pixel JEPA's own latents}\label{sec:stageC}
+
+TODO-C
+
+\subsection{Do two encoders agree? (H4)}\label{sec:h4}
+
+TODO-H4
+
+\input{generated/agreement.tex}
+
+\section{Limitations}\label{sec:limits}
+
+TODO-LIMITS
 
 \section{Conclusion}
 
-\appendix
-\section{Claims and evidence}
-\begin{tabular}{p{0.42\linewidth}lll}
-\toprule
-Claim & Hypothesis & Ledger experiment & Seeds \\
-\midrule
-(none yet) & & & \\
-\bottomrule
-\end{tabular}
+TODO-CONCLUSION
 
 \bibliographystyle{plainnat}
 \bibliography{refs}
+
+\appendix
+\section{Claims and evidence}\label{app:ledger}
+Every table and every number in this paper is produced by \texttt{paper/make\_figures.py} from the
+\texttt{summary.json} files that the experiment scripts write next to their entries in
+\texttt{results/ledger.jsonl}. The table below lists, for each table of the paper, the ledger
+experiments behind it, the seeds, and the commit at which they ran. Seed 0 was used only to explore
+and tune, and appears in no table.
+
+\small
+\input{generated/appendix_ledger.tex}
+\normalsize
+
 \end{document}

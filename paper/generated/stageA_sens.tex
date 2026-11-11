@@ -1,0 +1,27 @@
+\begin{table}[t]\centering\small
+\caption{Stage A: the go rule, and its sensitivity to the scenario parameters (speed of the improbable ball: scale; gain at the rough wall).}\label{tab:sensitivity}
+\begin{tabular}{llcccccc}\toprule
+Run & Family & best PE score & best PE & \texttt{inv} & gain & H1 & H2\\\midrule
+default & energy & \texttt{pe\_rel} & 0.42 & 1.00 & +0.57 & yes & yes\\
+ & permanence & \texttt{pe\_max} & 1.00 & 1.00 & +0.00 & no & no\\
+ & stochastic & \texttt{pe\_max} & 0.64 & 1.00 & +0.36 & yes & yes\\
+& \multicolumn{7}{l}{\emph{GO}: H2 in 2 of 3 conservation families}\\\midrule
+scale 2 & energy & \texttt{pe\_rel} & 0.29 & 1.00 & +0.71 & yes & yes\\
+ & permanence & \texttt{pe\_max} & 1.00 & 1.00 & +0.00 & no & no\\
+ & stochastic & \texttt{pe\_max} & 0.64 & 1.00 & +0.36 & yes & yes\\
+& \multicolumn{7}{l}{\emph{GO}: H2 in 2 of 3 conservation families}\\\midrule
+scale 4 & energy & \texttt{pe\_rel} & 0.61 & 1.00 & +0.38 & yes & yes\\
+ & permanence & \texttt{pe\_max} & 1.00 & 1.00 & +0.00 & no & no\\
+ & stochastic & \texttt{pe\_max} & 0.64 & 1.00 & +0.36 & yes & yes\\
+& \multicolumn{7}{l}{\emph{GO}: H2 in 2 of 3 conservation families}\\\midrule
+gain 1.2 & energy & \texttt{pe\_rel} & 0.42 & 1.00 & +0.57 & yes & yes\\
+ & permanence & \texttt{pe\_max} & 1.00 & 1.00 & +0.00 & no & no\\
+ & stochastic & \texttt{pe\_max} & 0.55 & 1.00 & +0.45 & yes & yes\\
+& \multicolumn{7}{l}{\emph{GO}: H2 in 2 of 3 conservation families}\\\midrule
+gain 2.0 & energy & \texttt{pe\_rel} & 0.42 & 1.00 & +0.57 & yes & yes\\
+ & permanence & \texttt{pe\_max} & 1.00 & 1.00 & +0.00 & no & no\\
+ & stochastic & \texttt{pe\_max} & 0.78 & 1.00 & +0.22 & no & yes\\
+& \multicolumn{7}{l}{\emph{GO}: H2 in 2 of 3 conservation families}\\\bottomrule
+\end{tabular}
+\par\smallskip\footnotesize AUROC impossible vs improbable, mean over seeds. The best PE score is chosen per family after the fact, in the baseline's favour. H1: best PE $\le 0.70$. H2: \texttt{inv} beats it by at least 0.15 on average and in every seed.
+\end{table}

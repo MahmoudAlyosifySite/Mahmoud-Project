@@ -320,11 +320,38 @@ def agreement(idx) -> list[str]:
     p = RES / "agreement" / "summary.json"
     if not p.exists():
         return []
-    a = load(p)
-    for k, v in a.get("macros", {}).items():
-        put(macro_name("H", k), v)
-    appendix.append(("H4 (Section~\\ref{sec:h4})", a.get("ledger_tag", "agreement").replace("_", "\\_"), a.get("seeds_text", "")))
-    return [a["table_tex"]] if "table_tex" in a else []
+    rows = load(p)["rows"]
+    lines = ["\\begin{table}[t]\\centering\\small",
+             "\\caption{H4: canonical correlations between the kept invariants of two independently fitted encoders, "
+             "on the same fresh lawful clips.}\\label{tab:agreement}",
+             "\\begin{tabular}{llcccc}\\toprule",
+             "Encoders & seeds & kept & canonical correlations & R$^2_E$ (a / b) & $\\ge 0.9$\\\\\\midrule"]
+    groups: dict[str, list] = defaultdict(list)
+    for r in rows:
+        name = f"ideal, mixer $\\alpha={r['alpha']:g}$" if r["mode"] == "control" else f"pixel JEPA ({r['checkpoints'].replace('_', chr(92) + '_')})"
+        tag = f"agreement/control\\_alpha{r['alpha']:g}" if r["mode"] == "control" else f"agreement/pixels\\_{r['checkpoints'].replace('_', chr(92) + '_')}"
+        groups[(name, tag)].append(r)
+    for (name, tag), rs in groups.items():
+        for i, r in enumerate(rs):
+            cc = ", ".join(f"{x:.3f}" for x in r["canonical_correlations"]) or "none"
+            lines.append(f"{name if i == 0 else ''} & {r['seeds'][0]}, {r['seeds'][1]} & {r['k_a']} / {r['k_b']} & {cc} & "
+                         f"{r['r2_energy_a']:.2f} / {r['r2_energy_b']:.2f} & {r['n_at_least_0.9']}\\\\")
+        lines.append("\\midrule")
+        seeds = sorted({s for r in rs for s in r["seeds"]})
+        appendix.append(("Table~\\ref{tab:agreement}", tag, ", ".join(map(str, seeds))))
+        key = name.split("(")[-1] if "pixel" in name else f"a{rs[0]['alpha']:g}"
+        ccs = [x for r in rs for x in r["canonical_correlations"]]
+        put(macro_name("H", "pix" if "pixel" in name else "ctl", key, "ccmin"), min(ccs) if ccs else 0.0, "{:.3f}")
+        put(macro_name("H", "pix" if "pixel" in name else "ctl", key, "rtwomax"),
+            max(max(r["r2_energy_a"], r["r2_energy_b"]) for r in rs))
+        put(macro_name("H", "pix" if "pixel" in name else "ctl", key, "kmax"), str(max(max(r["k_a"], r["k_b"]) for r in rs)))
+    lines[-1] = "\\bottomrule"
+    lines += ["\\end{tabular}",
+              "\\par\\smallskip\\footnotesize kept: invariants kept by each encoder. R$^2_E$: how well each encoder's kept "
+              "invariants explain the true energy on the shared clips (diagnostic only). Last column: canonical "
+              "correlations of at least 0.9 (the H4 threshold).",
+              "\\end{table}"]
+    return ["\n".join(lines)]
 
 
 def main() -> None:
@@ -332,6 +359,8 @@ def main() -> None:
     GEN.mkdir(parents=True, exist_ok=True)
     idx = ledger_index()
     blocks = {"stageA": stage_a(idx), "stageB": stage_b(idx), "stageC": stage_c(idx), "agreement": agreement(idx)}
+    blocks["stageA_sens"] = blocks["stageA"][1:]
+    blocks["stageA"] = blocks["stageA"][:1]
     for name, tex in blocks.items():
         (GEN / f"{name}.tex").write_text("\n\n".join(tex) + "\n", encoding="utf-8")
     (GEN / "numbers.tex").write_text(
