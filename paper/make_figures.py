@@ -33,7 +33,7 @@ SCORE_TEX = {"inv": "\\texttt{inv}", "inv_rel": "\\texttt{inv\\_rel}", "pe_max":
              "pe_mean": "\\texttt{pe\\_mean}", "pe_rel": "\\texttt{pe\\_rel}", "oracle_pe": "\\texttt{oracle\\_pe}"}
 
 macros: dict[str, str] = {}
-appendix: list[tuple[str, str, str]] = []  # (what, ledger experiment tag, seeds)
+appendix: list[tuple] = []  # (what, ledger experiment tag, seeds[, commits])
 
 
 def load(path: Path) -> dict:
@@ -365,6 +365,8 @@ def diagnostics(idx) -> list[str]:
                      f"{r['mlp_occupancy']:.2f} & {r['roughness']:.3f} & {r['clean_share']:.3f}\\\\")
     lines.append("\\midrule")
     for r in d["references"]:
+        if "roughness" not in r:
+            continue
         lines.append(f"{r['latent']} & & & & & {r['roughness']:.3f} & {r['clean_share']:.3f}\\\\")
     lines += ["\\bottomrule\\end{tabular}",
               "\\par\\smallskip\\footnotesize Read-outs are $R^2$ on fresh lawful clips (diagnostic). Roughness: median "
@@ -380,6 +382,11 @@ def diagnostics(idx) -> list[str]:
     put("DMlpCountMax", max(r["mlp_count"] for r in enc))
     put("DLinCountMax", max(r["linear_count"] for r in enc))
     for r in d["references"]:
+        if r["latent"].startswith("raw pixels"):
+            put("DPixSlots", r["linear_slots"])
+            put("DPixCount", r["linear_count"])
+            put("DPixOcc", r["linear_occupancy"])
+            continue
         key = {"ideal frame latent": "Ideal"}.get(r["latent"], r["latent"].replace("Stage B mixer alpha ", "A").replace(", noise ", "N"))
         put(macro_name("DRef", key, "rough"), r["roughness"], "{:.3f}")
         put(macro_name("DRef", key, "clean"), r["clean_share"], "{:.3f}")
@@ -387,6 +394,27 @@ def diagnostics(idx) -> list[str]:
     appendix.append(("Table~\\ref{tab:diag}", f"encoder\\_diagnostics/{d['config']['checkpoints'].replace('_', chr(92) + '_')}", seeds))
     appendix.append(("Table~\\ref{tab:diag} (references)", "encoder\\_diagnostics/reference\\_latents", "none"))
     return ["\n".join(lines)]
+
+
+def tuning() -> None:
+    """Seed-0 encoder tuning (exploration, never a claim): how many settings, and the range of the gate value."""
+    probes, stds = [], []
+    tune_commits: set[str] = set()
+    for line in (RES / "ledger.jsonl").read_text(encoding="utf-8").splitlines():
+        e = json.loads(line)
+        if e["experiment"].startswith("pilot_pixels/") and e["seed"] == 0:
+            w = e["metrics"]["worlds"]["specular"]
+            if "probe_r2_count" in w:  # the gate as defined on 2026-11-11 (docs/hypotheses.md)
+                probes.append(w["probe_r2"])
+                stds.append(w["latent_std_min"])
+                tune_commits.add(e["commit"])
+    if probes:
+        put("TuneN", str(len(probes)))
+        put("TuneProbeMin", min(probes))
+        put("TuneProbeMax", max(probes))
+        put("TuneStdMin", min(stds))
+        appendix.append(("Section~\\ref{sec:stageC}, tuning (seed 0)", "pilot\\_pixels/* (seed 0, gate of 2026-11-11)",
+                         "0", ", ".join(sorted(tune_commits))))
 
 
 def agreement(idx) -> list[str]:
@@ -397,8 +425,8 @@ def agreement(idx) -> list[str]:
     lines = ["\\begin{table}[t]\\centering\\small",
              "\\caption{H4: canonical correlations between the kept invariants of two independently fitted encoders, "
              "on the same fresh lawful clips.}\\label{tab:agreement}",
-             "\\begin{tabular}{llcccc}\\toprule",
-             "Encoders & seeds & kept & canonical correlations & R$^2_E$ (a / b) & $\\ge 0.9$\\\\\\midrule"]
+             "\\begin{tabular}{llccccc}\\toprule",
+             "Encoders & seeds & kept & canonical correlations & R$^2_E$ (a / b) & R$^2_N$ (a / b) & $\\ge 0.9$\\\\\\midrule"]
     groups: dict[str, list] = defaultdict(list)
     for r in rows:
         name = f"ideal, mixer $\\alpha={r['alpha']:g}$" if r["mode"] == "control" else f"pixel JEPA ({r['checkpoints'].replace('_', chr(92) + '_')})"
@@ -408,7 +436,8 @@ def agreement(idx) -> list[str]:
         for i, r in enumerate(rs):
             cc = ", ".join(f"{x:.3f}" for x in r["canonical_correlations"]) or "none"
             lines.append(f"{name if i == 0 else ''} & {r['seeds'][0]}, {r['seeds'][1]} & {r['k_a']} / {r['k_b']} & {cc} & "
-                         f"{r['r2_energy_a']:.2f} / {r['r2_energy_b']:.2f} & {r['n_at_least_0.9']}\\\\")
+                         f"{r['r2_energy_a']:.2f} / {r['r2_energy_b']:.2f} & {r['r2_count_a']:.2f} / {r['r2_count_b']:.2f} & "
+                         f"{r['n_at_least_0.9']}\\\\")
         lines.append("\\midrule")
         seeds = sorted({s for r in rs for s in r["seeds"]})
         appendix.append(("Table~\\ref{tab:agreement}", tag, ", ".join(map(str, seeds))))
@@ -418,10 +447,12 @@ def agreement(idx) -> list[str]:
         put(macro_name("H", "pix" if "pixel" in name else "ctl", key, "rtwomax"),
             max(max(r["r2_energy_a"], r["r2_energy_b"]) for r in rs))
         put(macro_name("H", "pix" if "pixel" in name else "ctl", key, "kmax"), str(max(max(r["k_a"], r["k_b"]) for r in rs)))
+        put(macro_name("H", "pix" if "pixel" in name else "ctl", key, "rtwocountmin"),
+            min(min(r["r2_count_a"], r["r2_count_b"]) for r in rs), "{:.3f}")
     lines[-1] = "\\bottomrule"
     lines += ["\\end{tabular}",
-              "\\par\\smallskip\\footnotesize kept: invariants kept by each encoder. R$^2_E$: how well each encoder's kept "
-              "invariants explain the true energy on the shared clips (diagnostic only). Last column: canonical "
+              "\\par\\smallskip\\footnotesize kept: invariants kept by each encoder. R$^2_E$, R$^2_N$: how well each encoder's kept "
+              "invariants explain the true energy and ball count on the shared clips (diagnostic only). Last column: canonical "
               "correlations of at least 0.9 (the H4 threshold).",
               "\\end{table}"]
     return ["\n".join(lines)]
@@ -431,6 +462,7 @@ def main() -> None:
     FIG.mkdir(parents=True, exist_ok=True)
     GEN.mkdir(parents=True, exist_ok=True)
     idx = ledger_index()
+    tuning()
     blocks = {"stageA": stage_a(idx), "stageB": stage_b(idx), "stageC": stage_c(idx), "agreement": agreement(idx), "diagnostics": diagnostics(idx)}
     blocks["stageA_sens"] = blocks["stageA"][1:]
     blocks["stageA"] = blocks["stageA"][:1]
@@ -440,10 +472,14 @@ def main() -> None:
         "% Generated by paper/make_figures.py from results/. Do not edit.\n"
         + "\n".join(f"\\newcommand{{\\{k}}}{{{v}}}" for k, v in sorted(macros.items())) + "\n", encoding="utf-8")
     rows = []
-    for what, tag, seeds in appendix:
+    for item in appendix:
+        what, tag, seeds = item[:3]
         raw = tag.replace("\\_", "_")
-        info = idx.get(raw)
-        commits = ", ".join(sorted(info["commits"])) if info else "MISSING FROM LEDGER"
+        if len(item) == 4:
+            commits = item[3] or "MISSING FROM LEDGER"
+        else:
+            info = idx.get(raw)
+            commits = ", ".join(sorted(info["commits"])) if info else "MISSING FROM LEDGER"
         rows.append(f"{what} & \\texttt{{{tag}}} & {seeds} & {commits}\\\\")
     (GEN / "appendix_ledger.tex").write_text(
         "\\begin{longtable}{p{3.6cm}p{6.2cm}p{1.6cm}p{1.6cm}}\\toprule\n"

@@ -6,7 +6,7 @@ Each stage ends in something that can be written up whatever the next stage show
 
 Done on 2026-11-11 for eight papers; answers are in `docs/reading-list.md` and the verdict in `docs/novelty.md`. None of them separates impossible from improbable, and none uses an invariant as a detector. The learner itself has a close precedent (arXiv 2608.23526) and is not claimed as new.
 
-- [ ] Read arXiv 2607.03728 and IntPhys 2 in full.
+- [x] Read arXiv 2607.03728 and IntPhys 2 in full. (2607.03728 about 80 percent word for word.)
 - [ ] Read Shang et al. 2015 and state how our score differs from theirs.
 
 ## Stage A. Ideal latents (CPU, minutes)
@@ -15,9 +15,9 @@ Done on 2026-11-11 for eight papers; answers are in `docs/reading-list.md` and t
 python experiments/pilot_synthetic.py
 ```
 
-- [ ] Run seeds 1 to 5 and commit the report and the ledger.
-- [ ] Check the sanity conditions: `oracle_pe` is 1.0 in the deterministic families, and `inv` is near 0.5 for continuity.
-- [ ] Sensitivity: rerun with the scenario parameters moved (speed scale 2 and 4; gain 1.2 and 2.0) and report how the AUROCs move.
+- [x] Run seeds 1 to 5 and commit the report and the ledger. (2026-11-11, 6.5 min CPU)
+- [x] Check the sanity conditions: `oracle_pe` is 1.0 in the deterministic families, and `inv` is near 0.5 for continuity. (Both hold; `inv` is below 0.5 against improbable clips in continuity.)
+- [x] Sensitivity: rerun with the scenario parameters moved (speed scale 2 and 4; gain 1.2 and 2.0) and report how the AUROCs move. (GO in all; H1 fails in the stochastic family at gain 2.0.)
 
 Output: the benchmark design and the proof of concept.
 
@@ -27,9 +27,9 @@ Output: the benchmark design and the proof of concept.
 python experiments/robustness_sweep.py
 ```
 
-- [ ] Run the default grid.
-- [ ] Find the largest nonlinearity and noise at which an energy invariant is still found (R2 against true energy above 0.9).
-- [ ] Decide whether `span` rescues the noisy cases.
+- [x] Run the default grid. (2026-11-11, wall 2376 s)
+- [x] Find the largest nonlinearity and noise at which an energy invariant is still found (R2 against true energy above 0.9). (alpha 0.3 without noise; no noise level tested, 0.003 and up, keeps it.)
+- [x] Decide whether `span` rescues the noisy cases. (No.)
 
 Output: a statement of what a latent must be like for conservation to be readable from it. This also gives a label-free probe of any encoder: does a conserved low-degree quantity exist in its latent, yes or no.
 
@@ -39,11 +39,11 @@ Output: a statement of what a latent must be like for conservation to be readabl
 python experiments/pilot_pixels.py --device cuda --steps 20000
 ```
 
-- [ ] Time one seed on the A40 and record it here.
-- [ ] Get the linear probe R2 to at least 0.9. Levers: `--steps`, `--lam`, `--dim`, frame size. If the latent collapses (`latent_std_min` near 0), raise `--lam`.
-- [ ] Only then read the verdict. Apply the secondary options from `docs/hypotheses.md` once each if it fails.
-- [ ] Train two seeds and measure `agreement.canonical_correlations` between their invariants (H4).
-- [ ] Replace or verify the SIGReg re-implementation before quoting any number.
+- [x] Time one seed on the A40 and record it here. (About 590 s per seed for both worlds at dim 512, 20,000 steps.)
+- [ ] Get the linear probe R2 to at least 0.9. Levers: `--steps`, `--lam`, `--dim`, frame size. If the latent collapses (`latent_std_min` near 0), raise `--lam`. (Not reached: best 0.52 on seed 0 over eleven settings; probe target changed on 2026-11-11, see `docs/hypotheses.md`.)
+- [x] Only then read the verdict. Apply the secondary options from `docs/hypotheses.md` once each if it fails. (Gate not met, so not read; all five secondary options run once on the frozen encoders and reported; none keeps an invariant.)
+- [x] Train two seeds and measure `agreement.canonical_correlations` between their invariants (H4). (Three seeds; no invariants to compare. Positive control on ideal latents done.)
+- [x] Replace or verify the SIGReg re-implementation before quoting any number. (Verified numerically and aligned before Stage C.)
 
 Output: the first evidence on whether the idea survives a learned latent. This is the gate for the rest.
 

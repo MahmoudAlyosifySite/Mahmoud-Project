@@ -9,24 +9,26 @@ Prediction error is high for both. An invariant moves only for the first.
 
 ## Status
 
-Built on 2026-11-11. The code runs and is tested. **No experiment in this repository has produced a result yet.** `results/` is empty and gets filled on the GPU server.
+Updated 2026-11-11, after Stages A to C were run on the A40 server. Every number below is in `results/ledger.jsonl`; the paper draft (`paper/main.tex`) quotes them only through macros generated from the results files by `paper/make_figures.py`. **All results come from one session and are not yet replicated by an independent session**, which `CLAUDE.md` requires before a finding counts.
 
 | Part | State |
 |---|---|
 | Billiards simulator, three-way scenarios, renderer | Tested |
 | Invariant learning, level-shift score, metrics, ledger | Tested |
-| Stage A and B scripts (synthetic latents, CPU) | Run end to end at toy size |
-| Stage C script (pixel JEPA, GPU) | Runs end to end on CPU for 30 steps. Never trained properly. Untuned. |
-| SIGReg-style regulariser | Re-implemented from the papers' description. Not checked against the official code. |
-| Stage D (LeWorldModel, V-JEPA 2) | Not started. Notes in `docs/roadmap.md`. |
-| Reading of the closest papers | Done for eight papers. Verdict in `docs/novelty.md`. |
+| Stage A (ideal latents, seeds 1-5, plus four sensitivity runs) | Run. GO in all five. `results/pilot_synthetic/` |
+| Stage B (bent and noisy latents, seeds 1-3) | Run. Energy invariant lost at alpha 1 and at any noise tested (0.003). `results/robustness/` |
+| Stage C (pixel JEPA, seeds 1-3, five secondary options) | Run. Encoder gate not met (probe about 0.5 against 0.9); no invariant kept; AUROCs reported but not read as a test of H2. `results/pilot_pixels/` |
+| H4 (agreement between encoders) | Positive control on ideal latents run; untestable on the Stage C encoders (no invariants). `results/agreement/` |
+| Encoder diagnostics | Run. `results/encoder_diagnostics/` |
+| SIGReg regulariser | Re-implemented, checked numerically against the official LeWM `SIGReg` and aligned (`experiments/check_sigreg.py`). Not the official file. |
+| Stage D (LeWorldModel, V-JEPA 2) | Not started. Plan in `docs/stage-d-plan.md`. |
+| Reading of the closest papers | Eleven papers; Shang et al. 2015 still unread (publisher refused access). `docs/novelty.md`, `docs/reading-list.md` |
 
-What exploratory runs showed while the code was written (seed 0, small samples, ideal latents, settings changed since; **rerun before quoting**):
+Headline (details and every seed in the paper draft and the reports under `results/`):
 
-- With an ideal latent the invariants recover energy and ball count without labels (R2 above 0.999).
-- They separated impossible from improbable clips perfectly where a conserved quantity was broken (AUROC 1.00), while the best prediction-error score was near or below chance (0.43 in the energy family, 0.62 with random bounces).
-- They are blind to a teleport, which breaks continuity and conserves everything. Prediction error catches that one. The two signals are complementary.
-- They degrade as the latent gets more nonlinear and they failed outright with frame-to-frame latent noise. Whether a learned encoder is good enough is the open question, and Stage C is the test.
+- Prediction error conflates impossible and improbable events: in the energy family every reading ranks lawful fast clips above energy jumps on ideal latents, and the largest and mean errors of the pixel JEPA's own predictor do the same (its best reading stays well short of separating them) (H1).
+- The invariant score separates them on ideal latents where a conserved quantity is broken, and is blind to a teleport (expected).
+- It breaks with small frame-to-frame noise in the latent, and it finds nothing in the latent of the small pixel JEPA trained here. Whether a better encoder exposes conservation is open; that is Stage D.
 
 ## Layout
 

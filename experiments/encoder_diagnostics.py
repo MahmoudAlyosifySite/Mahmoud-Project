@@ -99,6 +99,20 @@ def reference_rows(sc: ScenarioConfig, n: int) -> list[dict]:
     raw_train, raw_test = [frame_latent(c) for c in train], [frame_latent(c) for c in test]
     rows = [{"latent": "ideal frame latent", "roughness": roughness(raw_test, raw_train),
              "clean_share": clean_share(raw_test, raw_train)}]
+    # the raw pixels as a "latent": a ceiling for linear read-outs of one frame
+    from conserve.worlds.render import render
+
+    cfg = world_for("energy", sc)
+    px_t = np.concatenate([render(c, cfg, 48).reshape(sc.T, -1) / 255.0 for c in train])
+    px_v = np.concatenate([render(c, cfg, 48).reshape(sc.T, -1) / 255.0 for c in test])
+    rows.append({
+        "latent": "raw pixels (48 x 48)",
+        "linear_count": linear_probe_r2(px_t, np.concatenate([ball_count(c) for c in train]),
+                                        px_v, np.concatenate([ball_count(c) for c in test])),
+        "linear_occupancy": linear_probe_r2(px_t, np.concatenate([occupancy(c, cfg) for c in train]),
+                                            px_v, np.concatenate([occupancy(c, cfg) for c in test]), weighted=True),
+        "linear_slots": linear_probe_r2(px_t, np.concatenate(raw_train), px_v, np.concatenate(raw_test)),
+    })
     for alpha, noise in ((0.3, 0.0), (0.0, 0.003), (0.0, 0.01)):
         mixer = Mixer(raw_train[0].shape[1], alpha, noise, 1).fit(raw_train)
         rng = np.random.default_rng(1)

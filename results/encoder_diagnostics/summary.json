@@ -66,6 +66,12 @@
       "clean_share": 0.9068067226890756
     },
     {
+      "latent": "raw pixels (48 x 48)",
+      "linear_count": 0.9998434804654481,
+      "linear_occupancy": 0.9999969819453557,
+      "linear_slots": -0.05415242052367156
+    },
+    {
       "latent": "Stage B mixer alpha 0.3, noise 0",
       "roughness": 0.0030470190359173773,
       "clean_share": 0.9076470588235294

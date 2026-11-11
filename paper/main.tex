@@ -7,9 +7,13 @@
 \documentclass[11pt]{article}
 \usepackage[margin=1in]{geometry}
 \usepackage{amsmath,amssymb,booktabs,graphicx,longtable}
+\usepackage[section]{placeins}
 \usepackage[numbers]{natbib}
 \usepackage{hyperref}
 \input{generated/numbers.tex}
+% short names for the primary Stage C run and its secondary options
+\newcommand{\Cp}[1]{\csname CDFiveOneTwolOnesTwoZeroZeroZeroZeropOneSixspOne#1\endcsname}
+\newcommand{\Hp}[1]{\csname HPixDimFiveOneTwolamOnestepsTwoZeroZeroZeroZeropcaOneSixspanOne#1\endcsname}
 
 \title{Impossible or Merely Improbable?\\
 A Three-Way Test of Physical Surprise in Latent World Models}
@@ -20,7 +24,21 @@ A Three-Way Test of Physical Surprise in Latent World Models}
 \maketitle
 
 \begin{abstract}
-%ABSTRACT%
+World models are tested for physical understanding by their surprise: an impossible event should
+raise their prediction error. A rare but lawful event raises it too. We add that missing control:
+a benchmark of possible, improbable and impossible billiards clips in four families, where the
+improbable clips are as unusual as the impossible ones but break no law. On ideal latents, every
+reading of prediction error ranks lawful fast clips above clips whose energy jumps (AUROC
+\AEnergyPemax{} for the largest error, \AEnergyPerel{} for the best reading). The largest error of the
+own predictor of a pixel JEPA we trained does the same (\Cp{EnergyPemaxAll}); its best reading
+reaches \Cp{EnergyPerelAll}. A
+label-free score assembled from known parts (slow features at long lag, read between bounces and
+collisions) separates impossible from improbable clips on ideal latents where a conserved quantity is
+broken (\AEnergyInv{} and \AStochasticInv{}) and is blind to a teleport, which conserves everything.
+It is fragile: per-frame latent noise of 0.003 standard deviations removes the energy invariant. On the
+pixel JEPA's own latents, whose linear read-out of the frame stays far below our pre-registered
+gate, it finds no conserved quantity at all, and two label-free measures place that latent where the
+method already fails on synthetic noise. We release the benchmark, the protocol and every run.
 \end{abstract}
 
 \section{Introduction}
@@ -54,7 +72,10 @@ This paper makes three contributions.
   works. On ideal latents it separates impossible from improbable where a conserved quantity is
   broken. It fails with frame-to-frame noise in the latent far smaller than a learned encoder
   produces, and with strong nonlinearity (Section~\ref{sec:stageB}). On the latents of a small
-  pixel JEPA trained by us, TODO-C (Section~\ref{sec:stageC}).
+  pixel JEPA trained by us it finds nothing: no low-degree function of the latent is even
+  approximately conserved, so the score is at chance by construction. We trace this to an encoder
+  whose latent reads the frame poorly and moves roughly between frames, close to the level where Stage B
+  already fails (Section~\ref{sec:stageC}).
 \end{enumerate}
 The learner itself is not new: the same criterion finds an energy-like invariant in a DreamerV3
 latent \citep{bao2026invariant}, and its roots are Slow Feature Analysis \citep{wiskott2002sfa} and
@@ -232,6 +253,7 @@ therefore a statement about these scenario parameters, not a law.
 
 \input{generated/stageA_sens.tex}
 
+\FloatBarrier
 \subsection{Stage B: where it breaks}\label{sec:stageB}
 
 Stage B bends the ideal latent with a random nonlinearity, $z \mapsto A s + \alpha \tanh(B s)$ with
@@ -267,23 +289,164 @@ motion. This also gives a label-free check of any encoder: does its latent keep 
 long-lag autocorrelation on lawful clips is high? The kept count in Table~\ref{tab:stageB} shows the
 check failing exactly where energy is lost (one fewer invariant is kept).
 
+\FloatBarrier
 \subsection{Stage C: a pixel JEPA's own latents}\label{sec:stageC}
 
-TODO-C
+\paragraph{Model.} A small JEPA world model in the style of LeWorldModel \citep{maes2026lewm}: a
+convolutional encoder maps a $48 \times 48$ grayscale frame to a vector, and an MLP predictor maps
+the embeddings of frames $t-1$ and $t$ to that of frame $t+1$. One loss, trained end to end with no
+stop-gradient, no EMA target and no pretrained weights: the squared prediction error plus a SIGReg
+term that pushes random one-dimensional projections of the embeddings towards a standard normal. Our
+SIGReg is a re-implementation; we checked it numerically against the \texttt{SIGReg} class of the
+LeWorldModel repository and aligned it (1024 projections, the statistic per time step), before any
+Stage C run. One model is trained per seed and world (specular, and rough for the stochastic family)
+on 400 lawful clips. The invariant learner, the event detector and the scores are exactly those of
+Stages A and B; the prediction-error baseline is the JEPA's own predictor.
 
+\paragraph{The encoder gate, and a change made to it.} The protocol reads Stage C only if a linear
+probe of the latent explains the frame with $R^2$ at least 0.9. The probe as first written regressed
+the latent on slot-indexed ball positions. All balls look the same, so a single frame cannot say
+which ball is in slot 0, and that target is not a function of the image: a linear probe from the
+raw pixels themselves reaches only \DPixSlots{} on it, against \DPixCount{} for the ball count and
+\DPixOcc{} for the occupancy map below. With the owner's approval,
+and before any Stage C AUROC existed, the target was replaced by two functions of the frame that
+do not depend on ball identity, with equal weight: the number of balls, and a $12 \times 12$
+occupancy map scored as the share of its variance explained. The threshold did not change. The
+change is dated in the repository's hypotheses file.
+
+\paragraph{Tuning, on seed 0 only.} We varied the four levers the protocol allows (training steps,
+regulariser weight, latent size and frame size) over \TuneN{} settings, choosing on the probe and the
+collapse statistic alone. The probe ranged from \TuneProbeMin{} to \TuneProbeMax{}; no setting
+collapsed (smallest per-dimension standard deviation \TuneStdMin{} or more). The gate of 0.9 was not
+reached. We froze the setting with the highest probe (latent size 512, regulariser weight 1.0, 20,000
+steps, 48 pixels) and ran seeds 1 to 3 once. As the protocol requires, we report their AUROCs but do
+not read them as a test of H2.
+
+\input{generated/stageC.tex}
+
+\paragraph{The encoder.} On the confirmatory seeds the probe lies between \Cp{ProberTwoMin} and
+\Cp{ProberTwoMax} in every seed and world (Table~\ref{tab:stageCenc}): the ball count is read with
+$R^2$ between \Cp{ProberTwocountMin} and \Cp{ProberTwocountMax}, the occupancy map between
+\Cp{ProberTwooccupancyMin} and \Cp{ProberTwooccupancyMax}. The old slot-indexed probe gives at most
+\Cp{ProberTwoslotsMax}.
+
+\paragraph{No invariant is found.} The selection rule keeps \Cp{KeptMax} invariants in every seed and
+world, for the primary run and for each of the \CNOptions{} runs counting the declared secondary
+options (spans 2, 4, 8; PCA sizes 8 and 32; Table~\ref{tab:stageCkept}). The best candidate's
+long-lag slowness on held-out lawful clips is between \Cp{SlowbestMin} and \Cp{SlowbestMax}, where
+the selection rule asks for at most 0.2 and an unrelated quantity scores about 2. With nothing kept,
+\texttt{inv} and \texttt{inv\_rel} are constant and their AUROC is 0.5 in every family by
+construction. The go rule's output is \Cp{Go} (Table~\ref{tab:stageCverdict}). This is not evidence
+against H2 on a good encoder; it is evidence that this encoder exposes no conserved quantity in low
+degree.
+
+\paragraph{H1 replicates on the learned model's own prediction error.} In the energy family the
+JEPA's \texttt{pe\_max} and \texttt{pe\_mean} reach \Cp{EnergyPemaxAll} and \Cp{EnergyPemeanAll}
+impossible vs improbable: the model is far more surprised by a lawful fast ball than by a ball whose
+energy jumps. The best reading, \texttt{pe\_rel}, reaches \Cp{EnergyPerelAll}. Permanence and
+continuity are easy for prediction error (\Cp{PermanencePemaxAll} and \Cp{ContinuityPemaxAll} for
+\texttt{pe\_max}). In the stochastic family the best reading, \texttt{pe\_mean}, reaches
+\Cp{StochasticBestpe}, above the 0.70 of H1; there the learned model does better than the true
+simulator's one-step error (\Cp{StochasticOraclepeAll}), which a random bounce defeats.
+
+\paragraph{Why the latent hides energy.} Table~\ref{tab:diag} adds two label-free properties of the
+latent and compares them with the Stage B latents where the method was seen to work or fail.
+\emph{Roughness}, the median size of the latent's second difference relative to its first, is
+\DRoughMin{} to \DRoughMax{} for the three encoders. The ideal latent scores \DRefIdealRough{} (it
+moves in straight lines between bounces), the bent latent at $\alpha = 0.3$ that still works scores
+\DRefAZeroThreeNZeroRough{}, and the noisy latent at noise 0.003, where Stage B already lost the
+energy invariant, scores \DRefAZeroNZeroZeroZeroThreeRough{}. The learned latent is far
+rougher than the latent that works and within a factor of two of the one that fails.
+The event detector, which on the ideal latent trusts \DRefIdealClean{} of the steps and so finds the
+bounces, trusts at least \DCleanMin{} of the steps of the learned latent: it no longer sees the
+bounces, as with the noisy latents. A nonlinear (MLP) read-out of the frame is no better than the
+linear one (occupancy at most \DMlpOccMax{} against \DLinOccMax{}; count \DMlpCountMax{} against
+\DLinCountMax{}), so the frame is not merely bent in the latent: part of it is missing.
+
+\input{generated/diagnostics.tex}
+
+\FloatBarrier
 \subsection{Do two encoders agree? (H4)}\label{sec:h4}
 
-TODO-H4
+H4 asks whether invariants found in two independently trained encoders of one world agree
+(canonical correlation at least 0.9). We fitted invariants for each encoder on its own lawful clips
+and compared them on one shared set of fresh lawful clips (Table~\ref{tab:agreement}).
+
+\paragraph{Positive control.} Ideal latents passed through two independently drawn mixers (different
+seeds for the mixer and the training clips) agree: the smallest canonical correlation among kept
+invariants is \HCtlAZeroCcmin{} at $\alpha = 0$ and \HCtlAZeroThreeCcmin{} at $\alpha = 0.3$. The
+control also exposes a weakness of H4 as stated. At $\alpha = 1$ the encoders still agree
+(\HCtlAOneCcmin{}) on the \HCtlAOneKmax{} invariants they keep, but those invariants explain at most
+\HCtlAOneRtwomax{} of the variance of the true energy, while they explain the ball count with $R^2$ at
+least \HCtlAOneRtwocountmin{}. Agreement between encoders does not show that the shared quantity is
+the one that matters; here the encoders agree on the count, which is easy, and both lose the energy.
+
+\paragraph{Learned encoders.} The Stage C encoders keep no invariant (\Hp{Kmax} kept), so there is
+nothing to compare, and H4 cannot be tested on them. The second half of H4, using agreement to filter
+invariants and lower false alarms, is not implemented.
 
 \input{generated/agreement.tex}
 
+\FloatBarrier
 \section{Limitations}\label{sec:limits}
 
-TODO-LIMITS
+\paragraph{The learned encoder never passed its gate.} The main question, whether learned invariants
+separate impossible from improbable events on a learned latent (H2), is left open. Our encoder
+reached a probe far below the gate, and the four levers the protocol allows did not move it
+further. A better encoder (spatial features, a different objective, more data, or a published model)
+may behave differently; Stage B says what it would need.
+
+\paragraph{The method is fragile.} Frame-to-frame noise of 0.003 standard deviations, on a latent that
+is otherwise ideal, removes the energy invariant (Section~\ref{sec:stageB}), and a longer velocity
+baseline does not help. Low-degree invariants also need a latent close to linear in the state. Our
+balls move about one percent of the box per step, which makes velocities from differences
+particularly sensitive; slower or faster worlds would shift the threshold, and we did not test that.
+
+\paragraph{The ideal latent is more ideal than pixels allow.} The Stage A latent stores each ball in
+a fixed slot, so it knows which ball is which. A single rendered frame does not. Stage A therefore
+shows what the method can do with a latent that carries identity, which a pixel encoder of identical
+balls cannot provide without tracking.
+
+\paragraph{The gate was changed during the study.} The first probe target needed ball identity and
+could not be met by any encoder; we replaced it before any Stage C AUROC was computed and kept the
+threshold, with the owner's approval, and dated the change. A reader should still weigh that the gate
+is not the one first written.
+
+\paragraph{Continuity is invisible to invariants.} A teleport conserves everything; \texttt{inv} is at
+chance against possible clips and below chance against improbable ones in that family. Prediction
+error catches it. The two signals are complementary and a combined detector is not built here.
+
+\paragraph{H1 depends on the scenario parameters.} With a stronger gain at the rough wall the best
+prediction-error reading exceeds 0.70 on ideal latents, and on the learned model it exceeds 0.70 in
+the stochastic family at the default parameters. H1 holds in the energy family in every setting we
+ran and should be read as a statement about these scenarios.
+
+\paragraph{Permanence cannot show a gain.} Every score detects a vanishing ball, so H2 cannot hold
+there by construction; the go rule effectively rests on two families.
+
+\paragraph{Scope.} One synthetic world, small models, a passive world without actions, and
+dissipation-free dynamics. The worlds where published world models are trained are driven by actions
+and lose energy, so they have few exact invariants; hidden per-episode constants are the candidate
+there and are not tested here.
+
+\paragraph{Unreplicated.} Every result here comes from one working session. Our protocol counts a
+finding only after a second run with new seeds launched by a different session; none has been done.
+The regulariser is a re-implementation checked numerically against the official code, not the
+official file. One closely related paper \citep{shang2015concurrent} could not be read in full.
 
 \section{Conclusion}
 
-TODO-CONCLUSION
+Adding a lawful but improbable condition to the usual possible and impossible clips changes what a
+surprise test shows. In the energy family, every reading of prediction error from a predictor fitted
+to ideal latents ranks lawful fast clips above clips whose energy jumps, and so do the largest and the
+mean error of a pixel world model's own predictor; its best reading reaches only \Cp{EnergyPerelAll}. A detector that reads conserved quantities from the latent makes the distinction
+on ideal latents, where a conserved quantity is broken, and is blind to continuity violations, as it
+should be. It does not survive the latent of the small world model we trained: no low-degree function
+of that latent is conserved, and two label-free properties, roughness between frames and the loss of
+visible events, place the latent where the method was already seen to fail with synthetic noise.
+Whether better encoders, and published world models, expose conservation in a readable form is the
+question this benchmark is built to answer; it is the subject of the next stage.
+
 
 \bibliographystyle{plainnat}
 \bibliography{refs}
