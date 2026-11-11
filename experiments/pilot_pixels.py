@@ -66,8 +66,14 @@ def run_world(families, sc, pc, args, seed, device, out_dir: Path, key: str):
 
     torch.manual_seed(seed)
     model = TinyJEPA(args.dim, args.size).to(device)
-    log = train(model, frames, args.steps, args.batch, args.lam, args.lr)
-    torch.save(model.state_dict(), args.ckpt_out / f"seed{seed}_{key}.pt")
+    if args.load_ckpt_dir is not None:
+        # a secondary option on the same encoders: only the invariant fit changes
+        src = args.load_ckpt_dir / f"seed{seed}_{key}.pt"
+        model.load_state_dict(torch.load(src, map_location=device))
+        log = {"loaded_from": str(src)}
+    else:
+        log = train(model, frames, args.steps, args.batch, args.lam, args.lr)
+        torch.save(model.state_dict(), args.ckpt_out / f"seed{seed}_{key}.pt")
 
     def encode(clip):
         return model.encode(render(clip, cfg, args.size), device)
@@ -127,6 +133,8 @@ def main() -> None:
     p.add_argument("--n-test", type=int, default=200)
     p.add_argument("--out", type=Path, default=ROOT / "results" / "pilot_pixels")
     p.add_argument("--ckpt-dir", type=Path, default=None, help="where model checkpoints go (default: --out/<tag>)")
+    p.add_argument("--load-ckpt-dir", type=Path, default=None,
+                   help="load trained encoders from here instead of training (for secondary options of a frozen run)")
     p.add_argument("--ledger", type=Path, default=ROOT / "results" / "ledger.jsonl")
     args = p.parse_args()
 
@@ -134,6 +142,8 @@ def main() -> None:
     sc = ScenarioConfig()
     pc = PilotConfig(n_train=args.n_train, n_val=args.n_val, n_test=args.n_test, pca_dim=args.pca_dim, span=args.span)
     tag = f"dim{args.dim}_lam{args.lam:g}_steps{args.steps}_pca{args.pca_dim}_span{args.span}"
+    if args.size != 48:
+        tag += f"_size{args.size}"
     out = args.out / tag
     out.mkdir(parents=True, exist_ok=True)
     args.ckpt_out = args.ckpt_dir / tag if args.ckpt_dir else out
