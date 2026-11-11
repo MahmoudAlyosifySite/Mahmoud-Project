@@ -56,7 +56,7 @@ class TinyJEPA(nn.Module):
         b = triples.shape[0]
         z = self.encoder(triples.reshape(b * 3, 1, *triples.shape[2:]).float() / 255.0).view(b, 3, -1)
         prediction = (self.predictor(z[:, 1], z[:, 0]) - z[:, 2]).pow(2).sum(-1).mean()
-        regulariser = sigreg(z.reshape(b * 3, -1))
+        regulariser = sigreg(z.transpose(0, 1))
         return prediction + lam * regulariser, prediction.detach(), regulariser.detach()
 
     @torch.no_grad()
