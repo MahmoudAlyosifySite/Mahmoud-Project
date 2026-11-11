@@ -1,0 +1,96 @@
+% Working skeleton. Plain article class; switch to the venue's template when one is chosen.
+% Rule: no number, and no sentence that depends on a number, goes in this file unless it
+% is in results/ledger.jsonl. Appendix A maps every claim to its ledger entries.
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,booktabs,graphicx}
+\usepackage[numbers]{natbib}
+\usepackage{hyperref}
+
+\title{Impossible or Merely Improbable?\\
+Conservation Laws as a Test of Physical Understanding in Latent World Models}
+\author{Mahmoud Alyosify\thanks{ORCID 0009-0005-1336-2726. Affiliation, contact and co-authors: to be added.}}
+\date{Working draft. No results yet.}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+To be written last, from the ledger.
+\end{abstract}
+
+\section{Introduction}
+% 1. World models are judged by surprise: an impossible event should be less expected than a
+%    possible one. Surprise is read off prediction error.
+% 2. Prediction error also rises for events that are only rare. Recent work finds it an
+%    unreliable measure of physical surprise \citep{hristov2026surprise}. Existing tests compare
+%    possible with impossible and have no control for rare but lawful events.
+% 3. Physics separates the two cleanly: an impossible event changes a conserved quantity, an
+%    improbable one does not.
+% 4. Contributions, each tied to a hypothesis in docs/hypotheses.md:
+%    (a) a three-way benchmark: possible, improbable, impossible;
+%    (b) a label-free way to find invariants in a frozen latent and score their violation;
+%    (c) results on learned and published world models;
+%    (d) what a latent must be like for conservation to be readable from it.
+
+\section{Related work}
+% Surprise and violation of expectation in world models: \citep{maes2026lewm,hristov2026surprise}.
+% Conservation inside learned world models, used for stability and not for detection:
+%   \citep{bao2026invariant,wang2026conservation,wang2026certified,alet2021noether}.
+% Identifiability and agreement of JEPA latents: \citep{klindt2026lejepa,balestriero2026platonic}.
+% What latents encode versus what models use: \citep{tan2026know,interno2026observer}.
+% The learner is not ours: the same criterion in \citep{bao2026invariant}; roots in
+%   \citep{wiskott2002sfa,kaiser2018conservation}.
+% The same separation in process monitoring: \citep{shang2015concurrent}.
+% Impossible versus improbable for language models: \citep{kauf2023event,michaelov2025sherlock}.
+% Benchmarks: \citep{bordes2025intphys2}. See docs/novelty.md for what may be claimed.
+
+\section{The three-way benchmark}
+% Worlds, the four families, how each improbable control is matched to its violation, and the
+% tests that prove every lawful clip conserves energy and count. Report sensitivity to the
+% scenario parameters.
+
+\section{Learning what never changes}
+Let $z_t$ be the latent of frame $t$ and $u_t = (z_t,\; z_t - z_{t-1})$. Let $\phi(u)$ collect all
+monomials of $u$ up to degree two. An invariant is $I(u) = w^\top (\phi(u) - \bar\phi)$ with $w$
+solving
+\begin{equation}
+  \min_w \; \mathbb{E}\big[\big(w^\top(\phi(u_{t_2}) - \phi(u_{t_1}))\big)^2\big]
+  \quad \text{s.t.} \quad \mathrm{Var}\big[w^\top \phi(u)\big] = 1,
+\end{equation}
+where $t_1, t_2$ are two event-free steps of the same clip, a long lag apart, and the variance is
+over all clips. This is a generalised eigenproblem; its smallest eigenvalues give the invariants.
+% Explain: event detection and why invariants are read between events; validation on held-out
+% lawful clips; the level-shift statistic; what is and is not used for fitting (no labels, no
+% impossible clips, no simulator state).
+
+\section{Experiments}
+% Stage A: ideal latents. Stage B: bent and noisy latents. Stage C: a pixel JEPA's own latents.
+% Stage D: published world models. For each: what is fitted on what, seeds, and the go rule
+% fixed in advance.
+
+\section{Results}
+% One table per stage: AUROC impossible vs possible, impossible vs improbable, improbable vs
+% possible, for the invariant score, each prediction-error score, and the oracle.
+
+\section{Limitations}
+% Continuity violations conserve everything and are invisible to invariants.
+% Driven, dissipative worlds have few exact invariants.
+% Invariants must be low-degree in the latent; strong nonlinearity or frame noise hides them.
+% Synthetic worlds; small models.
+
+\section{Conclusion}
+
+\appendix
+\section{Claims and evidence}
+\begin{tabular}{p{0.42\linewidth}lll}
+\toprule
+Claim & Hypothesis & Ledger experiment & Seeds \\
+\midrule
+(none yet) & & & \\
+\bottomrule
+\end{tabular}
+
+\bibliographystyle{plainnat}
+\bibliography{refs}
+\end{document}
