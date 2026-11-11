@@ -79,7 +79,7 @@ def run_world(families, sc, pc, args, seed, device, out_dir: Path, key: str):
     torch.manual_seed(seed)
     model = TinyJEPA(args.dim, args.size).to(device)
     log = train(model, frames, args.steps, args.batch, args.lam, args.lr)
-    torch.save(model.state_dict(), out_dir / f"seed{seed}_{key}.pt")
+    torch.save(model.state_dict(), args.ckpt_out / f"seed{seed}_{key}.pt")
 
     def encode(clip):
         return model.encode(render(clip, cfg, args.size), device)
@@ -139,6 +139,7 @@ def main() -> None:
     p.add_argument("--n-val", type=int, default=100)
     p.add_argument("--n-test", type=int, default=200)
     p.add_argument("--out", type=Path, default=ROOT / "results" / "pilot_pixels")
+    p.add_argument("--ckpt-dir", type=Path, default=None, help="where model checkpoints go (default: --out/<tag>)")
     p.add_argument("--ledger", type=Path, default=ROOT / "results" / "ledger.jsonl")
     args = p.parse_args()
 
@@ -148,6 +149,8 @@ def main() -> None:
     tag = f"dim{args.dim}_lam{args.lam:g}_steps{args.steps}_pca{args.pca_dim}_span{args.span}"
     out = args.out / tag
     out.mkdir(parents=True, exist_ok=True)
+    args.ckpt_out = args.ckpt_dir / tag if args.ckpt_dir else out
+    args.ckpt_out.mkdir(parents=True, exist_ok=True)
     model_args = {k: getattr(args, k) for k in ("steps", "batch", "lr", "lam", "dim", "size")}
     config = {"scenario": asdict(sc), "pilot": asdict(pc), "model": model_args, "families": args.families}
 
