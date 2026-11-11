@@ -21,8 +21,12 @@ OCC_RENDER = 48  # occupancy targets are always rendered at this size
 OCC_CELLS = 12  # into OCC_CELLS x OCC_CELLS blocks
 
 
-def linear_probe_r2(x_train, y_train, x_test, y_test, ridge: float = 1e-3) -> float:
-    """Mean R2 over target columns of a ridge regression from x to y, fitted on train, scored on test."""
+def linear_probe_r2(x_train, y_train, x_test, y_test, ridge: float = 1e-3, weighted: bool = False) -> float:
+    """R2 of a ridge regression from x to y, fitted on train, scored on test.
+
+    weighted=False: the mean of the per-column R2. weighted=True: the share of the
+    total variance of y explained, so that near-constant columns do not dominate.
+    """
     y_train = np.asarray(y_train, dtype=float).reshape(len(y_train), -1)
     y_test = np.asarray(y_test, dtype=float).reshape(len(y_test), -1)
     mean, std = x_train.mean(0), x_train.std(0)
@@ -33,6 +37,8 @@ def linear_probe_r2(x_train, y_train, x_test, y_test, ridge: float = 1e-3) -> fl
     resid = y_test - b @ coef
     var = y_test.var(0)
     keep = var > 1e-12
+    if weighted:
+        return float(1.0 - resid.var(0)[keep].sum() / var[keep].sum())
     return float((1.0 - resid.var(0)[keep] / var[keep]).mean())
 
 
@@ -61,7 +67,8 @@ def encoder_probes(z_train, clips_train, z_val, clips_val, cfg: BilliardsConfig)
 
     count = linear_probe_r2(zt, stack(ball_count, clips_train), zv, stack(ball_count, clips_val))
     occ = linear_probe_r2(
-        zt, stack(lambda c: occupancy(c, cfg), clips_train), zv, stack(lambda c: occupancy(c, cfg), clips_val)
+        zt, stack(lambda c: occupancy(c, cfg), clips_train), zv, stack(lambda c: occupancy(c, cfg), clips_val),
+        weighted=True,
     )
     slots = linear_probe_r2(zt, stack(frame_latent, clips_train), zv, stack(frame_latent, clips_val))
     return {"probe_r2": 0.5 * (count + occ), "probe_r2_count": count, "probe_r2_occupancy": occ, "probe_r2_slots": slots}
