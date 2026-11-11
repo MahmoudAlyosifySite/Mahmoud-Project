@@ -64,3 +64,13 @@ If Stage C fails with a good encoder: try the declared secondary options below, 
 - The learner is not presented as new. Bao (arXiv 2608.23526) uses the same criterion. H2 is a claim about what the invariants can be used for.
 - H2 carries more risk than first assumed: the identifiability paper's own pixel experiment (arXiv 2605.26379) finds a linear read-out of the state below R2 0.5 on real trajectories.
 - Candidate H5, not yet a gated hypothesis: in worlds driven by actions and losing energy, the hidden per-episode constants (mass, drag, stiffness) play the role of conserved quantities. A constant that changes mid-episode is the impossible event; a rare value is the improbable one.
+
+**2026-11-11, the Stage C probe target. Approved by the owner in the session before the change.** Threshold (0.9), go rule, primary score and hypotheses are unchanged. What changed is the target of the linear probe that gates Stage C.
+
+- Reason: the probe regressed the latent on slot-indexed ball positions (`frame_latent`: presence, x and y for slot 0, 1, 2). The renderer draws every ball the same, so one frame does not say which ball is slot 0; the target is not a function of the image. On seed 0 (exploration, not in any claim) a ridge probe from the raw pixels themselves reached R2 0.16 on that target, so 0.9 was out of reach for any encoder.
+- New gate, `probe_r2`: the mean of two R2 values on held-out lawful clips, with equal weight: (a) the number of balls present; (b) a 12 by 12 occupancy map of the frame (the frame rendered at 48 pixels, whatever size the encoder sees, averaged over 4 by 4 pixel blocks). Both are functions of the frame and do not depend on ball identity.
+- The old slot-indexed value is still reported as `probe_r2_slots`, for transparency; it does not gate.
+- The probe was decided from the definition of the target and the raw-pixel ceiling, before any AUROC of Stage C was read. No Stage C AUROC exists at the time of this entry.
+- Known weakness: an occupancy map is not linear in the ball positions, and the invariant learner needs position and velocity in low degree. A latent can pass this gate and still hide energy. The gate is a necessary check on the encoder, not a sufficient one.
+
+**2026-11-11, the regulariser.** `src/conserve/jepa/sigreg.py` was compared with the official LeWorldModel SIGReg (github.com/lucas-maes/le-wm, `module.py`, commit 8edfeb3) using `experiments/check_sigreg.py`, and aligned with it: 1024 projections, the statistic per time step and averaged over time. Before, it pooled the three frames of a triple, which made it about three times larger than the official one on non-Gaussian embeddings. No Stage C number existed. The official config uses weight 0.09; the paper text says 0.1.

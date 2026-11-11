@@ -29,25 +29,13 @@ sys.path.insert(0, str(ROOT / "src"))
 from conserve import ledger  # noqa: E402
 from conserve.events import clean_mask  # noqa: E402
 from conserve.jepa import TinyJEPA, train  # noqa: E402
-from conserve.latents import frame_latent, phase_space  # noqa: E402
+from conserve.latents import phase_space  # noqa: E402
+from conserve.probes import encoder_probes  # noqa: E402
 from conserve.pipeline import SCORES, PilotConfig, compare, fit_latents, score_latent  # noqa: E402
 from conserve.runner import decide, markdown_report, summarise  # noqa: E402
 from conserve.scores import oracle_errors  # noqa: E402
 from conserve.worlds import CONDITIONS, FAMILIES, ScenarioConfig, make_dataset, world_for  # noqa: E402
 from conserve.worlds.render import render  # noqa: E402
-
-
-def linear_probe_r2(x_train, y_train, x_test, y_test, ridge: float = 1e-3) -> float:
-    """Mean R2 of a ridge regression from latents to the true frame state (diagnostic only)."""
-    mean, std = x_train.mean(0), x_train.std(0)
-    std = np.where(std < 1e-9, 1.0, std)
-    a = np.concatenate([(x_train - mean) / std, np.ones((len(x_train), 1))], axis=1)
-    b = np.concatenate([(x_test - mean) / std, np.ones((len(x_test), 1))], axis=1)
-    coef = np.linalg.solve(a.T @ a + ridge * len(a) * np.eye(a.shape[1]), a.T @ y_train)
-    resid = y_test - b @ coef
-    var = y_test.var(0)
-    keep = var > 1e-12
-    return float((1.0 - resid.var(0)[keep] / var[keep]).mean())
 
 
 def invariant_r2(fl, zs, clips, pc) -> dict:
@@ -92,15 +80,14 @@ def run_world(families, sc, pc, args, seed, device, out_dir: Path, key: str):
         "invariants_kept": fl.head.k,
         "slowness_val": [round(float(x), 5) for x in fl.head_all.slowness_val],
         "r2": invariant_r2(fl, zs_val, val_clips, pc),
-        "probe_r2": linear_probe_r2(
-            stacked, np.concatenate([frame_latent(c) for c in train_clips]),
-            np.concatenate(zs_val), np.concatenate([frame_latent(c) for c in val_clips]),
-        ),
+        **encoder_probes(zs, train_clips, zs_val, val_clips, cfg),
         "latent_std_min": float(stacked.std(0).min()),
         "latent_std_median": float(np.median(stacked.std(0))),
         "train_log": log,
     }
-    print(f"  [{key}] probe R2 {info['probe_r2']:.3f}, invariants kept {fl.head.k}, "
+    print(f"  [{key}] probe R2 {info['probe_r2']:.3f} (count {info['probe_r2_count']:.3f}, "
+          f"occupancy {info['probe_r2_occupancy']:.3f}, slots {info['probe_r2_slots']:.3f}), "
+          f"latent std min {info['latent_std_min']:.3f}, invariants kept {fl.head.k}, "
           f"R2 energy {info['r2']['energy']:.3f}, R2 count {info['r2']['count']:.3f}", flush=True)
 
     results = {}
@@ -179,11 +166,12 @@ def main() -> None:
     )
     report = markdown_report(f"Pixel pilot ({tag})", config, runs, summary, verdict)
     probes = "\n".join(
-        f"- seed {seed}, {key}: probe R2 {w['probe_r2']:.3f}, latent std min/median "
+        f"- seed {seed}, {key}: probe R2 {w['probe_r2']:.3f} (count {w['probe_r2_count']:.3f}, "
+        f"occupancy {w['probe_r2_occupancy']:.3f}; slot-indexed, not gating, {w['probe_r2_slots']:.3f}), latent std min/median "
         f"{w['latent_std_min']:.3f}/{w['latent_std_median']:.3f}"
         for seed in sorted(runs) for key, w in runs[seed]["worlds"].items()
     )
-    report += "\n## Is the encoder any good?\n\nProbe R2 is a linear read-out of the true ball positions and presence from the latent (1.0 is perfect). If it is low, fix the model before reading the AUROCs.\n\n" + probes + "\n"
+    report += "\n## Is the encoder any good?\n\nProbe R2 (the Stage C gate, docs/hypotheses.md) is the mean of two linear read-outs from the latent on held-out lawful clips: the number of balls, and a 12 by 12 occupancy map of the frame (1.0 is perfect). If it is below 0.9, fix the model before reading the AUROCs.\n\n" + probes + "\n"
     (out / "report.md").write_text(report, encoding="utf-8")
     print(report)
 
