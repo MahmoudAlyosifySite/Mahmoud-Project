@@ -1,3 +1,4 @@
+\pdfoutput=1
 % Rule: no number, and no sentence that depends on a number, goes in this file unless it
 % is in results/ledger.jsonl. Results are quoted only through the macros of
 % generated/numbers.tex and the tables in generated/, all written by paper/make_figures.py
@@ -8,6 +9,7 @@
 \usepackage[margin=1in]{geometry}
 \usepackage{amsmath,amssymb,booktabs,graphicx,longtable}
 \usepackage[section]{placeins}
+\usepackage{adjustbox}
 \usepackage[numbers]{natbib}
 \usepackage{hyperref}
 \input{generated/numbers.tex}
@@ -18,7 +20,7 @@
 \title{Impossible or Merely Improbable?\\
 A Three-Way Test of Physical Surprise in Latent World Models}
 \author{Mahmoud Alyosify\thanks{ORCID 0009-0005-1336-2726. Affiliation, contact and co-authors: to be added.}}
-\date{Working draft, 11 November 2026. All results are from one session and are not yet replicated.}
+\date{November 2026}
 
 \begin{document}
 \maketitle
@@ -29,16 +31,19 @@ raise their prediction error. A rare but lawful event raises it too. We add that
 a benchmark of possible, improbable and impossible billiards clips in four families, where the
 improbable clips are as unusual as the impossible ones but break no law. On ideal latents, every
 reading of prediction error ranks lawful fast clips above clips whose energy jumps (AUROC
-\AEnergyPemax{} for the largest error, \AEnergyPerel{} for the best reading). The largest error of the
-own predictor of a pixel JEPA we trained does the same (\Cp{EnergyPemaxAll}); its best reading
-reaches \Cp{EnergyPerelAll}. A
+\AEnergyPemax{} for the largest error, \AEnergyPerel{} for the best reading). The largest error of a
+pixel JEPA's own predictor, in a model we trained, does the same (\Cp{EnergyPemaxAll}); its best
+reading reaches \Cp{EnergyPerelAll}. A
 label-free score assembled from known parts (slow features at long lag, read between bounces and
 collisions) separates impossible from improbable clips on ideal latents where a conserved quantity is
-broken (\AEnergyInv{} and \AStochasticInv{}) and is blind to a teleport, which conserves everything.
+broken (AUROC \AEnergyInv{} in the energy family and \AStochasticInv{} in the stochastic family) and is
+blind to a teleport, which conserves everything.
 It is fragile: per-frame latent noise of 0.003 standard deviations removes the energy invariant. On the
 pixel JEPA's own latents, whose linear read-out of the frame stays far below our pre-registered
 gate, it finds no conserved quantity at all, and two label-free measures place that latent where the
-method already fails on synthetic noise. We release the benchmark, the protocol and every run.
+method already fails on synthetic noise. All results come from one working session and await an
+independent rerun. The benchmark, the protocol fixed before the runs, the code and the ledger of every
+run are at \url{https://github.com/MahmoudAlyosifySite/Mahmoud-Project}.
 \end{abstract}
 
 \section{Introduction}

@@ -1,6 +1,6 @@
 \begin{table}[t]\centering\small
 \caption{Stage A: ideal frame latents. AUROC for each pair of conditions.}\label{tab:stageA}
-\begin{tabular}{llccc}\toprule
+\begin{adjustbox}{max width=\linewidth}\begin{tabular}{llccc}\toprule
 Family & Score & imp.\ vs poss. & imp.\ vs improb. & improb.\ vs poss.\\\midrule
 energy & \texttt{inv} & 1.00 $\pm$ 0.00 & 1.00 $\pm$ 0.00 & 0.92 $\pm$ 0.02\\
  & \texttt{inv\_rel} & 1.00 $\pm$ 0.00 & 1.00 $\pm$ 0.00 & 0.91 $\pm$ 0.02\\
@@ -30,6 +30,6 @@ continuity & \texttt{inv} & 0.56 $\pm$ 0.00 & 0.10 $\pm$ 0.02 & 0.92 $\pm$ 0.01\
  & \texttt{pe\_rel} & 1.00 $\pm$ 0.00 & 1.00 $\pm$ 0.00 & 0.57 $\pm$ 0.06\\
  & \texttt{oracle\_pe} & 1.00 $\pm$ 0.00 & 1.00 $\pm$ 0.00 & 0.50 $\pm$ 0.00\\
 \bottomrule
-\end{tabular}
+\end{tabular}\end{adjustbox}
 \par\smallskip\footnotesize Mean $\pm$ standard deviation over seeds 1, 2, 3, 4, 5. 0.5 is chance; below 0.5 the score ranks the lawful clips above the impossible ones.
 \end{table}

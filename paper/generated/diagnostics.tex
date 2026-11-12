@@ -1,6 +1,6 @@
 \begin{table}[t]\centering\small
 \caption{Why the learned latent hides energy. Read-outs of the frame from the frozen Stage C encoders, and two label-free properties of the latent next to the Stage B reference latents.}\label{tab:diag}
-\begin{tabular}{lcccccc}\toprule
+\begin{adjustbox}{max width=\linewidth}\begin{tabular}{lcccccc}\toprule
 Latent & lin.\ count & MLP count & lin.\ occup. & MLP occup. & roughness & clean steps\\\midrule
 pixel JEPA seed 1 & 0.28 & 0.26 & 0.51 & 0.53 & 0.214 & 0.999\\
 pixel JEPA seed 2 & 0.28 & 0.20 & 0.51 & 0.52 & 0.216 & 1.000\\
@@ -10,6 +10,6 @@ ideal frame latent & & & & & 0.000 & 0.907\\
 Stage B mixer alpha 0.3, noise 0 & & & & & 0.003 & 0.908\\
 Stage B mixer alpha 0, noise 0.003 & & & & & 0.388 & 0.999\\
 Stage B mixer alpha 0, noise 0.01 & & & & & 1.057 & 1.000\\
-\bottomrule\end{tabular}
+\bottomrule\end{tabular}\end{adjustbox}
 \par\smallskip\footnotesize Read-outs are $R^2$ on fresh lawful clips (diagnostic). Roughness: median norm of the standardised latent's second difference over that of its first difference. Clean steps: the share of steps the event detector trusts. Both are label-free.
 \end{table}

@@ -1,6 +1,6 @@
 \begin{table}[t]\centering\small
 \caption{Stage B: ideal latents bent by $\alpha$ and given frame-to-frame noise. Mean over seeds 1, 2, 3.}\label{tab:stageB}
-\begin{tabular}{rrr|cccc|cccc}\toprule
+\begin{adjustbox}{max width=\linewidth}\begin{tabular}{rrr|cccc|cccc}\toprule
 & & & \multicolumn{4}{c|}{energy family} & \multicolumn{4}{c}{stochastic family}\\
 $\alpha$ & noise & span & kept & R$^2_E$ & \texttt{inv} & best PE & kept & R$^2_E$ & \texttt{inv} & best PE\\\midrule
 0 & 0 & 1 & 4.0 & 1.00 & 1.00 & 0.42 & 4.0 & 1.00 & 1.00 & 0.64\\
@@ -27,6 +27,6 @@ $\alpha$ & noise & span & kept & R$^2_E$ & \texttt{inv} & best PE & kept & R$^2_
 1 & 0.003 & 4 & 3.0 & 0.44 & 0.07 & 0.37 & 3.0 & 0.45 & 0.58 & 0.66\\
 1 & 0.01 & 1 & 3.0 & 0.44 & 0.17 & 0.39 & 3.0 & 0.45 & 0.54 & 0.63\\
 1 & 0.01 & 4 & 3.0 & 0.44 & 0.10 & 0.39 & 3.0 & 0.45 & 0.54 & 0.63\\
-\bottomrule\end{tabular}
+\bottomrule\end{tabular}\end{adjustbox}
 \par\smallskip\footnotesize kept: invariants kept by the selection rule. R$^2_E$: how well the kept invariants explain the true energy (diagnostic only). AUROCs are impossible vs improbable.
 \end{table}
