@@ -1,0 +1,14 @@
+# BA Space. Gradio itself comes from sdk_version in README.md (6.31.0).
+# ZeroGPU supports torch 2.8.0-2.13.0 and Python 3.10.13 / 3.12.12 (huggingface.co/docs/hub/spaces-zerogpu).
+torch==2.13.0
+voxcpm==2.0.3
+transformers==5.22.2
+audioseal==0.2.1
+omegaconf
+pyloudnorm==0.2.0
+soundfile
+soxr
+librosa
+numpy
+huggingface_hub
+spaces

@@ -88,3 +88,9 @@ Real colloquial Egyptian speech is labelled Egyptian 90–98% of the time; Egypt
 - At 30× real time on CPU the demo cannot run on the free CPU tier: a GPU Space is needed (ZeroGPU requires HF PRO).
 
 **Would change if.** The owner's blind ear test rates Chatterbox as more Egyptian than VoxCPM2.
+
+## D11 — Demo on ZeroGPU without PRO; model repo not gated (2026-11-12)
+
+**Decision.** The Space runs on ZeroGPU from the owner's free account. The model repo is public and not gated; the acceptable-use terms are in the licence and the model card. This replaces the hardware part of D8 and the gating part of D9.
+
+**Why.** D8 assumed ZeroGPU hosting needs PRO; the current Hub docs allow free personal accounts up to 2 ZeroGPU Spaces. VoxCPM2 runs at 30× real time on 2 CPU threads, so a CPU Space would take minutes per sentence. Gating with automatic approval adds a click, not a safeguard, and a gated repo would force the public Space to hold a token secret to load its own weights. The safeguards that do work stay: the required consent box, the watermark on every output, no storage of uploads.

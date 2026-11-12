@@ -1,0 +1,90 @@
+{
+ "policies": {
+  "keep": {
+   "n": 24,
+   "n_fail": 0,
+   "err": 0.3562,
+   "cer": 0.3562,
+   "wer": 0.5272,
+   "sim_ecapa": 0.7692,
+   "sim_wavlm": 0.967,
+   "dialect_egyptian": 0.7083,
+   "mos_p808": 3.4703,
+   "gen_sec": 2.8802,
+   "rtf": 0.7659,
+   "retries": 0,
+   "cer_canonical": 0.0916
+  },
+  "arabic": {
+   "n": 24,
+   "n_fail": 0,
+   "err": 0.379,
+   "cer": 0.379,
+   "wer": 0.562,
+   "sim_ecapa": 0.7542,
+   "sim_wavlm": 0.9645,
+   "dialect_egyptian": 0.7917,
+   "mos_p808": 3.4858,
+   "gen_sec": 2.8006,
+   "rtf": 0.7734,
+   "retries": 0,
+   "cer_canonical": 0.0932
+  }
+ },
+ "decision": "arabic",
+ "steps": [
+  "canonical CER keep=0.0916, arabic=0.0932",
+  "within 10% relative -> dialect share decides",
+  "dialect keep=0.7083, arabic=0.7917 -> arabic"
+ ],
+ "examples": [
+  {
+   "utt_id": "cs__keep__cst01__ar_eg_m1",
+   "asr": "ابعتلي الايميل بتاع الكلاينت قبل الكول بتاعت بكرة"
+  },
+  {
+   "utt_id": "cs__arabic__cst01__ar_eg_m1",
+   "asr": "ابعث لي الإيميل بتاع الكلينت قبل الكل بتاعت بكرة"
+  },
+  {
+   "utt_id": "cs__keep__cst01__ar_eg_f4",
+   "asr": "ابعتلي الإيميل بتاع الكلاينت قبل القول بتاعت بكرة"
+  },
+  {
+   "utt_id": "cs__arabic__cst01__ar_eg_f4",
+   "asr": "ابعث لي الإيميل بتاع الكلاينت قبل الكول بتاعت بكرة"
+  },
+  {
+   "utt_id": "cs__keep__cst01__ar_eg_m2",
+   "asr": "ابعث لي الإيميل بتاع الكلاينت قبل الكل بتاعت بكرة"
+  },
+  {
+   "utt_id": "cs__arabic__cst01__ar_eg_m2",
+   "asr": "ابعث لي الإيميل بتاع الكلاينت قبل الكول بتاعت بكرة"
+  },
+  {
+   "utt_id": "cs__keep__cst02__ar_eg_f5",
+   "asr": "الباسورد بتاع الأكاونت مش راضي يشتغل خالص"
+  },
+  {
+   "utt_id": "cs__arabic__cst02__ar_eg_f5",
+   "asr": "الباسورد بتاع الأكاونت مش راضي يشتغل خالص"
+  },
+  {
+   "utt_id": "cs__keep__cst02__ar_eg_m3",
+   "asr": "الباسور بتاع الكونت مش راضي يشتغل خالص"
+  },
+  {
+   "utt_id": "cs__arabic__cst02__ar_eg_m3",
+   "asr": "الباسورد بتاع الكونت مش راضي يشتغل خالص"
+  },
+  {
+   "utt_id": "cs__keep__cst02__ar_eg_f6",
+   "asr": "الباسورد بتاع الكونت مش راضي يشتغل خالص"
+  },
+  {
+   "utt_id": "cs__arabic__cst02__ar_eg_f6",
+   "asr": "البسور بتاع الأكاونت مش راضي يشتغل خاص"
+  }
+ ]
+}

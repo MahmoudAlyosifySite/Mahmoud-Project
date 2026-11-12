@@ -159,3 +159,10 @@ Every number goes to `BA/eval/results/*.json` with the command and seed that pro
 **Result.** Bar = 0.6 × 0.90 = 0.54. Passing: VoxCPM2 (0.82; 0.91 with a reference transcript). Failing: Chatterbox V3 (0.21), V2 (0.17). VoxCPM2's Egyptian CER 0.065 is within the G3 bound (real colloquial Egyptian ASR CER 0.071 + 0.10). **Selected: VoxCPM2.** Numbers: `BA/eval/results/bakeoff.md`.
 
 **Independent check.** The owner's blind listening test (system names hidden) is pending. If the ear test contradicts the classifier, this choice is reopened.
+
+### 2026-11-12 — Phase 2–3 review (made after seeing the results)
+
+- **Reference noise gate.** The executor's pre-written threshold (36.2 dB on the Phase 1 SNR proxy) would have rejected about half of the real clean calibration clips. Accepted the replacement it measured instead: a 1st-percentile noise floor that rejects every reference at ≤ 15 dB SNR and no real clean clip, warning at 20 dB (`BA/eval/results/reference_thresholds.json`). Reason: a gate that refuses clean recordings fails the user; the replacement was chosen on calibration clips, not on the evaluation outputs.
+- **Chunk length.** Kept at the rule's 1,000 characters. The hint that shorter chunks raise similarity (0.88 at 150 vs 0.83 at 1,000) rests on 2 passages per setting; not enough to change a rule. Open item for v0.2 with more long passages.
+- **Cross-language French** similarity (0.696) sits exactly at 0.80 of the Egyptian ceiling. Cross-language use is not part of G3; the model card states it as a limitation.
+- **Demo hardware.** Hugging Face now lets free personal accounts host up to 2 ZeroGPU Spaces (docs, "Hosting limitations"), so the demo targets ZeroGPU without PRO.

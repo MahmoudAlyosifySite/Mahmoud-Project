@@ -64,3 +64,32 @@ variant: the 120 main Egyptian utterances. Listening pack: 6 sentences x 2 voice
 
 See the docstrings: Whisper large-v3 with forced language, CER/WER after normalisation; ECAPA and WavLM-SV cosine;
 `badrex/mms-300m-arabic-dialect-identifier`; DNSMOS (speechmos) as the MOS predictor; failure rule F1-F4; G1.
+
+## Phase 2: the BA engine (`ba` system)
+
+venv `ba`: `uv venv -p /opt/conda/bin/python3.12 /tmp/ba/venvs/ba`, then
+`uv pip install "torch==2.13.0" "voxcpm==2.0.3" "gradio==6.31.0" spaces audioseal pyloudnorm pytest jiwer`
+and `uv pip install -e "BA[test]"` (Python 3.12 and torch 2.13.0 match what Hugging Face ZeroGPU supports).
+Generated audio: `/home/jovyan/ba-work/engine/<experiment>/`.
+
+| Script | What |
+|---|---|
+| `engine_common.py` | tuning / held-out split (fixed before any run), experiment settings |
+| `synth_ba.py <exp>` | synthesis with `ba_tts` for `ref`, `cs`, `chunk`, `sweep`, `full` (resumable) |
+| `score_manifest.py <exp>` | the Phase 1 scorer on an experiment (venv `eval`) |
+| `analyze_engine.py <exp>` | decision rules (in its docstring) -> `reference_thresholds.json`, `codeswitch_policy.json`, `chunk_length.json`, `sweep.json` |
+| `asr_check.py` | Whisper large-v3-turbo vs large-v3 on the calibration clips -> `asr_check.json` |
+| `watermark_check.py` | AudioSeal detection on BA outputs, MP3 128k/64k, 16 kHz, and on unwatermarked audio -> `watermark.json` |
+| `bench_engine.py [--no-optimize]` | load time, generation time, peak VRAM on the A40 -> `bench.json` |
+| `engine_report.py` | BA vs raw VoxCPM2 on held-out texts, gate G3 -> `engine.json`, `engine.md` |
+| `run_engine.sh <steps>` | runs synthesis + scoring per step, one GPU job at a time |
+
+```bash
+E=BA/eval/scripts
+$E/run_engine.sh asr ref cs chunk sweep
+/tmp/ba/venvs/eval/bin/python $E/analyze_engine.py ref   # likewise cs, chunk, sweep; copy decisions into src/ba_tts/defaults.py
+$E/run_engine.sh full
+/tmp/ba/venvs/ba/bin/python $E/watermark_check.py
+/tmp/ba/venvs/ba/bin/python $E/bench_engine.py; /tmp/ba/venvs/ba/bin/python $E/bench_engine.py --no-optimize
+/tmp/ba/venvs/eval/bin/python $E/engine_report.py
+```

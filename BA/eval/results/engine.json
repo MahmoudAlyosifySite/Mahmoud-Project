@@ -1,0 +1,1131 @@
+{
+ "held_out_rule": "tuning texts excluded: egy11 egy14 egy17 egy20 egy23 egy26 egy29 egy32 egy35 egy38 en11 en12 en14 en16 en18 en20",
+ "ba": {
+  "egy_main": {
+   "n": 72,
+   "n_fail": 0,
+   "fail_kinds": {},
+   "cer": 0.0296,
+   "wer": 0.1051,
+   "cer_spelled_ref": 0.0296,
+   "sim_ecapa": 0.7694,
+   "sim_wavlm": 0.9609,
+   "dialect_egyptian": 0.8889,
+   "mos_p808": 3.5269
+  },
+  "egy_digits": {
+   "n": 18,
+   "n_fail": 0,
+   "fail_kinds": {},
+   "cer": 0.0726,
+   "wer": 0.1423,
+   "cer_spelled_ref": 0.328,
+   "sim_ecapa": 0.7771,
+   "sim_wavlm": 0.9631,
+   "dialect_egyptian": 0.8333,
+   "mos_p808": 3.5615
+  },
+  "diac": {
+   "n": 20,
+   "n_fail": 0,
+   "fail_kinds": {},
+   "cer": 0.0398,
+   "wer": 0.1253,
+   "cer_spelled_ref": 0.0398,
+   "sim_ecapa": 0.7684,
+   "sim_wavlm": 0.958,
+   "dialect_egyptian": 0.6,
+   "mos_p808": 3.5495
+  },
+  "cs": {
+   "n": 18,
+   "n_fail": 0,
+   "fail_kinds": {},
+   "cer": 0.2839,
+   "wer": 0.3503,
+   "cer_spelled_ref": 0.2839,
+   "sim_ecapa": 0.7729,
+   "sim_wavlm": 0.9677,
+   "dialect_egyptian": 0.9444,
+   "mos_p808": 3.5148,
+   "cer_canonical": 0.0738
+  },
+  "en": {
+   "n": 42,
+   "n_fail": 0,
+   "fail_kinds": {},
+   "cer": 0.002,
+   "wer": 0.0027,
+   "cer_spelled_ref": 0.002,
+   "sim_ecapa": 0.7794,
+   "sim_wavlm": 0.9654,
+   "dialect_egyptian": null,
+   "mos_p808": 3.861
+  },
+  "fr": {
+   "n": 60,
+   "n_fail": 0,
+   "fail_kinds": {},
+   "cer": 0.0189,
+   "wer": 0.0301,
+   "cer_spelled_ref": 0.0189,
+   "sim_ecapa": 0.7919,
+   "sim_wavlm": 0.9656,
+   "dialect_egyptian": null,
+   "mos_p808": 3.7271
+  },
+  "cross_en": {
+   "n": 20,
+   "n_fail": 0,
+   "fail_kinds": {},
+   "cer": 0.0,
+   "wer": 0.0,
+   "cer_spelled_ref": 0.0,
+   "sim_ecapa": 0.7298,
+   "sim_wavlm": 0.9643,
+   "dialect_egyptian": null,
+   "mos_p808": 3.6034
+  },
+  "cross_fr": {
+   "n": 20,
+   "n_fail": 0,
+   "fail_kinds": {},
+   "cer": 0.0346,
+   "wer": 0.0623,
+   "cer_spelled_ref": 0.0346,
+   "sim_ecapa": 0.6962,
+   "sim_wavlm": 0.9591,
+   "dialect_egyptian": null,
+   "mos_p808": 3.5763
+  },
+  "long_arz": {
+   "n": 2,
+   "n_fail": 0,
+   "fail_kinds": {},
+   "cer": 0.0397,
+   "wer": 0.1653,
+   "cer_spelled_ref": 0.0397,
+   "sim_ecapa": 0.8228,
+   "sim_wavlm": 0.9767,
+   "dialect_egyptian": 1.0,
+   "mos_p808": 3.558
+  },
+  "long_en": {
+   "n": 2,
+   "n_fail": 0,
+   "fail_kinds": {},
+   "cer": 0.0,
+   "wer": 0.0,
+   "cer_spelled_ref": 0.0,
+   "sim_ecapa": 0.8074,
+   "sim_wavlm": 0.9519,
+   "dialect_egyptian": null,
+   "mos_p808": 3.9425
+  },
+  "long_fr": {
+   "n": 2,
+   "n_fail": 0,
+   "fail_kinds": {},
+   "cer": 0.0054,
+   "wer": 0.0103,
+   "cer_spelled_ref": 0.0054,
+   "sim_ecapa": 0.8394,
+   "sim_wavlm": 0.9755,
+   "dialect_egyptian": null,
+   "mos_p808": 3.843
+  }
+ },
+ "raw_voxcpm2": {
+  "egy_main": {
+   "n": 72,
+   "n_fail": 0,
+   "fail_kinds": {},
+   "cer": 0.069,
+   "wer": 0.1801,
+   "cer_spelled_ref": 0.069,
+   "sim_ecapa": 0.7128,
+   "sim_wavlm": 0.9529,
+   "dialect_egyptian": 0.8194,
+   "mos_p808": 3.3486
+  },
+  "egy_digits": {
+   "n": 18,
+   "n_fail": 0,
+   "fail_kinds": {},
+   "cer": 0.1223,
+   "wer": 0.2212,
+   "cer_spelled_ref": 0.3667,
+   "sim_ecapa": 0.7301,
+   "sim_wavlm": 0.9558,
+   "dialect_egyptian": 0.6667,
+   "mos_p808": 3.3128
+  },
+  "diac": {
+   "n": 20,
+   "n_fail": 0,
+   "fail_kinds": {},
+   "cer": 0.0446,
+   "wer": 0.1543,
+   "cer_spelled_ref": 0.0446,
+   "sim_ecapa": 0.6938,
+   "sim_wavlm": 0.953,
+   "dialect_egyptian": 0.4,
+   "mos_p808": 3.41
+  },
+  "cs": {
+   "n": 18,
+   "n_fail": 0,
+   "fail_kinds": {},
+   "cer": 0.2737,
+   "wer": 0.3788,
+   "cer_spelled_ref": 0.2737,
+   "sim_ecapa": 0.7387,
+   "sim_wavlm": 0.9637,
+   "dialect_egyptian": 0.7222,
+   "mos_p808": 3.3871,
+   "cer_canonical": 0.0842
+  },
+  "en": {
+   "n": 42,
+   "n_fail": 2,
+   "fail_kinds": {
+    "empty": 2
+   },
+   "cer": 0.0,
+   "wer": 0.0,
+   "cer_spelled_ref": 0.0,
+   "sim_ecapa": 0.6552,
+   "sim_wavlm": 0.9386,
+   "dialect_egyptian": null,
+   "mos_p808": 3.7019
+  },
+  "fr": {
+   "n": 60,
+   "n_fail": 0,
+   "fail_kinds": {},
+   "cer": 0.0181,
+   "wer": 0.0304,
+   "cer_spelled_ref": 0.0181,
+   "sim_ecapa": 0.7588,
+   "sim_wavlm": 0.9697,
+   "dialect_egyptian": null,
+   "mos_p808": 3.6311
+  },
+  "cross_en": {
+   "n": 20,
+   "n_fail": 0,
+   "fail_kinds": {},
+   "cer": 0.0,
+   "wer": 0.0,
+   "cer_spelled_ref": 0.0,
+   "sim_ecapa": 0.6392,
+   "sim_wavlm": 0.9194,
+   "dialect_egyptian": null,
+   "mos_p808": 3.5292
+  },
+  "cross_fr": {
+   "n": 20,
+   "n_fail": 0,
+   "fail_kinds": {},
+   "cer": 0.096,
+   "wer": 0.1368,
+   "cer_spelled_ref": 0.096,
+   "sim_ecapa": 0.57,
+   "sim_wavlm": 0.9546,
+   "dialect_egyptian": null,
+   "mos_p808": 3.3848
+  },
+  "long_arz": {
+   "n": 2,
+   "n_fail": 0,
+   "fail_kinds": {},
+   "cer": 0.0333,
+   "wer": 0.1356,
+   "cer_spelled_ref": 0.0333,
+   "sim_ecapa": 0.7616,
+   "sim_wavlm": 0.9746,
+   "dialect_egyptian": 1.0,
+   "mos_p808": 3.5215
+  },
+  "long_en": {
+   "n": 2,
+   "n_fail": 0,
+   "fail_kinds": {},
+   "cer": 0.0,
+   "wer": 0.0,
+   "cer_spelled_ref": 0.0,
+   "sim_ecapa": 0.7031,
+   "sim_wavlm": 0.9377,
+   "dialect_egyptian": null,
+   "mos_p808": 3.762
+  },
+  "long_fr": {
+   "n": 2,
+   "n_fail": 0,
+   "fail_kinds": {},
+   "cer": 0.0034,
+   "wer": 0.0103,
+   "cer_spelled_ref": 0.0034,
+   "sim_ecapa": 0.7969,
+   "sim_wavlm": 0.9742,
+   "dialect_egyptian": null,
+   "mos_p808": 3.7815
+  }
+ },
+ "voxcpm2_prompt_phase1": {
+  "egy_main": {
+   "n": 72,
+   "n_fail": 0,
+   "fail_kinds": {},
+   "cer": 0.0789,
+   "wer": 0.198,
+   "cer_spelled_ref": 0.0789,
+   "sim_ecapa": 0.7707,
+   "sim_wavlm": 0.962,
+   "dialect_egyptian": 0.9028,
+   "mos_p808": 3.4441
+  },
+  "egy_digits": {
+   "n": 18,
+   "n_fail": 0,
+   "fail_kinds": {},
+   "cer": 0.1519,
+   "wer": 0.2834,
+   "cer_spelled_ref": 0.3614,
+   "sim_ecapa": 0.7798,
+   "sim_wavlm": 0.9671,
+   "dialect_egyptian": 0.8889,
+   "mos_p808": 3.4483
+  }
+ },
+ "ba_all_texts": {
+  "egy_main": {
+   "n": 96,
+   "n_fail": 0,
+   "fail_kinds": {},
+   "cer": 0.0269,
+   "wer": 0.1017,
+   "cer_spelled_ref": 0.0269,
+   "sim_ecapa": 0.771,
+   "sim_wavlm": 0.961,
+   "dialect_egyptian": 0.8958,
+   "mos_p808": 3.5192
+  },
+  "egy_digits": {
+   "n": 24,
+   "n_fail": 0,
+   "fail_kinds": {},
+   "cer": 0.0653,
+   "wer": 0.1478,
+   "cer_spelled_ref": 0.2949,
+   "sim_ecapa": 0.7693,
+   "sim_wavlm": 0.9623,
+   "dialect_egyptian": 0.875,
+   "mos_p808": 3.5308
+  },
+  "diac": {
+   "n": 20,
+   "n_fail": 0,
+   "fail_kinds": {},
+   "cer": 0.0398,
+   "wer": 0.1253,
+   "cer_spelled_ref": 0.0398,
+   "sim_ecapa": 0.7684,
+   "sim_wavlm": 0.958,
+   "dialect_egyptian": 0.6,
+   "mos_p808": 3.5495
+  },
+  "cs": {
+   "n": 18,
+   "n_fail": 0,
+   "fail_kinds": {},
+   "cer": 0.2839,
+   "wer": 0.3503,
+   "cer_spelled_ref": 0.2839,
+   "sim_ecapa": 0.7729,
+   "sim_wavlm": 0.9677,
+   "dialect_egyptian": 0.9444,
+   "mos_p808": 3.5148,
+   "cer_canonical": 0.0738
+  },
+  "en": {
+   "n": 60,
+   "n_fail": 0,
+   "fail_kinds": {},
+   "cer": 0.0014,
+   "wer": 0.0019,
+   "cer_spelled_ref": 0.0014,
+   "sim_ecapa": 0.7844,
+   "sim_wavlm": 0.9671,
+   "dialect_egyptian": null,
+   "mos_p808": 3.8522
+  },
+  "fr": {
+   "n": 60,
+   "n_fail": 0,
+   "fail_kinds": {},
+   "cer": 0.0189,
+   "wer": 0.0301,
+   "cer_spelled_ref": 0.0189,
+   "sim_ecapa": 0.7919,
+   "sim_wavlm": 0.9656,
+   "dialect_egyptian": null,
+   "mos_p808": 3.7271
+  },
+  "cross_en": {
+   "n": 20,
+   "n_fail": 0,
+   "fail_kinds": {},
+   "cer": 0.0,
+   "wer": 0.0,
+   "cer_spelled_ref": 0.0,
+   "sim_ecapa": 0.7298,
+   "sim_wavlm": 0.9643,
+   "dialect_egyptian": null,
+   "mos_p808": 3.6034
+  },
+  "cross_fr": {
+   "n": 20,
+   "n_fail": 0,
+   "fail_kinds": {},
+   "cer": 0.0346,
+   "wer": 0.0623,
+   "cer_spelled_ref": 0.0346,
+   "sim_ecapa": 0.6962,
+   "sim_wavlm": 0.9591,
+   "dialect_egyptian": null,
+   "mos_p808": 3.5763
+  },
+  "long_arz": {
+   "n": 2,
+   "n_fail": 0,
+   "fail_kinds": {},
+   "cer": 0.0397,
+   "wer": 0.1653,
+   "cer_spelled_ref": 0.0397,
+   "sim_ecapa": 0.8228,
+   "sim_wavlm": 0.9767,
+   "dialect_egyptian": 1.0,
+   "mos_p808": 3.558
+  },
+  "long_en": {
+   "n": 2,
+   "n_fail": 0,
+   "fail_kinds": {},
+   "cer": 0.0,
+   "wer": 0.0,
+   "cer_spelled_ref": 0.0,
+   "sim_ecapa": 0.8074,
+   "sim_wavlm": 0.9519,
+   "dialect_egyptian": null,
+   "mos_p808": 3.9425
+  },
+  "long_fr": {
+   "n": 2,
+   "n_fail": 0,
+   "fail_kinds": {},
+   "cer": 0.0054,
+   "wer": 0.0103,
+   "cer_spelled_ref": 0.0054,
+   "sim_ecapa": 0.8394,
+   "sim_wavlm": 0.9755,
+   "dialect_egyptian": null,
+   "mos_p808": 3.843
+  }
+ },
+ "gate_g3": {
+  "arz": {
+   "checks": {
+    "failure_rate": {
+     "value": 0.0,
+     "arithmetic": "0/130 = 0.0000 <= 0.05",
+     "passed": true
+    },
+    "intelligibility": {
+     "value": 0.0296,
+     "arithmetic": "CER 0.0296 <= 0.1712 (= 0.0712 + 0.10)",
+     "passed": true
+    },
+    "similarity": {
+     "value": 0.7694,
+     "arithmetic": "ECAPA 0.7694 >= 0.8 x 0.8704 = 0.6963",
+     "passed": true
+    },
+    "dialect": {
+     "value": 0.8889,
+     "arithmetic": "Egyptian share 0.8889 >= 0.6 x 0.9 = 0.54",
+     "passed": true
+    }
+   },
+   "passed": true,
+   "listed_as": "Egyptian Arabic"
+  },
+  "en": {
+   "checks": {
+    "failure_rate": {
+     "value": 0.0,
+     "arithmetic": "0/64 = 0.0000 <= 0.05",
+     "passed": true
+    },
+    "intelligibility": {
+     "value": 0.0027,
+     "arithmetic": "WER 0.0027 <= 0.08",
+     "passed": true
+    },
+    "similarity": {
+     "value": 0.7794,
+     "arithmetic": "ECAPA 0.7794 >= 0.8 x 0.874 = 0.6992",
+     "passed": true
+    }
+   },
+   "passed": true,
+   "listed_as": "English"
+  },
+  "fr": {
+   "checks": {
+    "failure_rate": {
+     "value": 0.0,
+     "arithmetic": "0/82 = 0.0000 <= 0.05",
+     "passed": true
+    },
+    "intelligibility": {
+     "value": 0.0301,
+     "arithmetic": "WER 0.0301 <= 0.1",
+     "passed": true
+    },
+    "similarity": {
+     "value": 0.7919,
+     "arithmetic": "ECAPA 0.7919 >= 0.8 x 0.9 = 0.72",
+     "passed": true
+    }
+   },
+   "passed": true,
+   "listed_as": "French"
+  }
+ },
+ "gate_g3_raw_voxcpm2_for_reference": {
+  "arz": {
+   "checks": {
+    "failure_rate": {
+     "value": 0.0,
+     "arithmetic": "0/130 = 0.0000 <= 0.05",
+     "passed": true
+    },
+    "intelligibility": {
+     "value": 0.069,
+     "arithmetic": "CER 0.069 <= 0.1712 (= 0.0712 + 0.10)",
+     "passed": true
+    },
+    "similarity": {
+     "value": 0.7128,
+     "arithmetic": "ECAPA 0.7128 >= 0.8 x 0.8704 = 0.6963",
+     "passed": true
+    },
+    "dialect": {
+     "value": 0.8194,
+     "arithmetic": "Egyptian share 0.8194 >= 0.6 x 0.9 = 0.54",
+     "passed": true
+    }
+   },
+   "passed": true,
+   "listed_as": "Egyptian Arabic"
+  },
+  "en": {
+   "checks": {
+    "failure_rate": {
+     "value": 0.0312,
+     "arithmetic": "2/64 = 0.0312 <= 0.05",
+     "passed": true
+    },
+    "intelligibility": {
+     "value": 0.0,
+     "arithmetic": "WER 0.0 <= 0.08",
+     "passed": true
+    },
+    "similarity": {
+     "value": 0.6552,
+     "arithmetic": "ECAPA 0.6552 >= 0.8 x 0.874 = 0.6992",
+     "passed": false
+    }
+   },
+   "passed": false,
+   "listed_as": "not listed"
+  },
+  "fr": {
+   "checks": {
+    "failure_rate": {
+     "value": 0.0,
+     "arithmetic": "0/82 = 0.0000 <= 0.05",
+     "passed": true
+    },
+    "intelligibility": {
+     "value": 0.0304,
+     "arithmetic": "WER 0.0304 <= 0.1",
+     "passed": true
+    },
+    "similarity": {
+     "value": 0.7588,
+     "arithmetic": "ECAPA 0.7588 >= 0.8 x 0.9 = 0.72",
+     "passed": true
+    }
+   },
+   "passed": true,
+   "listed_as": "French"
+  }
+ },
+ "cross_language_similarity": {
+  "cross_en": {
+   "ba": 0.7298,
+   "raw": 0.6392,
+   "ar_eg_ceiling": 0.8704,
+   "ratio_ba": 0.8385
+  },
+  "cross_fr": {
+   "ba": 0.6962,
+   "raw": 0.57,
+   "ar_eg_ceiling": 0.8704,
+   "ratio_ba": 0.7999
+  }
+ },
+ "engine_checks": {
+  "utterances_with_retry": 0,
+  "total_retries": 0,
+  "chunks_failing_after_retries": 0,
+  "n": 324
+ },
+ "decisions": {
+  "sweep": {
+   "arz": {
+    "cfg_value": 2.0,
+    "inference_timesteps": 10
+   },
+   "en": {
+    "cfg_value": 2.0,
+    "inference_timesteps": 10
+   }
+  },
+  "chunk_length": {
+   "arz": 1000,
+   "en": 1000
+  },
+  "codeswitch_policy": "arabic",
+  "reference_thresholds": {
+   "noise_estimator": "p95-p1: 95th minus 1st percentile of 25 ms frame RMS (dB) at 16 kHz",
+   "REF_SNR_MIN_DB": 25.9,
+   "REF_SNR_WARN_DB": 32.7,
+   "REF_CLIP_MAX_RATIO": 0.00625,
+   "arithmetic": {
+    "reject": "(24.5 + 27.31) / 2 = 25.9",
+    "warn": "(28.65 + 36.77) / 2 = 32.7"
+   },
+   "real_clean_clips": {
+    "lahgtna_eg": {
+     "n": 50,
+     "rejected": 0,
+     "warned": 4
+    },
+    "niletts": {
+     "n": 50,
+     "rejected": 0,
+     "warned": 0
+    },
+    "fleurs_ar_eg": {
+     "n": 50,
+     "rejected": 0,
+     "warned": 0
+    },
+    "fleurs_en_us": {
+     "n": 30,
+     "rejected": 0,
+     "warned": 5
+    },
+    "fleurs_fr_fr": {
+     "n": 30,
+     "rejected": 0,
+     "warned": 0
+    },
+    "fleurs_ref": {
+     "n": 12,
+     "rejected": 0,
+     "warned": 0
+    }
+   },
+   "degraded_references": {
+    "clean": {
+     "n": 6,
+     "rejected": 0,
+     "warned": 0
+    },
+    "snr30": {
+     "n": 6,
+     "rejected": 0,
+     "warned": 0
+    },
+    "snr20": {
+     "n": 6,
+     "rejected": 0,
+     "warned": 6
+    },
+    "snr15": {
+     "n": 6,
+     "rejected": 6,
+     "warned": 0
+    },
+    "snr10": {
+     "n": 6,
+     "rejected": 6,
+     "warned": 0
+    },
+    "snr5": {
+     "n": 6,
+     "rejected": 6,
+     "warned": 0
+    }
+   },
+   "deviation": "The pre-written rule with the Phase 1 proxy (p95-p10) gives 36.2 dB, which rejects about half of the real clean calibration clips (see decision.calibration_false_rejections); that proxy confounds few pauses with noise. The rule's finding that SNR 20-30 dB references already lower similarity is kept as a warning, not a rejection."
+  },
+  "asr_check": {
+   "fleurs_ar_eg": {
+    "n": 50,
+    "turbo_cer": 0.0157,
+    "turbo_wer": 0.0711,
+    "v3_cer": 0.0139,
+    "v3_wer": 0.0597,
+    "language_detected_correctly": 1.0,
+    "turbo_sec_per_clip": 0.297,
+    "mean_clip_s": 11.31
+   },
+   "fleurs_en_us": {
+    "n": 30,
+    "turbo_cer": 0.0254,
+    "turbo_wer": 0.0604,
+    "v3_cer": 0.0204,
+    "v3_wer": 0.0523,
+    "language_detected_correctly": 1.0,
+    "turbo_sec_per_clip": 0.151,
+    "mean_clip_s": 8.98
+   },
+   "fleurs_fr_fr": {
+    "n": 30,
+    "turbo_cer": 0.0192,
+    "turbo_wer": 0.0529,
+    "v3_cer": 0.022,
+    "v3_wer": 0.0624,
+    "language_detected_correctly": 1.0,
+    "turbo_sec_per_clip": 0.229,
+    "mean_clip_s": 9.76
+   },
+   "lahgtna_eg": {
+    "n": 50,
+    "turbo_cer": 0.0699,
+    "turbo_wer": 0.2139,
+    "v3_cer": 0.0712,
+    "v3_wer": 0.2056,
+    "language_detected_correctly": 1.0,
+    "turbo_sec_per_clip": 0.334,
+    "mean_clip_s": 10.15
+   },
+   "niletts": {
+    "n": 50,
+    "turbo_cer": 0.0342,
+    "turbo_wer": 0.1278,
+    "v3_cer": 0.0193,
+    "v3_wer": 0.0908,
+    "language_detected_correctly": 1.0,
+    "turbo_sec_per_clip": 0.416,
+    "mean_clip_s": 13.38
+   }
+  },
+  "watermark": {
+   "method": "AudioSeal (facebook/audioseal generator_base/detector_base, 16-bit message 'BA'), threshold 0.5",
+   "licence": "audioseal 0.2.1 on PyPI: MIT; weights facebook/audioseal: MIT",
+   "ffmpeg": "ffmpeg version 6.1.1-3ubuntu5 Copyright (c) 2000-2023 the FFmpeg developers",
+   "summary": {
+    "ba_wav48k": {
+     "n": 60,
+     "detected": 60,
+     "mean_score": 1.0,
+     "min_score": 1.0,
+     "max_score": 1.0,
+     "mean_bits_match": 1.0
+    },
+    "ba_mp3_128k": {
+     "n": 60,
+     "detected": 60,
+     "mean_score": 1.0,
+     "min_score": 1.0,
+     "max_score": 1.0,
+     "mean_bits_match": 1.0
+    },
+    "ba_mp3_64k": {
+     "n": 60,
+     "detected": 60,
+     "mean_score": 0.9998,
+     "min_score": 0.989,
+     "max_score": 1.0,
+     "mean_bits_match": 1.0
+    },
+    "ba_resampled_16k": {
+     "n": 60,
+     "detected": 60,
+     "mean_score": 1.0,
+     "min_score": 1.0,
+     "max_score": 1.0,
+     "mean_bits_match": 1.0
+    },
+    "raw_voxcpm2_wav": {
+     "n": 60,
+     "detected": 0,
+     "mean_score": 0.0003,
+     "min_score": 0.0,
+     "max_score": 0.008,
+     "mean_bits_match": 0.424
+    },
+    "raw_voxcpm2_mp3_128k": {
+     "n": 60,
+     "detected": 0,
+     "mean_score": 0.0002,
+     "min_score": 0.0,
+     "max_score": 0.0069,
+     "mean_bits_match": 0.4135
+    },
+    "real_speech_wav": {
+     "n": 53,
+     "detected": 0,
+     "mean_score": 0.0077,
+     "min_score": 0.0,
+     "max_score": 0.1685,
+     "mean_bits_match": 0.4811
+    }
+   },
+   "utterances": [
+    "egy__egy01__ar_eg_m1",
+    "egy__egy01__ar_eg_f4",
+    "egy__egy01__ar_eg_m2",
+    "egy__egy02__ar_eg_f5",
+    "egy__egy02__ar_eg_m3",
+    "egy__egy02__ar_eg_f6",
+    "egy__egy03__ar_eg_m1",
+    "egy__egy03__ar_eg_f4",
+    "egy__egy03__ar_eg_m2",
+    "egy__egy04__ar_eg_f5",
+    "egy__egy04__ar_eg_m3",
+    "egy__egy04__ar_eg_f6",
+    "egy__egy05__ar_eg_m1",
+    "egy__egy05__ar_eg_f4",
+    "egy__egy05__ar_eg_m2",
+    "egy__egy06__ar_eg_f5",
+    "egy__egy06__ar_eg_m3",
+    "egy__egy06__ar_eg_f6",
+    "egy__egy07__ar_eg_m1",
+    "egy__egy07__ar_eg_f4",
+    "egy__egy07__ar_eg_m2",
+    "egy__egy08__ar_eg_f5",
+    "egy__egy08__ar_eg_m3",
+    "egy__egy08__ar_eg_f6",
+    "egy__egy09__ar_eg_m1",
+    "egy__egy09__ar_eg_f4",
+    "egy__egy09__ar_eg_m2",
+    "egy__egy10__ar_eg_f5",
+    "egy__egy10__ar_eg_m3",
+    "egy__egy10__ar_eg_f6",
+    "egy__egy12__ar_eg_f5",
+    "egy__egy12__ar_eg_m3",
+    "egy__egy12__ar_eg_f6",
+    "egy__egy13__ar_eg_m1",
+    "egy__egy13__ar_eg_f4",
+    "egy__egy13__ar_eg_m2",
+    "egy__egy15__ar_eg_m1",
+    "egy__egy15__ar_eg_f4",
+    "egy__egy15__ar_eg_m2",
+    "egy__egy16__ar_eg_f5",
+    "egy__egy16__ar_eg_m3",
+    "egy__egy16__ar_eg_f6",
+    "egy__egy18__ar_eg_f5",
+    "egy__egy18__ar_eg_m3",
+    "egy__egy18__ar_eg_f6",
+    "egy__egy19__ar_eg_m1",
+    "egy__egy19__ar_eg_f4",
+    "egy__egy19__ar_eg_m2",
+    "egy__egy21__ar_eg_m1",
+    "egy__egy21__ar_eg_f4",
+    "egy__egy21__ar_eg_m2",
+    "egy__egy22__ar_eg_f5",
+    "egy__egy22__ar_eg_m3",
+    "egy__egy22__ar_eg_f6",
+    "egy__egy24__ar_eg_f5",
+    "egy__egy24__ar_eg_m3",
+    "egy__egy24__ar_eg_f6",
+    "egy__egy25__ar_eg_m1",
+    "egy__egy25__ar_eg_f4",
+    "egy__egy25__ar_eg_m2"
+   ],
+   "command": "/tmp/ba/venvs/ba/bin/python BA/eval/scripts/watermark_check.py"
+  },
+  "bench": {
+   "optimize": {
+    "mode": "optimize",
+    "model_load_s": 33.3,
+    "asr_load_s": 1.6,
+    "watermark_load_s": 0.2,
+    "create_voice_s_first": 1.18,
+    "create_voice_s": 0.29,
+    "runs": {
+     "sentence_arz": {
+      "runs": [
+       {
+        "gen_s": 6.32,
+        "audio_s": 9.43,
+        "rtf": 0.67,
+        "chunks": 1,
+        "retries": 0
+       },
+       {
+        "gen_s": 6.28,
+        "audio_s": 9.43,
+        "rtf": 0.666,
+        "chunks": 1,
+        "retries": 0
+       },
+       {
+        "gen_s": 6.27,
+        "audio_s": 9.43,
+        "rtf": 0.665,
+        "chunks": 1,
+        "retries": 0
+       }
+      ],
+      "median_gen_s": 6.28,
+      "median_audio_s": 9.43,
+      "median_rtf": 0.666,
+      "chars": 120,
+      "words": 23
+     },
+     "passage_arz": {
+      "runs": [
+       {
+        "gen_s": 27.49,
+        "audio_s": 41.11,
+        "rtf": 0.669,
+        "chunks": 1,
+        "retries": 0
+       },
+       {
+        "gen_s": 27.49,
+        "audio_s": 41.11,
+        "rtf": 0.669,
+        "chunks": 1,
+        "retries": 0
+       }
+      ],
+      "median_gen_s": 27.49,
+      "median_audio_s": 41.11,
+      "median_rtf": 0.669,
+      "chars": 646,
+      "words": 118
+     },
+     "sentence_en": {
+      "runs": [
+       {
+        "gen_s": 5.03,
+        "audio_s": 7.44,
+        "rtf": 0.676,
+        "chunks": 1,
+        "retries": 0
+       },
+       {
+        "gen_s": 4.99,
+        "audio_s": 7.44,
+        "rtf": 0.67,
+        "chunks": 1,
+        "retries": 0
+       },
+       {
+        "gen_s": 4.99,
+        "audio_s": 7.44,
+        "rtf": 0.67,
+        "chunks": 1,
+        "retries": 0
+       }
+      ],
+      "median_gen_s": 4.99,
+      "median_audio_s": 7.44,
+      "median_rtf": 0.67,
+      "chars": 145,
+      "words": 27
+     },
+     "passage_en": {
+      "runs": [
+       {
+        "gen_s": 28.41,
+        "audio_s": 42.45,
+        "rtf": 0.669,
+        "chunks": 1,
+        "retries": 0
+       },
+       {
+        "gen_s": 28.41,
+        "audio_s": 42.45,
+        "rtf": 0.669,
+        "chunks": 1,
+        "retries": 0
+       }
+      ],
+      "median_gen_s": 28.41,
+      "median_audio_s": 42.45,
+      "median_rtf": 0.669,
+      "chars": 772,
+      "words": 158
+     }
+    },
+    "peak_vram_allocated_gb": 8.11,
+    "peak_vram_reserved_gb": 10.99,
+    "gpu": "NVIDIA A40",
+    "torch": "2.13.0+cu130"
+   },
+   "summary": {
+    "optimize: model load (s)": 33.3,
+    "optimize: Whisper + watermark load (s)": 1.8,
+    "optimize: create_voice on a 10 s clip (s)": 0.29,
+    "optimize: sentence_arz (23 words -> 9.43 s audio): time (s)": 6.28,
+    "optimize: passage_arz (118 words -> 41.11 s audio): time (s)": 27.49,
+    "optimize: sentence_en (27 words -> 7.44 s audio): time (s)": 4.99,
+    "optimize: passage_en (158 words -> 42.45 s audio): time (s)": 28.41,
+    "optimize: peak VRAM allocated / reserved (GB)": "8.11 / 10.99",
+    "no_optimize: model load (s)": 19.9,
+    "no_optimize: Whisper + watermark load (s)": 3.0,
+    "no_optimize: create_voice on a 10 s clip (s)": 0.3,
+    "no_optimize: sentence_arz (23 words -> 8.25 s audio): time (s)": 7.89,
+    "no_optimize: passage_arz (118 words -> 39.99 s audio): time (s)": 38.03,
+    "no_optimize: sentence_en (27 words -> 7.44 s audio): time (s)": 7.13,
+    "no_optimize: passage_en (158 words -> 41.22 s audio): time (s)": 39.0,
+    "no_optimize: peak VRAM allocated / reserved (GB)": "8.08 / 10.35"
+   },
+   "command": "/tmp/ba/venvs/ba/bin/python BA/eval/scripts/bench_engine.py [--no-optimize]",
+   "no_optimize": {
+    "mode": "no_optimize",
+    "model_load_s": 19.9,
+    "asr_load_s": 2.8,
+    "watermark_load_s": 0.2,
+    "create_voice_s_first": 1.09,
+    "create_voice_s": 0.3,
+    "runs": {
+     "sentence_arz": {
+      "runs": [
+       {
+        "gen_s": 7.93,
+        "audio_s": 8.25,
+        "rtf": 0.961,
+        "chunks": 1,
+        "retries": 0
+       },
+       {
+        "gen_s": 7.89,
+        "audio_s": 8.25,
+        "rtf": 0.957,
+        "chunks": 1,
+        "retries": 0
+       },
+       {
+        "gen_s": 7.89,
+        "audio_s": 8.25,
+        "rtf": 0.957,
+        "chunks": 1,
+        "retries": 0
+       }
+      ],
+      "median_gen_s": 7.89,
+      "median_audio_s": 8.25,
+      "median_rtf": 0.957,
+      "chars": 120,
+      "words": 23
+     },
+     "passage_arz": {
+      "runs": [
+       {
+        "gen_s": 38.04,
+        "audio_s": 39.99,
+        "rtf": 0.951,
+        "chunks": 1,
+        "retries": 0
+       },
+       {
+        "gen_s": 38.03,
+        "audio_s": 39.99,
+        "rtf": 0.951,
+        "chunks": 1,
+        "retries": 0
+       }
+      ],
+      "median_gen_s": 38.03,
+      "median_audio_s": 39.99,
+      "median_rtf": 0.951,
+      "chars": 646,
+      "words": 118
+     },
+     "sentence_en": {
+      "runs": [
+       {
+        "gen_s": 7.19,
+        "audio_s": 7.44,
+        "rtf": 0.967,
+        "chunks": 1,
+        "retries": 0
+       },
+       {
+        "gen_s": 7.13,
+        "audio_s": 7.44,
+        "rtf": 0.958,
+        "chunks": 1,
+        "retries": 0
+       },
+       {
+        "gen_s": 7.12,
+        "audio_s": 7.44,
+        "rtf": 0.957,
+        "chunks": 1,
+        "retries": 0
+       }
+      ],
+      "median_gen_s": 7.13,
+      "median_audio_s": 7.44,
+      "median_rtf": 0.958,
+      "chars": 145,
+      "words": 27
+     },
+     "passage_en": {
+      "runs": [
+       {
+        "gen_s": 39.0,
+        "audio_s": 41.22,
+        "rtf": 0.946,
+        "chunks": 1,
+        "retries": 0
+       },
+       {
+        "gen_s": 39.01,
+        "audio_s": 41.22,
+        "rtf": 0.946,
+        "chunks": 1,
+        "retries": 0
+       }
+      ],
+      "median_gen_s": 39.0,
+      "median_audio_s": 41.22,
+      "median_rtf": 0.946,
+      "chars": 772,
+      "words": 158
+     }
+    },
+    "peak_vram_allocated_gb": 8.08,
+    "peak_vram_reserved_gb": 10.35,
+    "gpu": "NVIDIA A40",
+    "torch": "2.13.0+cu130"
+   }
+  }
+ },
+ "commands": {
+  "synth": "BA/eval/scripts/run_engine.sh full",
+  "report": "engine_report.py"
+ }
+}

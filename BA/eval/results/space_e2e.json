@@ -1,0 +1,48 @@
+{
+ "api_endpoints": [
+  "/generate"
+ ],
+ "consent_unticked": "refused: لازم تأكد إن ده صوتك أو إن معاك إذن صاحب الصوت.\nPlease confirm that this is your voice or that you have the speaker's explicit permission.",
+ "request_0_seconds": 6.34,
+ "request_1_seconds": 1.94,
+ "uploaded_reference_copies_left_in_gradio_cache": [],
+ "files_left_in_gradio_cache": 4,
+ "file_types_left": [
+  ".wav"
+ ],
+ "watermark": [
+  {
+   "watermarked": true,
+   "score": 1.0,
+   "bits_match": 1.0
+  },
+  {
+   "watermarked": true,
+   "score": 1.0,
+   "bits_match": 1.0
+  }
+ ],
+ "scores": [
+  {
+   "utt_id": "space_e2e_0",
+   "asr": "القطر هيقوم الساعة 7 ونص الصبح من محطة مصر والتزجرة ب150 جنيه",
+   "cer": 0.22535211267605634,
+   "cer_vs_digit_text": 0.09836065573770492,
+   "sim_ecapa": 0.8547,
+   "dialect": "Egyptian",
+   "mos_p808": 3.623,
+   "dur": 5.999
+  },
+  {
+   "utt_id": "space_e2e_1",
+   "asr": "انا مبسوط قوي انك جيت توحشتني والله",
+   "cer": 0.058823529411764705,
+   "cer_vs_digit_text": null,
+   "sim_ecapa": 0.7799,
+   "dialect": "Egyptian",
+   "mos_p808": 3.575,
+   "dur": 2.436
+  }
+ ],
+ "scored_with": "BA/eval/scripts/score_manifest.py space (Phase 1 scorer: Whisper large-v3, ECAPA vs the FLEURS reference ar_eg_f6, dialect ID, DNSMOS)"
+}

@@ -1,0 +1,102 @@
+{
+ "settings": {
+  "arz": {
+   "150": {
+    "n": 2,
+    "n_fail": 0,
+    "err": 0.0282,
+    "cer": 0.0282,
+    "wer": 0.1339,
+    "sim_ecapa": 0.8819,
+    "sim_wavlm": 0.9798,
+    "dialect_egyptian": 1.0,
+    "mos_p808": 3.678,
+    "gen_sec": 31.904,
+    "rtf": 0.6789,
+    "retries": 0,
+    "n_chunks": 5.0
+   },
+   "300": {
+    "n": 2,
+    "n_fail": 0,
+    "err": 0.0344,
+    "cer": 0.0344,
+    "wer": 0.1295,
+    "sim_ecapa": 0.8732,
+    "sim_wavlm": 0.9749,
+    "dialect_egyptian": 1.0,
+    "mos_p808": 3.7095,
+    "gen_sec": 31.215,
+    "rtf": 0.6722,
+    "retries": 0,
+    "n_chunks": 3.0
+   },
+   "1000": {
+    "n": 2,
+    "n_fail": 0,
+    "err": 0.0353,
+    "cer": 0.0353,
+    "wer": 0.1518,
+    "sim_ecapa": 0.83,
+    "sim_wavlm": 0.9783,
+    "dialect_egyptian": 1.0,
+    "mos_p808": 3.4605,
+    "gen_sec": 26.5505,
+    "rtf": 0.6735,
+    "retries": 0,
+    "n_chunks": 1.0
+   }
+  },
+  "en": {
+   "150": {
+    "n": 2,
+    "n_fail": 0,
+    "err": 0.0,
+    "cer": 0.0,
+    "wer": 0.0,
+    "sim_ecapa": 0.8836,
+    "sim_wavlm": 0.9802,
+    "dialect_egyptian": null,
+    "mos_p808": 4.002,
+    "gen_sec": 23.0195,
+    "rtf": 0.6934,
+    "retries": 0,
+    "n_chunks": 6.0
+   },
+   "300": {
+    "n": 2,
+    "n_fail": 0,
+    "err": 0.0,
+    "cer": 0.0,
+    "wer": 0.0,
+    "sim_ecapa": 0.8709,
+    "sim_wavlm": 0.9798,
+    "dialect_egyptian": null,
+    "mos_p808": 4.0275,
+    "gen_sec": 20.266,
+    "rtf": 0.675,
+    "retries": 0,
+    "n_chunks": 2.0
+   },
+   "1000": {
+    "n": 2,
+    "n_fail": 0,
+    "err": 0.0,
+    "cer": 0.0,
+    "wer": 0.0,
+    "sim_ecapa": 0.835,
+    "sim_wavlm": 0.9753,
+    "dialect_egyptian": null,
+    "mos_p808": 3.8685,
+    "gen_sec": 19.5975,
+    "rtf": 0.6791,
+    "retries": 0,
+    "n_chunks": 1.0
+   }
+  }
+ },
+ "decision": {
+  "arz": 1000,
+  "en": 1000
+ }
+}

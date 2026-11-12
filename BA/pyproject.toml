@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ba-tts"
+version = "0.1.0"
+description = "BA: personalised voice cloning for Egyptian Arabic, English and French, built on VoxCPM2"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "BA Community Licence (proposed; see the model card). Third-party notices: VoxCPM2 Apache-2.0, AudioSeal MIT, Whisper MIT." }
+dependencies = [
+    "voxcpm==2.0.3",          # Apache-2.0; brings torch, transformers, librosa, soundfile
+    "torch>=2.8",
+    "numpy",
+    "soundfile",
+    "soxr",
+    "librosa",
+    "pyloudnorm>=0.1",        # MIT
+    "audioseal==0.2.1",       # MIT (weights: facebook/audioseal, MIT)
+    "omegaconf",
+    "huggingface_hub",
+    "transformers",           # Whisper large-v3-turbo for reference transcription (weights MIT)
+]
+
+[project.optional-dependencies]
+test = ["pytest", "num2words"]    # num2words (LGPL-2.1) is a test oracle only, never imported by the package
+space = ["gradio==6.31.0", "spaces"]
+
+[project.scripts]
+ba-tts = "ba_tts.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = ["gpu: needs a CUDA GPU and the model weights (run with BA_RUN_GPU_TESTS=1)"]

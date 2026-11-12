@@ -1,0 +1,455 @@
+{
+ "levels": {
+  "arz/clean": {
+   "n": 9,
+   "n_fail": 0,
+   "err": 0.0095,
+   "cer": 0.0095,
+   "wer": 0.0437,
+   "sim_ecapa": 0.7916,
+   "sim_wavlm": 0.964,
+   "dialect_egyptian": 0.8889,
+   "mos_p808": 3.5298,
+   "gen_sec": 2.2563,
+   "rtf": 0.7365,
+   "retries": 0,
+   "snr_proxy_db": 45.35,
+   "clip_ratio": 0.0
+  },
+  "arz/snr30": {
+   "n": 9,
+   "n_fail": 0,
+   "err": 0.0235,
+   "cer": 0.0235,
+   "wer": 0.0946,
+   "sim_ecapa": 0.7629,
+   "sim_wavlm": 0.9549,
+   "dialect_egyptian": 0.8889,
+   "mos_p808": 3.1638,
+   "gen_sec": 2.1794,
+   "rtf": 0.6918,
+   "retries": 0,
+   "snr_proxy_db": 34.2767,
+   "clip_ratio": 0.0,
+   "harmful": false
+  },
+  "arz/snr20": {
+   "n": 9,
+   "n_fail": 0,
+   "err": 0.0332,
+   "cer": 0.0332,
+   "wer": 0.0996,
+   "sim_ecapa": 0.703,
+   "sim_wavlm": 0.9582,
+   "dialect_egyptian": 0.5556,
+   "mos_p808": 2.8198,
+   "gen_sec": 2.2002,
+   "rtf": 0.6855,
+   "retries": 0,
+   "snr_proxy_db": 26.0267,
+   "clip_ratio": 0.0,
+   "harmful": true
+  },
+  "arz/snr15": {
+   "n": 9,
+   "n_fail": 0,
+   "err": 0.021,
+   "cer": 0.021,
+   "wer": 0.0897,
+   "sim_ecapa": 0.671,
+   "sim_wavlm": 0.9499,
+   "dialect_egyptian": 0.5556,
+   "mos_p808": 2.739,
+   "gen_sec": 2.275,
+   "rtf": 0.6822,
+   "retries": 0,
+   "snr_proxy_db": 21.3867,
+   "clip_ratio": 0.0,
+   "harmful": true
+  },
+  "arz/snr10": {
+   "n": 9,
+   "n_fail": 0,
+   "err": 0.1101,
+   "cer": 0.1101,
+   "wer": 0.2302,
+   "sim_ecapa": 0.6115,
+   "sim_wavlm": 0.939,
+   "dialect_egyptian": 0.4444,
+   "mos_p808": 2.6398,
+   "gen_sec": 2.2344,
+   "rtf": 0.6902,
+   "retries": 0,
+   "snr_proxy_db": 17.0533,
+   "clip_ratio": 0.0,
+   "harmful": true
+  },
+  "arz/snr5": {
+   "n": 9,
+   "n_fail": 0,
+   "err": 0.1011,
+   "cer": 0.1011,
+   "wer": 0.2041,
+   "sim_ecapa": 0.5492,
+   "sim_wavlm": 0.9323,
+   "dialect_egyptian": 0.5556,
+   "mos_p808": 2.5587,
+   "gen_sec": 2.3214,
+   "rtf": 0.6871,
+   "retries": 0,
+   "snr_proxy_db": 12.2767,
+   "clip_ratio": 0.0,
+   "harmful": true
+  },
+  "arz/clip6": {
+   "n": 9,
+   "n_fail": 0,
+   "err": 0.0196,
+   "cer": 0.0196,
+   "wer": 0.0401,
+   "sim_ecapa": 0.7756,
+   "sim_wavlm": 0.9617,
+   "dialect_egyptian": 0.8889,
+   "mos_p808": 3.4382,
+   "gen_sec": 2.3416,
+   "rtf": 0.7635,
+   "retries": 0,
+   "snr_proxy_db": 45.35,
+   "clip_ratio": 0.0008,
+   "harmful": false
+  },
+  "arz/clip12": {
+   "n": 9,
+   "n_fail": 0,
+   "err": 0.0602,
+   "cer": 0.0602,
+   "wer": 0.1334,
+   "sim_ecapa": 0.7132,
+   "sim_wavlm": 0.9516,
+   "dialect_egyptian": 1.0,
+   "mos_p808": 3.3894,
+   "gen_sec": 2.2111,
+   "rtf": 0.7293,
+   "retries": 0,
+   "snr_proxy_db": 44.6633,
+   "clip_ratio": 0.0117,
+   "harmful": true
+  },
+  "arz/clip20": {
+   "n": 9,
+   "n_fail": 0,
+   "err": 0.0123,
+   "cer": 0.0123,
+   "wer": 0.056,
+   "sim_ecapa": 0.6268,
+   "sim_wavlm": 0.9475,
+   "dialect_egyptian": 0.8889,
+   "mos_p808": 3.1117,
+   "gen_sec": 2.4199,
+   "rtf": 0.756,
+   "retries": 0,
+   "snr_proxy_db": 40.5767,
+   "clip_ratio": 0.1204,
+   "harmful": true
+  },
+  "en/clean": {
+   "n": 9,
+   "n_fail": 0,
+   "err": 0.0,
+   "cer": 0.0,
+   "wer": 0.0,
+   "sim_ecapa": 0.7935,
+   "sim_wavlm": 0.9687,
+   "dialect_egyptian": null,
+   "mos_p808": 3.8773,
+   "gen_sec": 3.5704,
+   "rtf": 0.7072,
+   "retries": 0,
+   "snr_proxy_db": 39.7833,
+   "clip_ratio": 0.0
+  },
+  "en/snr30": {
+   "n": 9,
+   "n_fail": 0,
+   "err": 0.0,
+   "cer": 0.0,
+   "wer": 0.0,
+   "sim_ecapa": 0.756,
+   "sim_wavlm": 0.9544,
+   "dialect_egyptian": null,
+   "mos_p808": 3.597,
+   "gen_sec": 3.326,
+   "rtf": 0.6803,
+   "retries": 0,
+   "snr_proxy_db": 32.6267,
+   "clip_ratio": 0.0,
+   "harmful": true
+  },
+  "en/snr20": {
+   "n": 9,
+   "n_fail": 0,
+   "err": 0.0,
+   "cer": 0.0,
+   "wer": 0.0,
+   "sim_ecapa": 0.6781,
+   "sim_wavlm": 0.9482,
+   "dialect_egyptian": null,
+   "mos_p808": 3.1642,
+   "gen_sec": 3.202,
+   "rtf": 0.6804,
+   "retries": 0,
+   "snr_proxy_db": 26.03,
+   "clip_ratio": 0.0,
+   "harmful": true
+  },
+  "en/snr15": {
+   "n": 9,
+   "n_fail": 0,
+   "err": 0.0,
+   "cer": 0.0,
+   "wer": 0.0,
+   "sim_ecapa": 0.6598,
+   "sim_wavlm": 0.9523,
+   "dialect_egyptian": null,
+   "mos_p808": 2.9668,
+   "gen_sec": 3.113,
+   "rtf": 0.6735,
+   "retries": 0,
+   "snr_proxy_db": 21.7433,
+   "clip_ratio": 0.0,
+   "harmful": true
+  },
+  "en/snr10": {
+   "n": 9,
+   "n_fail": 0,
+   "err": 0.0,
+   "cer": 0.0,
+   "wer": 0.0,
+   "sim_ecapa": 0.6114,
+   "sim_wavlm": 0.9418,
+   "dialect_egyptian": null,
+   "mos_p808": 2.9451,
+   "gen_sec": 3.1633,
+   "rtf": 0.6814,
+   "retries": 0,
+   "snr_proxy_db": 17.3667,
+   "clip_ratio": 0.0,
+   "harmful": true
+  },
+  "en/snr5": {
+   "n": 9,
+   "n_fail": 0,
+   "err": 0.0,
+   "cer": 0.0,
+   "wer": 0.0,
+   "sim_ecapa": 0.4474,
+   "sim_wavlm": 0.9378,
+   "dialect_egyptian": null,
+   "mos_p808": 2.629,
+   "gen_sec": 3.2757,
+   "rtf": 0.6829,
+   "retries": 0,
+   "snr_proxy_db": 12.6233,
+   "clip_ratio": 0.0,
+   "harmful": true
+  },
+  "en/clip6": {
+   "n": 9,
+   "n_fail": 0,
+   "err": 0.0,
+   "cer": 0.0,
+   "wer": 0.0,
+   "sim_ecapa": 0.7967,
+   "sim_wavlm": 0.9677,
+   "dialect_egyptian": null,
+   "mos_p808": 3.8193,
+   "gen_sec": 3.4092,
+   "rtf": 0.7185,
+   "retries": 0,
+   "snr_proxy_db": 39.7733,
+   "clip_ratio": 0.002,
+   "harmful": false
+  },
+  "en/clip12": {
+   "n": 9,
+   "n_fail": 0,
+   "err": 0.0,
+   "cer": 0.0,
+   "wer": 0.0,
+   "sim_ecapa": 0.72,
+   "sim_wavlm": 0.9616,
+   "dialect_egyptian": null,
+   "mos_p808": 3.6856,
+   "gen_sec": 3.5562,
+   "rtf": 0.715,
+   "retries": 0,
+   "snr_proxy_db": 38.3667,
+   "clip_ratio": 0.0333,
+   "harmful": true
+  },
+  "en/clip20": {
+   "n": 9,
+   "n_fail": 0,
+   "err": 0.0278,
+   "cer": 0.0133,
+   "wer": 0.0278,
+   "sim_ecapa": 0.5556,
+   "sim_wavlm": 0.9263,
+   "dialect_egyptian": null,
+   "mos_p808": 3.1968,
+   "gen_sec": 3.6794,
+   "rtf": 0.6878,
+   "retries": 0,
+   "snr_proxy_db": 32.9667,
+   "clip_ratio": 0.177,
+   "harmful": true
+  }
+ },
+ "decision": {
+  "REF_SNR_MIN_DB": 36.2,
+  "REF_CLIP_MAX_RATIO": 0.00625,
+  "bounds": {
+   "noise": [
+    {
+     "lang": "arz",
+     "first_harmful": "snr20",
+     "bound": 30.1517
+    },
+    {
+     "lang": "en",
+     "first_harmful": "snr30",
+     "bound": 36.205
+    }
+   ],
+   "clip": [
+    {
+     "lang": "arz",
+     "first_harmful": "clip12",
+     "bound": 0.00625
+    },
+    {
+     "lang": "en",
+     "first_harmful": "clip12",
+     "bound": 0.01765
+    }
+   ]
+  },
+  "calibration_false_rejections": {
+   "fleurs_ar_eg": {
+    "n": 50,
+    "rejected_noisy": 23,
+    "rejected_clipped": 0,
+    "snr_min_observed": 25.57,
+    "snr_p5": 27.21,
+    "clip_max_observed": 2.5531045751633988e-05
+   },
+   "fleurs_en_us": {
+    "n": 30,
+    "rejected_noisy": 24,
+    "rejected_clipped": 0,
+    "snr_min_observed": 18.78,
+    "snr_p5": 21.76,
+    "clip_max_observed": 0.0
+   },
+   "fleurs_fr_fr": {
+    "n": 30,
+    "rejected_noisy": 5,
+    "rejected_clipped": 0,
+    "snr_min_observed": 28.08,
+    "snr_p5": 30.66,
+    "clip_max_observed": 0.0
+   },
+   "lahgtna_eg": {
+    "n": 50,
+    "rejected_noisy": 29,
+    "rejected_clipped": 0,
+    "snr_min_observed": 19.95,
+    "snr_p5": 22.98,
+    "clip_max_observed": 0.0003251300520208083
+   },
+   "niletts": {
+    "n": 50,
+    "rejected_noisy": 0,
+    "rejected_clipped": 0,
+    "snr_min_observed": 36.74,
+    "snr_p5": 38.43,
+    "clip_max_observed": 0.0
+   }
+  }
+ },
+ "adopted": {
+  "noise_estimator": "p95-p1: 95th minus 1st percentile of 25 ms frame RMS (dB) at 16 kHz",
+  "REF_SNR_MIN_DB": 25.9,
+  "REF_SNR_WARN_DB": 32.7,
+  "REF_CLIP_MAX_RATIO": 0.00625,
+  "arithmetic": {
+   "reject": "(24.5 + 27.31) / 2 = 25.9",
+   "warn": "(28.65 + 36.77) / 2 = 32.7"
+  },
+  "real_clean_clips": {
+   "lahgtna_eg": {
+    "n": 50,
+    "rejected": 0,
+    "warned": 4
+   },
+   "niletts": {
+    "n": 50,
+    "rejected": 0,
+    "warned": 0
+   },
+   "fleurs_ar_eg": {
+    "n": 50,
+    "rejected": 0,
+    "warned": 0
+   },
+   "fleurs_en_us": {
+    "n": 30,
+    "rejected": 0,
+    "warned": 5
+   },
+   "fleurs_fr_fr": {
+    "n": 30,
+    "rejected": 0,
+    "warned": 0
+   },
+   "fleurs_ref": {
+    "n": 12,
+    "rejected": 0,
+    "warned": 0
+   }
+  },
+  "degraded_references": {
+   "clean": {
+    "n": 6,
+    "rejected": 0,
+    "warned": 0
+   },
+   "snr30": {
+    "n": 6,
+    "rejected": 0,
+    "warned": 0
+   },
+   "snr20": {
+    "n": 6,
+    "rejected": 0,
+    "warned": 6
+   },
+   "snr15": {
+    "n": 6,
+    "rejected": 6,
+    "warned": 0
+   },
+   "snr10": {
+    "n": 6,
+    "rejected": 6,
+    "warned": 0
+   },
+   "snr5": {
+    "n": 6,
+    "rejected": 6,
+    "warned": 0
+   }
+  },
+  "deviation": "The pre-written rule with the Phase 1 proxy (p95-p10) gives 36.2 dB, which rejects about half of the real clean calibration clips (see decision.calibration_false_rejections); that proxy confounds few pauses with noise. The rule's finding that SNR 20-30 dB references already lower similarity is kept as a warning, not a rejection."
+ }
+}
