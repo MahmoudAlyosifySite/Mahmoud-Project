@@ -5,14 +5,4 @@ __pycache__/
 .venv/
 build/
 dist/
-
-# model checkpoints are large; the ledger and the reports are the record
-results/**/*.pt
-
-# LaTeX
-paper/*.aux
-paper/*.bbl
-paper/*.blg
-paper/*.log
-paper/*.out
-paper/*.pdf
+.DS_Store

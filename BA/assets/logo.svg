@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 200" width="640" height="200" role="img" aria-labelledby="t d">
+  <title id="t">BA — Your Voice. Your Identity.</title>
+  <desc id="d">Temporary logo: a voice waveform beneath a sun disk, the BA wordmark and the tagline.</desc>
+  <rect x="0" y="0" width="640" height="200" rx="28" fill="#13264F"/>
+  <!-- mark: sun disk (the Ba, the person) above a voice waveform -->
+  <g transform="translate(24,20)">
+    <rect x="0" y="0" width="160" height="160" rx="32" fill="#1D3A73"/>
+    <circle cx="80" cy="40" r="13" fill="#D9A94A"/>
+    <g fill="#D9A94A">
+      <rect x="20"  y="99"  width="8" height="22" rx="4"/>
+      <rect x="34"  y="91"  width="8" height="38" rx="4"/>
+      <rect x="48"  y="80"  width="8" height="60" rx="4"/>
+      <rect x="62"  y="70"  width="8" height="80" rx="4"/>
+      <rect x="76"  y="64"  width="8" height="92" rx="4"/>
+      <rect x="90"  y="70"  width="8" height="80" rx="4"/>
+      <rect x="104" y="80"  width="8" height="60" rx="4"/>
+      <rect x="118" y="91"  width="8" height="38" rx="4"/>
+      <rect x="132" y="99"  width="8" height="22" rx="4"/>
+    </g>
+  </g>
+  <!-- wordmark -->
+  <text x="216" y="118" font-family="Georgia, 'Times New Roman', serif" font-size="96" font-weight="700" letter-spacing="14" fill="#D9A94A">BA</text>
+  <text x="220" y="156" font-family="'Helvetica Neue', Arial, sans-serif" font-size="23" letter-spacing="1.5" fill="#E8E3D3">Your Voice. Your Identity.</text>
+</svg>
