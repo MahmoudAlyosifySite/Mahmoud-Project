@@ -1,12 +1,14 @@
 <p align="center">
-  <img src="assets/logo.svg" alt="BA — Your Voice. Your Identity." width="560">
+  <img src="assets/logo.svg" alt="BA — Your Voice. Your Identity." width="520">
 </p>
 
 # BA — Product Vision & Engineering Mission
 
 > **Your Voice. Your Identity.**
 
-**Status:** vision only. No code, data or model yet. The logo is temporary.
+**Status:** vision only. No code, data or model yet. The logo is a first version.
+
+**The mark.** The Arabic letter **ب**, whose name is pronounced *ba*, drawn with a voice wave in its base, and its dot in turquoise. It reads as *BA* to an Arabic reader and as a voice to everyone. Files: `assets/logo.svg` (full logo) and `assets/mark.svg` (square, for avatars and icons). Colours: sapphire `#14254D`, gold `#D9B45A`, turquoise `#3FD0C9`.
 
 ---
 
