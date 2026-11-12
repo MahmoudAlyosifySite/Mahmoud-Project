@@ -1,0 +1,114 @@
+/* BA — Gradio CSS. Pair with theme.py (BATheme). Palette and rules: BA/docs/brand.md */
+
+:root {
+  --ba-sapphire: #14254D;
+  --ba-deep: #0F1D3E;
+  --ba-surface: #1A2F5E;
+  --ba-line: #2C477F;
+  --ba-rule: #6380B8;
+  --ba-gold: #D9B45A;
+  --ba-turquoise: #3FD0C9;
+  --ba-ivory: #E8E3D3;
+  --ba-muted: #A7B1C8;
+  --ba-font: "IBM Plex Sans", "IBM Plex Sans Arabic", ui-sans-serif, system-ui, "Segoe UI", Tahoma, sans-serif;
+  --ba-font-ar: "IBM Plex Sans Arabic", "IBM Plex Sans", Tahoma, sans-serif;
+}
+
+.gradio-container {
+  width: 100% !important;
+  max-width: 1080px !important;
+  margin: 0 auto !important;
+  font-family: var(--ba-font) !important;
+}
+
+/* ---------- header (space/header.html) ---------- */
+.ba-header {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+  padding: 28px 4px 22px;
+  border-bottom: 1px solid var(--ba-line);
+  margin-bottom: 8px;
+}
+.ba-header .ba-mark { width: 76px; height: auto; flex: none; display: block; }
+.ba-header .ba-divider { width: 1px; align-self: stretch; background: var(--ba-line); margin: 6px 2px; }
+.ba-header .ba-name { display: flex; flex-direction: column; gap: 10px; }
+.ba-header .ba-word { width: 66px; height: auto; display: block; }
+.ba-header .ba-tagline {
+  margin: 0;
+  font: 500 12px/1.2 var(--ba-font);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ba-ivory);
+}
+.ba-header .ba-langs {
+  margin: 0 0 0 auto;
+  font: 400 14px/1.4 var(--ba-font);
+  color: var(--ba-muted);
+  display: flex; align-items: baseline; gap: 10px;
+}
+.ba-header .ba-langs [lang="ar"] { font-family: var(--ba-font-ar); font-size: 15px; }
+.ba-header .ba-sep { color: var(--ba-gold); }
+@media (max-width: 560px) {
+  .ba-header { gap: 14px; padding-top: 20px; }
+  .ba-header .ba-mark { width: 58px; }
+  .ba-header .ba-word { width: 52px; }
+  .ba-header .ba-tagline { font-size: 11px; letter-spacing: 0.12em; }
+  .ba-header .ba-langs { margin-left: 0; width: 100%; }
+}
+
+/* ---------- typography ---------- */
+.gradio-container h1, .gradio-container h2, .gradio-container h3 {
+  font-weight: 500 !important;
+  letter-spacing: -0.005em;
+  color: var(--ba-ivory);
+}
+.gradio-container .prose p { line-height: 1.6; }
+.gradio-container :lang(ar), .gradio-container [dir="rtl"] {
+  font-family: var(--ba-font-ar);
+  line-height: 1.75;
+}
+
+/* ---------- right-to-left friendly text fields ----------
+   Each paragraph takes its direction from its first strong character, so Arabic
+   lines run right-to-left and English/French lines left-to-right in the same box. */
+.gradio-container textarea,
+.gradio-container input:not([type]),
+.gradio-container input[type="text"],
+.gradio-container input[type="search"] {
+  unicode-bidi: plaintext;
+  text-align: start;
+  line-height: 1.7;
+}
+/* Single-line inputs (e.g. the Dropdown's) are 20px tall with overflow clipped, which
+   cuts off Arabic dots below the baseline (the two dots of a final ي). Give them room. */
+.gradio-container input:not([type]),
+.gradio-container input[type="text"],
+.gradio-container input[type="search"] {
+  height: auto !important;
+  min-height: 1.7em;
+}
+/* Force a field to Arabic layout: gr.Textbox(..., elem_classes=["ba-rtl"]) */
+.gradio-container .ba-rtl textarea,
+.gradio-container .ba-rtl input {
+  direction: rtl;
+  text-align: right;
+  font-family: var(--ba-font-ar);
+}
+
+/* ---------- focus: turquoise, always visible ---------- */
+.gradio-container button:focus-visible,
+.gradio-container [role="button"]:focus-visible,
+.gradio-container input:focus-visible,
+.gradio-container textarea:focus-visible,
+.gradio-container select:focus-visible {
+  outline: 2px solid var(--ba-turquoise) !important;
+  outline-offset: 2px;
+}
+
+/* primary button: calm, no glow */
+.gradio-container button.primary { letter-spacing: 0.02em; }
+
+/* footer quieter */
+footer { opacity: 0.7; }
