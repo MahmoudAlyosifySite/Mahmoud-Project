@@ -63,3 +63,28 @@ One entry per major decision: what was decided, why, and what would change it. N
 **Why.** The brief asks for a restricted licence and misuse safeguards. MIT and Apache-2.0 bases allow a derivative to carry stricter terms as long as their notices are kept.
 
 **Open.** The licence text should be reviewed by a lawyer before any commercial launch.
+
+## D10 — BA is built on VoxCPM2 (2026-11-12)
+
+**Decision.** VoxCPM2 (OpenBMB, Apache-2.0, 2B, 48 kHz) is BA's base. Gate G1 was amended to require the Egyptian dialect bar before ranking on CER; see the dated change in `execution-plan.md`.
+
+**Evidence** (`BA/eval/results/bakeoff.md`, 3 Egyptian reference voices × 32 colloquial sentences):
+
+| | Chatterbox V3 | VoxCPM2 | VoxCPM2 + transcript |
+|---|---|---|---|
+| Egyptian CER | 0.035 | 0.065 | 0.080 |
+| Labelled Egyptian by the dialect classifier | 21% | 82% | 91% |
+| Speaker similarity (ECAPA) | 0.706 | 0.714 | 0.769 |
+| Failure rate, all conditions | 1.9% | 0.9% | 0% |
+| ~120-word Egyptian passage | cut off, CER 0.47 | complete, CER 0.03 | — |
+| GPU real-time factor (A40) | 0.69 | 0.63 | 0.64 |
+| CPU real-time factor (2 threads) | 9.8 | 30.5 | — |
+
+Real colloquial Egyptian speech is labelled Egyptian 90–98% of the time; Egyptians reading MSA (FLEURS) 34%. Chatterbox outputs were mostly labelled Levantine, Gulf or MSA: it says the right words with the wrong dialect. The two community Egyptian fine-tunes of Chatterbox reach 93% (NAMAA, data undocumented) and 20% (lahgtna).
+
+**Consequences.**
+- Phase 2 does not need an Egyptian fine-tune to pass G3; it focuses on the engine (Egyptian number normalisation — digits are the largest error source for every system — reference transcript, long text).
+- Reference-transcript mode raises similarity and dialect; BA will transcribe the reference automatically.
+- At 30× real time on CPU the demo cannot run on the free CPU tier: a GPU Space is needed (ZeroGPU requires HF PRO).
+
+**Would change if.** The owner's blind ear test rates Chatterbox as more Egyptian than VoxCPM2.

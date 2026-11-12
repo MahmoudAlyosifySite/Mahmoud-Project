@@ -147,3 +147,15 @@ Every number goes to `BA/eval/results/*.json` with the command and seed that pro
 - Do not touch other users' files, keys or caches.
 - Do not commit or push; the planner does that at each gate.
 - No number in a document unless it is in a results file. No capability claimed unless it was run.
+
+## Changes
+
+### 2026-11-12 — Gate G1 amended after the bake-off (made after seeing the results)
+
+**What changed.** G1 now also requires the Egyptian dialect bar from G3. New G1: among licence-eligible systems with a failure rate of 5% or less, whose Egyptian CER is within the G3 bound, **and whose dialect-ID share on the Egyptian set is at least 60% of the rate on real colloquial Egyptian speech**: lowest Egyptian CER wins; then the original tie-breaks.
+
+**Why.** As written, G1 ranked on CER alone, and section 4 of this plan already says CER cannot see dialect. Applied mechanically it selects Chatterbox V3 (CER 0.035), whose Egyptian outputs the dialect classifier labels Egyptian only 21% of the time (mostly Levantine, Gulf or MSA), against 90% and 98% on real colloquial Egyptian speech. That base fails G3's Egyptian bar, so G1 would have chosen a model that cannot be called "Egyptian Arabic" — the brief's first priority — without a fine-tune on data we do not have. The gate was underspecified, not the results inconvenient: the amendment uses a bar written into G3 before any model ran.
+
+**Result.** Bar = 0.6 × 0.90 = 0.54. Passing: VoxCPM2 (0.82; 0.91 with a reference transcript). Failing: Chatterbox V3 (0.21), V2 (0.17). VoxCPM2's Egyptian CER 0.065 is within the G3 bound (real colloquial Egyptian ASR CER 0.071 + 0.10). **Selected: VoxCPM2.** Numbers: `BA/eval/results/bakeoff.md`.
+
+**Independent check.** The owner's blind listening test (system names hidden) is pending. If the ear test contradicts the classifier, this choice is reopened.
