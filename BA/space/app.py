@@ -45,7 +45,7 @@ except ImportError:      # not on Hugging Face: a no-op decorator
 
 logging.getLogger("httpx").setLevel(logging.WARNING)
 
-MODEL_REPO = os.environ.get("BA_MODEL_REPO", "openbmb/VoxCPM2")
+MODEL_REPO = os.environ.get("BA_MODEL_REPO", "mahmoudalyosify/BA")
 MAX_TEXT = int(os.environ.get("BA_MAX_TEXT_CHARS", "600"))
 MAX_UPLOAD_MB = 20
 # All three passed gate G3 (BA/eval/results/engine.md). French is marked: it was tested on fewer voices

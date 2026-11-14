@@ -20,7 +20,7 @@ def ba():
     if not torch.cuda.is_available():
         pytest.skip("no CUDA GPU")
     from ba_tts import BA
-    return BA.from_pretrained(os.environ.get("BA_MODEL_REPO", "openbmb/VoxCPM2"), device="cuda", optimize=False)
+    return BA.from_pretrained(os.environ.get("BA_MODEL_REPO", "mahmoudalyosify/BA"), device="cuda", optimize=False)
 
 
 def test_create_voice_and_speak(ba, tmp_path):

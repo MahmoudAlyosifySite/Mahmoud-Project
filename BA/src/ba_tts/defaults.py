@@ -54,6 +54,7 @@ PEAK_CEILING = 0.89         # -1 dBFS
 
 # ---- ASR used to transcribe references when no transcript is given
 ASR_MODEL = "openai/whisper-large-v3-turbo"   # MIT; choice: BA/eval/results/asr_check.json
+ASR_REVISION = "41f01f3fe87f28c78e2fbf8b568835947dd65ed9"   # the snapshot used for asr_check.json and the engine runs
 
 # ---- text limits
 MAX_TEXT_CHARS = 5000

@@ -1,0 +1,392 @@
+{
+ "description": "Owner's blind listening test of Phase 1 bake-off outputs (raw systems, no BA engine). 6 Egyptian sentences (egy02, egy13, egy21, egy28 digits, egy36, cs01 code-switch), one FLEURS voice per sentence, 8 systems in shuffled order labelled A-H; the owner is a native Egyptian speaker. dialect: egy = Egyptian, mid = partly, no = not Egyptian; words: ok / bad (a wrong or missing word).",
+ "date": "2026-11-12",
+ "rater": "owner (native Egyptian speaker), 1 rater",
+ "note_g4_egy28": "الرقم مش بيتقال بالمصري في اغلبهم (the number is not said the Egyptian way in most of them)",
+ "ratings": [
+  {
+   "clip": "g1a",
+   "system": "lahgtna",
+   "text_id": "egy02",
+   "voice": "ar_eg_m1",
+   "dialect": "egy",
+   "words": "ok"
+  },
+  {
+   "clip": "g1b",
+   "system": "cb-v3",
+   "text_id": "egy02",
+   "voice": "ar_eg_m1",
+   "dialect": "no",
+   "words": "ok"
+  },
+  {
+   "clip": "g1c",
+   "system": "voxcpm2",
+   "text_id": "egy02",
+   "voice": "ar_eg_m1",
+   "dialect": "egy",
+   "words": "ok"
+  },
+  {
+   "clip": "g1d",
+   "system": "voicetut",
+   "text_id": "egy02",
+   "voice": "ar_eg_m1",
+   "dialect": "mid",
+   "words": "ok"
+  },
+  {
+   "clip": "g1e",
+   "system": "cb-v2",
+   "text_id": "egy02",
+   "voice": "ar_eg_m1",
+   "dialect": "no",
+   "words": "bad"
+  },
+  {
+   "clip": "g1f",
+   "system": "namaa",
+   "text_id": "egy02",
+   "voice": "ar_eg_m1",
+   "dialect": "mid",
+   "words": "bad"
+  },
+  {
+   "clip": "g1g",
+   "system": "omnivoice",
+   "text_id": "egy02",
+   "voice": "ar_eg_m1",
+   "dialect": "no",
+   "words": "bad"
+  },
+  {
+   "clip": "g1h",
+   "system": "voxcpm2-prompt",
+   "text_id": "egy02",
+   "voice": "ar_eg_m1",
+   "dialect": "mid",
+   "words": "ok"
+  },
+  {
+   "clip": "g2a",
+   "system": "namaa",
+   "text_id": "egy13",
+   "voice": "ar_eg_f4",
+   "dialect": "mid",
+   "words": "ok"
+  },
+  {
+   "clip": "g2b",
+   "system": "lahgtna",
+   "text_id": "egy13",
+   "voice": "ar_eg_f4",
+   "dialect": "mid",
+   "words": "ok"
+  },
+  {
+   "clip": "g2c",
+   "system": "cb-v3",
+   "text_id": "egy13",
+   "voice": "ar_eg_f4",
+   "dialect": "no",
+   "words": "ok"
+  },
+  {
+   "clip": "g2d",
+   "system": "voxcpm2",
+   "text_id": "egy13",
+   "voice": "ar_eg_f4",
+   "dialect": "mid",
+   "words": "bad"
+  },
+  {
+   "clip": "g2e",
+   "system": "voxcpm2-prompt",
+   "text_id": "egy13",
+   "voice": "ar_eg_f4",
+   "dialect": "mid",
+   "words": "ok"
+  },
+  {
+   "clip": "g2f",
+   "system": "voicetut",
+   "text_id": "egy13",
+   "voice": "ar_eg_f4",
+   "dialect": "egy",
+   "words": "ok"
+  },
+  {
+   "clip": "g2g",
+   "system": "omnivoice",
+   "text_id": "egy13",
+   "voice": "ar_eg_f4",
+   "dialect": "mid",
+   "words": "ok"
+  },
+  {
+   "clip": "g2h",
+   "system": "cb-v2",
+   "text_id": "egy13",
+   "voice": "ar_eg_f4",
+   "dialect": "no",
+   "words": "ok"
+  },
+  {
+   "clip": "g3a",
+   "system": "voxcpm2",
+   "text_id": "egy21",
+   "voice": "ar_eg_m1",
+   "dialect": "egy",
+   "words": "bad"
+  },
+  {
+   "clip": "g3b",
+   "system": "omnivoice",
+   "text_id": "egy21",
+   "voice": "ar_eg_m1",
+   "dialect": "egy",
+   "words": "ok"
+  },
+  {
+   "clip": "g3c",
+   "system": "cb-v3",
+   "text_id": "egy21",
+   "voice": "ar_eg_m1",
+   "dialect": "no",
+   "words": "ok"
+  },
+  {
+   "clip": "g3d",
+   "system": "namaa",
+   "text_id": "egy21",
+   "voice": "ar_eg_m1",
+   "dialect": "mid",
+   "words": "bad"
+  },
+  {
+   "clip": "g3e",
+   "system": "lahgtna",
+   "text_id": "egy21",
+   "voice": "ar_eg_m1",
+   "dialect": "mid",
+   "words": "bad"
+  },
+  {
+   "clip": "g3f",
+   "system": "voicetut",
+   "text_id": "egy21",
+   "voice": "ar_eg_m1",
+   "dialect": "mid",
+   "words": "ok"
+  },
+  {
+   "clip": "g3g",
+   "system": "cb-v2",
+   "text_id": "egy21",
+   "voice": "ar_eg_m1",
+   "dialect": "no",
+   "words": "bad"
+  },
+  {
+   "clip": "g3h",
+   "system": "voxcpm2-prompt",
+   "text_id": "egy21",
+   "voice": "ar_eg_m1",
+   "dialect": "mid",
+   "words": "ok"
+  },
+  {
+   "clip": "g4a",
+   "system": "voxcpm2",
+   "text_id": "egy28",
+   "voice": "ar_eg_f4",
+   "dialect": "mid",
+   "words": "ok"
+  },
+  {
+   "clip": "g4b",
+   "system": "voxcpm2-prompt",
+   "text_id": "egy28",
+   "voice": "ar_eg_f4",
+   "dialect": "mid",
+   "words": "ok"
+  },
+  {
+   "clip": "g4c",
+   "system": "omnivoice",
+   "text_id": "egy28",
+   "voice": "ar_eg_f4",
+   "dialect": "egy",
+   "words": "bad"
+  },
+  {
+   "clip": "g4d",
+   "system": "cb-v3",
+   "text_id": "egy28",
+   "voice": "ar_eg_f4",
+   "dialect": "no",
+   "words": "bad"
+  },
+  {
+   "clip": "g4e",
+   "system": "voicetut",
+   "text_id": "egy28",
+   "voice": "ar_eg_f4",
+   "dialect": "egy",
+   "words": "bad"
+  },
+  {
+   "clip": "g4f",
+   "system": "lahgtna",
+   "text_id": "egy28",
+   "voice": "ar_eg_f4",
+   "dialect": "no",
+   "words": "bad"
+  },
+  {
+   "clip": "g4g",
+   "system": "namaa",
+   "text_id": "egy28",
+   "voice": "ar_eg_f4",
+   "dialect": "no",
+   "words": "ok"
+  },
+  {
+   "clip": "g4h",
+   "system": "cb-v2",
+   "text_id": "egy28",
+   "voice": "ar_eg_f4",
+   "dialect": "no",
+   "words": "ok"
+  },
+  {
+   "clip": "g5a",
+   "system": "cb-v3",
+   "text_id": "egy36",
+   "voice": "ar_eg_m1",
+   "dialect": "no",
+   "words": "ok"
+  },
+  {
+   "clip": "g5b",
+   "system": "lahgtna",
+   "text_id": "egy36",
+   "voice": "ar_eg_m1",
+   "dialect": "egy",
+   "words": "ok"
+  },
+  {
+   "clip": "g5c",
+   "system": "omnivoice",
+   "text_id": "egy36",
+   "voice": "ar_eg_m1",
+   "dialect": "mid",
+   "words": "ok"
+  },
+  {
+   "clip": "g5d",
+   "system": "voxcpm2-prompt",
+   "text_id": "egy36",
+   "voice": "ar_eg_m1",
+   "dialect": "mid",
+   "words": "bad"
+  },
+  {
+   "clip": "g5e",
+   "system": "voicetut",
+   "text_id": "egy36",
+   "voice": "ar_eg_m1",
+   "dialect": "egy",
+   "words": "ok"
+  },
+  {
+   "clip": "g5f",
+   "system": "voxcpm2",
+   "text_id": "egy36",
+   "voice": "ar_eg_m1",
+   "dialect": "mid",
+   "words": "bad"
+  },
+  {
+   "clip": "g5g",
+   "system": "namaa",
+   "text_id": "egy36",
+   "voice": "ar_eg_m1",
+   "dialect": "no",
+   "words": "ok"
+  },
+  {
+   "clip": "g5h",
+   "system": "cb-v2",
+   "text_id": "egy36",
+   "voice": "ar_eg_m1",
+   "dialect": "no",
+   "words": "bad"
+  },
+  {
+   "clip": "g6a",
+   "system": "namaa",
+   "text_id": "cs01",
+   "voice": "ar_eg_f4",
+   "dialect": "egy",
+   "words": "ok"
+  },
+  {
+   "clip": "g6b",
+   "system": "omnivoice",
+   "text_id": "cs01",
+   "voice": "ar_eg_f4",
+   "dialect": "mid",
+   "words": "bad"
+  },
+  {
+   "clip": "g6c",
+   "system": "lahgtna",
+   "text_id": "cs01",
+   "voice": "ar_eg_f4",
+   "dialect": "no",
+   "words": "ok"
+  },
+  {
+   "clip": "g6d",
+   "system": "cb-v2",
+   "text_id": "cs01",
+   "voice": "ar_eg_f4",
+   "dialect": "no",
+   "words": "bad"
+  },
+  {
+   "clip": "g6e",
+   "system": "voxcpm2",
+   "text_id": "cs01",
+   "voice": "ar_eg_f4",
+   "dialect": "egy",
+   "words": "ok"
+  },
+  {
+   "clip": "g6f",
+   "system": "voxcpm2-prompt",
+   "text_id": "cs01",
+   "voice": "ar_eg_f4",
+   "dialect": "egy",
+   "words": "ok"
+  },
+  {
+   "clip": "g6g",
+   "system": "voicetut",
+   "text_id": "cs01",
+   "voice": "ar_eg_f4",
+   "dialect": "mid",
+   "words": "ok"
+  },
+  {
+   "clip": "g6h",
+   "system": "cb-v3",
+   "text_id": "cs01",
+   "voice": "ar_eg_f4",
+   "dialect": "no",
+   "words": "bad"
+  }
+ ]
+}

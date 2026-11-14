@@ -6,9 +6,9 @@ build-backend = "setuptools.build_meta"
 name = "ba-tts"
 version = "0.1.0"
 description = "BA: personalised voice cloning for Egyptian Arabic, English and French, built on VoxCPM2"
-readme = "README.md"
+readme = { text = "BA: personalised voice cloning for Egyptian Arabic, English and French (beta), built on unmodified VoxCPM2 weights (OpenBMB, Apache-2.0). Every output carries an inaudible AudioSeal watermark. Model card, quick start, results and licence: https://huggingface.co/mahmoudalyosify/BA", content-type = "text/plain" }
 requires-python = ">=3.10"
-license = { text = "BA Community Licence (proposed; see the model card). Third-party notices: VoxCPM2 Apache-2.0, AudioSeal MIT, Whisper MIT." }
+license = { text = "BA Community License 1.0 (see LICENSE). Third-party components keep their own licences: VoxCPM2 weights Apache-2.0, Whisper MIT, AudioSeal MIT." }
 dependencies = [
     "voxcpm==2.0.3",          # Apache-2.0; brings torch, transformers, librosa, soundfile
     "torch>=2.8",
@@ -26,6 +26,10 @@ dependencies = [
 [project.optional-dependencies]
 test = ["pytest", "num2words"]    # num2words (LGPL-2.1) is a test oracle only, never imported by the package
 space = ["gradio==6.31.0", "spaces"]
+
+[project.urls]
+Homepage = "https://huggingface.co/mahmoudalyosify/BA"
+Demo = "https://huggingface.co/spaces/mahmoudalyosify/BA"
 
 [project.scripts]
 ba-tts = "ba_tts.cli:main"

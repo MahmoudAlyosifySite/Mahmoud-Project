@@ -1,0 +1,83 @@
+BA Community License 1.0
+
+Copyright (c) 2026 the owner of BA, the Hugging Face account mahmoudalyosify
+(https://huggingface.co/mahmoudalyosify). All rights not granted below are reserved.
+
+This is a plain-English licence. It has not yet been reviewed by a lawyer.
+
+1. What this licence covers
+
+"BA" means the work of the BA project itself: the ba_tts code, its configuration files
+(including ba_config.json), the text normalisers and their lexicons, the documentation and
+model card, the audio samples, and the BA name, logo and other brand assets.
+
+It does not cover third-party components. They keep their own licences (section 7).
+
+2. What you may do
+
+If you follow the conditions below, you may, free of charge and for non-commercial purposes:
+  a. use BA;
+  b. modify BA;
+  c. share BA and your modified versions.
+
+This licence does not let you use the BA name or logo to suggest that your work is BA or is
+endorsed by its owner, beyond the attribution required below.
+
+3. Conditions
+
+  a. Attribution. Keep this licence and the copyright notice with every copy, say that your
+     work is based on BA, and link to https://huggingface.co/mahmoudalyosify/BA. If you changed
+     BA, say so.
+  b. Same terms. Share BA and anything you derive from it only under this licence.
+  c. Non-commercial. Commercial use needs the copyright holder's prior written permission.
+     Commercial use means use for, or as part of, anything sold, licensed, or offered for
+     money or other paid benefit, including paid services and advertising-funded products.
+     To ask for permission, contact the owner through the Hugging Face profile
+     https://huggingface.co/mahmoudalyosify.
+
+4. Voices and consent
+
+You may only use a voice with BA if you are that speaker, or if you have that speaker's
+explicit permission to clone their voice and to use it the way you intend.
+
+5. Forbidden uses
+
+You may not use BA, or anything made with it:
+  a. to impersonate anyone;
+  b. for fraud, scams or deception, including making people believe a real person said
+     something they did not say;
+  c. to harass, threaten, defame or bully anyone;
+  d. to create sexual, intimate or otherwise harmful content with someone's voice without
+     their consent, or any non-consensual content;
+  e. to break the law.
+
+6. Watermark
+
+BA puts an inaudible watermark in the audio it produces. Do not remove, alter, or try to
+circumvent it, and do not help others do so. Do not publish or give to others BA audio made
+with the watermark switched off.
+
+7. Third-party components
+
+BA runs together with components made by others. Each keeps its own licence:
+  - VoxCPM2 model weights (OpenBMB): Apache License 2.0. The weights in the BA model
+    repository are unmodified; see LICENSE-VoxCPM2 and NOTICE.
+  - Whisper large-v3-turbo (OpenAI), used to transcribe reference recordings: MIT License.
+  - AudioSeal (Meta), the watermark model and code: MIT License.
+  - Other software packages BA depends on: their own licences.
+
+Nothing in this licence restricts any right that those licences give you. You may use the
+VoxCPM2 weights, Whisper and AudioSeal under their own licences, independently of BA. This
+licence adds conditions only to BA's own work.
+
+8. Ending this licence
+
+If you break this licence, your rights under it end automatically. They come back if you
+fix the breach within 30 days of learning about it, unless the copyright holder has already
+told you in writing that they will not.
+
+9. No warranty
+
+BA is provided "as is", without warranty of any kind. The authors are not liable for any
+claim, damage or other liability arising from BA or from its use. You are responsible for how
+you use BA and for the audio you make with it.

@@ -1,7 +1,7 @@
 """The BA engine on top of VoxCPM2 (OpenBMB, Apache-2.0).
 
     from ba_tts import BA
-    ba = BA.from_pretrained("openbmb/VoxCPM2", device="cuda")
+    ba = BA.from_pretrained("mahmoudalyosify/BA")              # or a local directory, or "openbmb/VoxCPM2"
     voice = ba.create_voice(["me.wav"], language="arz")        # transcript optional
     sr, wav = ba.speak("أنا رايح الشغل الساعة 7:30", voice, language="arz")
 """
@@ -15,6 +15,7 @@ from typing import Sequence
 import numpy as np
 
 from . import defaults as D
+from .config import DEFAULT_REPO, DOWNLOAD_PATTERNS, engine_settings, load_config
 from .audio import AudioInput, join, normalize_loudness, trim_edges
 from .chunking import band_distance, check_chunk, chunk_text
 from .reference import ReferenceAudioError, prepare_reference
@@ -42,26 +43,52 @@ def _end_punct(t: str) -> str:
 
 
 class BA:
-    def __init__(self, tts, device: str, model_id: str, asr_model: str = D.ASR_MODEL):
+    def __init__(self, tts, device: str, model_id: str, asr_model: str = D.ASR_MODEL, config: dict | None = None,
+                 asr_revision: str | None = D.ASR_REVISION):
         self.tts = tts                      # voxcpm.VoxCPM
         self.model = tts.tts_model          # VoxCPM2Model
         self.sample_rate = int(self.model.sample_rate)
         self.device = device
         self.model_id = model_id
+        self.config = config                # ba_config.json of the model repository (None for plain VoxCPM2)
+        st = engine_settings(config)
+        self.gen_defaults = st["gen_defaults"]
+        self.max_chunk_chars = st["max_chunk_chars"]
         self.asr_model = asr_model
+        self.asr_revision = asr_revision
         self._asr = None
 
     # ------------------------------------------------------------------ loading
     @classmethod
-    def from_pretrained(cls, model: str = "openbmb/VoxCPM2", device: str = "cuda", optimize: bool | None = None,
-                        asr_model: str = D.ASR_MODEL, load_asr: bool = False) -> "BA":
-        """``model`` is a Hub repo id or a local directory holding VoxCPM2 weights.
+    def from_pretrained(cls, model: str = DEFAULT_REPO, device: str | None = None, optimize: bool | None = None,
+                        asr_model: str | None = None, load_asr: bool = False, revision: str | None = None,
+                        token: str | bool | None = None, cache_dir: str | None = None,
+                        local_files_only: bool = False) -> "BA":
+        """``model``: a Hub repo id (default: the BA model repository) or a local directory holding
+        VoxCPM2 weights. Only the files the engine needs are downloaded (weights, tokenizer,
+        ``ba_config.json``). ``revision``/``token``/``cache_dir``/``local_files_only`` go to the Hub download.
+        ``device``: "cuda", "cpu", ...; default: CUDA if available, else CPU.
         ``optimize`` (torch.compile) defaults to on for CUDA, off on ZeroGPU and CPU."""
         from voxcpm import VoxCPM
+        if device is None:
+            import torch
+            device = "cuda" if torch.cuda.is_available() else "cpu"
+        if os.path.isdir(model):
+            local = model
+        else:
+            from huggingface_hub import snapshot_download
+            local = snapshot_download(model, revision=revision, allow_patterns=DOWNLOAD_PATTERNS, token=token,
+                                      cache_dir=cache_dir, local_files_only=local_files_only)
+        cfg = load_config(local)
+        st = engine_settings(cfg)
+        if asr_model is None or asr_model == st["asr_model"]:
+            asr_model, asr_revision = st["asr_model"], st["asr_revision"]
+        else:
+            asr_revision = None
         if optimize is None:
             optimize = str(device).startswith("cuda") and not on_zerogpu()
-        tts = VoxCPM.from_pretrained(model, load_denoiser=False, optimize=optimize, device=device)
-        ba = cls(tts, device, model, asr_model)
+        tts = VoxCPM.from_pretrained(local, load_denoiser=False, optimize=optimize, device=device)
+        ba = cls(tts, device, model, asr_model, config=cfg, asr_revision=asr_revision)
         if load_asr:
             _ = ba.asr
         return ba
@@ -70,7 +97,7 @@ class BA:
     def asr(self):
         if self._asr is None:
             from .asr import Transcriber
-            self._asr = Transcriber(self.asr_model, device=self.device)
+            self._asr = Transcriber(self.asr_model, device=self.device, revision=self.asr_revision)
         return self._asr
 
     # ------------------------------------------------------------------ voices
@@ -166,13 +193,13 @@ class BA:
             raise ValueError("Text is empty.")
         if len(text) > D.MAX_TEXT_CHARS:
             raise ValueError(f"Text is too long ({len(text)} characters; the limit is {D.MAX_TEXT_CHARS}).")
-        g = D.GEN_DEFAULTS[lang]
+        g = self.gen_defaults[lang]
         cfg = float(cfg_value if cfg_value is not None else g["cfg_value"])
         steps = int(inference_timesteps if inference_timesteps is not None else g["inference_timesteps"])
         seed = D.DEFAULT_SEED if seed is None else int(seed)
         t0 = time.time()
         norm = normalize(text, lang) if normalize_text else clean(text)
-        chunks = chunk_text(norm, max_chunk_chars or D.MAX_CHUNK_CHARS[lang])
+        chunks = chunk_text(norm, max_chunk_chars or self.max_chunk_chars[lang])
         cache = self.prompt_cache(voice, mode)
         pieces, info_chunks = [], []
         for ch in chunks:

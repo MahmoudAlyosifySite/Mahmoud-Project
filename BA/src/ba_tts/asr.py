@@ -16,13 +16,14 @@ WHISPER_CODE_TO_BA = {"ar": "arz", "en": "en", "fr": "fr"}
 
 
 class Transcriber:
-    def __init__(self, model_id: str, device: str = "cuda"):
+    def __init__(self, model_id: str, device: str = "cuda", revision: str | None = None):
         import torch
         from transformers import WhisperForConditionalGeneration, WhisperProcessor
         self.device = device
         self.dtype = torch.float16 if str(device).startswith("cuda") else torch.float32
-        self.processor = WhisperProcessor.from_pretrained(model_id)
-        self.model = WhisperForConditionalGeneration.from_pretrained(model_id, dtype=self.dtype).to(device).eval()
+        self.processor = WhisperProcessor.from_pretrained(model_id, revision=revision)
+        self.model = WhisperForConditionalGeneration.from_pretrained(model_id, revision=revision,
+                                                                     dtype=self.dtype).to(device).eval()
         self._lock = threading.Lock()
 
     def __call__(self, audio16: np.ndarray, language: str | None = None) -> tuple[str, str | None]:

@@ -6,7 +6,16 @@
 
 > **Your Voice. Your Identity.**
 
-**Status:** vision only. No code, data or model yet. The logo is a first version.
+**Status:** v0.1.0 published as a model on Hugging Face: **https://huggingface.co/mahmoudalyosify/BA** (Egyptian Arabic, English, French beta). The demo Space is prepared in `space/` but not online yet (the account's free ZeroGPU slots are in use).
+
+| Folder | What is in it |
+|---|---|
+| `src/ba_tts/`, `tests/`, `pyproject.toml` | The BA engine (Python package `ba-tts`) and its 195 tests |
+| `eval/` | Bake-off of 8 systems, engine evaluation, owner's blind listening test; every published number comes from `eval/results/` |
+| `space/` | The Gradio demo (ZeroGPU-ready) |
+| `hf/` | Publishing and validation scripts for the Hub |
+| `docs/` | Execution plan, decision log, brand guide, publish report |
+| `assets/` | Logo, banner, social card, avatar and their generators |
 
 **The mark.** The Arabic letter **ب**, whose name is pronounced *ba*, drawn with a voice wave in its base, and its dot in turquoise. It reads as *BA* to an Arabic reader and as a voice to everyone. Files: `assets/logo.svg` (full logo) and `assets/mark.svg` (square, for avatars and icons). Colours: sapphire `#14254D`, gold `#D9B45A`, turquoise `#3FD0C9`.
 

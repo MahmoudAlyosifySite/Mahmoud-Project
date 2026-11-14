@@ -19,7 +19,7 @@ def main(argv=None) -> int:
     p.add_argument("--text", help="text to speak")
     p.add_argument("--text-file", help="read the text from a UTF-8 file")
     p.add_argument("--out", default="out.wav", help="output WAV path")
-    p.add_argument("--model", default="openbmb/VoxCPM2", help="Hub repo id or local directory")
+    p.add_argument("--model", default="mahmoudalyosify/BA", help="Hub repo id or local directory (default: the BA model repository)")
     p.add_argument("--device", default=None, help="cuda / cpu (default: cuda if available)")
     p.add_argument("--seed", type=int, default=None)
     p.add_argument("--cfg", type=float, default=None, help="guidance scale (default: per-language)")
@@ -41,10 +41,8 @@ def main(argv=None) -> int:
     if not a.lang or not (a.text or a.text_file) or not (a.ref or a.voice):
         p.error("--lang, --text (or --text-file) and --ref (or --voice) are required")
     text = a.text if a.text else open(a.text_file, encoding="utf-8").read()
-    import torch
     from . import BA, ReferenceAudioError, Voice
-    device = a.device or ("cuda" if torch.cuda.is_available() else "cpu")
-    ba = BA.from_pretrained(a.model, device=device)
+    ba = BA.from_pretrained(a.model, device=a.device)
     try:
         voice = Voice.load(a.voice) if a.voice else ba.create_voice(a.ref, transcript=a.ref_text, language=a.ref_lang)
     except ReferenceAudioError as e:
