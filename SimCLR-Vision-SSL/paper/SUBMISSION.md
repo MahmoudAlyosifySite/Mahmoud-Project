@@ -33,8 +33,15 @@ that are still in the queue (`\pending{...}`); none may remain in a submitted ve
 
 ## Journal
 
+Current choice: **Neurocomputing** (Elsevier). It accepts empirical studies of learning systems, including computer
+vision, uses the same `elsarticle` class (no reformatting), and is less selective than Pattern Recognition or Neural
+Networks. Pattern Recognition (the supervisor's example) requires 20-35 single-column, double-spaced pages; the review
+layout of this paper has about 30 pages of text and 9 of references before the appendix, so it would need cutting.
+Official acceptance rates are on each journal's ScienceDirect "Insights" page (open it in a browser).
+
+
 The supervisor asked for a journal template and advised against TPAMI, IJCV and JMLR. The manuscript is prepared for
-an Elsevier journal (`\journal{Pattern Recognition}` in `submission.tex`; the same class serves Neural Networks,
+an Elsevier journal (`\journal{Neurocomputing}` in `submission.tex`, the main target since 2026-11-15; the same class serves Neural Networks,
 Neurocomputing, Computer Vision and Image Understanding and Image and Vision Computing). Requirements that we could
 verify on official pages, and those that still need a check in a browser, are listed in `JOURNAL_NOTES.md` in this
 folder. Points to confirm on the journal's "Guide for authors" before submitting: review model (single- or
