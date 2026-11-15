@@ -1,0 +1,190 @@
+\appendix
+
+\section{The original study and what changed}
+\label{app:report}
+
+This paper grew out of an earlier study in which we reproduced \simclr on CIFAR-10 and extended it to
+label-scarce \supcon. That study (run on one NVIDIA RTX 5000 Ada GPU, 32\,GB) is the source of the 75.2\%
+vs.\ 84.3\% comparison in \cref{sec:intro}; none of its numbers are used anywhere else in this paper. We
+summarise it here because it motivated the questions, and because two of its observations are re-measured
+in \cref{sec:shortcut,sec:ood}.
+
+\paragraph{Setup of the original study.}
+ResNet-50 with the CIFAR stem; \simclr with AdamW (peak learning rate 0.06, batch 512, $\tau=0.5$, mixed
+precision, 200 epochs over 50,000 images, i.e.\ 19,400 steps); \supcon with SGD (learning rate 0.05, batch 512,
+$\tau=0.1$, float32, 100 epochs over the 5,000 labeled images, i.e.\ 900 steps) and a different augmentation
+pipeline. The two runs therefore differed in optimiser, learning rate, augmentation, temperature, numerical
+precision and, by a factor of about 21, in the number of gradient steps. Every result was a single run.
+
+\paragraph{The 42-configuration augmentation sweep.}
+The sweep combined spatial (crop, flip, rotation), photometric (colour jitter, grayscale) and structural
+(blur, cutout, Sobel edges, noise) transforms. Most configurations were screened for 10 epochs only; twelve
+were trained for 200 epochs and probed. Its clearest result is the colour-jitter ablation reproduced in
+\cref{fig:report}: adding colour jitter to five different structural pipelines improved the linear probe by
+14.9--21.3 points (mean 18.1). The five pipelines without jitter reached almost the same contrastive loss
+(4.95--4.96) but linear accuracies from 34.4\% to 66.3\%, which led us to the shortcut interpretation tested in
+\cref{sec:shortcut}. The best configuration (crop, flip, Gaussian blur and colour jitter) reached 84.30\%.
+Its superiority over the cutout variant (81.21\%) rests on single runs and is within the seed-to-seed
+variation we measure in this paper (\cref{tab:main}), so we do not claim it.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.78\linewidth]{figures/fig_report_jitter.pdf}
+\caption{Colour-jitter ablation of the original study (ResNet-50, 200 epochs, single runs on an RTX 5000
+Ada; experiment numbers of the original sweep in parentheses). Adding colour jitter helps every structural
+pipeline.}
+\label{fig:report}
+\end{figure}
+
+\paragraph{Six attempts to make \supcon train.}
+Getting \supcon to learn at all took six runs, and the failure modes may help others:
+(1) half precision overflowed at $\tau=0.1$: each exponentiated logit can reach $e^{1/\tau}\approx 22{,}000$,
+and the denominator sums about a thousand of them, far above the float16 maximum of 65,504; (2--3) AdamW with learning rate 0.5 stalled at a loss of $\log 10$, the
+value reached when the batch is split evenly between classes; (4--5) batch normalisation on the
+\emph{output} of the projection head, followed by $\ell_2$ normalisation, collapsed all embeddings to a
+point (loss $\log(2B-1)=6.93$); (6) the official recipe (no output batch normalisation, SGD with warm-up,
+$\tau=0.1$) worked. In this paper the loss is always computed in float32 after a mixed-precision forward pass,
+and the output layer of the head has no batch normalisation.
+
+\paragraph{Changes in this paper.}
+We (i) replaced epochs by a fixed number of steps; (ii) used one optimiser, augmentation and evaluation for
+every method; (iii) switched to ResNet-18 to afford \nSeeds seeds and a factorial design, and confirmed the main
+result with a ResNet-50 (\cref{tab:generalization}); (iv) replaced the Adam-trained linear probe of the
+original study by a regularised, validated logistic regression; (v) removed the CLIP accuracy comparison
+from the main results, since CLIP differs in architecture, data and supervision \citep{radford2021clip}, and
+kept CLIP only as a reference point in the resolution study (\cref{sec:ood}).
+
+\section{Implementation checks}
+\label{app:impl}
+
+\paragraph{GPU augmentation.}
+Every transform draws its random parameters per image, as \texttt{torchvision} does, but processes a whole
+batch at once on the GPU. With fixed parameters we compared each operation with
+\texttt{torchvision.transforms.functional} on 64 random images: brightness, saturation, hue and grayscale
+match exactly; contrast to $6\times10^{-8}$; resized crop (bilinear) and crop+flip to $1.2\times10^{-7}$;
+$3{\times}3$ Gaussian blur to $2.4\times10^{-7}$. Random erasing is applied to $70.0\%$ of images for $p=0.7$.
+The test is \texttt{tests/test\_gpu\_aug.py}.
+
+\paragraph{Loss.}
+\Cref{eq:loss} was compared with the official \supcon implementation and with the NT-Xent implementation of
+the original study on random embeddings: all labels (\supcon) $0$, no labels (NT-Xent)
+$4.8\times10^{-7}$, half of the batch labeled (\union, compared to the official code with an explicit mask)
+$9.5\times10^{-7}$ maximum absolute difference.
+
+\section{Hyper-parameters}
+\label{app:hparams}
+
+\begin{table}[h]
+\centering
+\small
+\caption{Hyper-parameters of all methods (ResNet-18 unless stated). ``Steps'' are gradient steps; one
+contrastive step processes 1,024 augmented views.}
+\label{tab:hparams}
+\begin{adjustbox}{max width=\linewidth}
+\begin{tabular}{l l}
+\toprule
+\simclr, \supcon, \union & SGD, momentum 0.9, lr 0.25 (batch 512), wd $10^{-4}$, 5\% warm-up + cosine, 9,700 steps;\\
+ & $\tau=0.5$ (\simclr), $0.1$ (\supcon), $0.1$ labeled / $0.5$ unlabeled anchors (\union); 25\% labeled per batch (\union)\\
+projection head & Linear(512, 512, no bias)--BN--ReLU--Linear(512, 128); ResNet-50: 2048 hidden units \\
+augmentation & crop (0.2--1), flip, colour jitter (0.4, 0.4, 0.4, 0.1; $p=0.8$), grayscale ($p=0.2$) \\
+BYOL & SGD, lr 0.24, wd $5\times10^{-4}$; projector/predictor 4096--256; EMA 0.99$\to$1 (cosine); same steps \\
+SimSiam & SGD, lr 0.06, wd $5\times10^{-4}$; projector 2048 (BN on output); predictor 512 at constant lr \\
+supervised CE & SGD-Nesterov, lr 0.2 (batch 512), wd $5\times10^{-4}$; crop with 4-pixel padding + flip; 9,700 steps \\
+FixMatch & batch 64 labeled + 448 unlabeled, threshold 0.95, RandAugment + Cutout, SGD-Nesterov lr 0.03, \\
+ & wd $5\times10^{-4}$, schedule $\cos(7\pi k/16K)$, EMA 0.999; $K$ chosen to process as many images as \simclr \\
+MixMatch & batch 64 + 64, $K=2$, $T=0.5$, $\alpha=0.75$, $\lambda_u=75$ (linear ramp), Adam lr 0.002, \\
+ & weight decay $0.02\cdot$lr, EMA 0.999; same image budget as \simclr \\
+linear probe & standardised features; multinomial logistic regression, L-BFGS; $\lambda\in\{10^{-6},\dots,10^{-1}\}$ \\
+ & selected on 20\% of the available training labels, then refit on all of them \\
+$k$NN & cosine similarity, $k=200$, weights $\exp(s/0.1)$ \\
+fine-tuning & linear-probe initialisation, SGD-Nesterov lr 0.01, wd $5\times10^{-4}$, batch 128, 60 epochs \\
+ & over the labeled images, crop with padding + flip \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\end{table}
+
+\section{Choosing the \union variant on a validation split}
+\label{app:pilot}
+
+The two design choices of \union were made before looking at the test set. We held out 5,000 training
+images (500 per class) as a validation set, trained every candidate for 50 epochs with one seed and
+compared them on the validation images (\cref{tab:pilot}). Using a single low temperature for all anchors
+hurts the unlabeled images, for which instance discrimination is easier with $\tau=0.5$; drawing a fixed
+share of labeled images into every batch helps slightly. We fixed $\tau_\ell=0.1$, $\tau_u=0.5$ and a labeled
+share of 25\% and did not tune any other parameter. The same split was used to check the temperature of
+\simclr and label-only \supcon: the standard values (0.5 and 0.1) were within one point of the best.
+
+\begin{table}[h]
+\centering
+\small
+\caption{Design of \union on the validation split (5,000 held-out training images, one seed, 50 epochs).}
+\label{tab:pilot}
+\input{generated/table_pilot.tex}
+\end{table}
+
+\section{Diversity statistics and constructed pools}
+\label{app:pools}
+
+\paragraph{Reference space.}
+All statistics of \cref{sec:geometry} are computed on $\ell_2$-normalised features of the \simclr encoder
+trained on all images (seed 0), which never saw a label. Augmented views use the \simclr augmentation. For a
+pool $S$ and a class $c$ with pool images $S_c$:
+\emph{spread} is the mean cosine distance over pairs of distinct images in $S_c$ (for ``aug.\ views'' each
+image is replaced by one random augmented view); the \emph{Vendi score} \citep{friedman2023vendi} is the
+exponential of the entropy of the eigenvalues of the normalised cosine kernel of $S_c$;
+the \emph{coverage radius} is the mean over test images $x$ of class $c$ of $\min_{s\in S_c} 1-\cos(x,s)$.
+All are averaged over classes.
+
+\paragraph{Constructed pools.}
+All constructed pools contain exactly 500 images per class, the size of the random 10\% subset, so every
+pool gives \supcon the same number of labels and positives per class.
+\emph{Redundant} ($k=10$ or $50$): the images of a class are visited in the random order that defines the
+random subset; each visited image that is not yet taken becomes a seed and is added together with its
+$k{-}1$ most similar untaken images of the same class, until 500 images are taken.
+\emph{$k$-center}: starting from a random image, greedily add the image whose cosine distance to its nearest
+chosen image is largest \citep{sener2018coreset}.
+
+\paragraph{Pixel space.}
+Repeating the statistics on mean-centred pixels gives the same picture for random pools: spread is flat in
+the pool size (0.915 at 1\% vs.\ 0.920 for all images) while the coverage radius decreases monotonically (0.444
+at 1\% to 0.296 for all images). In pixel space the constructed pools differ less in coverage, because pixel
+distances say little about semantic similarity.
+
+\section{Reproducing the results}
+\label{app:repro}
+
+All code, the job lists of every run in this paper, per-run results (accuracy, geometry, predictions on the
+test set) and the scripts that turn them into the tables and figures are available at \repo. With the
+environment of \texttt{environment.yml} (or the \texttt{Dockerfile}), the complete study is reproduced by
+{\small
+\begin{verbatim}
+python scripts/run_queue.py jobs/00_pilot.txt         # design choices (validation split)
+python scripts/run_queue.py jobs/01_main.txt          # all test-set runs
+python scripts/run_queue.py jobs/02_semisup.txt       # FixMatch, MixMatch
+python scripts/run_queue.py jobs/03_finetune.txt      # fine-tuning runs
+python scripts/run_queue.py jobs/04_extra_finetune.txt
+python scripts/make_pools.py --ref_run simclr_all_e100_s0 --ckpt_dir results/runs
+python scripts/reeval.py --ckpt_dir results/runs      # label-limited probes
+python scripts/diversity.py --ref_run simclr_all_e100_s0 --ckpt_dir results/runs
+python scripts/hist_probe.py                          # colour-histogram baseline
+python scripts/ood_resolution.py --ckpt_dir results/runs --ood_dir <imagewoof2-320/val> \
+       --runs simclr_all_e100_s0 supcon_lab_f0.1_e100_s0 union_f0.1_e100_s0 \
+              simclr_all_e200_s0 ce_f1.0_e100_s0
+python scripts/make_assets.py                         # every table, figure and number
+\end{verbatim}}
+On one NVIDIA A40 the 121 runs of the study took about 20 GPU-hours of training (plus re-evaluation).
+
+\section{Additional results}
+\label{app:extra}
+
+\begin{table}[h]
+\centering
+\small
+\caption{Accuracy against the number of gradient steps (CIFAR-10, 10\% labels, ResNet-18 unless stated;
+mean $\pm$ s.d.\ where several seeds exist). Linear probe and $k$NN use all training labels.}
+\label{tab:budget}
+\begin{adjustbox}{max width=\linewidth}
+\input{generated/table_budget.tex}
+\end{adjustbox}
+\end{table}

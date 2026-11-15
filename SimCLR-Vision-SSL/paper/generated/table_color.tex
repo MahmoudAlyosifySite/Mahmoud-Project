@@ -1,0 +1,14 @@
+\begin{tabular}{l l ccc ccc}
+\toprule
+ & & \multicolumn{3}{c}{accuracy (\%)} & \multicolumn{3}{c}{colour reliance} \\
+\cmidrule(lr){3-5}\cmidrule(lr){6-8}
+augmentation & tier & linear & gray test & $\Delta$ & CKA(hist.) & CKA(label) & hist.\ $R^2$ \\
+\midrule
+crop + flip & Tier 1 & 60.9 & 24.5 & -36.4 & 0.57 & 0.16 & 0.64 \\
+crop + flip + jitter & Tier 2 & 75.9 & 38.2 & -37.6 & 0.47 & 0.28 & 0.48 \\
+crop + flip + grayscale & Tier 2 & 77.1 & 75.5 & -1.6 & 0.30 & 0.34 & 0.33 \\
+crop + flip + jitter + grayscale & Tier 3 & 83.8 & 82.7 & -1.1 & 0.22 & 0.47 & 0.25 \\
+\midrule
+colour histogram only ($8^3$ bins, no encoder) & -- & 37.7 & -- & -- & 1.00 & -- & 1.00 \\
+\bottomrule
+\end{tabular}

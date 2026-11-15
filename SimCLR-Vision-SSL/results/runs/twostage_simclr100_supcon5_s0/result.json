@@ -1,0 +1,173 @@
+{
+ "name": "twostage_simclr100_supcon5_s0",
+ "args": {
+  "name": "twostage_simclr100_supcon5_s0",
+  "out": "results/runs",
+  "ckpt_dir": "/tmp/claude-1000/-home-jovyan-SimCLR-Vision-SSL/d9e8e4cb-36d5-5896-9064-1fe1d907057f/scratchpad/ckpt",
+  "data_dir": "/tmp/claude-1000/-home-jovyan-SimCLR-Vision-SSL/d9e8e4cb-36d5-5896-9064-1fe1d907057f/scratchpad/data",
+  "dataset": "cifar10",
+  "method": "supcon",
+  "backbone": "resnet18",
+  "aug": "simclr",
+  "pool": "labeled",
+  "label_fraction": 0.1,
+  "pool_file": null,
+  "labeled_share": null,
+  "epochs": 5.0,
+  "batch_size": 512,
+  "lr": 0.02,
+  "wd": 0.0001,
+  "temperature": 0.1,
+  "temperature_unlabeled": null,
+  "holdout": 0,
+  "warmup_frac": 0.05,
+  "seed": 0,
+  "split_seed": 0,
+  "curve_points": 8,
+  "compile": 1,
+  "init_run": "simclr_all_e100_s0",
+  "force": false,
+  "no_save_ckpt": false
+ },
+ "n_pool": 5000,
+ "n_labeled": 5000,
+ "steps": 485,
+ "train_time_s": 64.03945732116699,
+ "eval_time_s": 15.146150827407837,
+ "final_loss": 4.930662631988525,
+ "loss_log": [
+  [
+   100,
+   5.955286502838135
+  ],
+  [
+   200,
+   5.248625755310059
+  ],
+  [
+   300,
+   5.088825225830078
+  ],
+  [
+   400,
+   4.976078987121582
+  ],
+  [
+   485,
+   4.930662631988525
+  ]
+ ],
+ "knn_curve": [
+  [
+   61,
+   82.42999911308289
+  ],
+  [
+   121,
+   84.42999720573425
+  ],
+  [
+   182,
+   85.09999513626099
+  ],
+  [
+   242,
+   85.13000011444092
+  ],
+  [
+   303,
+   85.38999557495117
+  ],
+  [
+   364,
+   85.65999865531921
+  ],
+  [
+   424,
+   86.06999516487122
+  ],
+  [
+   485,
+   86.08999848365784
+  ]
+ ],
+ "geom_curve": [
+  {
+   "step": 61,
+   "pool_cdnv": 0.42157791544448775,
+   "test_cdnv": 0.4887154849147954,
+   "labeled_cdnv": 0.42157791544448775
+  },
+  {
+   "step": 121,
+   "pool_cdnv": 0.3493572246473819,
+   "test_cdnv": 0.4616146923964945,
+   "labeled_cdnv": 0.34935722464738195
+  },
+  {
+   "step": 182,
+   "pool_cdnv": 0.30850989367832776,
+   "test_cdnv": 0.4549128403723766,
+   "labeled_cdnv": 0.30850989367832776
+  },
+  {
+   "step": 242,
+   "pool_cdnv": 0.2897746841733411,
+   "test_cdnv": 0.4582202983443949,
+   "labeled_cdnv": 0.2897746841733411
+  },
+  {
+   "step": 303,
+   "pool_cdnv": 0.2765487493022063,
+   "test_cdnv": 0.46126274951140783,
+   "labeled_cdnv": 0.2765487493022062
+  },
+  {
+   "step": 364,
+   "pool_cdnv": 0.2645081453338713,
+   "test_cdnv": 0.453951773121655,
+   "labeled_cdnv": 0.26450814533387135
+  },
+  {
+   "step": 424,
+   "pool_cdnv": 0.2540903371534527,
+   "test_cdnv": 0.4404254764186525,
+   "labeled_cdnv": 0.25409033715345275
+  }
+ ],
+ "metrics": {
+  "linear_acc": 86.75999641418457,
+  "linear_l2": 0.001,
+  "linear_val_acc": 89.13999795913696,
+  "knn_acc": 86.08999848365784,
+  "linear_lab_acc": 85.24999618530273,
+  "linear_lab_l2": 0.1,
+  "seen_cdnv": 0.2538304853219081,
+  "seen_etf_cos_mean": -0.10416959518756584,
+  "seen_etf_cos_std": 0.1609711386188164,
+  "seen_etf_norm_cv": 0.20952290113583358,
+  "seen_etf_dev": 0.12894715193238396,
+  "seen_ncc_acc": 98.07999730110168,
+  "test_cdnv": 0.44218584283818063,
+  "test_etf_cos_mean": -0.09698550202643309,
+  "test_etf_cos_std": 0.20934500022589972,
+  "test_etf_norm_cv": 0.2730481910540321,
+  "test_etf_dev": 0.17273441289196578,
+  "test_ncc_acc": 83.35999846458435,
+  "heldout_cdnv": 0.42296868750045763,
+  "heldout_etf_cos_mean": -0.0982867209490521,
+  "heldout_etf_cos_std": 0.20618475050957025,
+  "heldout_etf_norm_cv": 0.26605469571716966,
+  "heldout_etf_dev": 0.16891873809807548,
+  "heldout_ncc_acc": 84.60444808006287,
+  "linear_acc_gray": 84.95999574661255,
+  "linear_acc_chperm": 82.77999758720398,
+  "cka_hist": 0.16653379320050488,
+  "cka_label": 0.5878925605564354,
+  "hist_r2": 0.25180318588719053,
+  "align": 0.11755796521902084,
+  "uniform": -1.6748312711715698
+ },
+ "torch": "2.11.0+cu126",
+ "gpu": "NVIDIA A40"
+}

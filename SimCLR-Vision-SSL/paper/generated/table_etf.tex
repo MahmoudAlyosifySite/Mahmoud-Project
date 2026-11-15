@@ -1,0 +1,10 @@
+\begin{tabular}{l l ccccc}
+\toprule
+augmentation & tier & linear & CDNV$\downarrow$ & ETF dev.$\downarrow$ & $\cos$ mean (target $-0.111$) & equinorm CV$\downarrow$ \\
+\midrule
+crop + flip & Tier 1 & 60.9 & 7.24 & 0.462 & -0.108 & 0.180 \\
+crop + flip + jitter & Tier 2 & 75.9 & 2.78 & 0.350 & -0.099 & 0.230 \\
+crop + flip + grayscale & Tier 2 & 77.1 & 2.22 & 0.314 & -0.098 & 0.243 \\
+crop + flip + jitter + grayscale & Tier 3 & 83.8 & 1.23 & 0.226 & -0.100 & 0.224 \\
+\bottomrule
+\end{tabular}

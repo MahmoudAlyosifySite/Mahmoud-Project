@@ -1,0 +1,27 @@
+{
+ "name": "ft_r50_union_f0.1_e100_s0",
+ "args": {
+  "name": "ft_r50_union_f0.1_e100_s0",
+  "from_run": "r50_union_f0.1_e100_s0",
+  "out": "results/runs",
+  "ckpt_dir": "/tmp/claude-1000/-home-jovyan-SimCLR-Vision-SSL/d9e8e4cb-36d5-5896-9064-1fe1d907057f/scratchpad/ckpt",
+  "data_dir": "/tmp/claude-1000/-home-jovyan-SimCLR-Vision-SSL/d9e8e4cb-36d5-5896-9064-1fe1d907057f/scratchpad/data",
+  "dataset": "cifar10",
+  "backbone": "resnet50",
+  "label_fraction": 0.1,
+  "seed": 0,
+  "epochs": 60.0,
+  "batch_size": 128,
+  "lr": 0.01,
+  "wd": 0.0005,
+  "holdout": 0,
+  "force": false
+ },
+ "n_labeled": 5000,
+ "steps": 2344,
+ "train_time_s": 216.5159227848053,
+ "metrics": {
+  "finetune_acc": 82.37999677658081,
+  "linear_lab_acc": 81.18999600410461
+ }
+}

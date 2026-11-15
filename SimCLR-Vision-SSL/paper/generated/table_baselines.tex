@@ -1,0 +1,15 @@
+\begin{tabular}{l l c ccc}
+\toprule
+method & family & labels used & linear (all labels) & $k$NN & accuracy with 5k labels$^\ddagger$ \\
+\midrule
+Supervised CE & supervised & 5k & 82.9 & 82.5 & 82.4 \\
+SimCLR & contrastive SSL & -- & 83.8{\scriptsize$\pm$0.1} & 79.9{\scriptsize$\pm$0.1} & 85.9{\scriptsize$\pm$0.4} \\
+BYOL & non-contrastive SSL & -- & 86.1 & 82.9 & 85.8 \\
+SimSiam & non-contrastive SSL & -- & 76.9 & 71.1 & 82.5 \\
+SupCon (label-only) & supervised contrastive & 5k & 83.9{\scriptsize$\pm$0.1} & 82.0{\scriptsize$\pm$0.1} & 82.3{\scriptsize$\pm$0.1} \\
+MixMatch$^\S$ & semi-supervised & 5k & 92.6 & 92.7 & 92.4 \\
+FixMatch$^\S$ & semi-supervised & 5k & 91.4 & 90.8 & 90.8 \\
+Union & semi-supervised contrastive & 5k & 85.6{\scriptsize$\pm$0.2} & 83.3{\scriptsize$\pm$0.4} & 81.9{\scriptsize$\pm$0.4} \\
+Supervised CE, all labels (reference) & supervised & 50k & 94.7 & 94.8 & 94.8 \\
+\bottomrule
+\end{tabular}

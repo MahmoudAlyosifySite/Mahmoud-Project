@@ -1,0 +1,16 @@
+\begin{tabular}{l ccccc}
+\toprule
+method & 970 & 2,425 & 4,850 & 9,700 & 19,400 steps \\
+\midrule
+SimCLR, linear & 67.1{\scriptsize$\pm$0.3} & 74.9 & 79.6 & 83.8{\scriptsize$\pm$0.1} & 87.8{\scriptsize$\pm$0.2} \\
+SimCLR, $k$NN & 58.0{\scriptsize$\pm$0.5} & 68.3 & 73.8 & 79.9{\scriptsize$\pm$0.1} & 85.8{\scriptsize$\pm$0.2} \\
+SupCon (label-only), linear & 80.5{\scriptsize$\pm$0.4} & 83.7 & 84.5 & 83.9{\scriptsize$\pm$0.1} & 84.0{\scriptsize$\pm$0.3} \\
+SupCon (label-only), $k$NN & 78.7{\scriptsize$\pm$0.3} & 82.1 & 82.6 & 82.0{\scriptsize$\pm$0.1} & 82.5{\scriptsize$\pm$0.2} \\
+Union, linear & -- & 83.4 & 85.6 & 85.6{\scriptsize$\pm$0.2} & 86.3{\scriptsize$\pm$0.5} \\
+Union, $k$NN & -- & 81.4 & 82.5 & 83.3{\scriptsize$\pm$0.4} & 84.5{\scriptsize$\pm$0.2} \\
+\midrule
+ResNet-50 SupCon (label-only), lr 0.25 & 74.3 & & & 86.4 & \\
+ResNet-50 SupCon (label-only), lr 0.05 & 59.3 & & & & \\
+ResNet-50 SimCLR & 61.7 & & & 85.8 & \\
+\bottomrule
+\end{tabular}

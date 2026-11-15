@@ -1,0 +1,12 @@
+# Design decisions are made here, on a 5,000-image validation split of the training set
+# (--holdout 5000, seed 100, 50 epochs). The test set is not used.
+--name pilot_simclr_t0.5        --method simclr --holdout 5000 --seed 100 --epochs 50
+--name pilot_supconL_t0.1       --method supcon --pool labeled --label_fraction 0.1 --holdout 5000 --seed 100 --epochs 50
+--name pilot_union_mixed        --method supcon --pool all --label_fraction 0.1 --temperature_unlabeled 0.5 --holdout 5000 --seed 100 --epochs 50
+--name pilot_union_mixed_sh0.5  --method supcon --pool all --label_fraction 0.1 --temperature_unlabeled 0.5 --labeled_share 0.5 --holdout 5000 --seed 100 --epochs 50
+--name pilot_union_t0.1         --method supcon --pool all --label_fraction 0.1 --holdout 5000 --seed 100 --epochs 50
+--name pilot_union_t0.5         --method supcon --pool all --label_fraction 0.1 --temperature 0.5 --holdout 5000 --seed 100 --epochs 50
+--name pilot_union_mixed_sh0.25 --method supcon --pool all --label_fraction 0.1 --temperature_unlabeled 0.5 --labeled_share 0.25 --holdout 5000 --seed 100 --epochs 50
+--name pilot_simclr_t0.1        --method simclr --temperature 0.1 --holdout 5000 --seed 100 --epochs 50
+--name pilot_simclr_t0.2        --method simclr --temperature 0.2 --holdout 5000 --seed 100 --epochs 50
+--name pilot_supconL_t0.5       --method supcon --pool labeled --label_fraction 0.1 --temperature 0.5 --holdout 5000 --seed 100 --epochs 50

@@ -1,0 +1,31 @@
+% shared preamble of arxiv.tex and tmlr_submission.tex
+\input{math_commands.tex}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{booktabs}
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{multirow}
+\usepackage{subcaption}
+\usepackage{enumitem}
+\usepackage{microtype}
+\usepackage{orcidlink}
+\usepackage[capitalise,noabbrev]{cleveref}
+\usepackage{adjustbox}
+\usepackage{xspace}
+\xspaceaddexceptions{\% \pp }
+
+\hypersetup{colorlinks=true, linkcolor=[rgb]{0.1,0.25,0.6}, citecolor=[rgb]{0.1,0.25,0.6}, urlcolor=[rgb]{0.1,0.25,0.6}}
+\setlist{itemsep=2pt, topsep=3pt}
+
+\input{generated/numbers.tex}
+
+\newcommand{\simclr}{SimCLR\xspace}
+\newcommand{\supcon}{SupCon\xspace}
+\newcommand{\union}{Union\xspace}
+\newcommand{\pp}{\,pp\xspace}
+\newcommand{\finding}[1]{\par\smallskip\noindent\fbox{\parbox{\dimexpr\linewidth-2\fboxsep-2\fboxrule}{\textbf{Finding.} #1}}\par\smallskip}
+\newcommand{\repo}{\ifanon\url{https://anonymous.4open.science}\else\url{https://github.com/MirnaEmbaby/SimCLR-Vision-SSL}\fi}

@@ -1,0 +1,232 @@
+# Revision round 2, part 2. Runs after jobs/05_revision_main.txt (uses its checkpoints).
+# fine-tuning hyper-parameter search on the 19,400-step encoders (selection on a held-out 20% of the 5k labels)
+-m scripts.ft_search --name ftsearch_simclr_all_e200_s0 --from_run simclr_all_e200_s0 --seed 0
+-m scripts.ft_search --name ftsearch_supcon_lab_f0.1_e200_s0 --from_run supcon_lab_f0.1_e200_s0 --seed 0
+-m scripts.ft_search --name ftsearch_union_f0.1_e200_s0 --from_run union_f0.1_e200_s0 --seed 0
+-m scripts.ft_search --name ftsearch_simclr_all_e200_s1 --from_run simclr_all_e200_s1 --seed 1 --config_from ftsearch_simclr_all_e200_s0
+-m scripts.ft_search --name ftsearch_simclr_all_e200_s2 --from_run simclr_all_e200_s2 --seed 2 --config_from ftsearch_simclr_all_e200_s0
+-m scripts.ft_search --name ftsearch_supcon_lab_f0.1_e200_s1 --from_run supcon_lab_f0.1_e200_s1 --seed 1 --config_from ftsearch_supcon_lab_f0.1_e200_s0
+-m scripts.ft_search --name ftsearch_supcon_lab_f0.1_e200_s2 --from_run supcon_lab_f0.1_e200_s2 --seed 2 --config_from ftsearch_supcon_lab_f0.1_e200_s0
+-m scripts.ft_search --name ftsearch_union_f0.1_e200_s1 --from_run union_f0.1_e200_s1 --seed 1 --config_from ftsearch_union_f0.1_e200_s0
+-m scripts.ft_search --name ftsearch_union_f0.1_e200_s2 --from_run union_f0.1_e200_s2 --seed 2 --config_from ftsearch_union_f0.1_e200_s0
+# FixMatch started from each pretrained encoder; FixMatch / MixMatch from scratch with more seeds and 3x budget
+-m dlt.semisup --name fixmatch_from_simclr_all_e200_s0 --method fixmatch --label_fraction 0.1 --seed 0 --init_run simclr_all_e200_s0
+-m dlt.semisup --name fixmatch_from_supcon_lab_f0.1_e200_s0 --method fixmatch --label_fraction 0.1 --seed 0 --init_run supcon_lab_f0.1_e200_s0
+-m dlt.semisup --name fixmatch_from_union_f0.1_e200_s0 --method fixmatch --label_fraction 0.1 --seed 0 --init_run union_f0.1_e200_s0
+-m dlt.semisup --name fixmatch_from_byol_all_e200_s0 --method fixmatch --label_fraction 0.1 --seed 0 --init_run byol_all_e200_s0
+-m dlt.semisup --name fixmatch_from_twostage_simclr200_supcon25_s0 --method fixmatch --label_fraction 0.1 --seed 0 --init_run twostage_simclr200_supcon25_s0
+-m dlt.semisup --name fixmatch_from_simclr_all_e200_s1 --method fixmatch --label_fraction 0.1 --seed 1 --init_run simclr_all_e200_s1
+-m dlt.semisup --name fixmatch_from_supcon_lab_f0.1_e200_s1 --method fixmatch --label_fraction 0.1 --seed 1 --init_run supcon_lab_f0.1_e200_s1
+-m dlt.semisup --name fixmatch_from_union_f0.1_e200_s1 --method fixmatch --label_fraction 0.1 --seed 1 --init_run union_f0.1_e200_s1
+-m dlt.semisup --name fixmatch_from_byol_all_e200_s1 --method fixmatch --label_fraction 0.1 --seed 1 --init_run byol_all_e200_s1
+-m dlt.semisup --name fixmatch_from_twostage_simclr200_supcon25_s1 --method fixmatch --label_fraction 0.1 --seed 1 --init_run twostage_simclr200_supcon25_s1
+-m dlt.semisup --name fixmatch_from_simclr_all_e200_s2 --method fixmatch --label_fraction 0.1 --seed 2 --init_run simclr_all_e200_s2
+-m dlt.semisup --name fixmatch_from_supcon_lab_f0.1_e200_s2 --method fixmatch --label_fraction 0.1 --seed 2 --init_run supcon_lab_f0.1_e200_s2
+-m dlt.semisup --name fixmatch_from_union_f0.1_e200_s2 --method fixmatch --label_fraction 0.1 --seed 2 --init_run union_f0.1_e200_s2
+-m dlt.semisup --name fixmatch_from_byol_all_e200_s2 --method fixmatch --label_fraction 0.1 --seed 2 --init_run byol_all_e200_s2
+-m dlt.semisup --name fixmatch_from_twostage_simclr200_supcon25_s2 --method fixmatch --label_fraction 0.1 --seed 2 --init_run twostage_simclr200_supcon25_s2
+-m dlt.semisup --name fixmatch_f0.1_s1 --method fixmatch --label_fraction 0.1 --seed 1
+-m dlt.semisup --name mixmatch_f0.1_s1 --method mixmatch --label_fraction 0.1 --seed 1
+-m dlt.semisup --name fixmatch_f0.1_s2 --method fixmatch --label_fraction 0.1 --seed 2
+-m dlt.semisup --name mixmatch_f0.1_s2 --method mixmatch --label_fraction 0.1 --seed 2
+-m dlt.semisup --name fixmatch_b3_f0.1_s0 --method fixmatch --label_fraction 0.1 --budget 3 --seed 0
+-m dlt.semisup --name fixmatch_b3_f0.1_s1 --method fixmatch --label_fraction 0.1 --budget 3 --seed 1
+-m dlt.semisup --name fixmatch_b3_f0.1_s2 --method fixmatch --label_fraction 0.1 --budget 3 --seed 2
+# default-recipe fine-tuning of the new encoders
+-m dlt.finetune --name ft_simclr_all_e100_s0 --from_run simclr_all_e100_s0 --label_fraction 0.1 --seed 0
+-m dlt.finetune --name ft_simclr_all_e200_s0 --from_run simclr_all_e200_s0 --label_fraction 0.1 --seed 0
+-m dlt.finetune --name ft_supcon_lab_f0.1_e100_s0 --from_run supcon_lab_f0.1_e100_s0 --label_fraction 0.1 --seed 0
+-m dlt.finetune --name ft_supcon_lab_f0.1_e200_s0 --from_run supcon_lab_f0.1_e200_s0 --label_fraction 0.1 --seed 0
+-m dlt.finetune --name ft_union_f0.1_e100_s0 --from_run union_f0.1_e100_s0 --label_fraction 0.1 --seed 0
+-m dlt.finetune --name ft_union_f0.1_e200_s0 --from_run union_f0.1_e200_s0 --label_fraction 0.1 --seed 0
+-m dlt.finetune --name ft_simclr_sub_f0.1_e100_s0 --from_run simclr_sub_f0.1_e100_s0 --label_fraction 0.1 --seed 0
+-m dlt.finetune --name ft_simclr_sub_f0.1_e200_s0 --from_run simclr_sub_f0.1_e200_s0 --label_fraction 0.1 --seed 0
+-m dlt.finetune --name ft_simclr_all_e100_s1 --from_run simclr_all_e100_s1 --label_fraction 0.1 --seed 1
+-m dlt.finetune --name ft_simclr_all_e200_s1 --from_run simclr_all_e200_s1 --label_fraction 0.1 --seed 1
+-m dlt.finetune --name ft_supcon_lab_f0.1_e100_s1 --from_run supcon_lab_f0.1_e100_s1 --label_fraction 0.1 --seed 1
+-m dlt.finetune --name ft_supcon_lab_f0.1_e200_s1 --from_run supcon_lab_f0.1_e200_s1 --label_fraction 0.1 --seed 1
+-m dlt.finetune --name ft_union_f0.1_e100_s1 --from_run union_f0.1_e100_s1 --label_fraction 0.1 --seed 1
+-m dlt.finetune --name ft_union_f0.1_e200_s1 --from_run union_f0.1_e200_s1 --label_fraction 0.1 --seed 1
+-m dlt.finetune --name ft_simclr_sub_f0.1_e100_s1 --from_run simclr_sub_f0.1_e100_s1 --label_fraction 0.1 --seed 1
+-m dlt.finetune --name ft_simclr_sub_f0.1_e200_s1 --from_run simclr_sub_f0.1_e200_s1 --label_fraction 0.1 --seed 1
+-m dlt.finetune --name ft_simclr_all_e100_s2 --from_run simclr_all_e100_s2 --label_fraction 0.1 --seed 2
+-m dlt.finetune --name ft_simclr_all_e200_s2 --from_run simclr_all_e200_s2 --label_fraction 0.1 --seed 2
+-m dlt.finetune --name ft_supcon_lab_f0.1_e100_s2 --from_run supcon_lab_f0.1_e100_s2 --label_fraction 0.1 --seed 2
+-m dlt.finetune --name ft_supcon_lab_f0.1_e200_s2 --from_run supcon_lab_f0.1_e200_s2 --label_fraction 0.1 --seed 2
+-m dlt.finetune --name ft_union_f0.1_e100_s2 --from_run union_f0.1_e100_s2 --label_fraction 0.1 --seed 2
+-m dlt.finetune --name ft_union_f0.1_e200_s2 --from_run union_f0.1_e200_s2 --label_fraction 0.1 --seed 2
+-m dlt.finetune --name ft_simclr_sub_f0.1_e100_s2 --from_run simclr_sub_f0.1_e100_s2 --label_fraction 0.1 --seed 2
+-m dlt.finetune --name ft_simclr_sub_f0.1_e200_s2 --from_run simclr_sub_f0.1_e200_s2 --label_fraction 0.1 --seed 2
+-m dlt.finetune --name ft_simclr_all_e100_s3 --from_run simclr_all_e100_s3 --label_fraction 0.1 --seed 3
+-m dlt.finetune --name ft_simclr_all_e200_s3 --from_run simclr_all_e200_s3 --label_fraction 0.1 --seed 3
+-m dlt.finetune --name ft_supcon_lab_f0.1_e100_s3 --from_run supcon_lab_f0.1_e100_s3 --label_fraction 0.1 --seed 3
+-m dlt.finetune --name ft_supcon_lab_f0.1_e200_s3 --from_run supcon_lab_f0.1_e200_s3 --label_fraction 0.1 --seed 3
+-m dlt.finetune --name ft_union_f0.1_e100_s3 --from_run union_f0.1_e100_s3 --label_fraction 0.1 --seed 3
+-m dlt.finetune --name ft_union_f0.1_e200_s3 --from_run union_f0.1_e200_s3 --label_fraction 0.1 --seed 3
+-m dlt.finetune --name ft_simclr_sub_f0.1_e100_s3 --from_run simclr_sub_f0.1_e100_s3 --label_fraction 0.1 --seed 3
+-m dlt.finetune --name ft_simclr_sub_f0.1_e200_s3 --from_run simclr_sub_f0.1_e200_s3 --label_fraction 0.1 --seed 3
+-m dlt.finetune --name ft_simclr_all_e100_s4 --from_run simclr_all_e100_s4 --label_fraction 0.1 --seed 4
+-m dlt.finetune --name ft_simclr_all_e200_s4 --from_run simclr_all_e200_s4 --label_fraction 0.1 --seed 4
+-m dlt.finetune --name ft_supcon_lab_f0.1_e100_s4 --from_run supcon_lab_f0.1_e100_s4 --label_fraction 0.1 --seed 4
+-m dlt.finetune --name ft_supcon_lab_f0.1_e200_s4 --from_run supcon_lab_f0.1_e200_s4 --label_fraction 0.1 --seed 4
+-m dlt.finetune --name ft_union_f0.1_e100_s4 --from_run union_f0.1_e100_s4 --label_fraction 0.1 --seed 4
+-m dlt.finetune --name ft_union_f0.1_e200_s4 --from_run union_f0.1_e200_s4 --label_fraction 0.1 --seed 4
+-m dlt.finetune --name ft_simclr_sub_f0.1_e100_s4 --from_run simclr_sub_f0.1_e100_s4 --label_fraction 0.1 --seed 4
+-m dlt.finetune --name ft_simclr_sub_f0.1_e200_s4 --from_run simclr_sub_f0.1_e200_s4 --label_fraction 0.1 --seed 4
+-m dlt.finetune --name ft_simclr_all_e400_s0 --from_run simclr_all_e400_s0 --label_fraction 0.1 --seed 0
+-m dlt.finetune --name ft_simclr_all_e1000_s0 --from_run simclr_all_e1000_s0 --label_fraction 0.1 --seed 0
+-m dlt.finetune --name ft_supcon_lab_f0.1_e400_s0 --from_run supcon_lab_f0.1_e400_s0 --label_fraction 0.1 --seed 0
+-m dlt.finetune --name ft_supcon_lab_f0.1_e1000_s0 --from_run supcon_lab_f0.1_e1000_s0 --label_fraction 0.1 --seed 0
+-m dlt.finetune --name ft_union_f0.1_e400_s0 --from_run union_f0.1_e400_s0 --label_fraction 0.1 --seed 0
+-m dlt.finetune --name ft_union_f0.1_e1000_s0 --from_run union_f0.1_e1000_s0 --label_fraction 0.1 --seed 0
+-m dlt.finetune --name ft_simclr_sub_f0.1_e400_s0 --from_run simclr_sub_f0.1_e400_s0 --label_fraction 0.1 --seed 0
+-m dlt.finetune --name ft_simclr_sub_f0.1_e1000_s0 --from_run simclr_sub_f0.1_e1000_s0 --label_fraction 0.1 --seed 0
+-m dlt.finetune --name ft_twostage_simclr100_supcon5_s0 --from_run twostage_simclr100_supcon5_s0 --label_fraction 0.1 --seed 0
+-m dlt.finetune --name ft_twostage_simclr100_supcon25_s0 --from_run twostage_simclr100_supcon25_s0 --label_fraction 0.1 --seed 0
+-m dlt.finetune --name ft_twostage_simclr100_supcon100_s0 --from_run twostage_simclr100_supcon100_s0 --label_fraction 0.1 --seed 0
+-m dlt.finetune --name ft_twostage_simclr200_supcon5_s0 --from_run twostage_simclr200_supcon5_s0 --label_fraction 0.1 --seed 0
+-m dlt.finetune --name ft_twostage_simclr200_supcon25_s0 --from_run twostage_simclr200_supcon25_s0 --label_fraction 0.1 --seed 0
+-m dlt.finetune --name ft_byol_all_e100_s0 --from_run byol_all_e100_s0 --label_fraction 0.1 --seed 0
+-m dlt.finetune --name ft_byol_all_e200_s0 --from_run byol_all_e200_s0 --label_fraction 0.1 --seed 0
+-m dlt.finetune --name ft_simclr_all_e400_s1 --from_run simclr_all_e400_s1 --label_fraction 0.1 --seed 1
+-m dlt.finetune --name ft_simclr_all_e1000_s1 --from_run simclr_all_e1000_s1 --label_fraction 0.1 --seed 1
+-m dlt.finetune --name ft_supcon_lab_f0.1_e400_s1 --from_run supcon_lab_f0.1_e400_s1 --label_fraction 0.1 --seed 1
+-m dlt.finetune --name ft_supcon_lab_f0.1_e1000_s1 --from_run supcon_lab_f0.1_e1000_s1 --label_fraction 0.1 --seed 1
+-m dlt.finetune --name ft_union_f0.1_e400_s1 --from_run union_f0.1_e400_s1 --label_fraction 0.1 --seed 1
+-m dlt.finetune --name ft_union_f0.1_e1000_s1 --from_run union_f0.1_e1000_s1 --label_fraction 0.1 --seed 1
+-m dlt.finetune --name ft_simclr_sub_f0.1_e400_s1 --from_run simclr_sub_f0.1_e400_s1 --label_fraction 0.1 --seed 1
+-m dlt.finetune --name ft_simclr_sub_f0.1_e1000_s1 --from_run simclr_sub_f0.1_e1000_s1 --label_fraction 0.1 --seed 1
+-m dlt.finetune --name ft_twostage_simclr100_supcon5_s1 --from_run twostage_simclr100_supcon5_s1 --label_fraction 0.1 --seed 1
+-m dlt.finetune --name ft_twostage_simclr100_supcon25_s1 --from_run twostage_simclr100_supcon25_s1 --label_fraction 0.1 --seed 1
+-m dlt.finetune --name ft_twostage_simclr100_supcon100_s1 --from_run twostage_simclr100_supcon100_s1 --label_fraction 0.1 --seed 1
+-m dlt.finetune --name ft_twostage_simclr200_supcon5_s1 --from_run twostage_simclr200_supcon5_s1 --label_fraction 0.1 --seed 1
+-m dlt.finetune --name ft_twostage_simclr200_supcon25_s1 --from_run twostage_simclr200_supcon25_s1 --label_fraction 0.1 --seed 1
+-m dlt.finetune --name ft_byol_all_e100_s1 --from_run byol_all_e100_s1 --label_fraction 0.1 --seed 1
+-m dlt.finetune --name ft_byol_all_e200_s1 --from_run byol_all_e200_s1 --label_fraction 0.1 --seed 1
+-m dlt.finetune --name ft_simclr_all_e400_s2 --from_run simclr_all_e400_s2 --label_fraction 0.1 --seed 2
+-m dlt.finetune --name ft_simclr_all_e1000_s2 --from_run simclr_all_e1000_s2 --label_fraction 0.1 --seed 2
+-m dlt.finetune --name ft_supcon_lab_f0.1_e400_s2 --from_run supcon_lab_f0.1_e400_s2 --label_fraction 0.1 --seed 2
+-m dlt.finetune --name ft_supcon_lab_f0.1_e1000_s2 --from_run supcon_lab_f0.1_e1000_s2 --label_fraction 0.1 --seed 2
+-m dlt.finetune --name ft_union_f0.1_e400_s2 --from_run union_f0.1_e400_s2 --label_fraction 0.1 --seed 2
+-m dlt.finetune --name ft_union_f0.1_e1000_s2 --from_run union_f0.1_e1000_s2 --label_fraction 0.1 --seed 2
+-m dlt.finetune --name ft_simclr_sub_f0.1_e400_s2 --from_run simclr_sub_f0.1_e400_s2 --label_fraction 0.1 --seed 2
+-m dlt.finetune --name ft_simclr_sub_f0.1_e1000_s2 --from_run simclr_sub_f0.1_e1000_s2 --label_fraction 0.1 --seed 2
+-m dlt.finetune --name ft_twostage_simclr100_supcon5_s2 --from_run twostage_simclr100_supcon5_s2 --label_fraction 0.1 --seed 2
+-m dlt.finetune --name ft_twostage_simclr100_supcon25_s2 --from_run twostage_simclr100_supcon25_s2 --label_fraction 0.1 --seed 2
+-m dlt.finetune --name ft_twostage_simclr100_supcon100_s2 --from_run twostage_simclr100_supcon100_s2 --label_fraction 0.1 --seed 2
+-m dlt.finetune --name ft_twostage_simclr200_supcon5_s2 --from_run twostage_simclr200_supcon5_s2 --label_fraction 0.1 --seed 2
+-m dlt.finetune --name ft_twostage_simclr200_supcon25_s2 --from_run twostage_simclr200_supcon25_s2 --label_fraction 0.1 --seed 2
+-m dlt.finetune --name ft_byol_all_e100_s2 --from_run byol_all_e100_s2 --label_fraction 0.1 --seed 2
+-m dlt.finetune --name ft_byol_all_e200_s2 --from_run byol_all_e200_s2 --label_fraction 0.1 --seed 2
+# coverage intervention: pools of exactly 5,000 labeled images with a controlled share of k-center / redundant images
+--name supcon_lab_mixkcenter25_f0.1_e100_s0 --method supcon --pool labeled --pool_file results/pools/mixkcenter25_f0.1_s0.npy --epochs 100 --seed 0
+--name simclr_sub_mixkcenter25_f0.1_e100_s0 --method simclr --pool labeled --pool_file results/pools/mixkcenter25_f0.1_s0.npy --epochs 100 --seed 0
+--name supcon_lab_mixkcenter50_f0.1_e100_s0 --method supcon --pool labeled --pool_file results/pools/mixkcenter50_f0.1_s0.npy --epochs 100 --seed 0
+--name simclr_sub_mixkcenter50_f0.1_e100_s0 --method simclr --pool labeled --pool_file results/pools/mixkcenter50_f0.1_s0.npy --epochs 100 --seed 0
+--name supcon_lab_mixkcenter75_f0.1_e100_s0 --method supcon --pool labeled --pool_file results/pools/mixkcenter75_f0.1_s0.npy --epochs 100 --seed 0
+--name simclr_sub_mixkcenter75_f0.1_e100_s0 --method simclr --pool labeled --pool_file results/pools/mixkcenter75_f0.1_s0.npy --epochs 100 --seed 0
+--name supcon_lab_mixcluster5025_f0.1_e100_s0 --method supcon --pool labeled --pool_file results/pools/mixcluster5025_f0.1_s0.npy --epochs 100 --seed 0
+--name simclr_sub_mixcluster5025_f0.1_e100_s0 --method simclr --pool labeled --pool_file results/pools/mixcluster5025_f0.1_s0.npy --epochs 100 --seed 0
+--name supcon_lab_mixcluster5050_f0.1_e100_s0 --method supcon --pool labeled --pool_file results/pools/mixcluster5050_f0.1_s0.npy --epochs 100 --seed 0
+--name simclr_sub_mixcluster5050_f0.1_e100_s0 --method simclr --pool labeled --pool_file results/pools/mixcluster5050_f0.1_s0.npy --epochs 100 --seed 0
+--name supcon_lab_mixcluster5075_f0.1_e100_s0 --method supcon --pool labeled --pool_file results/pools/mixcluster5075_f0.1_s0.npy --epochs 100 --seed 0
+--name simclr_sub_mixcluster5075_f0.1_e100_s0 --method simclr --pool labeled --pool_file results/pools/mixcluster5075_f0.1_s0.npy --epochs 100 --seed 0
+--name supcon_lab_kcenter_f0.1_e100_s0 --method supcon --pool labeled --pool_file results/pools/kcenter_f0.1_s0.npy --epochs 100 --seed 0
+--name simclr_sub_kcenter_f0.1_e100_s0 --method simclr --pool labeled --pool_file results/pools/kcenter_f0.1_s0.npy --epochs 100 --seed 0
+--name supcon_lab_cluster50_f0.1_e100_s0 --method supcon --pool labeled --pool_file results/pools/cluster50_f0.1_s0.npy --epochs 100 --seed 0
+--name simclr_sub_cluster50_f0.1_e100_s0 --method simclr --pool labeled --pool_file results/pools/cluster50_f0.1_s0.npy --epochs 100 --seed 0
+--name supcon_lab_mixkcenter25_f0.1_e100_s1 --method supcon --pool labeled --pool_file results/pools/mixkcenter25_f0.1_s1.npy --epochs 100 --seed 1
+--name simclr_sub_mixkcenter25_f0.1_e100_s1 --method simclr --pool labeled --pool_file results/pools/mixkcenter25_f0.1_s1.npy --epochs 100 --seed 1
+--name supcon_lab_mixkcenter50_f0.1_e100_s1 --method supcon --pool labeled --pool_file results/pools/mixkcenter50_f0.1_s1.npy --epochs 100 --seed 1
+--name simclr_sub_mixkcenter50_f0.1_e100_s1 --method simclr --pool labeled --pool_file results/pools/mixkcenter50_f0.1_s1.npy --epochs 100 --seed 1
+--name supcon_lab_mixkcenter75_f0.1_e100_s1 --method supcon --pool labeled --pool_file results/pools/mixkcenter75_f0.1_s1.npy --epochs 100 --seed 1
+--name simclr_sub_mixkcenter75_f0.1_e100_s1 --method simclr --pool labeled --pool_file results/pools/mixkcenter75_f0.1_s1.npy --epochs 100 --seed 1
+--name supcon_lab_mixcluster5025_f0.1_e100_s1 --method supcon --pool labeled --pool_file results/pools/mixcluster5025_f0.1_s1.npy --epochs 100 --seed 1
+--name simclr_sub_mixcluster5025_f0.1_e100_s1 --method simclr --pool labeled --pool_file results/pools/mixcluster5025_f0.1_s1.npy --epochs 100 --seed 1
+--name supcon_lab_mixcluster5050_f0.1_e100_s1 --method supcon --pool labeled --pool_file results/pools/mixcluster5050_f0.1_s1.npy --epochs 100 --seed 1
+--name simclr_sub_mixcluster5050_f0.1_e100_s1 --method simclr --pool labeled --pool_file results/pools/mixcluster5050_f0.1_s1.npy --epochs 100 --seed 1
+--name supcon_lab_mixcluster5075_f0.1_e100_s1 --method supcon --pool labeled --pool_file results/pools/mixcluster5075_f0.1_s1.npy --epochs 100 --seed 1
+--name simclr_sub_mixcluster5075_f0.1_e100_s1 --method simclr --pool labeled --pool_file results/pools/mixcluster5075_f0.1_s1.npy --epochs 100 --seed 1
+--name supcon_lab_kcenter_f0.1_e100_s1 --method supcon --pool labeled --pool_file results/pools/kcenter_f0.1_s1.npy --epochs 100 --seed 1
+--name simclr_sub_kcenter_f0.1_e100_s1 --method simclr --pool labeled --pool_file results/pools/kcenter_f0.1_s1.npy --epochs 100 --seed 1
+--name supcon_lab_cluster50_f0.1_e100_s1 --method supcon --pool labeled --pool_file results/pools/cluster50_f0.1_s1.npy --epochs 100 --seed 1
+--name simclr_sub_cluster50_f0.1_e100_s1 --method simclr --pool labeled --pool_file results/pools/cluster50_f0.1_s1.npy --epochs 100 --seed 1
+--name supcon_lab_mixkcenter25_f0.1_e100_s2 --method supcon --pool labeled --pool_file results/pools/mixkcenter25_f0.1_s2.npy --epochs 100 --seed 2
+--name simclr_sub_mixkcenter25_f0.1_e100_s2 --method simclr --pool labeled --pool_file results/pools/mixkcenter25_f0.1_s2.npy --epochs 100 --seed 2
+--name supcon_lab_mixkcenter50_f0.1_e100_s2 --method supcon --pool labeled --pool_file results/pools/mixkcenter50_f0.1_s2.npy --epochs 100 --seed 2
+--name simclr_sub_mixkcenter50_f0.1_e100_s2 --method simclr --pool labeled --pool_file results/pools/mixkcenter50_f0.1_s2.npy --epochs 100 --seed 2
+--name supcon_lab_mixkcenter75_f0.1_e100_s2 --method supcon --pool labeled --pool_file results/pools/mixkcenter75_f0.1_s2.npy --epochs 100 --seed 2
+--name simclr_sub_mixkcenter75_f0.1_e100_s2 --method simclr --pool labeled --pool_file results/pools/mixkcenter75_f0.1_s2.npy --epochs 100 --seed 2
+--name supcon_lab_mixcluster5025_f0.1_e100_s2 --method supcon --pool labeled --pool_file results/pools/mixcluster5025_f0.1_s2.npy --epochs 100 --seed 2
+--name simclr_sub_mixcluster5025_f0.1_e100_s2 --method simclr --pool labeled --pool_file results/pools/mixcluster5025_f0.1_s2.npy --epochs 100 --seed 2
+--name supcon_lab_mixcluster5050_f0.1_e100_s2 --method supcon --pool labeled --pool_file results/pools/mixcluster5050_f0.1_s2.npy --epochs 100 --seed 2
+--name simclr_sub_mixcluster5050_f0.1_e100_s2 --method simclr --pool labeled --pool_file results/pools/mixcluster5050_f0.1_s2.npy --epochs 100 --seed 2
+--name supcon_lab_mixcluster5075_f0.1_e100_s2 --method supcon --pool labeled --pool_file results/pools/mixcluster5075_f0.1_s2.npy --epochs 100 --seed 2
+--name simclr_sub_mixcluster5075_f0.1_e100_s2 --method simclr --pool labeled --pool_file results/pools/mixcluster5075_f0.1_s2.npy --epochs 100 --seed 2
+--name supcon_lab_kcenter_f0.1_e100_s2 --method supcon --pool labeled --pool_file results/pools/kcenter_f0.1_s2.npy --epochs 100 --seed 2
+--name simclr_sub_kcenter_f0.1_e100_s2 --method simclr --pool labeled --pool_file results/pools/kcenter_f0.1_s2.npy --epochs 100 --seed 2
+--name supcon_lab_cluster50_f0.1_e100_s2 --method supcon --pool labeled --pool_file results/pools/cluster50_f0.1_s2.npy --epochs 100 --seed 2
+--name simclr_sub_cluster50_f0.1_e100_s2 --method simclr --pool labeled --pool_file results/pools/cluster50_f0.1_s2.npy --epochs 100 --seed 2
+# label fraction x budget grid (one seed): where does each method win?
+--name supcon_lab_f0.5_e100_s0 --method supcon --pool labeled --label_fraction 0.5 --epochs 100 --seed 0
+--name supcon_lab_f1.0_e100_s0 --method supcon --pool labeled --label_fraction 1.0 --epochs 100 --seed 0
+--name union_f0.5_e100_s0 --method supcon --pool all --temperature_unlabeled 0.5 --labeled_share 0.25 --label_fraction 0.5 --epochs 100 --seed 0
+--name supcon_lab_f0.01_e25_s0 --method supcon --pool labeled --label_fraction 0.01 --epochs 25 --curve_points 8 --seed 0
+--name supcon_lab_f0.05_e25_s0 --method supcon --pool labeled --label_fraction 0.05 --epochs 25 --curve_points 8 --seed 0
+--name supcon_lab_f0.2_e25_s0 --method supcon --pool labeled --label_fraction 0.2 --epochs 25 --curve_points 8 --seed 0
+--name supcon_lab_f0.5_e25_s0 --method supcon --pool labeled --label_fraction 0.5 --epochs 25 --curve_points 8 --seed 0
+--name supcon_lab_f1.0_e25_s0 --method supcon --pool labeled --label_fraction 1.0 --epochs 25 --curve_points 8 --seed 0
+--name union_f0.01_e25_s0 --method supcon --pool all --temperature_unlabeled 0.5 --labeled_share 0.25 --label_fraction 0.01 --epochs 25 --curve_points 8 --seed 0
+--name union_f0.05_e25_s0 --method supcon --pool all --temperature_unlabeled 0.5 --labeled_share 0.25 --label_fraction 0.05 --epochs 25 --curve_points 8 --seed 0
+--name union_f0.2_e25_s0 --method supcon --pool all --temperature_unlabeled 0.5 --labeled_share 0.25 --label_fraction 0.2 --epochs 25 --curve_points 8 --seed 0
+--name union_f0.5_e25_s0 --method supcon --pool all --temperature_unlabeled 0.5 --labeled_share 0.25 --label_fraction 0.5 --epochs 25 --curve_points 8 --seed 0
+--name supcon_lab_f0.01_e400_s0 --method supcon --pool labeled --label_fraction 0.01 --epochs 400 --curve_points 16 --seed 0
+--name supcon_lab_f0.05_e400_s0 --method supcon --pool labeled --label_fraction 0.05 --epochs 400 --curve_points 16 --seed 0
+--name supcon_lab_f0.2_e400_s0 --method supcon --pool labeled --label_fraction 0.2 --epochs 400 --curve_points 16 --seed 0
+--name supcon_lab_f0.5_e400_s0 --method supcon --pool labeled --label_fraction 0.5 --epochs 400 --curve_points 16 --seed 0
+--name supcon_lab_f1.0_e400_s0 --method supcon --pool labeled --label_fraction 1.0 --epochs 400 --curve_points 16 --seed 0
+--name union_f0.01_e400_s0 --method supcon --pool all --temperature_unlabeled 0.5 --labeled_share 0.25 --label_fraction 0.01 --epochs 400 --curve_points 16 --seed 0
+--name union_f0.05_e400_s0 --method supcon --pool all --temperature_unlabeled 0.5 --labeled_share 0.25 --label_fraction 0.05 --epochs 400 --curve_points 16 --seed 0
+--name union_f0.2_e400_s0 --method supcon --pool all --temperature_unlabeled 0.5 --labeled_share 0.25 --label_fraction 0.2 --epochs 400 --curve_points 16 --seed 0
+--name union_f0.5_e400_s0 --method supcon --pool all --temperature_unlabeled 0.5 --labeled_share 0.25 --label_fraction 0.5 --epochs 400 --curve_points 16 --seed 0
+-m dlt.finetune --name ft_supcon_lab_f0.01_e25_s0 --from_run supcon_lab_f0.01_e25_s0 --label_fraction 0.01 --seed 0
+-m dlt.finetune --name ft_union_f0.01_e25_s0 --from_run union_f0.01_e25_s0 --label_fraction 0.01 --seed 0
+-m dlt.finetune --name ft_simclr_all_e25_f0.01_s0 --from_run simclr_all_e25_s0 --label_fraction 0.01 --seed 0
+-m dlt.finetune --name ft_supcon_lab_f0.01_e100_s0 --from_run supcon_lab_f0.01_e100_s0 --label_fraction 0.01 --seed 0
+-m dlt.finetune --name ft_union_f0.01_e100_s0 --from_run union_f0.01_e100_s0 --label_fraction 0.01 --seed 0
+-m dlt.finetune --name ft_simclr_all_e100_f0.01_s0 --from_run simclr_all_e100_s0 --label_fraction 0.01 --seed 0
+-m dlt.finetune --name ft_supcon_lab_f0.01_e400_s0 --from_run supcon_lab_f0.01_e400_s0 --label_fraction 0.01 --seed 0
+-m dlt.finetune --name ft_union_f0.01_e400_s0 --from_run union_f0.01_e400_s0 --label_fraction 0.01 --seed 0
+-m dlt.finetune --name ft_simclr_all_e400_f0.01_s0 --from_run simclr_all_e400_s0 --label_fraction 0.01 --seed 0
+-m dlt.finetune --name ft_supcon_lab_f0.05_e25_s0 --from_run supcon_lab_f0.05_e25_s0 --label_fraction 0.05 --seed 0
+-m dlt.finetune --name ft_union_f0.05_e25_s0 --from_run union_f0.05_e25_s0 --label_fraction 0.05 --seed 0
+-m dlt.finetune --name ft_simclr_all_e25_f0.05_s0 --from_run simclr_all_e25_s0 --label_fraction 0.05 --seed 0
+-m dlt.finetune --name ft_supcon_lab_f0.05_e100_s0 --from_run supcon_lab_f0.05_e100_s0 --label_fraction 0.05 --seed 0
+-m dlt.finetune --name ft_union_f0.05_e100_s0 --from_run union_f0.05_e100_s0 --label_fraction 0.05 --seed 0
+-m dlt.finetune --name ft_simclr_all_e100_f0.05_s0 --from_run simclr_all_e100_s0 --label_fraction 0.05 --seed 0
+-m dlt.finetune --name ft_supcon_lab_f0.05_e400_s0 --from_run supcon_lab_f0.05_e400_s0 --label_fraction 0.05 --seed 0
+-m dlt.finetune --name ft_union_f0.05_e400_s0 --from_run union_f0.05_e400_s0 --label_fraction 0.05 --seed 0
+-m dlt.finetune --name ft_simclr_all_e400_f0.05_s0 --from_run simclr_all_e400_s0 --label_fraction 0.05 --seed 0
+-m dlt.finetune --name ft_supcon_lab_f0.2_e25_s0 --from_run supcon_lab_f0.2_e25_s0 --label_fraction 0.2 --seed 0
+-m dlt.finetune --name ft_union_f0.2_e25_s0 --from_run union_f0.2_e25_s0 --label_fraction 0.2 --seed 0
+-m dlt.finetune --name ft_simclr_all_e25_f0.2_s0 --from_run simclr_all_e25_s0 --label_fraction 0.2 --seed 0
+-m dlt.finetune --name ft_supcon_lab_f0.2_e100_s0 --from_run supcon_lab_f0.2_e100_s0 --label_fraction 0.2 --seed 0
+-m dlt.finetune --name ft_union_f0.2_e100_s0 --from_run union_f0.2_e100_s0 --label_fraction 0.2 --seed 0
+-m dlt.finetune --name ft_simclr_all_e100_f0.2_s0 --from_run simclr_all_e100_s0 --label_fraction 0.2 --seed 0
+-m dlt.finetune --name ft_supcon_lab_f0.2_e400_s0 --from_run supcon_lab_f0.2_e400_s0 --label_fraction 0.2 --seed 0
+-m dlt.finetune --name ft_union_f0.2_e400_s0 --from_run union_f0.2_e400_s0 --label_fraction 0.2 --seed 0
+-m dlt.finetune --name ft_simclr_all_e400_f0.2_s0 --from_run simclr_all_e400_s0 --label_fraction 0.2 --seed 0
+-m dlt.finetune --name ft_supcon_lab_f0.5_e25_s0 --from_run supcon_lab_f0.5_e25_s0 --label_fraction 0.5 --seed 0
+-m dlt.finetune --name ft_union_f0.5_e25_s0 --from_run union_f0.5_e25_s0 --label_fraction 0.5 --seed 0
+-m dlt.finetune --name ft_simclr_all_e25_f0.5_s0 --from_run simclr_all_e25_s0 --label_fraction 0.5 --seed 0
+-m dlt.finetune --name ft_supcon_lab_f0.5_e100_s0 --from_run supcon_lab_f0.5_e100_s0 --label_fraction 0.5 --seed 0
+-m dlt.finetune --name ft_union_f0.5_e100_s0 --from_run union_f0.5_e100_s0 --label_fraction 0.5 --seed 0
+-m dlt.finetune --name ft_simclr_all_e100_f0.5_s0 --from_run simclr_all_e100_s0 --label_fraction 0.5 --seed 0
+-m dlt.finetune --name ft_supcon_lab_f0.5_e400_s0 --from_run supcon_lab_f0.5_e400_s0 --label_fraction 0.5 --seed 0
+-m dlt.finetune --name ft_union_f0.5_e400_s0 --from_run union_f0.5_e400_s0 --label_fraction 0.5 --seed 0
+-m dlt.finetune --name ft_simclr_all_e400_f0.5_s0 --from_run simclr_all_e400_s0 --label_fraction 0.5 --seed 0
+# is the SupCon plateau a regularisation failure? weight decay and stronger augmentation at 38,800 steps
+--name supcon_lab_f0.1_wd0.0005_e400_s0 --method supcon --pool labeled --label_fraction 0.1 --wd 0.0005 --epochs 400 --curve_points 16 --seed 0
+--name supcon_lab_f0.1_wd0.001_e400_s0 --method supcon --pool labeled --label_fraction 0.1 --wd 0.001 --epochs 400 --curve_points 16 --seed 0
+--name supcon_lab_f0.1_strongaug_e400_s0 --method supcon --pool labeled --label_fraction 0.1 --aug simclr_strong --epochs 400 --curve_points 16 --seed 0
+--name supcon_lab_f0.1_wd0.0005_strongaug_e400_s0 --method supcon --pool labeled --label_fraction 0.1 --wd 0.0005 --aug simclr_strong --epochs 400 --curve_points 16 --seed 0

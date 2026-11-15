@@ -1,0 +1,131 @@
+# Revision round 2, part 1 (runs that need no new code). Order = priority.
+# two-stage: SimCLR on all images, then SupCon on the 5k labeled images (labels last, still contrastive)
+--name twostage_simclr100_supcon5_s0 --init_run simclr_all_e100_s0 --method supcon --pool labeled --label_fraction 0.1 --epochs 5 --lr 0.02 --seed 0
+--name twostage_simclr100_supcon25_s0 --init_run simclr_all_e100_s0 --method supcon --pool labeled --label_fraction 0.1 --epochs 25 --lr 0.02 --seed 0
+--name twostage_simclr100_supcon100_s0 --init_run simclr_all_e100_s0 --method supcon --pool labeled --label_fraction 0.1 --epochs 100 --lr 0.02 --seed 0
+--name twostage_simclr200_supcon5_s0 --init_run simclr_all_e200_s0 --method supcon --pool labeled --label_fraction 0.1 --epochs 5 --lr 0.02 --seed 0
+--name twostage_simclr200_supcon25_s0 --init_run simclr_all_e200_s0 --method supcon --pool labeled --label_fraction 0.1 --epochs 25 --lr 0.02 --seed 0
+--name twostage_simclr100_supcon5_s1 --init_run simclr_all_e100_s1 --method supcon --pool labeled --label_fraction 0.1 --epochs 5 --lr 0.02 --seed 1
+--name twostage_simclr100_supcon25_s1 --init_run simclr_all_e100_s1 --method supcon --pool labeled --label_fraction 0.1 --epochs 25 --lr 0.02 --seed 1
+--name twostage_simclr100_supcon100_s1 --init_run simclr_all_e100_s1 --method supcon --pool labeled --label_fraction 0.1 --epochs 100 --lr 0.02 --seed 1
+--name twostage_simclr200_supcon5_s1 --init_run simclr_all_e200_s1 --method supcon --pool labeled --label_fraction 0.1 --epochs 5 --lr 0.02 --seed 1
+--name twostage_simclr200_supcon25_s1 --init_run simclr_all_e200_s1 --method supcon --pool labeled --label_fraction 0.1 --epochs 25 --lr 0.02 --seed 1
+--name twostage_simclr100_supcon5_s2 --init_run simclr_all_e100_s2 --method supcon --pool labeled --label_fraction 0.1 --epochs 5 --lr 0.02 --seed 2
+--name twostage_simclr100_supcon25_s2 --init_run simclr_all_e100_s2 --method supcon --pool labeled --label_fraction 0.1 --epochs 25 --lr 0.02 --seed 2
+--name twostage_simclr100_supcon100_s2 --init_run simclr_all_e100_s2 --method supcon --pool labeled --label_fraction 0.1 --epochs 100 --lr 0.02 --seed 2
+--name twostage_simclr200_supcon5_s2 --init_run simclr_all_e200_s2 --method supcon --pool labeled --label_fraction 0.1 --epochs 5 --lr 0.02 --seed 2
+--name twostage_simclr200_supcon25_s2 --init_run simclr_all_e200_s2 --method supcon --pool labeled --label_fraction 0.1 --epochs 25 --lr 0.02 --seed 2
+--name twostage_simclr100_supcon25_lr0.005_s0 --init_run simclr_all_e100_s0 --method supcon --pool labeled --label_fraction 0.1 --epochs 25 --lr 0.005 --seed 0
+--name twostage_simclr100_supcon25_lr0.25_s0 --init_run simclr_all_e100_s0 --method supcon --pool labeled --label_fraction 0.1 --epochs 25 --lr 0.25 --seed 0
+# five seeds for the main arms at 9,700 and 19,400 steps
+--name simclr_all_e100_s3 --method simclr --pool all --epochs 100 --seed 3
+--name supcon_lab_f0.1_e100_s3 --method supcon --pool labeled --label_fraction 0.1 --epochs 100 --seed 3
+--name union_f0.1_e100_s3 --method supcon --pool all --temperature_unlabeled 0.5 --labeled_share 0.25 --label_fraction 0.1 --epochs 100 --seed 3
+--name simclr_sub_f0.1_e100_s3 --method simclr --pool labeled --label_fraction 0.1 --epochs 100 --seed 3
+--name simclr_all_e100_s4 --method simclr --pool all --epochs 100 --seed 4
+--name supcon_lab_f0.1_e100_s4 --method supcon --pool labeled --label_fraction 0.1 --epochs 100 --seed 4
+--name union_f0.1_e100_s4 --method supcon --pool all --temperature_unlabeled 0.5 --labeled_share 0.25 --label_fraction 0.1 --epochs 100 --seed 4
+--name simclr_sub_f0.1_e100_s4 --method simclr --pool labeled --label_fraction 0.1 --epochs 100 --seed 4
+--name simclr_all_e200_s0 --method simclr --pool all --epochs 200 --seed 0
+--name supcon_lab_f0.1_e200_s0 --method supcon --pool labeled --label_fraction 0.1 --epochs 200 --seed 0
+--name union_f0.1_e200_s0 --method supcon --pool all --temperature_unlabeled 0.5 --labeled_share 0.25 --label_fraction 0.1 --epochs 200 --seed 0
+--name simclr_sub_f0.1_e200_s0 --method simclr --pool labeled --label_fraction 0.1 --epochs 200 --seed 0
+--name simclr_all_e200_s1 --method simclr --pool all --epochs 200 --seed 1
+--name supcon_lab_f0.1_e200_s1 --method supcon --pool labeled --label_fraction 0.1 --epochs 200 --seed 1
+--name union_f0.1_e200_s1 --method supcon --pool all --temperature_unlabeled 0.5 --labeled_share 0.25 --label_fraction 0.1 --epochs 200 --seed 1
+--name simclr_sub_f0.1_e200_s1 --method simclr --pool labeled --label_fraction 0.1 --epochs 200 --seed 1
+--name simclr_all_e200_s2 --method simclr --pool all --epochs 200 --seed 2
+--name supcon_lab_f0.1_e200_s2 --method supcon --pool labeled --label_fraction 0.1 --epochs 200 --seed 2
+--name union_f0.1_e200_s2 --method supcon --pool all --temperature_unlabeled 0.5 --labeled_share 0.25 --label_fraction 0.1 --epochs 200 --seed 2
+--name simclr_sub_f0.1_e200_s2 --method simclr --pool labeled --label_fraction 0.1 --epochs 200 --seed 2
+--name simclr_all_e200_s3 --method simclr --pool all --epochs 200 --seed 3
+--name supcon_lab_f0.1_e200_s3 --method supcon --pool labeled --label_fraction 0.1 --epochs 200 --seed 3
+--name union_f0.1_e200_s3 --method supcon --pool all --temperature_unlabeled 0.5 --labeled_share 0.25 --label_fraction 0.1 --epochs 200 --seed 3
+--name simclr_sub_f0.1_e200_s3 --method simclr --pool labeled --label_fraction 0.1 --epochs 200 --seed 3
+--name simclr_all_e200_s4 --method simclr --pool all --epochs 200 --seed 4
+--name supcon_lab_f0.1_e200_s4 --method supcon --pool labeled --label_fraction 0.1 --epochs 200 --seed 4
+--name union_f0.1_e200_s4 --method supcon --pool all --temperature_unlabeled 0.5 --labeled_share 0.25 --label_fraction 0.1 --epochs 200 --seed 4
+--name simclr_sub_f0.1_e200_s4 --method simclr --pool labeled --label_fraction 0.1 --epochs 200 --seed 4
+# three seeds at every point of the step curve; 900 steps = the report's exact SupCon budget
+--name simclr_all_e10_s0 --method simclr --pool all --epochs 10 --seed 0
+--name supcon_lab_f0.1_e10_s0 --method supcon --pool labeled --label_fraction 0.1 --epochs 10 --seed 0
+--name union_f0.1_e10_s0 --method supcon --pool all --temperature_unlabeled 0.5 --labeled_share 0.25 --label_fraction 0.1 --epochs 10 --seed 0
+--name simclr_all_e25_s0 --method simclr --pool all --epochs 25 --seed 0
+--name supcon_lab_f0.1_e25_s0 --method supcon --pool labeled --label_fraction 0.1 --epochs 25 --seed 0
+--name union_f0.1_e25_s0 --method supcon --pool all --temperature_unlabeled 0.5 --labeled_share 0.25 --label_fraction 0.1 --epochs 25 --seed 0
+--name simclr_all_e50_s0 --method simclr --pool all --epochs 50 --seed 0
+--name supcon_lab_f0.1_e50_s0 --method supcon --pool labeled --label_fraction 0.1 --epochs 50 --seed 0
+--name union_f0.1_e50_s0 --method supcon --pool all --temperature_unlabeled 0.5 --labeled_share 0.25 --label_fraction 0.1 --epochs 50 --seed 0
+--name supcon_lab_f0.1_steps900_s0 --method supcon --pool labeled --label_fraction 0.1 --epochs 9.28 --seed 0
+--name simclr_all_e10_s1 --method simclr --pool all --epochs 10 --seed 1
+--name supcon_lab_f0.1_e10_s1 --method supcon --pool labeled --label_fraction 0.1 --epochs 10 --seed 1
+--name union_f0.1_e10_s1 --method supcon --pool all --temperature_unlabeled 0.5 --labeled_share 0.25 --label_fraction 0.1 --epochs 10 --seed 1
+--name simclr_all_e25_s1 --method simclr --pool all --epochs 25 --seed 1
+--name supcon_lab_f0.1_e25_s1 --method supcon --pool labeled --label_fraction 0.1 --epochs 25 --seed 1
+--name union_f0.1_e25_s1 --method supcon --pool all --temperature_unlabeled 0.5 --labeled_share 0.25 --label_fraction 0.1 --epochs 25 --seed 1
+--name simclr_all_e50_s1 --method simclr --pool all --epochs 50 --seed 1
+--name supcon_lab_f0.1_e50_s1 --method supcon --pool labeled --label_fraction 0.1 --epochs 50 --seed 1
+--name union_f0.1_e50_s1 --method supcon --pool all --temperature_unlabeled 0.5 --labeled_share 0.25 --label_fraction 0.1 --epochs 50 --seed 1
+--name supcon_lab_f0.1_steps900_s1 --method supcon --pool labeled --label_fraction 0.1 --epochs 9.28 --seed 1
+--name simclr_all_e10_s2 --method simclr --pool all --epochs 10 --seed 2
+--name supcon_lab_f0.1_e10_s2 --method supcon --pool labeled --label_fraction 0.1 --epochs 10 --seed 2
+--name union_f0.1_e10_s2 --method supcon --pool all --temperature_unlabeled 0.5 --labeled_share 0.25 --label_fraction 0.1 --epochs 10 --seed 2
+--name simclr_all_e25_s2 --method simclr --pool all --epochs 25 --seed 2
+--name supcon_lab_f0.1_e25_s2 --method supcon --pool labeled --label_fraction 0.1 --epochs 25 --seed 2
+--name union_f0.1_e25_s2 --method supcon --pool all --temperature_unlabeled 0.5 --labeled_share 0.25 --label_fraction 0.1 --epochs 25 --seed 2
+--name simclr_all_e50_s2 --method simclr --pool all --epochs 50 --seed 2
+--name supcon_lab_f0.1_e50_s2 --method supcon --pool labeled --label_fraction 0.1 --epochs 50 --seed 2
+--name union_f0.1_e50_s2 --method supcon --pool all --temperature_unlabeled 0.5 --labeled_share 0.25 --label_fraction 0.1 --epochs 50 --seed 2
+--name supcon_lab_f0.1_steps900_s2 --method supcon --pool labeled --label_fraction 0.1 --epochs 9.28 --seed 2
+# supervised CE and BYOL at matched budgets; temperature swap; missing pool cell
+--name ce_f0.1_e100_s0 --method ce --pool labeled --label_fraction 0.1 --epochs 100 --seed 0
+--name byol_all_e100_s0 --method byol --pool all --epochs 100 --seed 0
+--name ce_f0.1_e200_s0 --method ce --pool labeled --label_fraction 0.1 --epochs 200 --seed 0
+--name byol_all_e200_s0 --method byol --pool all --epochs 200 --seed 0
+--name ce_f0.1_e100_s1 --method ce --pool labeled --label_fraction 0.1 --epochs 100 --seed 1
+--name byol_all_e100_s1 --method byol --pool all --epochs 100 --seed 1
+--name ce_f0.1_e200_s1 --method ce --pool labeled --label_fraction 0.1 --epochs 200 --seed 1
+--name byol_all_e200_s1 --method byol --pool all --epochs 200 --seed 1
+--name ce_f0.1_e100_s2 --method ce --pool labeled --label_fraction 0.1 --epochs 100 --seed 2
+--name byol_all_e100_s2 --method byol --pool all --epochs 100 --seed 2
+--name ce_f0.1_e200_s2 --method ce --pool labeled --label_fraction 0.1 --epochs 200 --seed 2
+--name byol_all_e200_s2 --method byol --pool all --epochs 200 --seed 2
+--name simclr_all_t0.1_e100_s0 --method simclr --pool all --temperature 0.1 --epochs 100 --seed 0
+--name supcon_lab_f0.1_t0.5_e100_s0 --method supcon --pool labeled --label_fraction 0.1 --temperature 0.5 --epochs 100 --seed 0
+--name simclr_sub_cluster10_f0.1_e100_s0 --method simclr --pool labeled --pool_file results/pools/cluster10_f0.1_s0.npy --epochs 100 --seed 0
+# ResNet-50: the report's budgets (900 vs 19,400 steps) and the crossover
+--name r50_supcon_lab_f0.1_steps900_s0 --backbone resnet50 --method supcon --pool labeled --label_fraction 0.1 --epochs 9.28 --seed 0
+--name r50_supcon_lab_f0.1_steps900_lr0.05_s0 --backbone resnet50 --method supcon --pool labeled --label_fraction 0.1 --epochs 9.28 --lr 0.05 --seed 0
+--name r50_simclr_all_e200_s0 --backbone resnet50 --method simclr --pool all --epochs 200 --seed 0
+--name r50_supcon_lab_f0.1_e200_s0 --backbone resnet50 --method supcon --pool labeled --label_fraction 0.1 --epochs 200 --seed 0
+# long budgets: 400 and 1,000 epoch-equivalents (38,800 and 97,000 steps), seed by seed
+--name simclr_all_e400_s0 --method simclr --pool all --epochs 400 --curve_points 16 --seed 0
+--name supcon_lab_f0.1_e400_s0 --method supcon --pool labeled --label_fraction 0.1 --epochs 400 --curve_points 16 --seed 0
+--name union_f0.1_e400_s0 --method supcon --pool all --temperature_unlabeled 0.5 --labeled_share 0.25 --label_fraction 0.1 --epochs 400 --curve_points 16 --seed 0
+--name simclr_sub_f0.1_e400_s0 --method simclr --pool labeled --label_fraction 0.1 --epochs 400 --curve_points 16 --seed 0
+--name simclr_all_e1000_s0 --method simclr --pool all --epochs 1000 --curve_points 20 --seed 0
+--name supcon_lab_f0.1_e1000_s0 --method supcon --pool labeled --label_fraction 0.1 --epochs 1000 --curve_points 20 --seed 0
+--name union_f0.1_e1000_s0 --method supcon --pool all --temperature_unlabeled 0.5 --labeled_share 0.25 --label_fraction 0.1 --epochs 1000 --curve_points 20 --seed 0
+--name simclr_sub_f0.1_e1000_s0 --method simclr --pool labeled --label_fraction 0.1 --epochs 1000 --curve_points 20 --seed 0
+--name union_unif_f0.1_e400_s0 --method supcon --pool all --temperature_unlabeled 0.5 --label_fraction 0.1 --epochs 400 --curve_points 16 --seed 0
+--name simclr_all_e400_s1 --method simclr --pool all --epochs 400 --curve_points 16 --seed 1
+--name supcon_lab_f0.1_e400_s1 --method supcon --pool labeled --label_fraction 0.1 --epochs 400 --curve_points 16 --seed 1
+--name union_f0.1_e400_s1 --method supcon --pool all --temperature_unlabeled 0.5 --labeled_share 0.25 --label_fraction 0.1 --epochs 400 --curve_points 16 --seed 1
+--name simclr_sub_f0.1_e400_s1 --method simclr --pool labeled --label_fraction 0.1 --epochs 400 --curve_points 16 --seed 1
+--name simclr_all_e1000_s1 --method simclr --pool all --epochs 1000 --curve_points 20 --seed 1
+--name supcon_lab_f0.1_e1000_s1 --method supcon --pool labeled --label_fraction 0.1 --epochs 1000 --curve_points 20 --seed 1
+--name union_f0.1_e1000_s1 --method supcon --pool all --temperature_unlabeled 0.5 --labeled_share 0.25 --label_fraction 0.1 --epochs 1000 --curve_points 20 --seed 1
+--name simclr_sub_f0.1_e1000_s1 --method simclr --pool labeled --label_fraction 0.1 --epochs 1000 --curve_points 20 --seed 1
+--name simclr_all_e400_s2 --method simclr --pool all --epochs 400 --curve_points 16 --seed 2
+--name supcon_lab_f0.1_e400_s2 --method supcon --pool labeled --label_fraction 0.1 --epochs 400 --curve_points 16 --seed 2
+--name union_f0.1_e400_s2 --method supcon --pool all --temperature_unlabeled 0.5 --labeled_share 0.25 --label_fraction 0.1 --epochs 400 --curve_points 16 --seed 2
+--name simclr_sub_f0.1_e400_s2 --method simclr --pool labeled --label_fraction 0.1 --epochs 400 --curve_points 16 --seed 2
+--name simclr_all_e1000_s2 --method simclr --pool all --epochs 1000 --curve_points 20 --seed 2
+--name supcon_lab_f0.1_e1000_s2 --method supcon --pool labeled --label_fraction 0.1 --epochs 1000 --curve_points 20 --seed 2
+--name union_f0.1_e1000_s2 --method supcon --pool all --temperature_unlabeled 0.5 --labeled_share 0.25 --label_fraction 0.1 --epochs 1000 --curve_points 20 --seed 2
+--name simclr_sub_f0.1_e1000_s2 --method simclr --pool labeled --label_fraction 0.1 --epochs 1000 --curve_points 20 --seed 2
+# ResNet-50 seeds
+--name r50_simclr_all_e200_s1 --backbone resnet50 --method simclr --pool all --epochs 200 --seed 1
+--name r50_supcon_lab_f0.1_e200_s1 --backbone resnet50 --method supcon --pool labeled --label_fraction 0.1 --epochs 200 --seed 1
+--name r50_simclr_all_e200_s2 --backbone resnet50 --method simclr --pool all --epochs 200 --seed 2
+--name r50_supcon_lab_f0.1_e200_s2 --backbone resnet50 --method supcon --pool labeled --label_fraction 0.1 --epochs 200 --seed 2

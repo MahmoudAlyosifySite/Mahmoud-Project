@@ -1,0 +1,12 @@
+\begin{tabular}{l ccc ccc}
+\toprule
+ & \multicolumn{3}{c}{CDNV $\downarrow$} & \multicolumn{3}{c}{test set} \\
+\cmidrule(lr){2-4}\cmidrule(lr){5-7}
+method & seen & unseen & ratio & NCC acc. & ETF dev.\ $\downarrow$ & equinorm CV $\downarrow$ \\
+\midrule
+SimCLR & 1.21 & 1.23 & 1.0$\times$ & 74.2 & 0.226 & 0.224 \\
+SimCLR (subset) & 2.37 & 2.43 & 1.0$\times$ & 59.7 & 0.160 & 0.311 \\
+SupCon (label-only) & 0.17 & 0.52 & 3.1$\times$ & 80.4 & 0.100 & 0.252 \\
+Union & 1.54 & 1.60 & 1.0$\times$ & 77.9 & 0.196 & 0.236 \\
+\bottomrule
+\end{tabular}

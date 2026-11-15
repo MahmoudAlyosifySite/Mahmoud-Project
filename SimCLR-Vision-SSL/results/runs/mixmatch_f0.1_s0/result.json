@@ -1,0 +1,109 @@
+{
+ "name": "mixmatch_f0.1_s0",
+ "args": {
+  "name": "mixmatch_f0.1_s0",
+  "out": "results/runs",
+  "ckpt_dir": "/tmp/claude-1000/-home-jovyan-SimCLR-Vision-SSL/d9e8e4cb-36d5-5896-9064-1fe1d907057f/scratchpad/ckpt",
+  "data_dir": "/tmp/claude-1000/-home-jovyan-SimCLR-Vision-SSL/d9e8e4cb-36d5-5896-9064-1fe1d907057f/scratchpad/data",
+  "dataset": "cifar10",
+  "method": "mixmatch",
+  "backbone": "resnet18",
+  "label_fraction": 0.1,
+  "steps": null,
+  "budget": 1.0,
+  "seed": 0,
+  "workers": 16,
+  "holdout": 0,
+  "force": false
+ },
+ "n_pool": 50000,
+ "n_labeled": 5000,
+ "steps": 51733,
+ "train_time_s": 2201.5206224918365,
+ "log": [
+  [
+   5173,
+   1.2149728536605835,
+   83.13999772071838
+  ],
+  [
+   10346,
+   0.6085581183433533,
+   87.97999620437622
+  ],
+  [
+   15519,
+   0.22628886997699738,
+   89.87999558448792
+  ],
+  [
+   20692,
+   1.4091355800628662,
+   90.49999713897705
+  ],
+  [
+   25865,
+   0.2194814682006836,
+   91.21999740600586
+  ],
+  [
+   31038,
+   1.0253922939300537,
+   91.69999957084656
+  ],
+  [
+   36211,
+   0.5785197019577026,
+   91.839998960495
+  ],
+  [
+   41384,
+   0.5657551288604736,
+   92.31999516487122
+  ],
+  [
+   46557,
+   0.9624905586242676,
+   92.36999750137329
+  ],
+  [
+   51730,
+   1.822749376296997,
+   92.35999584197998
+  ]
+ ],
+ "metrics": {
+  "linear_acc": 92.58999824523926,
+  "linear_l2": 0.001,
+  "linear_val_acc": 93.68000030517578,
+  "knn_acc": 92.739999294281,
+  "linear_lab_acc": 92.41999983787537,
+  "linear_lab_l2": 1e-06,
+  "seen_cdnv": 0.199428903397367,
+  "seen_etf_cos_mean": -0.10839561005830534,
+  "seen_etf_cos_std": 0.14179047667734104,
+  "seen_etf_norm_cv": 0.12035578714474111,
+  "seen_etf_dev": 0.11127687411877933,
+  "seen_ncc_acc": 93.05799603462219,
+  "test_cdnv": 0.22577608560000623,
+  "test_etf_cos_mean": -0.10793453896133347,
+  "test_etf_cos_std": 0.14901932719455144,
+  "test_etf_norm_cv": 0.12884478026879215,
+  "test_etf_dev": 0.11627233199064813,
+  "test_ncc_acc": 92.44999885559082,
+  "labeled_cdnv": 0.10379285601357818,
+  "labeled_etf_cos_mean": -0.10996229511056224,
+  "labeled_etf_cos_std": 0.11642725330615761,
+  "labeled_etf_norm_cv": 0.08170112314632151,
+  "labeled_etf_dev": 0.09443429043139631,
+  "labeled_ncc_acc": 100.0,
+  "linear_acc_gray": 85.4200005531311,
+  "linear_acc_chperm": 79.02999520301819,
+  "cka_hist": 0.20875922841586406,
+  "cka_label": 0.7791083867655522,
+  "hist_r2": 0.2798384499492781,
+  "classifier_acc": 92.3799991607666
+ },
+ "torch": "2.11.0+cu126",
+ "gpu": "NVIDIA A40"
+}
