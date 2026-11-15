@@ -22,7 +22,7 @@ from dlt.evaluate import geometry, knn_predict, linear_probe   # noqa: E402
 from dlt.gpu_aug import GPUAugment                       # noqa: E402
 from dlt.models import extract_features, load_encoder    # noqa: E402
 
-FRACTIONS = (0.01, 0.05, 0.1, 0.2)
+FRACTIONS = (0.01, 0.05, 0.1, 0.2, 0.5)
 
 p = argparse.ArgumentParser()
 p.add_argument("--ckpt_dir", required=True)
@@ -42,7 +42,7 @@ for res_path in sorted(glob.glob(os.path.join(args.root, "*", "result.json"))):
     out = os.path.join(d, "probes.json")
     if not os.path.exists(ck):
         continue
-    if os.path.exists(out) and not args.force and "cdnv_rest_0.1" in json.load(open(out)):
+    if os.path.exists(out) and not args.force and all(k in json.load(open(out)) for k in ("cdnv_rest_0.1", "linear_0.5")):
         continue
     enc, a = load_encoder(ck)
     ds = a.get("dataset", "cifar10")

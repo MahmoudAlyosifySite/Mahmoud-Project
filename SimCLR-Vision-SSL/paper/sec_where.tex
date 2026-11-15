@@ -1,0 +1,61 @@
+\section{Results III: where the labels should go}
+\label{sec:where}
+
+\Cref{tab:where} puts every way of using 5,000 labels that we tested on one scale: the test accuracy of the
+final classifier, with only those labels.
+
+\begin{table}[t]
+\centering
+\small
+\caption{Where the labels enter (CIFAR-10, 5,000 labels, ResNet-18). Test accuracy (\%) of the final
+classifier, mean $\pm$ standard deviation over seeds. Pretraining is 19,400 steps where it applies.
+FixMatch and MixMatch from scratch process as many views as a 9,700-step contrastive run, or three times as
+many where stated; FixMatch after pretraining adds the same amount to the 19,400 pretraining steps.}
+\label{tab:where}
+\begin{adjustbox}{max width=\linewidth}
+\input{generated/tab_where.tex}
+\end{adjustbox}
+\end{table}
+
+\paragraph{Labels inside the loss from the first step}
+\supcon followed by fine-tuning reaches \R{supcon_lab_f0.1_e200:ft:pm}\%, and \union
+\R{union_f0.1_e200:ft:pm}\%. Plain cross-entropy training on the same 5,000 images for the same 19,400
+steps reaches \R{ce_f0.1_e200:clf:pm}\%. With the default fine-tuning recipe, contrastive pretraining with
+the labels is therefore no better than not pretraining at all
+(\R{cmp:supconft-ce:e200:sdiff}\pt, \R{cmp:supconft-ce:e200:ci}).
+
+\paragraph{Labels after label-free pretraining}
+\simclr followed by fine-tuning reaches \R{simclr_all_e200:ft:pm}\%, \R{cmp:simclrft-ce:e200:diff}\pt above
+cross-entropy on the 5,000 labels. Two further arms keep the labels until after pretraining.
+
+\emph{\simclr, then \supcon.} We continue the \simclr encoder with \supcon on the 5,000 labeled images, with
+a small learning rate (0.02) and for a short time. Five passes of the full-data schedule (485 steps) raise
+\lpfive from \R{simclr_all_e200:lp5}\% to \R{twostage_simclr200_supcon5:lp5:pm}\%
+(\R{cmp:twostage-simclr:lp5:e200:ci}) and \lpall from \R{simclr_all_e200:lp50}\% to
+\R{twostage_simclr200_supcon5:lp50}\%. Longer second stages are worse (\R{twostage_simclr200_supcon25:lp5}\%
+\lpfive after 2,425 steps), and with the first-stage learning rate of 0.25 the benefit of pretraining is
+largely lost. The labels thus help inside a contrastive loss when they arrive late and briefly; the same
+loss applied from the first step ends \R{d:twostage-supcon:lp5}\pt lower. \pending{Fine-tuning after the
+short \supcon stage gives \R{twostage_simclr200_supcon5:ft:pm}\%.}
+
+\emph{\simclr, then fine-tuning, then self-distillation.} In the style of SimCLR~v2 \citep{chen2020simclrv2},
+the fine-tuned network labels all 50,000 training images with class probabilities and a student, started
+from the same \simclr encoder, is trained to match them. \pending{This reaches
+\R{simclr_all_e200:dist:pm}\%.}
+
+\paragraph{Labels in a semi-supervised objective}
+FixMatch and MixMatch trained from scratch reach \R{fixmatch_f0.1:clf:pm}\% and
+\R{mixmatch_f0.1:clf:pm}\% with the compute of a 9,700-step contrastive run. They use the labels from the
+first step and still beat every pretrain-then-fine-tune pipeline in the table, including \simclr with
+twice the pretraining budget. \pending{Starting FixMatch from the \simclr encoder gives
+\R{simclr_all_e200:fm:pm}\%, the best result of our study on CIFAR-10 with 5,000 labels; FixMatch from
+scratch with three times the budget, a comparable total compute, gives \R{fixmatch_b3_f0.1:clf:pm}\%.}
+
+\paragraph{Summary}
+The answer to the question in the title is ``after''. Within the pipelines that end with supervised
+fine-tuning, the labels are better kept out of the contrastive loss until a label-free encoder exists.
+Overall, the best place for scarce labels in our experiments is not a contrastive loss at all but a
+pseudo-labeling objective, alone or after label-free pretraining. This is consistent with the semi-supervised
+literature \citep{sohn2020fixmatch,li2021comatch,zheng2022simmatch,wang2022usb}, and it bounds the claim of
+this paper: we compare ways of using labels around contrastive pretraining, and we do not claim that
+contrastive pretraining is the best use of a label budget.

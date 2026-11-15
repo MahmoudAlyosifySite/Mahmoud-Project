@@ -1,0 +1,17 @@
+Supervised contrastive learning can use labels during pretraining, but in practice labels are scarce and
+unlabeled images are plentiful. Should the few labels go inside the contrastive loss, or be kept until
+after label-free pretraining? The question is harder to answer than it looks, because two things are
+usually confounded with the method: the compute that each method receives, and whether the evaluation uses
+labels that the practitioner does not have. We study it with a compute-matched $2\times2$ design that
+separates the use of labels from the choice of images: SimCLR and supervised contrastive learning (SupCon),
+each trained on the labeled subset or on all images, with the same number of gradient steps for every
+method, on CIFAR-10, CIFAR-100 and STL-10. Three results stand out. First, labels inside the loss buy
+speed, not a better end point: with 10\% of the CIFAR-10 labels, SupCon leads SimCLR by
+\R{d:simclr-supcon:lp50:e10}\pt after 970 steps and trails it by \R{long:d:simclr-supcon}\pt after
+\R{long:steps}. Second, the evaluation protocol decides the ranking: the standard linear probe, which is
+trained with all labels, ranks a semi-supervised SupCon first, while fine-tuning on the same 5,000 labels
+ranks it last. Third, a simple diagnostic explains the reversal: encoders that use labels make classes
+tight on the labeled images, but not on images that they saw without a label or never saw. Within
+contrastive pretraining, our advice is to keep scarce labels out of a SupCon-style loss and to spend them
+afterwards: in fine-tuning, in a short supervised contrastive stage or, best in our experiments, in
+semi-supervised training.

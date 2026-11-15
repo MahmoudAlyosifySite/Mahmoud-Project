@@ -1,0 +1,11 @@
+% Journal submission version (Elsevier review layout: double spacing and line numbers).   Build: bash build.sh
+\documentclass[review,12pt]{elsarticle}
+\newif\ifanon\anonfalse     % set \anontrue for a double-anonymised venue
+\input{preamble.tex}
+\usepackage{lineno}
+\journal{Pattern Recognition}
+\begin{document}
+\linenumbers
+\input{frontmatter.tex}
+\input{body.tex}
+\end{document}

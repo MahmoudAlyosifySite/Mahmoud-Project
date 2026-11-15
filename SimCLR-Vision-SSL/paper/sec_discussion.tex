@@ -1,0 +1,55 @@
+\section{Discussion and limitations}
+\label{sec:discussion}
+
+\paragraph{Practical guidance, with its scope}
+For a practitioner with a small labeled set, a large unlabeled set and a contrastive pretraining pipeline,
+our results support three rules.
+\begin{enumerate}[leftmargin=1.6em]
+\item \emph{Do not spend scarce labels in a \supcon-style loss from the start; keep them for fine-tuning or
+for semi-supervised training.} A brief \supcon stage after label-free pretraining is a good use of them.
+\item \emph{If pretraining compute is very limited, labels in the loss are the faster route.} Below roughly
+5,000 steps in our setting, \supcon on the labeled subset is ahead under every protocol we ran.
+\item \emph{Evaluate with the labels you have.} Report a label-budget protocol next to the all-label probe,
+and state budgets in steps or processed images.
+\end{enumerate}
+These rules are supported for class-balanced data, unlabeled images from the same or a broader distribution
+(CIFAR, STL-10), ResNet-18 and ResNet-50 encoders, label fractions around 1--20\% and budgets up to 97,000
+steps. At label fractions of 50\% and above \supcon is the better pretraining method again
+(\cref{sec:fractions}).
+
+\paragraph{Limitations}
+\emph{Scale.} All experiments use images of at most 96 px, at most 105,000 training images and ResNets. We
+did not run ImageNet-scale data or vision transformers, and the budgets at which the crossover occurs will
+differ there; for the ResNet-50 it already comes later than for the ResNet-18.
+
+\emph{Balanced, curated labels.} The labeled subsets are class-balanced. Self-supervised pretraining is
+reported to be more robust to class imbalance than supervised pretraining
+\citep{liu2022self,yang2020rethinking}, which would favour our conclusion, but we did not test it.
+
+\emph{Unlabeled data.} On CIFAR the unlabeled images come from the same distribution as the labeled ones.
+STL-10 relaxes this, but its unlabeled set is still close to the labeled classes. With unlabeled data from
+a different domain, the value of the ``all images'' column can be lower \citep{cole2022when}.
+
+\emph{The label-using arms.} \union is the simplest way of mixing labeled and unlabeled images in a
+contrastive loss. Methods that add pseudo-labels or a class-conditional instance term
+\citep{li2021comatch,zheng2022simmatch,chen2022perfectly} address exactly the weakness we measure, and our
+negative result for \union does not extend to them.
+
+\emph{Fine-tuning.} The recipe search of \cref{sec:protocol} covers 72 recipes for one architecture. A wider
+search, or augmentation policies such as RandAugment \citep{cubuk2020randaugment}, could move the
+fine-tuning numbers of all encoders.
+
+\emph{Statistics.} Three to five seeds give a coarse estimate of the between-seed variance; several
+secondary results rest on one seed and are marked. The coverage analysis is an intervention on the pool,
+but its link to the plateau of \supcon remains correlational.
+
+\section{Conclusion}
+\label{sec:conclusion}
+We asked whether scarce labels should go inside a contrastive loss or be used after label-free pretraining,
+and removed the two confounds that make the question hard: unequal compute and evaluation with labels that
+are not available. At equal steps, labels inside the loss give a fast start and an early plateau, and
+label-free pretraining on all images overtakes them. Which method looks better at the crossover depends on
+the protocol: the all-label probe favours the label-using methods, and every protocol that respects the label
+budget favours label-free pretraining. The reason is visible in the geometry of the features, where the
+labels tighten the labeled images and leave the others unchanged. Within contrastive pretraining the labels
+are best spent last; across all methods we tested, they are best spent in semi-supervised training.

@@ -1,316 +1,158 @@
-\section{Labels buy speed, images buy accuracy}
-\label{sec:trap}
+\section{Results I: the compute-matched comparison}
+\label{sec:results}
+
+\subsection{CIFAR-10 with 10\% labels}
+\label{sec:main}
+
+\Cref{fig:budget} follows the four arms of the design from 970 to 97,000 steps under three protocols, and
+\cref{tab:main} gives the numbers at four budgets. We first read the results with the oracle-label probe,
+because it is the protocol used in most of the literature, and come back to the others in
+\cref{sec:protocol}.
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=\linewidth]{figures/fig_main.pdf}
-\caption{\textbf{The two main results} (CIFAR-10, 10\% labels, ResNet-18, mean $\pm$ s.d.\ over seeds where
-shown). \textbf{(a)} Linear-probe accuracy against the number of gradient steps, with every method given the
-same steps. Label-only \supcon learns much faster but stops improving after about 5,000 steps; \simclr on all
-images keeps improving and overtakes it. Our original report compared \supcon after 970 steps with \simclr
-after 9,700 (``100 epochs'' each, dashed arrow) and concluded that the labels hurt.
-\textbf{(b)} After 19,400 steps. Solid: probe trained on all 50,000 labels, the standard protocol. Hatched:
-fine-tuned with the 5,000 labels that actually exist. Fine-tuning helps \simclr but not the encoders that
-already used the same labels during pretraining.}
-\label{fig:main}
+\includegraphics[width=\linewidth]{figures/fig_budget.pdf}
+\caption{CIFAR-10, 10\% labels, ResNet-18: test accuracy against the number of gradient steps for the four
+arms of the $2\times2$ design. Mean and standard deviation over seeds (five at 9,700 and 19,400 steps,
+three elsewhere). (a) With the oracle-label probe, \supcon is far ahead early, level with \simclr at 9,700
+steps and behind afterwards. (b, c) With the 5,000 labels only, \simclr is ahead of both label-using methods
+from 9,700 steps on. Fine-tuning was run from 9,700 steps on.}
+\label{fig:budget}
 \end{figure}
-
-\subsection{The epoch trap}
-
-Our report compared \supcon and \simclr at ``100--200 epochs'' each. With $N$ images and batch $B$, an epoch
-is $\lfloor N/B\rfloor$ steps, so an epoch over the 5,000 labeled images is 9 steps and an epoch over the
-50,000 images is 97. In the report, \supcon therefore received 900 gradient steps and \simclr 19,400, a
-21-fold difference that we did not notice at the time.
-
-\Cref{fig:main}a replays this comparison in our controlled setting. After 970 steps (``100 epochs'' over the
-labeled images), label-only \supcon reaches \supconTenLinPm, \gapBudget points below \simclr after 9,700
-steps (\simclrLinPm). The original report used a ResNet-50, which needs even more steps: trained for 970 steps
-in our pipeline, a ResNet-50 \supcon reaches \rFiftySupconTen, within one point of the 75.2\% we reported
-(\cref{tab:budget} in \cref{app:extra}). The original gap was therefore mostly a gap in training, not in
-supervision.
-
-\subsection{Matched steps: a crossover}
-
-With equal steps, which method wins depends on the budget (\cref{fig:main}a, \cref{tab:budget}):
-\begin{itemize}[leftmargin=*]
-\item \textbf{Short budgets favour labels.} After 970 steps label-only \supcon is far ahead of \simclr
-(\supconTenLin vs.\ \simclrTenLin, $+$\gapShort points), and it stays ahead after 4,850 steps
-(\supconFiftyLin vs.\ \simclrFiftyLin). This agrees with \citet{assran2020suncet}: supervision accelerates
-contrastive pretraining.
-\item \textbf{Label-only \supcon then stops improving.} From 4,850 to 19,400 steps it stays at 84--85\%
-(\supconFiftyLin, \supconLin, \supconTwoHundredLin).
-\item \textbf{\simclr keeps improving and overtakes it.} The two meet at about 9,700 steps (\simclrLin vs.\
-\supconLin, 95\% CI of the difference \ciSupconSimclrLin), and after 19,400 steps \simclr is \gapLong points
-ahead (\simclrTwoHundredLinPm vs.\ \supconTwoHundredLinPm; \cref{tab:stats}).
-\end{itemize}
-
-\finding{Labels buy speed, unlabeled images buy accuracy. Label-only \supcon is the better encoder when
-training is short, but it saturates at the accuracy its 5,000 images can support, while \simclr on all
-50,000 images keeps improving. Comparing the two at ``equal epochs'' measures neither effect.}
-
-The trap is easy to fall into because ``epochs'' is the unit in which contrastive methods are usually
-described, and because the loss of a small-pool run looks converged long before the large-pool run has caught
-up. Comparisons between pools of different size should be reported in steps or in processed images.
-
-\section{Labels used in pretraining are spent}
-\label{sec:decompose}
 
 \begin{table}[t]
 \centering
 \small
-\caption{\textbf{Main results} on CIFAR-10 with 10\% labels (ResNet-18, mean $\pm$ s.d.\ over \nSeeds seeds; one
-seed where no s.d.\ is shown). ``Probe, 50k'': standard linear evaluation with all training labels. ``Probe,
-5k'' and ``fine-tune, 5k'': only the 5,000 labels that exist in this setting are used after pretraining; for
-the label-using methods these are the same labels they saw during pretraining. Best value per column in bold.}
+\caption{CIFAR-10, 10\% labels, ResNet-18. Test accuracy (\%), mean $\pm$ standard deviation over seeds;
+best mean per budget and column in bold. \lpall and $k$NN-50k use all 50,000 labels; \lpfive and \ftfive use
+only the 5,000 labels of the budget. All budgets are listed in \cref{tab:budgets}; tests are in
+\cref{tab:stats}.}
 \label{tab:main}
-\begin{adjustbox}{max width=\linewidth}
-\input{generated/table_main.tex}
-\end{adjustbox}
+\input{generated/tab_main.tex}
 \end{table}
 
-\Cref{fig:main}a uses the standard protocol, in which the linear probe is trained on all 50,000 labels. In the
-setting that motivates semi-supervised learning only 5,000 labels exist, and they can be used twice: inside
-the pretraining loss, or afterwards to train the classifier. \Cref{tab:main} compares both uses.
+\paragraph{Labels buy speed}
+After 970 steps \supcon reaches \R{supcon_lab_f0.1_e10:lp50:pm}\% and \simclr \R{simclr_all_e10:lp50:pm}\%, a
+gap of \R{d:simclr-supcon:lp50:e10}\pt in favour of the method that uses labels. The gap shrinks to
+\R{d:simclr-supcon:lp50:e25}\pt at 2,425 steps and \R{d:simclr-supcon:lp50:e50}\pt at 4,850. At 9,700 steps the
+two are level: the difference is \R{cmp:simclr-supcon:lp50:e100:sdiff}\pt (95\% interval
+\R{cmp:simclr-supcon:lp50:e100:ci}), and the equivalence test accepts a margin of $\pm1$ point
+($p=\R{cmp:simclr-supcon:lp50:e100:tost}$). This agrees with SuNCEt \citep{assran2020suncet}: labels in the
+loss reach a given accuracy with much less compute.
 
-\paragraph{Labels are worth more after pretraining than inside it.}
-Fine-tuning the label-free \simclr encoder on the 5,000 labels gives \simclrFtPm after 9,700 steps and
-\simclrTwoHundredFtPm after 19,400 steps. Encoders that used the same labels during pretraining end lower:
-\supconFtPm and \supconTwoHundredFtPm for label-only \supcon, \unionFtPm and \unionTwoHundredFtPm for \union.
-Their fine-tuned accuracy is barely above their own linear probe on the same labels
-(\supconProbeFive and \unionProbeFive after 9,700 steps), while for \simclr fine-tuning adds several points.
-The labels have already been used: the pretrained encoder fits them, so training on them again teaches little
-(\cref{sec:geometry}).
+\paragraph{The lead does not last}
+\supcon stops improving early. It is at \R{supcon_lab_f0.1_e25:lp50}\% after 2,425 steps and at
+\R{supcon_lab_f0.1_e200:lp50}\% after 19,400; \pending{at 38,800 and 97,000 steps it reaches
+\R{supcon_lab_f0.1_e400:lp50}\% and \R{supcon_lab_f0.1_e1000:lp50}\%.} \simclr keeps climbing:
+\R{simclr_all_e100:lp50}\% at 9,700 steps, \R{simclr_all_e200:lp50}\% at 19,400 \pending{and
+\R{simclr_all_e400:lp50}\% and \R{simclr_all_e1000:lp50}\% at the two long budgets}. At 19,400 steps \simclr is
+ahead by \R{cmp:simclr-supcon:lp50:e200:diff}\pt (\R{cmp:simclr-supcon:lp50:e200:ci},
+$p\,\R{cmp:simclr-supcon:lp50:e200:p}$ after correction), \pending{and by \R{long:d:simclr-supcon}\pt at
+\R{long:steps} steps}. The crossover is therefore not an artefact of a short budget: it widens as training
+gets longer.
 
-\paragraph{The standard protocol hides this.}
-With a probe trained on all 50,000 labels, \union is the best encoder after 9,700 steps (\unionLinPm,
-\diffUnionSimclrLin points over \simclr, $p\pUnionSimclrLin$). Under the protocol that matches the label budget
-it falls to the level of label-only \supcon, more than three points below \simclr. Linear evaluation with all labels is the right way to compare self-supervised
-encoders, but it rewards an encoder for structure that a downstream user who has only the 5,000 labels cannot
-exploit.
+\paragraph{Reading the $2\times2$}
+The two columns of the design answer what the unlabeled images are worth. Without labels the answer is
+``a lot, and more with time'': \simclr on all images beats \simclr on the labeled subset by
+\R{cmp:simclr-sub:lp50:e100:diff}\pt at 9,700 steps and by \R{cmp:simclr-sub:lp50:e200:diff}\pt at 19,400,
+because \simclrsub gets \emph{worse} with more steps (\R{simclr_sub_f0.1_e100:lp50}\% $\to$
+\R{simclr_sub_f0.1_e200:lp50}\%): instance discrimination on 5,000 images overfits. With labels the unlabeled
+images help less: \union beats \supcon by \R{cmp:union-supcon:lp50:e100:diff}\pt and
+\R{cmp:union-supcon:lp50:e200:diff}\pt.
 
-\paragraph{The unlabeled images matter under every protocol.}
-\simclr on only the 5,000 labeled images (``\simclr (subset)'') is \diffSimclrSubLin points below \simclr on
-all images with the same number of steps (95\% CI \ciSimclrSubLin). Adding labels to that small pool
-(\supcon) recovers the all-label probe accuracy, but not the fine-tuned accuracy of \simclr on all images.
+The two rows answer what the labels are worth. On the small pool they are worth a great deal: \supcon beats
+\simclrsub by \R{cmp:supcon-sub:lp50:e100:diff}\pt at 9,700 steps. On the full pool the answer depends on the
+budget: \union is \R{d:simclr-union:lp50:e100}\pt ahead of \simclr at 9,700 steps and
+\R{d:simclr-union:lp50:e200}\pt behind at 19,400. So under the oracle-label probe, adding labels to a
+contrastive loss that already sees all images helps for short budgets only, and adding unlabeled images to
+\supcon always helps a little. \Cref{sec:protocol} shows that the second statement does not survive a change
+of protocol.
 
-\paragraph{Does \union fix label-only \supcon?}
-Keeping the unlabeled images in the pool, each as its own class, improves the standard probe at every budget
-(\unionLin vs.\ \supconLin at 9,700 steps; \unionTwoHundredLin vs.\ \supconTwoHundredLin at 19,400) and removes the
-plateau of label-only \supcon, but it does not reach \simclr at the long budget (\unionTwoHundredLin vs.\
-\simclrTwoHundredLin). Part of the shortfall is the 25\% labeled share of every batch, which over-samples the
-5,000 labeled images: with uniform batches \union reaches \unionUnifTwoHundredLin. Neither variant matches
-\simclr followed by fine-tuning.
+\subsection{Is the plateau of \supcon a tuning failure?}
+\label{sec:plateau}
+A plateau after a few thousand steps on 5,000 images could simply mean that \supcon is under-regularised:
+9,700 steps are almost a thousand passes over the labeled images. We tested four explanations.
 
-\begin{table}[t]
-\centering
-\small
-\caption{Paired bootstrap tests (10,000 resamples of test images and seeds). Differences in percentage
-points under the stated protocol.}
-\label{tab:stats}
-\input{generated/table_stats.tex}
-\end{table}
+\emph{Temperature.} The rows of the design differ in temperature. Swapping them does not help either
+method: \simclr with $\tau=0.1$ reaches \R{simclr_all_t0.1_e100:lp50}\% (default
+\R{simclr_all_e100:lp50}\%) and \supcon with $\tau=0.5$ reaches \R{supcon_lab_f0.1_t0.5_e100:lp50}\% (default
+\R{supcon_lab_f0.1_e100:lp50}\%) at 9,700 steps (one seed each).
 
-\finding{With 10\% labels, the best use of the labels is to fine-tune an encoder pretrained without them.
-Labels used inside the contrastive loss improve the encoder under the all-label probe, but they cannot be
-used a second time.}
+\emph{Weight decay and augmentation.} \pending{At 38,800 steps we raised the weight decay of \supcon from
+$10^{-4}$ to $5\times10^{-4}$ and $10^{-3}$, strengthened the augmentation (crop scale 0.08--1 and
+full-strength colour jitter), and combined both (\cref{tab:reg}). The best variant reaches
+\R{reg:best}\%, against \R{supcon_lab_f0.1_e400:lp50}\% for the default.}
 
-\paragraph{How the picture changes with the number of labels.}
-\Cref{fig:fraction} and \cref{tab:fraction} repeat the comparison from 1\% to 20\% labels at 9,700 steps. Under
-the all-label probe, label-only \supcon needs a large labeled pool: it is far behind \simclr with 1\% and 5\% of
-the labels (\fracSupconLinOne and \fracSupconLinFive, against \simclrLin) and ahead with 20\%
-(\fracSupconLinTwenty). With only the labels that exist, fine-tuning the \simclr encoder is the best use of them
-at every fraction, and its advantage grows as labels get scarcer: \fracSimclrFtOne against \fracSupconFtOne
-(\supcon) and \fracUnionFtOne (\union) with 1\% of the labels, \fracSimclrFtFive against \fracSupconFtFive and
-\fracUnionFtFive with 5\%, and \fracSimclrFtTwenty against \fracSupconFtTwenty and \fracUnionFtTwenty with 20\%.
+\emph{Early stopping.} The best checkpoint along the longest \supcon run, selected with all 50,000 labels and
+therefore an upper bound on any early-stopping rule, reaches \R{bestknn:supcon}\% $k$NN accuracy, against
+\R{bestknn:simclr}\% for \simclr.
+
+\emph{Learning-rate schedule.} Every budget is a separate run with its own warm-up and cosine schedule, so
+no point of \cref{fig:budget} is a truncated longer run.
+
+None of these changes the conclusion that, with 5,000 labeled images, \supcon saturates several points below
+where label-free pretraining on all images arrives.
+
+\subsection{Label fraction and budget together}
+\label{sec:fractions}
+\Cref{fig:wins} extends the comparison to label fractions from 1\% to 100\% and to three budgets. Each cell
+is the accuracy of the label-using method minus that of \simclr at the same number of steps, under the
+all-label probe (LP-all) and under a probe that sees only the fraction $f$ of the labels (LP-$f$).
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=\linewidth]{figures/fig_fraction.pdf}
-\caption{Label-fraction sweep at 9,700 steps (one seed for $f\neq10\%$). Label-only methods pretrain on the
-labeled images only. \textbf{(a)} With a probe trained on all labels, label-only \supcon needs a large labeled
-pool. \textbf{(b)} With only the labels that exist, fine-tuning \simclr is the best use of them at every fraction.}
-\label{fig:fraction}
+\includegraphics[width=\linewidth]{figures/fig_wins.pdf}
+\caption{Which method wins, by label fraction and budget (CIFAR-10, ResNet-18, one seed except $f=10\%$).
+Cells show the accuracy of \supcon (a, b) or \union (c, d) minus that of \simclr at the same number of steps;
+red means that the label-using method is ahead. LP-all is the oracle-label probe; LP-$f$ uses the same
+fraction of labels as pretraining. The numbers behind the chart are in \cref{tab:fraction}.}
+\label{fig:wins}
 \end{figure}
+
+\pending{Three regions are visible. With few labels and many steps (upper left) \simclr wins under both
+probes. With many labels (right) \supcon wins everywhere, in line with the full-label result of
+\citet{khosla2020supcon}; the break-even fraction moves to the right as the budget grows. With few steps
+(bottom row) the label-using methods win at every fraction, the speed effect of \cref{sec:main}. The LP-$f$
+panels are shifted towards \simclr relative to the LP-all panels, most strongly for \union, which is the
+protocol effect studied in \cref{sec:protocol}.}
+
+\subsection{Other datasets and a larger encoder}
+\label{sec:datasets}
 
 \begin{table}[t]
 \centering
 \small
-\caption{Label-fraction sweep (seed 0, 9,700 steps). Left: probe with all labels. Right: fine-tuning with the
-labeled subset only. \simclr (all images) uses no labels in pretraining, so one encoder serves every column.}
-\label{tab:fraction}
+\caption{The four arms on CIFAR-100, on STL-10 and with a ResNet-50 (test accuracy in \%, mean $\pm$
+standard deviation over seeds). LP-all uses all training labels and is not available on STL-10, whose
+5,000 labels are the whole labeled set; LP-budget and FT-budget use the labels of the budget only.}
+\label{tab:datasets}
 \begin{adjustbox}{max width=\linewidth}
-\input{generated/table_fraction.tex}
+\input{generated/tab_datasets.tex}
 \end{adjustbox}
 \end{table}
 
-\section{Mechanism: memorised classes and missing coverage}
-\label{sec:geometry}
+\paragraph{CIFAR-100}
+With 10\% labels there are 50 labeled images per class. At 9,700 steps \union is the best arm under the
+oracle-label probe (\R{c100_union_f0.1_e100:lp50}\%), ahead of \simclr (\R{c100_simclr_all_e100:lp50}\%)
+and \supcon (\R{c100_supcon_lab_f0.1_e100:lp50}\%); after fine-tuning on the 5,000 labels the order is
+\simclr (\R{c100_simclr_all_e100:ft}\%), \union (\R{c100_union_f0.1_e100:ft}\%), \supcon
+(\R{c100_supcon_lab_f0.1_e100:ft}\%). \pending{The same holds at 19,400 steps.}
 
-\begin{figure}[t]
-\centering
-\begin{minipage}[c]{0.45\linewidth}
-\includegraphics[width=\linewidth]{figures/fig_geometry.pdf}
-\end{minipage}\hfill
-\begin{minipage}[c]{0.52\linewidth}
-\caption{Tightness of class clusters (CDNV; \citealp{galanti2022role}) on images that were in the
-pretraining pool (solid) and on images that were not (hatched), after 9,700 steps. For label-only methods
-``unseen'' are the 45,000 training images outside the pool; for full-pool methods the test set. Label-only
-\supcon collapses the classes of its 5,000 images, but much of that collapse does not carry over to new
-images; \simclr shows no gap.}
-\label{fig:geometry}
-\end{minipage}
-\end{figure}
+\paragraph{STL-10}
+\pending{STL-10 has no oracle labels, and its unlabeled images are not restricted to the ten classes. With
+20,500 steps \simclr on the 105,000 images reaches \R{stl_simclr_all_e100:lp5}\% with a linear probe on the
+5,000 labels and \R{stl_simclr_all_e100:ft}\% after fine-tuning; \supcon on the 5,000 labeled images reaches
+\R{stl_supcon_lab_e100:lp5}\% and \R{stl_supcon_lab_e100:ft}\%, and \union \R{stl_union_e100:lp5}\% and
+\R{stl_union_e100:ft}\%. \simclr on the 5,000 labeled images only reaches \R{stl_simclr_sub_e100:lp5}\%, so
+the unlabeled images are worth \R{d:stl:simclr-sub:lp5:e100}\pt even though many of them show other
+classes.}
 
-\paragraph{Collapse that does not generalise.}
-The supervised contrastive loss asks every image of a class to move towards every other image of the class.
-On a finite pool this can be achieved by memorising. We measure it with the class-distance normalised
-variance (CDNV) of \citet{galanti2022role}, which divides the spread of a class by the squared distance
-between class means, separately on images seen and unseen during pretraining (\cref{fig:geometry,tab:geometry}).
-Label-only \supcon makes very tight clusters of its own images (CDNV \supconCdnvSeen, against
-\simclrCdnvSeen for \simclr), but on unseen images of the same classes its CDNV is \supconCdnvHeld, a
-\supconCdnvRatio-fold increase. \simclr has no such gap (ratio \simclrCdnvRatio). This is the generalisation gap
-of neural collapse that \citet{hui2022limitations} found for supervised classifiers.
-
-\paragraph{Why spent labels cannot be reused.}
-The same memorisation explains \cref{sec:decompose}. A linear probe trained on the 5,000 labeled images
-reaches \supconProbeTrain\% training accuracy on the \supcon encoder and \unionProbeTrain\% on the \union
-encoder, against \simclrProbeTrain\% on \simclr. The CDNV of the labeled images is \supconCdnvLab (\supcon) and
-\unionCdnvLab (\union), against \simclrCdnvLab (\simclr). The classes of the labeled images are already
-separated, so neither the probe nor fine-tuning receives much of an error signal from them; for \simclr the
-labels are new information, and fine-tuning can use them to reshape the encoder.
-
-\paragraph{Why the plateau: coverage, not spread.}
-Our report explained the weakness of label-only \supcon by ``reduced semantic diversity'' of the 10\% subset,
-and the reviewer asked us to make this measurable. We embed all images with a fixed reference encoder (\simclr
-on all images, seed 0) and compute several diversity statistics of each pool (\cref{tab:diversity}).
-The average distance between augmented views of a class, the metric suggested by the reviewer, is
-\spreadOne for a random 1\% subset, \spreadTen for 10\% and \spreadFull for the full set: a random subset is
-exactly as spread out as the data it came from, because spread is a property of the distribution. What a small
-pool lacks is \emph{coverage}: the distance from an unseen image to the closest pool image of its class falls
-from \radiusOne (1\%) to \radiusTen (10\%) and \radiusFull (all images). Memorised clusters only help unseen
-images that fall close to a memorised one, so coverage, not spread, is the property that should limit
-label-only \supcon.
-
-To separate coverage from pool size, we built three pools with exactly 500 images per class (\cref{app:pools}).
-\emph{Redundant} pools are made of tight clumps of near-duplicates ($k=10$ or $50$ images per clump); the
-\emph{$k$-center} pool greedily adds the image farthest from everything chosen so far \citep{sener2018coreset}.
-Redundancy behaves as coverage predicts: the clumpier the pool, the worse its coverage and the worse label-only
-\supcon (\clTenAcc for $k=10$ and \clFiftyAcc for $k=50$, against \supconLin for a random pool; with the probe
-trained on the pool's own labels, \clTenLabAcc and \clFiftyLabAcc against \supconLabAcc). The $k$-center pool is
-the informative exception. It has by far the largest spread (\spreadKc) and the worst coverage of typical test
-images (radius \radiusKc, like a random pool of only \neffKc images), because it is made of atypical images.
-Under the all-label probe its \supcon encoder is almost as good as the random pool's (\kcAcc); only under the
-probe trained on its own labels does it drop (\kcLabAcc), because a classifier fit to atypical images transfers
-poorly to typical ones.
-
-The same pools tell a different story without labels (last column of \cref{tab:diversity}). \simclr on the
-$k$-center pool collapses to \subKcAcc, far below the random pool (\subLin), exactly as its poor coverage
-predicts, while redundancy does not hurt it at all (\subClFiftyAcc for $k=50$). Labels change which images are
-useful: for \simclr an atypical image is just an outlier, for \supcon a labeled atypical image marks where a
-class ends, and a clump of near-duplicates with the same label adds positives that are trivially easy. No single
-statistic predicts both methods. Spread, the metric we were asked to compute, fails everywhere. Coverage
-explains the effect of pool size, the collapse of \simclr on the $k$-center pool and the cost of redundancy for
-\supcon, but not \simclr's indifference to redundancy or \supcon's tolerance of atypical labeled images: the
-value of a labeled pool depends on how its labels will be used (\cref{fig:coverage,tab:diversity}).
-
-\begin{figure}[t]
-\centering
-\includegraphics[width=\linewidth]{figures/fig_coverage.pdf}
-\caption{Accuracy of label-only \supcon (filled) and of \simclr trained on the same pool without labels
-(hollow) against two diversity measures of the pool (9,700 steps, one seed per pool, probe with all labels):
-random pools of 1--20\% and three pools of exactly 5,000 images. \textbf{(a)} Coverage radius:
-mean cosine distance from a test image to the nearest pool image of its class in a fixed reference feature
-space (lower is better; axis reversed). \textbf{(b)} Within-class spread of augmented views.}
-\label{fig:coverage}
-\end{figure}
-
-\begin{table}[t]
-\centering
-\small
-\caption{Diversity of labeled pools in the reference feature space (seed 0) and the linear-probe accuracy of
-label-only \supcon trained on each pool for 9,700 steps.}
-\label{tab:diversity}
-\begin{adjustbox}{max width=\linewidth}
-\input{generated/table_diversity.tex}
-\end{adjustbox}
-\end{table}
-
-\begin{table}[t]
-\centering
-\small
-\caption{Geometry of the encoder features after 9,700 steps (mean over seeds). CDNV on seen and unseen images;
-on the test set, accuracy of the nearest-class-centre rule with centres from the seen images, mean deviation of
-the angles between centred class means from those of a simplex ETF, and coefficient of variation of their norms.}
-\label{tab:geometry}
-\input{generated/table_geometry.tex}
-\end{table}
-
-\finding{Label-only \supcon memorises its labeled pool: its classes are \supconCdnvRatio times tighter on seen than
-on unseen images, and the labels it memorised are of little further use downstream. A random labeled subset is as
-spread out as the full data; what it lacks is coverage of unseen images.}
-
-\section{Comparison with established methods}
-\label{sec:baselines}
-
-\begin{table}[t]
-\centering
-\small
-\caption{Baselines on the same CIFAR-10 split with 10\% labels (ResNet-18, 9,700 steps or the same number of
-processed images, one seed unless an s.d.\ is shown). $^\ddagger$Accuracy with only the 5,000 labels:
-fine-tuning for the pretrained encoders, the trained classifier (EMA weights) for CE, MixMatch and FixMatch.
-$^\S$MixMatch and FixMatch are trained for about 1\% of the steps of the original papers, which report 93.8\%
-and 95.7\% with 4,000 labels and a Wide ResNet-28-2 \citep{sohn2020fixmatch}.}
-\label{tab:baselines}
-\begin{adjustbox}{max width=\linewidth}
-\input{generated/table_baselines.tex}
-\end{adjustbox}
-\end{table}
-
-\Cref{tab:baselines} places the encoders among other families, all trained with the same 5,000 labels and the
-same image budget. Three points are worth stating plainly.
-
-\emph{\simclr is a reasonable self-supervised baseline at this budget}: BYOL reaches \byolLin and SimSiam
-\simsiamLin, against \simclrLin. With 1,000 epochs, published ResNet-18 numbers on CIFAR-10 are 90--94\%
-\citep{dacosta2022sololearn}, so all our contrastive numbers are those of a short schedule.
-
-\emph{If the goal is the best classifier from 5,000 labels, use a semi-supervised method.} Given the same
-number of processed images as a 9,700-step contrastive run, MixMatch reaches \mixmatchAcc and FixMatch
-\fixmatchAcc, above every contrastive pipeline in this paper, including \simclr fine-tuned after twice as many
-steps (\simclrTwoHundredFt). Both remain below their published accuracy, which they reach after about a
-million steps.
-
-\emph{Labels in the loss make pretraining no better than plain supervision.} A network trained with
-cross-entropy on the 5,000 labeled images alone, for the same 9,700 steps, reaches \ceTen. This is as good as
-label-only \supcon followed by fine-tuning (\supconFt) and \union followed by fine-tuning (\unionFt): once the
-labels are inside the contrastive loss, neither the contrastive objective nor the 45,000 unlabeled images add
-measurable accuracy for a user who has only those labels. What clearly improves on plain supervision is
-pretraining \emph{without} labels and fine-tuning afterwards: \simclrFt with \simclr and \byolFt with BYOL.
-
-\emph{These baselines fit our explanation.} MixMatch and FixMatch also use the labels from the first step, but
-they do not ask the network to cluster the labeled images; they turn the network's predictions into targets for
-the unlabeled images (sharpened guesses or confident pseudo-labels), so the supervision keeps flowing to images
-that have not been memorised. Label-only \supcon and
-\union spend the labels on the 5,000 labeled images themselves. Our claims are therefore about how to use labels
-\emph{inside contrastive pretraining}, the setting in which one encoder is pretrained once and reused; they are
-not claims about the best achievable accuracy with 5,000 labels.
-
-\paragraph{Other datasets and architectures.}
-\Cref{tab:generalization} repeats the four configurations on CIFAR-100 and with a ResNet-50 on CIFAR-10 (one
-seed each, 9,700 steps). CIFAR-100 is the harder case for label-only pretraining: 10\% of the labels means only
-50 labeled images per class. Already at 9,700 steps \simclr is ahead under the all-label probe (\cHundredSimclr
-vs.\ \cHundredSupcon), and with only the labels that exist the gap is large: fine-tuned \simclr reaches
-\cHundredSimclrFt, against \cHundredSupconFt for \supcon and \cHundredUnionFt for \union. A ResNet-50 trains more slowly,
-so 9,700 steps is still in the regime where labels in the loss help the all-label probe (\rFiftySupcon for
-\supcon and \rFiftyUnion for \union, against \rFiftySimclr for \simclr). With only the labels that exist, the
-ordering is the same as for the ResNet-18: fine-tuned \simclr reaches \rFiftySimclrFt, against \rFiftySupconFt for
-\supcon and \rFiftyUnionFt for \union.
-
-\begin{table}[t]
-\centering
-\small
-\caption{The four configurations on CIFAR-100 (ResNet-18) and with a ResNet-50 on CIFAR-10 (one seed,
-10\% labels, 9,700 steps). ``Probe, 50k'' and $k$NN use all training labels; ``fine-tune, 5k'' and ``probe, 5k''
-use only the labeled 10\%.}
-\label{tab:generalization}
-\input{generated/table_generalization.tex}
-\end{table}
+\paragraph{ResNet-50}
+With a ResNet-50 the crossover under the oracle-label probe comes later than with a ResNet-18. At 9,700
+steps \supcon is still slightly ahead (\R{r50_supcon_lab_f0.1_e100:lp50}\% against
+\R{r50_simclr_all_e100:lp50}\%, one seed); \pending{at 19,400 steps \simclr is ahead
+(\R{r50_simclr_all_e200:lp50}\% against \R{r50_supcon_lab_f0.1_e200:lp50}\%, three seeds).} Under \ftfive
+\simclr is ahead already at 9,700 steps (\R{r50_simclr_all_e100:ft}\% against
+\R{r50_supcon_lab_f0.1_e100:ft}\%). The larger encoder also makes very short budgets fragile: at 900 steps
+\supcon reaches \R{r50_supcon_lab_f0.1_steps900:lp50}\% with learning rate 0.25 but only
+\R{r50_supcon_lab_f0.1_steps900_lr0.05:lp50}\% with 0.05 (\cref{tab:r50}).

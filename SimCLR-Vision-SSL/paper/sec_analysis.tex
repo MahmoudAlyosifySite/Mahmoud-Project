@@ -1,99 +1,151 @@
-\section{The colour shortcut, measured}
-\label{sec:shortcut}
+\section{Analysis}
+\label{sec:analysis}
 
-Our report found that colour jitter added 15--21 points to every structural pipeline (\cref{app:report}) and
-attributed this to a colour-histogram shortcut \citep{chen2020simclr,geirhos2020shortcut}: without colour
-distortion, two crops of an image can be matched by their colour statistics alone. The reviewer asked for
-evidence of the mechanism rather than of its effect. We trained \simclr on all images with four augmentation
-pipelines that form the three tiers of the report and measured how much each encoder relies on colour
-(\cref{tab:color}):
-\begin{itemize}[leftmargin=*]
-\item \textbf{Gray test images.} We convert the test images to grayscale and apply the unchanged linear probe.
-An encoder that matches views by colour should suffer most.
-\item \textbf{Histogram alignment.} Linear CKA \citep{kornblith2019cka} between the encoder features of the test
-images and their joint RGB histograms ($8^3$ bins, no spatial information), next to the CKA with the class
-labels; and the $R^2$ of a ridge regression that predicts the histogram from the features.
-\end{itemize}
+\subsection{Tight classes on labeled images do not reach the others}
+\label{sec:geometry}
 
-\begin{table}[t]
-\centering
-\small
-\caption{Colour reliance of \simclr encoders trained with different augmentations (all images, one seed).
-$\Delta$: change in linear accuracy when the test images are converted to grayscale. CKA(hist.): linear CKA
-between features and colour histograms; CKA(label): between features and one-hot labels.}
-\label{tab:color}
-\begin{adjustbox}{max width=\linewidth}
-\input{generated/table_color.tex}
-\end{adjustbox}
-\end{table}
-
-Without colour distortion (crop + flip, \augTwoLin\% linear accuracy) the encoder is a colour detector: its
-features are more aligned with the colour histogram than with the class labels (CKA \augTwoCka against
-\augTwoCkaLabel), the histogram can be read off them almost linearly, and converting the test images to gray
-costs \augTwoGrayDrop points (to \augTwoGrayAcc\%), which is less than a linear classifier on the raw colour
-histogram achieves on its own (\histProbe\%). This is the shortcut, measured directly. Each colour transform removes part of it.
-Random grayscale lowers the histogram alignment most and, as expected, makes the encoder insensitive to gray
-test images (a drop of \augSixGrayDrop points), while colour jitter alone leaves a large gray-image penalty (\augFiveGrayDrop points) because
-it perturbs but rarely removes colour. Accuracy needs both (\augFiveLin and \augSixLin\% with one of them,
-\augEightLin\% with both). With grayscale alone the encoder is about as aligned with the colour histogram as with
-the labels (CKA \augSixCka vs.\ \augSixCkaLabel); with both transforms the label alignment is twice the histogram
-alignment (\augEightCkaLabel vs.\ \augEightCka). The tiers of our report thus order the encoders by how much colour information they keep.
-
-Labels make the shortcut much less important. Removing colour jitter from the full pipeline costs \simclr
-\augJitterCost points (\augSixLin\% instead of \augEightLin\%), but label-only \supcon only \supconJitterCost
-(\supconNoJitterLin\% instead of \supconLin\%): when two images of the same class are positives, matching colour
-statistics is no longer enough to solve the task, so the labels themselves break the shortcut. This is a second
-way in which labels buy speed: they substitute for part of the augmentation that a self-supervised method needs.
-
-\paragraph{Geometry of the augmentation tiers.}
-\citet{luthra2025approximately} predict that stronger invariances push the representation towards a collapsed
-simplex ETF. \Cref{tab:etf} confirms this quantitatively on the test set: from crop + flip to the full pipeline,
-the CDNV falls from \augTwoCdnv to \augEightCdnv and the mean deviation of the class-mean angles from those of a
-simplex ETF halves (\augTwoEtf to \augEightEtf), with the single-transform tiers in between. The class means
-are equiangular on average for every encoder (mean cosine close to $-1/9$); what changes is how evenly the
-angles are spread around that value. The t-SNE plots of our report showed this qualitatively; the ETF
-statistics turn it into a measurement.
+\paragraph{The diagnostic}
+For a set of images $S$ with class labels, let $\mu_c$ be the mean encoder feature of class $c$ in $S$ and
+$\sigma_c^2$ the mean squared distance of the features of class $c$ to $\mu_c$. The class-distance
+normalised variance \citep{galanti2022role} of $S$ is
+\begin{equation}
+\label{eq:cdnv}
+\mathrm{CDNV}(S) \;=\; \frac{1}{C(C-1)}\sum_{c\neq c'} \frac{\sigma_c^2+\sigma_{c'}^2}{2\,\lVert\mu_c-\mu_{c'}\rVert^2},
+\end{equation}
+the average over all ordered pairs of the $C$ classes; we compute it on the 512-dimensional encoder
+features without normalisation. A small value means tight, well separated classes. We evaluate
+\cref{eq:cdnv} on three disjoint sets, each with its own class means: the 5,000 \emph{labeled} training
+images, the \emph{other} 45,000 training images, and the 10,000 \emph{test} images. The same three sets are
+used for every method, so the numbers are comparable across methods. What differs is the role of the middle
+set: \supcon, \simclrsub and cross-entropy on the 5,000 labels never see the other 45,000 images, while
+\simclr and \union train on them without labels. The ground-truth labels of the 45,000 images are used only
+for this measurement.
 
 \begin{table}[t]
 \centering
 \small
-\caption{Neural-collapse statistics on the CIFAR-10 test set for the augmentation tiers (one seed). A simplex
-ETF has pairwise cosines of $-1/9=-0.111$ between centred class means, ETF deviation 0 and equinorm CV 0.}
-\label{tab:etf}
+\caption{Class tightness (CDNV, \cref{eq:cdnv}) on three sets of images, and accuracy of the \lpfive probe on
+its own training images and on test images (CIFAR-10, 10\% labels, ResNet-18, 19,400 steps; mean $\pm$
+standard deviation over seeds).}
+\label{tab:geometry}
 \begin{adjustbox}{max width=\linewidth}
-\input{generated/table_etf.tex}
+\input{generated/tab_geometry.tex}
 \end{adjustbox}
 \end{table}
 
-\section{A resolution boundary, quantified}
-\label{sec:ood}
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{figures/fig_geometry.pdf}
+\caption{(a) CDNV on the labeled images, on the other training images and on test images at 19,400 steps
+(log scale, mean $\pm$ standard deviation over seeds). (b) Ratio of the CDNV on test images to the CDNV on
+the images the method used with labels (\supcon, \union) or trained on (\simclr), during training.}
+\label{fig:geometry}
+\end{figure}
 
-The retrieval demo of our original project returned horses and deer when queried with a high-resolution
-photograph of a German Shepherd. To check that this is a systematic effect and not an anecdote, we took all
-\nOod validation images of Imagewoof \citep{howard2019imagewoof}, ten dog breeds from ImageNet
-\citep{deng2009imagenet}, centre-cropped them and downsampled them to $32{\times}32$ with an antialiased
-bicubic filter, as the demo does. We then measured how often each encoder's linear probe calls them ``dog''
-and how many of their five nearest CIFAR-10 test images are dogs (\cref{tab:ood}).
+\paragraph{What the split shows}
+\Cref{tab:geometry} and \cref{fig:geometry}(a) give three observations.
+
+\emph{Label-free pretraining treats all images alike.} For \simclr the CDNV is the same on labeled images
+(\R{simclr_all_e200:cdnv_lab}), other training images (\R{simclr_all_e200:cdnv_rest}) and test images
+(\R{simclr_all_e200:cdnv_test}).
+
+\emph{\supcon is tight where it had labels.} Its CDNV is \R{supcon_lab_f0.1_e200:cdnv_lab} on the labeled
+images and \R{supcon_lab_f0.1_e200:cdnv_test} on test images, a ratio of
+\R{supcon_lab_f0.1_e200:cdnv_ratio}. The other 45,000 training images, which it never saw, behave like test
+images (\R{supcon_lab_f0.1_e200:cdnv_rest}).
+
+\emph{In \union the labels do not spread.} \union trains on all 50,000 images, yet its CDNV is
+\R{union_f0.1_e200:cdnv_lab} on the labeled 5,000 and \R{union_f0.1_e200:cdnv_rest} on the 45,000 images it
+saw without labels, which is as loose as on test images (\R{union_f0.1_e200:cdnv_test}) and as loose as
+\simclr. The joint loss makes the labeled images tight and leaves the unlabeled ones where instance
+discrimination puts them. This is the direct reason why \union looks good to a probe that brings fresh
+labels for the 45,000 images and gains nothing for a probe restricted to the 5,000.
+
+\paragraph{The gap is not specific to \supcon}
+Cross-entropy training on the 5,000 labels shows the same pattern in a stronger form: the labeled images
+collapse almost completely (CDNV \R{ce_f0.1_e200:cdnv_lab}) while test images stay at
+\R{ce_f0.1_e200:cdnv_test}. The gap between seen and unseen images is therefore ordinary supervised
+overfitting to a small labeled set, as described for neural collapse by \citet{hui2022limitations}, and not
+a property of the contrastive loss. What is specific to the label-scarce contrastive setting is its
+consequence: the labels have been used to fit 5,000 images, and reusing them in a probe or in fine-tuning
+adds little. Cross-entropy on the 5,000 labels is in fact tighter on test images than \supcon
+(\R{ce_f0.1_e200:cdnv_test} against \R{supcon_lab_f0.1_e200:cdnv_test}) and slightly more accurate
+(\cref{tab:where}).
+
+\paragraph{Dynamics}
+\Cref{fig:geometry}(b) follows the ratio between the CDNV on test images and on the labeled images during
+training. \pending{For \supcon the ratio grows during the first few thousand steps, the phase in which its
+accuracy saturates, and stays high afterwards; for \simclr it stays at one.} The evidence is consistent with
+the plateau of \supcon being reached when the labeled images are fitted; it is correlational and we do not
+claim more.
+
+\subsection{Does the coverage of the labeled pool explain the limit of \supcon?}
+\label{sec:coverage}
+A natural hypothesis is that \supcon on a small pool is limited by how well the pool \emph{covers} the data:
+low-budget active learning and data pruning find that coverage is what matters for small sets
+\citep{hacohen2022active,yehuda2022active,sorscher2022beyond}. We test it with an intervention that keeps
+the pool size at 5,000 images (500 per class) and changes only which images are in it.
+
+\paragraph{Pools and statistics}
+Features are taken from a reference encoder and $\ell_2$-normalised. For a pool $S$, the \emph{coverage
+radius} is the mean, over test images $x$, of the cosine distance from $x$ to the nearest pool image of the
+same class; the \emph{spread} is the mean cosine distance between two pool images of the same class. Both
+are averaged over classes (formulas in \cref{app:pools}). We build three families of pools: random; mixtures
+in which 25, 50, 75 or 100\% of each class is chosen by greedy $k$-center selection \citep{sener2018coreset},
+which favours atypical images, and the rest at random; and mixtures in which 25, 50, 75 or 100\% consists of
+groups of 50 near-duplicates in feature space (``redundant''), and the rest at random. Each pool is drawn
+for three seeds, and \supcon and \simclr are trained on it for 9,700 steps. To check that the result does
+not depend on measuring distances with a \simclr encoder, all statistics are computed in two reference
+spaces: a \simclr encoder trained on all images and a supervised encoder trained on all labels.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{figures/fig_coverage.pdf}
+\caption{Accuracy of (a) \supcon and (b) \simclr trained for 9,700 steps on pools of 5,000 images with
+different coverage (CIFAR-10; mean $\pm$ standard deviation over seeds; coverage radius in the \simclr
+reference space). Black: random pool; green: mixtures with $k$-center selection; red: mixtures with redundant
+groups.}
+\label{fig:coverage}
+\end{figure}
+
+\paragraph{Result}
+\pending{Within the redundant family the picture is clean: as the share of near-duplicates grows, the
+coverage radius grows and the accuracy of \supcon falls monotonically, from \R{supcon_lab_f0.1_e100:lp50}\%
+for the random pool to \R{supcon_lab_cluster50_f0.1_e100:lp50}\% for the fully redundant one. The
+$k$-center family behaves differently: its coverage radius is the largest of all pools, yet \supcon loses
+little accuracy (\R{supcon_lab_kcenter_f0.1_e100:lp50}\%), while \simclr trained on the same pool collapses
+(\R{simclr_sub_kcenter_f0.1_e100:lp50}\%). Across all pools the rank correlation between coverage radius and
+the accuracy of \supcon is \R{rho:all:radius_simclr:supcon} (Spearman, $n=\R{rho:all:radius_simclr:supcon:n}$
+pools); within the random and redundant pools it is \R{rho:nokc:radius_simclr:supcon}. The supervised
+reference space gives \R{rho:all:radius_supervised:supcon} and \R{rho:nokc:radius_supervised:supcon}. Across
+pool sizes from 1\% to 20\%, the partial rank correlation that controls for the pool size is
+\R{rho:partial}.} The $k$-center pool is the kind of set that \citet{hacohen2022active} show to be a poor
+choice at low budgets for \emph{supervised} learners; here the labels make \supcon robust to it, and the
+label-free learner is the one that fails.
+
+We conclude that coverage explains part of the effect of pool composition, namely the cost of redundancy,
+and that no single statistic of the pool predicts the accuracy of both learners. Spread, a natural
+candidate, does not separate pools of different size (it is flat from 1\% to 100\% of the data,
+\cref{app:pools}) and ranks the $k$-center pool best; it does decrease with redundancy, in line with the
+accuracy of \supcon.
+
+\subsection{Labels make colour augmentation less necessary}
+\label{sec:jitter}
+\simclr is known to depend on colour distortion: without it, two crops of an image can be matched by their
+colour histogram alone \citep{chen2020simclr,chen2021intriguing,robinson2021can}. Labels offer another way
+out of this shortcut, because two different images of a class do not share a histogram. \Cref{tab:jitter}
+removes colour jitter (keeping random grayscale) from the three methods. \simclr loses
+\R{jitter:simclr_all_e100}\pt, and \supcon only \R{jitter:supcon_lab_f0.1_e100}\pt. \pending{\union, which sees
+labels for a quarter of each batch, loses \R{jitter:union_f0.1_e100}\pt.} Where good augmentations are not
+known, for example outside natural images, this is an argument for using labels in the loss that our
+accuracy comparison does not capture. The full analysis of colour reliance in \simclr is in
+\cref{app:colour}.
 
 \begin{table}[t]
 \centering
 \small
-\caption{Resolution shift: ImageNet dog photographs ($\geq$320\,px) downsampled to 32\,px, compared with CIFAR-10
-test dogs. Dog recall of the linear probe (95\% bootstrap CI) and retrieval precision@5 in the CIFAR-10 test
-set (seed 0 encoders). CLIP (zero-shot, ViT-B/32) is an external reference trained on 400M image--text
-pairs.}
-\label{tab:ood}
-\begin{adjustbox}{max width=\linewidth}
-\input{generated/table_ood.tex}
-\end{adjustbox}
+\caption{Removing colour jitter from the augmentation (CIFAR-10, 10\% labels, 9,700 steps, \lpall accuracy
+in \%, mean $\pm$ standard deviation over seeds; the change is computed per seed).}
+\label{tab:jitter}
+\input{generated/tab_jitter.tex}
 \end{table}
-
-Every CIFAR-trained encoder recognises far fewer of the downsampled ImageNet dogs than of the CIFAR-10 dogs
-(\simclr: \oodSimclrCifar\% $\to$ \oodSimclrOod\%), and the most frequent wrong answer is
-\oodSimclrTopWrong. The drop is not specific to self-supervision: the supervised encoder trained with all labels
-falls from \oodCeCifar\% to \oodCeOod\%. CLIP shows that most of the information survives the
-downsampling (dog recall \clipResThirtyTwo\% at 32\,px vs.\ \clipResTwoTwoFour\% at 224\,px). The failure is
-therefore a distribution shift between ImageNet photographs and CIFAR-10 images at the same resolution
-(framing, pose, and the downsampling filter), which all of our encoders inherit from CIFAR-10. We had
-attributed the demo failure to the lack of language supervision; the supervised baseline shows that the
-training distribution, not the kind of supervision, is the main cause.

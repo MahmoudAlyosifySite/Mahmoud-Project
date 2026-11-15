@@ -1,68 +1,66 @@
 \section{Introduction}
 \label{sec:intro}
 
-Labels are expensive and images are cheap. Contrastive learning offers two ways to use a few labels together
-with many images. Self-supervised methods such as \simclr \citep{chen2020simclr} pretrain on every image
-without labels, by pulling two augmented views of the same image together; the labels are used only
-afterwards, to train a classifier. Supervised contrastive learning, \supcon \citep{khosla2020supcon}, puts the
-labels inside the pretraining loss: every image of the same class becomes a positive. With full labels \supcon
-beats \simclr \citep{khosla2020supcon}, and \simclr itself approximately optimises a \supcon-like objective
-\citep{luthra2025approximately}. It is therefore natural to assume that when \emph{some} labels exist, putting
-them into the contrastive loss is the better choice.
+Contrastive pretraining learns an image encoder by pulling together two augmented views of the same image
+and pushing apart views of different images \citep{chen2020simclr,he2020moco}. It needs no labels. When
+labels are available, supervised contrastive learning (\supcon; \citealp{khosla2020supcon}) uses them to
+define more positives: all images of a class are pulled together. With all labels, \supcon is better than
+both \simclr and cross-entropy training \citep{khosla2020supcon}.
 
-This paper started from a result that seemed to contradict this assumption. In an earlier study on CIFAR-10,
-we trained a ResNet-50 with \supcon on the 10\% of images that carry labels and a ResNet-50 with \simclr on
-all images, each for ``100--200 epochs''. \supcon reached 75.2\% linear-probe accuracy, 9.1 points below
-label-free \simclr (84.3\%; \cref{app:report}). We read this as a cost of lost diversity: restricting
-pretraining to 5,000 labeled images seemed to destroy more than the labels could give back. A reviewer of
-that report asked the questions this paper answers: \emph{Is the drop real or an optimisation artefact? When
-does adding limited labels to a contrastive objective hurt, and why? And how does the result compare with the
-methods the community actually uses with 10\% labels?}
+Most practical problems do not have all labels. They have a small labeled set and a much larger unlabeled
+one, and this raises a plain question: \emph{where should the few labels go?} They can go \emph{inside} the
+contrastive loss, either by running \supcon on the labeled subset or by mixing labeled and unlabeled images
+in one objective \citep{assran2020suncet,inoue2020semi}. Or they can be kept until \emph{after} a
+label-free pretraining stage and then used for fine-tuning, as in SimCLR~v2 \citep{chen2020simclrv2}, or
+for semi-supervised training \citep{sohn2020fixmatch}.
 
-\paragraph{What we did.}
-We rebuilt the study around a controlled design (\cref{sec:setup}). All contrastive methods share one loss
-(\cref{eq:loss}), one architecture, one augmentation pipeline, one evaluation code and, crucially, the same
-number of gradient steps. A $2{\times}2$ design separates the two things that label-scarce pretraining changes
-at once: whether the labels are used in the loss, and which images are in the pretraining pool. We evaluate
-every encoder twice, with the standard linear probe that uses all 50,000 labels and with the 5,000 labels that
-actually exist in the semi-supervised setting. Key runs are repeated over \nSeeds seeds and every key
-difference is tested with a paired bootstrap; we add self-supervised (BYOL, SimSiam), supervised and
-semi-supervised (FixMatch, MixMatch) baselines on the same split, and repeat the main comparison on CIFAR-100
-and with a ResNet-50.
+Prior work gives parts of the answer (\cref{sec:related}), but a controlled comparison has to deal with two
+confounds.
 
-\paragraph{What we found.}
-\begin{enumerate}[leftmargin=*]
-\item \textbf{The original gap was an epoch-counting artefact} (\cref{sec:trap}). ``100 epochs'' over 5,000
-images is ten times fewer gradient steps than 100 epochs over 50,000; in our report the difference was
-21-fold. A ResNet-50 \supcon given the report's 970 steps reaches \rFiftySupconTen in our pipeline, close to
-the 75.2\% we reported.
-\item \textbf{Labels buy speed, unlabeled images buy accuracy} (\cref{sec:trap}). At equal steps, label-only
-\supcon is far ahead early (\supconTenLin vs.\ \simclrTenLin after 970 steps), stops improving at about 84\%,
-and is overtaken by \simclr, which reaches \simclrTwoHundredLin after 19,400 steps (\gapLong points ahead).
-\item \textbf{Labels used in pretraining are spent} (\cref{sec:decompose}). With only the 5,000 labels available
-after pretraining, fine-tuning a \simclr encoder gives \simclrTwoHundredFt, while encoders that used the same
-labels inside the loss reach \supconTwoHundredFt (\supcon) and \unionTwoHundredFt (\supcon plus all unlabeled
-images). The standard all-label probe hides this and even ranks the label-using encoder first at shorter
-budgets.
-\item \textbf{The mechanism is memorisation, and coverage limits it} (\cref{sec:geometry}). Label-only \supcon
-collapses the classes of the images it has seen \supconCdnvRatio times more tightly than those of new images,
-so the labeled images are already fitted when the labels are used again. The reviewer's proposed diversity
-metric, the spread of augmented views within a class, is the same for a random 1\% subset (\spreadOne) and the
-full data set (\spreadFull); what a small pool lacks is coverage of unseen images, and pools made redundant at a
-fixed size give worse encoders.
+\begin{itemize}[leftmargin=1.4em]
+\item \textbf{Compute.} A method that trains on the labeled subset and a method that trains on all images do
+very different amounts of work if their budgets are counted in passes over their own data: one ``epoch''
+over 5,000 images is a tenth of the gradient steps of one epoch over 50,000. Careful studies equalise
+iterations \citep{newell2020useful,liu2022self}, but the budget unit is often left unclear: in a small audit
+of published comparisons of this kind we could not recover the budget of one arm in 5 of 17 papers, and 2
+compared arms at equal epochs over pools of different size (\cref{app:audit}).
+\item \textbf{Evaluation.} The standard test of a pretrained encoder is a linear probe trained on
+\emph{all} training labels \citep{chen2020simclr}. In the label-scarce setting those labels do not exist.
+The probe then measures what the features would be worth to someone with an oracle, not what the
+practitioner with 5,000 labels can obtain \citep{oliver2018realistic}.
+\end{itemize}
+
+This paper removes both confounds. All contrastive methods are written as one loss
+(\cref{sec:setup}), and two properties are varied independently in a $2\times2$ design: whether the loss
+uses the labels, and whether the pretraining pool is the labeled subset or all images. Every method
+receives the same number of gradient steps, from 970 to 97,000, and every encoder is evaluated both with the
+all-label probe, which we call the \emph{oracle-label probe}, and with protocols that respect the label
+budget. The main experiments use CIFAR-10 with 10\% of the labels (5,000 images), a ResNet-18 and five
+seeds; we repeat them on CIFAR-100, on STL-10 with its 100,000 unlabeled images, and with a ResNet-50.
+
+\paragraph{Contributions}
+\begin{enumerate}[leftmargin=1.6em]
+\item \textbf{A compute-matched $2\times2$ comparison} that separates the use of labels from the choice of
+images. It shows that labels inside the loss mainly buy speed. \supcon on the labeled subset is
+\R{d:simclr-supcon:lp50:e10}\pt ahead of \simclr after 970 steps, statistically equivalent to it after 9,700
+steps, and \R{long:d:simclr-supcon}\pt behind after \R{long:steps} steps
+(\cref{sec:results}).
+\item \textbf{Evidence that the evaluation protocol decides the ranking.} At 9,700 steps the oracle-label
+probe ranks a semi-supervised \supcon that trains on all images (\union) first and \simclr last; fine-tuning
+on the 5,000 labels gives exactly the opposite order (\cref{sec:protocol}). A conclusion about label-scarce
+pretraining that rests on the all-label probe can therefore be reversed by the protocol the practitioner
+would actually use.
+\item \textbf{A seen/unseen diagnostic.} Comparing the tightness of classes on the labeled images, on the
+other training images and on test images shows where the label information ends up. Encoders that use
+labels make the labeled images very tight, but the gain does not reach images without labels, including
+those that \union trains on (\cref{sec:analysis}).
 \end{enumerate}
-On the reviewer's last question, the answer is sobering for contrastive pretraining: MixMatch and FixMatch
-\citep{berthelot2019mixmatch,sohn2020fixmatch}, given the same image budget, beat every contrastive pipeline we
-trained (\mixmatchAcc and \fixmatchAcc; \cref{sec:baselines}). This is also consistent with our explanation:
-both methods use the labels to create targets for the unlabeled images instead of clustering the labeled ones. We also quantify two
-observations of the original study, the colour shortcut behind the large effect of colour
-jitter (\cref{sec:shortcut}) and a resolution failure on ImageNet photographs (\cref{sec:ood}).
 
-\paragraph{Why this matters.}
-The practical message is short: \emph{pretrain on every image without labels, and spend the labels last}.
-Labels inside a contrastive loss make training faster, which matters when compute is tight; but with a
-realistic budget, the same labels are worth more when they are kept for fine-tuning. The broader message is
-about evaluation. A plausible mechanism (``fewer images means less diversity'') was attached to a 9-point gap
-that was caused by a 21-fold difference in training; and the standard linear probe, which assumes all labels
-are available, can rank methods in the opposite order from the protocol that matches the label budget. Both
-echo earlier warnings about evaluating semi-supervised learning \citep{oliver2018realistic}.
+\paragraph{What the results mean in practice}
+Within contrastive pretraining, and in the setting we tested (balanced data, in-distribution or mildly
+out-of-distribution unlabeled images, small ResNets), scarce labels should not be spent in a \supcon-style
+loss. Pretraining without labels on all images and using the labels afterwards is better, whether
+``afterwards'' means fine-tuning, a short \supcon stage, or semi-supervised training. The last option is
+the strongest overall: FixMatch and MixMatch \citep{sohn2020fixmatch,berthelot2019mixmatch} beat every
+pretrain-then-fine-tune pipeline in our comparison (\cref{sec:where}), and we say so plainly, because the
+question of this paper is where labels belong, not which contrastive method wins.

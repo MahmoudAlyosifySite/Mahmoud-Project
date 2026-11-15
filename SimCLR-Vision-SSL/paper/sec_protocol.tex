@@ -1,0 +1,93 @@
+\section{Results II: the protocol decides the ranking}
+\label{sec:protocol}
+
+The comparison of \cref{sec:results} used a probe that sees 50,000 labels. A practitioner with a 5,000-label
+budget cannot run it. \Cref{tab:protocol} evaluates the same encoders at 19,400 steps with every protocol of
+\cref{sec:protocols}, and \cref{tab:main} gives \lpfive and \ftfive for the other budgets.
+
+\begin{table}[t]
+\centering
+\small
+\caption{One set of encoders, six protocols (CIFAR-10, 10\% labels, ResNet-18, 19,400 steps; test accuracy
+in \%, mean $\pm$ standard deviation over seeds). The superscript is the rank of the encoder within the
+column. \simclr{}$\to$\supcon is \simclr followed by 485 steps of \supcon on the 5,000 labels
+(\cref{sec:where}).}
+\label{tab:protocol}
+\begin{adjustbox}{max width=\linewidth}
+\input{generated/tab_protocol.tex}
+\end{adjustbox}
+\end{table}
+
+\paragraph{The ranking reverses}
+At 9,700 steps the oracle-label probe orders the three main encoders as \union
+(\R{union_f0.1_e100:lp50}\%) $>$ \supcon (\R{supcon_lab_f0.1_e100:lp50}\%) $\approx$ \simclr
+(\R{simclr_all_e100:lp50}\%). Fine-tuning on the 5,000 labels orders them as \simclr
+(\R{simclr_all_e100:ft}\%) $>$ \supcon (\R{supcon_lab_f0.1_e100:ft}\%) $>$ \union
+(\R{union_f0.1_e100:ft}\%): the exact opposite. The encoder that the standard protocol puts first is last
+when the labels are limited to the ones that exist, and \simclr gains
+\R{cmp:simclr-union:ft:e100:diff}\pt on it (\R{cmp:simclr-union:ft:e100:ci}).
+
+At 19,400 steps \simclr is first under every protocol, but the order of the two label-using methods still
+flips: \union is \R{cmp:union-supcon:lp50:e200:diff}\pt \emph{above} \supcon with the oracle-label probe and
+\R{d:union-supcon:lp5:e200}\pt \emph{below} it with \lpfive. The unlabeled images that \union adds to \supcon
+improve what an oracle can read out of the features, and do not improve what the 5,000 labels can read out.
+The size of the effect is also protocol-dependent: the advantage of \simclr over \supcon is
+\R{cmp:simclr-supcon:lp50:e200:diff}\pt with \lpall, \R{cmp:simclr-supcon:lp5:e200:diff}\pt with \lpfive and
+\R{cmp:simclr-supcon:ft:e200:diff}\pt with \ftfive.
+
+\paragraph{Why the protocols disagree}
+The label-budget protocols reuse the very labels that \supcon and \union were trained on. On their own 5,000
+labeled images these encoders already separate the classes perfectly: the \lpfive probe reaches
+\R{supcon_lab_f0.1_e200:lp5_train}\% training accuracy on them, against \R{simclr_all_e200:lp5_train}\% for
+\simclr. A probe trained on images that the encoder has pulled into tight clusters learns a decision rule
+that fits those images and transfers less well to new ones (\cref{sec:geometry}). The oracle-label probe
+hides this, because 45,000 of its 50,000 training images were not labeled during pretraining.
+
+\paragraph{Is this an artefact of the fine-tuning recipe?}
+\label{sec:ftrobust}
+There is a simple alternative explanation for the weak fine-tuning of the label-using encoders. Our default
+recipe starts from the linear probe, which already fits the 5,000 labels perfectly; the cross-entropy
+gradient is then close to zero and the encoder hardly moves. That would be a property of the recipe, not of
+the encoder. We tested it with a grid of 72 recipes per encoder: head initialisation (linear probe or
+random), learning rate (0.003, 0.01, 0.03, 0.1), number of passes (30, 60, 120) and a regulariser that keeps
+the training loss above zero (none, label smoothing \citep{szegedy2016rethinking}, mixup
+\citep{zhang2018mixup}).
+
+\emph{Selecting the recipe with the label budget.} We first selected the recipe with the 5,000 labels only:
+4,000 for training and 1,000 for validation. For \simclr this works as intended. The validation accuracy
+spreads over \R{ftgrid:simclr_all_e200:valrange}\pt across the grid, the selected recipe (linear-probe head,
+label smoothing) raises \ftfive from \R{simclr_all_e200:ftd}\% to \R{simclr_all_e200:ftt:pm}\%, and the
+default recipe was close to the best. For \supcon and \union the selection fails for a reason that is itself
+part of our finding: the 1,000 validation images were labeled images during pretraining, the encoder has
+already separated them, and most recipes reach 100\% on them (the best validation score is
+\R{ftgrid:supcon_lab_f0.1_e200:valmax}\% for \supcon and \R{ftgrid:union_f0.1_e200:valmax}\% for \union).
+The validation score cannot rank the recipes, and the recipe it returns is no better than the default
+(\R{supcon_lab_f0.1_e200:ftt}\% against \R{supcon_lab_f0.1_e200:ftd}\% for \supcon). A method that uses the
+labels in pretraining therefore also uses up the only data on which a practitioner could tune what comes
+next. In \cref{tab:protocol} the ``selected'' column gives, for the label-using encoders, the recipe selected
+for \simclr.
+
+\emph{An upper bound.} To see what any selection rule could achieve, we scored all 72 recipes on the test
+set of seed 0, took the best one for each encoder, and applied it to the other seeds (``oracle'' column;
+\cref{tab:ftsearch}). \pending{The best recipe for \supcon uses \R{ftgrid:supcon_lab_f0.1_e200:recipe} and
+reaches \R{supcon_lab_f0.1_e200:fto:pm}\%, \R{d:fto-ft:supcon_lab_f0.1_e200}\pt above the default; for \union
+it reaches \R{union_f0.1_e200:fto:pm}\% and for \simclr \R{simclr_all_e200:fto:pm}\%. The concern is
+therefore partly justified: starting from the linear probe without regularisation under-uses the
+label-using encoders. With the oracle recipe the advantage of \simclr over \supcon shrinks from
+\R{cmp:simclr-supcon:ft:e200:diff}\pt to \R{cmp:simclr-supcon:fto:e200:diff}\pt
+(\R{cmp:simclr-supcon:fto:e200:ci}); it does not close, and a practitioner has no label-budget way of
+finding that recipe.}
+
+\paragraph{Semi-supervised fine-tuning}
+The pipeline a practitioner would use when unlabeled images are available is semi-supervised
+\citep{chen2020simclrv2}. We therefore started FixMatch from each encoder. \pending{FixMatch-init reaches
+\R{simclr_all_e200:fm:pm}\% from \simclr, \R{supcon_lab_f0.1_e200:fm:pm}\% from \supcon and
+\R{union_f0.1_e200:fm:pm}\% from \union. The difference between \simclr and \supcon is
+\R{cmp:simclr-supcon:fm:e200:sdiff}\pt (\R{cmp:simclr-supcon:fm:e200:ci}).}
+
+\paragraph{What we take from this}
+A statement such as ``method A learns better representations than method B with 10\% labels'' needs the
+protocol attached. In our experiments the all-label probe is the protocol most favourable to the
+label-using methods, and each protocol that respects the label budget moves the comparison towards
+label-free pretraining. We recommend reporting at least one label-budget protocol next to the oracle-label
+probe whenever the pretraining method itself uses labels.

@@ -1,0 +1,28 @@
+\section*{CRediT authorship contribution statement}
+\ifanon
+Omitted for anonymous review.
+\else
+\textbf{Mahmoud Alyosify:} Conceptualization, Methodology, Software, Investigation, Formal analysis,
+Writing -- original draft. \textbf{Mirna Imbabi:} Methodology, Software, Investigation, Validation, Writing --
+review \& editing. \textbf{Natalie Nashed:} Investigation, Validation, Visualization, Writing -- review \&
+editing. \textbf{Hazem M. Abbas:} Supervision, Conceptualization, Writing -- review \& editing.
+\fi
+
+\section*{Declaration of competing interest}
+The authors declare that they have no known competing financial interests or personal relationships that
+could have appeared to influence the work reported in this paper.
+
+\section*{Funding}
+This research did not receive any specific grant from funding agencies in the public, commercial, or
+not-for-profit sectors.
+
+\section*{Data and code availability}
+CIFAR-10, CIFAR-100 and STL-10 are public datasets. The code, the job files of every run, the per-run
+results (metrics and test-set predictions) and the scripts that generate every table and figure of this
+paper are available at \repo. Checkpoints of the main runs are released with the archived version of the
+repository.
+
+\section*{Compute}
+All experiments ran on a single NVIDIA A40 GPU (48 GB). The \R{nruns} runs behind this paper took about
+\R{gpuhours} GPU-hours of training in total; a 9,700-step ResNet-18 contrastive run on CIFAR takes about
+\R{simclr_all_e100:time} minutes (\cref{tab:compute}).

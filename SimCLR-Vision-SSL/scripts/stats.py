@@ -1,13 +1,21 @@
-"""Significance tests between two configurations.
+"""Statistical comparison of two configurations (sets of runs that differ only in the seed).
 
-For configurations A and B (each a set of runs that differ only in the seed) we report
+Hierarchical (two-level) bootstrap
+    One bootstrap replicate (i) resamples the seeds of each configuration with replacement and
+    (ii) resamples the test images with replacement, using the SAME resampled images for both
+    configurations (paired at the image level). When the two configurations were run with the same
+    seeds, the seeds are resampled jointly, because runs with the same seed share the labeled
+    subset. The statistic is the difference of mean test accuracy. We report the percentile 95%
+    interval and a two-sided p-value 2*min(P(d<=0), P(d>=0)), which cannot be smaller than
+    1/n_boot and is reported as "< 0.001" below that.
 
-* the difference of mean test accuracy with a 95% bootstrap confidence interval. The
-  bootstrap is *paired* over test images (both configurations are scored on the same
-  resampled images) and also resamples the seeds, so the interval covers both test-set
-  noise and run-to-run noise;
-* the two-sided bootstrap p-value for "no difference";
-* Welch's t-test across seeds, as a second opinion that uses only run-to-run variance.
+Equivalence (TOST)
+    For "no difference" claims we test H0: |d| >= margin with two one-sided tests on the same
+    bootstrap distribution: p_tost = max(P(d <= -margin), P(d >= margin)). Equivalence within the
+    margin is declared when p_tost < 0.05 (the 90% interval lies inside +-margin).
+
+Multiple comparisons
+    holm() applies the Holm-Bonferroni step-down correction to a family of p-values.
 
     python scripts/stats.py simclr_all_e100 supcon_lab_f0.1_e100 --key linear
 """
@@ -19,65 +27,106 @@ import re
 import numpy as np
 from scipy import stats as sps
 
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
 
 def config_runs(config, root="results/runs"):
-    runs = []
-    for d in sorted(glob.glob(os.path.join(root, config + "_s*"))):
-        if re.fullmatch(re.escape(config) + r"_s\d+", os.path.basename(d)) and os.path.exists(os.path.join(d, "preds.npz")):
-            runs.append(d)
+    runs = {}
+    for d in sorted(glob.glob(os.path.join(root, glob.escape(config) + "_s*"))):
+        m = re.fullmatch(re.escape(config) + r"_s(\d+)", os.path.basename(d))
+        if m:
+            runs[int(m.group(1))] = d
     return runs
 
 
-def load_correct(config, key, y, root="results/runs"):
-    """Boolean matrix [seeds, test images]: was the image classified correctly?"""
-    out = []
-    for d in config_runs(config, root):
-        z = np.load(os.path.join(d, "preds.npz"))
-        if key in z:
-            out.append(z[key] == y)
-    if not out:
-        raise FileNotFoundError(f"no predictions '{key}' for {config}")
-    return np.stack(out).astype(np.float32)
+def load_correct(config, key, y, root="results/runs", files=("preds.npz", "probes_preds.npz")):
+    """Dict seed -> boolean vector over test images (was the image classified correctly?)."""
+    out = {}
+    for seed, d in config_runs(config, root).items():
+        for fn in files:
+            p = os.path.join(d, fn)
+            if os.path.exists(p):
+                z = np.load(p)
+                if key in z:
+                    out[seed] = (z[key] == y).astype(np.float32)
+                    break
+    return out
 
 
-def paired_bootstrap(ca, cb, n_boot=10000, seed=0, chunk=500):
-    """ca, cb: correctness matrices [seeds_a, n], [seeds_b, n] on the same n test images."""
+def hierarchical_bootstrap(ca, cb, n_boot=10000, seed=0, chunk=500, margin=1.0):
+    """ca, cb: dicts seed -> correctness vector on the same n test images."""
     rng = np.random.default_rng(seed)
-    n = ca.shape[1]
+    sa, sb = sorted(ca), sorted(cb)
+    A, B = np.stack([ca[s] for s in sa]), np.stack([cb[s] for s in sb])
+    paired = sa == sb
+    n = A.shape[1]
     diffs = np.empty(n_boot, dtype=np.float64)
     for start in range(0, n_boot, chunk):
         m = min(chunk, n_boot - start)
         w = rng.multinomial(n, np.full(n, 1.0 / n), size=m).astype(np.float32) / n   # [m, n] image weights
-        acc_a = w @ ca.T                                                             # [m, seeds_a]
-        acc_b = w @ cb.T
-        ia = rng.integers(0, ca.shape[0], size=(m, ca.shape[0]))
-        ib = rng.integers(0, cb.shape[0], size=(m, cb.shape[0]))
+        acc_a, acc_b = w @ A.T, w @ B.T                                              # [m, seeds]
+        ia = rng.integers(0, A.shape[0], size=(m, A.shape[0]))
+        ib = ia if paired else rng.integers(0, B.shape[0], size=(m, B.shape[0]))
         diffs[start:start + m] = (np.take_along_axis(acc_a, ia, 1).mean(1)
                                   - np.take_along_axis(acc_b, ib, 1).mean(1))
-    obs = ca.mean() - cb.mean()
+    diffs *= 100
+    obs = 100 * (A.mean() - B.mean())
     lo, hi = np.percentile(diffs, [2.5, 97.5])
     p = 2 * min((diffs <= 0).mean(), (diffs >= 0).mean())
-    return {"diff": 100 * obs, "ci_lo": 100 * lo, "ci_hi": 100 * hi, "p_boot": max(p, 1.0 / n_boot)}
-
-
-def compare(a, b, y, key="linear", root="results/runs", n_boot=10000):
-    ca, cb = load_correct(a, key, y, root), load_correct(b, key, y, root)
-    res = paired_bootstrap(ca, cb, n_boot)
-    acc_a, acc_b = 100 * ca.mean(1), 100 * cb.mean(1)
-    res.update({"a": a, "b": b, "key": key, "n_a": len(acc_a), "n_b": len(acc_b),
-                "mean_a": acc_a.mean(), "std_a": acc_a.std(ddof=1) if len(acc_a) > 1 else float("nan"),
-                "mean_b": acc_b.mean(), "std_b": acc_b.std(ddof=1) if len(acc_b) > 1 else float("nan")})
-    if len(acc_a) > 1 and len(acc_b) > 1:
-        t = sps.ttest_ind(acc_a, acc_b, equal_var=False)
-        res["p_welch"] = float(t.pvalue)
+    p_tost = max((diffs <= -margin).mean(), (diffs >= margin).mean())
+    acc_a, acc_b = 100 * A.mean(1), 100 * B.mean(1)
+    res = {"diff": obs, "ci_lo": lo, "ci_hi": hi, "p": float(min(1.0, max(p, 1.0 / n_boot))),
+           "p_tost": float(max(p_tost, 1.0 / n_boot)), "margin": margin, "paired_seeds": paired,
+           "n_a": len(sa), "n_b": len(sb), "mean_a": acc_a.mean(), "mean_b": acc_b.mean(),
+           "std_a": acc_a.std(ddof=1) if len(sa) > 1 else float("nan"),
+           "std_b": acc_b.std(ddof=1) if len(sb) > 1 else float("nan")}
+    if len(sa) > 1 and len(sb) > 1:
+        res["p_welch"] = float(sps.ttest_ind(acc_a, acc_b, equal_var=False).pvalue)
     return res
 
 
+def holm(pvals):
+    """Holm-Bonferroni adjusted p-values (same order as the input)."""
+    p = np.asarray(pvals, dtype=float)
+    order = np.argsort(p)
+    adj = np.empty_like(p)
+    running = 0.0
+    for rank, i in enumerate(order):
+        running = max(running, (len(p) - rank) * p[i])
+        adj[i] = min(1.0, running)
+    return adj
+
+
+def mean_ci(values, n_boot=10000, seed=0):
+    """Mean and percentile 95% interval of a handful of per-seed numbers."""
+    v = np.asarray(values, dtype=float)
+    if len(v) < 2:
+        return float(v.mean()), float("nan"), float("nan")
+    rng = np.random.default_rng(seed)
+    b = v[rng.integers(0, len(v), size=(n_boot, len(v)))].mean(1)
+    return float(v.mean()), float(np.percentile(b, 2.5)), float(np.percentile(b, 97.5))
+
+
 def test_labels(dataset="cifar10", data_dir=None):
+    """Test labels, cached in results/test_labels_<dataset>.npy."""
+    cache = os.path.join(ROOT, "results", f"test_labels_{dataset}.npy")
+    if os.path.exists(cache):
+        return np.load(cache)
     import sys
-    sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    sys.path.insert(0, ROOT)
     from dlt.data import load_dataset
-    return load_dataset(dataset, data_dir or os.environ.get("DLT_DATA", "./data"))["test_y"].numpy()
+    y = load_dataset(dataset, data_dir or os.environ.get("DLT_DATA", "./data"))["test_y"].numpy()
+    np.save(cache, y)
+    return y
+
+
+def compare(a, b, y, key="linear", key_b=None, root="results/runs", n_boot=10000, margin=1.0):
+    ca, cb = load_correct(a, key, y, root), load_correct(b, key_b or key, y, root)
+    if not ca or not cb:
+        raise FileNotFoundError(f"missing predictions for {a} [{key}] or {b} [{key_b or key}]")
+    res = hierarchical_bootstrap(ca, cb, n_boot, margin=margin)
+    res.update({"a": a, "b": b, "key": key})
+    return res
 
 
 def main():
@@ -87,12 +136,13 @@ def main():
     p.add_argument("--key", default="linear")
     p.add_argument("--dataset", default="cifar10")
     p.add_argument("--root", default="results/runs")
+    p.add_argument("--margin", type=float, default=1.0)
     args = p.parse_args()
-    r = compare(args.a, args.b, test_labels(args.dataset), args.key, args.root)
+    r = compare(args.a, args.b, test_labels(args.dataset), args.key, root=args.root, margin=args.margin)
     print(f"{r['a']}: {r['mean_a']:.2f} ± {r['std_a']:.2f} (n={r['n_a']})")
     print(f"{r['b']}: {r['mean_b']:.2f} ± {r['std_b']:.2f} (n={r['n_b']})")
-    print(f"difference {r['diff']:+.2f} pp, 95% CI [{r['ci_lo']:+.2f}, {r['ci_hi']:+.2f}], "
-          f"bootstrap p = {r['p_boot']:.4g}" + (f", Welch p = {r['p_welch']:.3g}" if "p_welch" in r else ""))
+    print(f"difference {r['diff']:+.2f} points, 95% CI [{r['ci_lo']:+.2f}, {r['ci_hi']:+.2f}], p = {r['p']:.4g}, "
+          f"TOST (±{r['margin']}) p = {r['p_tost']:.4g}" + (f", Welch p = {r['p_welch']:.3g}" if "p_welch" in r else ""))
 
 
 if __name__ == "__main__":
