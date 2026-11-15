@@ -1,0 +1,12 @@
+{
+ "repo": "mahmoudalyosify/horus-chat-api",
+ "sha": "c236388e721aff19cbfa53d86061d84fcc97c177",
+ "sdk": "gradio",
+ "last_modified": "2026-08-03 15:29:17+00:00",
+ "hardware_requested": "zero-a10g",
+ "variables": {},
+ "secret_names (values not readable)": [
+  "API_KEY"
+ ],
+ "backed_up": "2026-11-15"
+}

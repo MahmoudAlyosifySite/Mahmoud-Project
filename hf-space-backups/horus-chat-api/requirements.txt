@@ -1,0 +1,9 @@
+# Horus-OSINT Space — free Gradio SDK, CPU only.
+#
+# llama-cpp-python ships prebuilt CPU wheels, so the Space builds in a couple of
+# minutes instead of compiling llama.cpp from source on 2 vCPU.
+llama-cpp-python==0.3.2
+huggingface_hub>=0.26,<1.0
+fastapi>=0.115
+pydantic>=2.9
+uvicorn>=0.30
