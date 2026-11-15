@@ -1,0 +1,16 @@
+--name tin_simclr_all_e100_s1 --dataset tinyimagenet --backbone resnet18_mp --method simclr --pool all --epochs 100 --seed 1
+--name tin_supcon_lab_f0.1_e100_s1 --dataset tinyimagenet --backbone resnet18_mp --method supcon --pool labeled --label_fraction 0.1 --epochs 100 --seed 1
+--name tin_union_f0.1_e100_s1 --dataset tinyimagenet --backbone resnet18_mp --method supcon --pool all --label_fraction 0.1 --temperature_unlabeled 0.5 --labeled_share 0.25 --epochs 100 --seed 1
+--name tin_simclr_sub_f0.1_e100_s1 --dataset tinyimagenet --backbone resnet18_mp --method simclr --pool labeled --label_fraction 0.1 --epochs 100 --seed 1
+--name tin_simclr_all_e100_s2 --dataset tinyimagenet --backbone resnet18_mp --method simclr --pool all --epochs 100 --seed 2
+--name tin_supcon_lab_f0.1_e100_s2 --dataset tinyimagenet --backbone resnet18_mp --method supcon --pool labeled --label_fraction 0.1 --epochs 100 --seed 2
+--name tin_union_f0.1_e100_s2 --dataset tinyimagenet --backbone resnet18_mp --method supcon --pool all --label_fraction 0.1 --temperature_unlabeled 0.5 --labeled_share 0.25 --epochs 100 --seed 2
+--name tin_simclr_sub_f0.1_e100_s2 --dataset tinyimagenet --backbone resnet18_mp --method simclr --pool labeled --label_fraction 0.1 --epochs 100 --seed 2
+--name tin_simclr_all_e200_s1 --dataset tinyimagenet --backbone resnet18_mp --method simclr --pool all --epochs 200 --seed 1
+--name tin_supcon_lab_f0.1_e200_s1 --dataset tinyimagenet --backbone resnet18_mp --method supcon --pool labeled --label_fraction 0.1 --epochs 200 --seed 1
+--name tin_union_f0.1_e200_s1 --dataset tinyimagenet --backbone resnet18_mp --method supcon --pool all --label_fraction 0.1 --temperature_unlabeled 0.5 --labeled_share 0.25 --epochs 200 --seed 1
+--name tin_simclr_sub_f0.1_e200_s1 --dataset tinyimagenet --backbone resnet18_mp --method simclr --pool labeled --label_fraction 0.1 --epochs 200 --seed 1
+--name tin_simclr_all_e200_s2 --dataset tinyimagenet --backbone resnet18_mp --method simclr --pool all --epochs 200 --seed 2
+--name tin_supcon_lab_f0.1_e200_s2 --dataset tinyimagenet --backbone resnet18_mp --method supcon --pool labeled --label_fraction 0.1 --epochs 200 --seed 2
+--name tin_union_f0.1_e200_s2 --dataset tinyimagenet --backbone resnet18_mp --method supcon --pool all --label_fraction 0.1 --temperature_unlabeled 0.5 --labeled_share 0.25 --epochs 200 --seed 2
+--name tin_simclr_sub_f0.1_e200_s2 --dataset tinyimagenet --backbone resnet18_mp --method simclr --pool labeled --label_fraction 0.1 --epochs 200 --seed 2

@@ -55,7 +55,7 @@ def parse_args(argv=None):
     p.add_argument("--out", default="results/runs")
     p.add_argument("--ckpt_dir", default=None, help="where to store the final encoder (default: <out>/<name>)")
     p.add_argument("--data_dir", default=os.environ.get("DLT_DATA", "./data"))
-    p.add_argument("--dataset", default="cifar10", choices=["cifar10", "cifar100", "stl10"])
+    p.add_argument("--dataset", default="cifar10", choices=["cifar10", "cifar100", "stl10", "tinyimagenet"])
     p.add_argument("--method", default="simclr", choices=list(DEFAULTS))
     p.add_argument("--backbone", default="resnet18", choices=["resnet18", "resnet50", "resnet18_mp", "resnet50_mp"])
     p.add_argument("--aug", default="simclr")
