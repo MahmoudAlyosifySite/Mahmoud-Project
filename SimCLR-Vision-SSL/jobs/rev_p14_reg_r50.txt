@@ -1,0 +1,8 @@
+--name r50_simclr_all_e200_s1 --backbone resnet50 --method simclr --pool all --epochs 200 --seed 1
+--name r50_supcon_lab_f0.1_e200_s1 --backbone resnet50 --method supcon --pool labeled --label_fraction 0.1 --epochs 200 --seed 1
+--name r50_simclr_all_e200_s2 --backbone resnet50 --method simclr --pool all --epochs 200 --seed 2
+--name r50_supcon_lab_f0.1_e200_s2 --backbone resnet50 --method supcon --pool labeled --label_fraction 0.1 --epochs 200 --seed 2
+--name supcon_lab_f0.1_wd0.0005_e400_s0 --method supcon --pool labeled --label_fraction 0.1 --wd 0.0005 --epochs 400 --curve_points 16 --seed 0
+--name supcon_lab_f0.1_wd0.001_e400_s0 --method supcon --pool labeled --label_fraction 0.1 --wd 0.001 --epochs 400 --curve_points 16 --seed 0
+--name supcon_lab_f0.1_strongaug_e400_s0 --method supcon --pool labeled --label_fraction 0.1 --aug simclr_strong --epochs 400 --curve_points 16 --seed 0
+--name supcon_lab_f0.1_wd0.0005_strongaug_e400_s0 --method supcon --pool labeled --label_fraction 0.1 --wd 0.0005 --aug simclr_strong --epochs 400 --curve_points 16 --seed 0
