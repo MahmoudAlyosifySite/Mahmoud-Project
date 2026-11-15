@@ -1,0 +1,12 @@
+-m dlt.finetune --name ft_simclr_all_e400_s0 --from_run simclr_all_e400_s0 --label_fraction 0.1 --seed 0
+-m dlt.finetune --name ft_supcon_lab_f0.1_e400_s0 --from_run supcon_lab_f0.1_e400_s0 --label_fraction 0.1 --seed 0
+-m dlt.finetune --name ft_union_f0.1_e400_s0 --from_run union_f0.1_e400_s0 --label_fraction 0.1 --seed 0
+-m dlt.finetune --name ft_simclr_sub_f0.1_e400_s0 --from_run simclr_sub_f0.1_e400_s0 --label_fraction 0.1 --seed 0
+-m dlt.finetune --name ft_simclr_all_e400_s1 --from_run simclr_all_e400_s1 --label_fraction 0.1 --seed 1
+-m dlt.finetune --name ft_supcon_lab_f0.1_e400_s1 --from_run supcon_lab_f0.1_e400_s1 --label_fraction 0.1 --seed 1
+-m dlt.finetune --name ft_union_f0.1_e400_s1 --from_run union_f0.1_e400_s1 --label_fraction 0.1 --seed 1
+-m dlt.finetune --name ft_simclr_sub_f0.1_e400_s1 --from_run simclr_sub_f0.1_e400_s1 --label_fraction 0.1 --seed 1
+-m dlt.finetune --name ft_simclr_all_e400_s2 --from_run simclr_all_e400_s2 --label_fraction 0.1 --seed 2
+-m dlt.finetune --name ft_supcon_lab_f0.1_e400_s2 --from_run supcon_lab_f0.1_e400_s2 --label_fraction 0.1 --seed 2
+-m dlt.finetune --name ft_union_f0.1_e400_s2 --from_run union_f0.1_e400_s2 --label_fraction 0.1 --seed 2
+-m dlt.finetune --name ft_simclr_sub_f0.1_e400_s2 --from_run simclr_sub_f0.1_e400_s2 --label_fraction 0.1 --seed 2

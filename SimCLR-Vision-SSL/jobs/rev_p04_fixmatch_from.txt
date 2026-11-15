@@ -1,0 +1,22 @@
+-m dlt.semisup --name fixmatch_from_simclr_all_e200_s0 --method fixmatch --label_fraction 0.1 --seed 0 --init_run simclr_all_e200_s0
+-m dlt.semisup --name fixmatch_from_supcon_lab_f0.1_e200_s0 --method fixmatch --label_fraction 0.1 --seed 0 --init_run supcon_lab_f0.1_e200_s0
+-m dlt.semisup --name fixmatch_from_union_f0.1_e200_s0 --method fixmatch --label_fraction 0.1 --seed 0 --init_run union_f0.1_e200_s0
+-m dlt.semisup --name fixmatch_from_byol_all_e200_s0 --method fixmatch --label_fraction 0.1 --seed 0 --init_run byol_all_e200_s0
+-m dlt.semisup --name fixmatch_from_twostage_simclr200_supcon25_s0 --method fixmatch --label_fraction 0.1 --seed 0 --init_run twostage_simclr200_supcon25_s0
+-m dlt.semisup --name fixmatch_from_simclr_all_e200_s1 --method fixmatch --label_fraction 0.1 --seed 1 --init_run simclr_all_e200_s1
+-m dlt.semisup --name fixmatch_from_supcon_lab_f0.1_e200_s1 --method fixmatch --label_fraction 0.1 --seed 1 --init_run supcon_lab_f0.1_e200_s1
+-m dlt.semisup --name fixmatch_from_union_f0.1_e200_s1 --method fixmatch --label_fraction 0.1 --seed 1 --init_run union_f0.1_e200_s1
+-m dlt.semisup --name fixmatch_from_byol_all_e200_s1 --method fixmatch --label_fraction 0.1 --seed 1 --init_run byol_all_e200_s1
+-m dlt.semisup --name fixmatch_from_twostage_simclr200_supcon25_s1 --method fixmatch --label_fraction 0.1 --seed 1 --init_run twostage_simclr200_supcon25_s1
+-m dlt.semisup --name fixmatch_from_simclr_all_e200_s2 --method fixmatch --label_fraction 0.1 --seed 2 --init_run simclr_all_e200_s2
+-m dlt.semisup --name fixmatch_from_supcon_lab_f0.1_e200_s2 --method fixmatch --label_fraction 0.1 --seed 2 --init_run supcon_lab_f0.1_e200_s2
+-m dlt.semisup --name fixmatch_from_union_f0.1_e200_s2 --method fixmatch --label_fraction 0.1 --seed 2 --init_run union_f0.1_e200_s2
+-m dlt.semisup --name fixmatch_from_byol_all_e200_s2 --method fixmatch --label_fraction 0.1 --seed 2 --init_run byol_all_e200_s2
+-m dlt.semisup --name fixmatch_from_twostage_simclr200_supcon25_s2 --method fixmatch --label_fraction 0.1 --seed 2 --init_run twostage_simclr200_supcon25_s2
+-m dlt.semisup --name fixmatch_f0.1_s1 --method fixmatch --label_fraction 0.1 --seed 1
+-m dlt.semisup --name mixmatch_f0.1_s1 --method mixmatch --label_fraction 0.1 --seed 1
+-m dlt.semisup --name fixmatch_f0.1_s2 --method fixmatch --label_fraction 0.1 --seed 2
+-m dlt.semisup --name mixmatch_f0.1_s2 --method mixmatch --label_fraction 0.1 --seed 2
+-m dlt.semisup --name fixmatch_b3_f0.1_s0 --method fixmatch --label_fraction 0.1 --budget 3 --seed 0
+-m dlt.semisup --name fixmatch_b3_f0.1_s1 --method fixmatch --label_fraction 0.1 --budget 3 --seed 1
+-m dlt.semisup --name fixmatch_b3_f0.1_s2 --method fixmatch --label_fraction 0.1 --budget 3 --seed 2

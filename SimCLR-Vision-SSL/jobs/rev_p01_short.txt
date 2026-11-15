@@ -1,0 +1,16 @@
+--name byol_all_e200_s0 --method byol --pool all --epochs 200 --seed 0
+--name ce_f0.1_e100_s1 --method ce --pool labeled --label_fraction 0.1 --epochs 100 --seed 1
+--name byol_all_e100_s1 --method byol --pool all --epochs 100 --seed 1
+--name ce_f0.1_e200_s1 --method ce --pool labeled --label_fraction 0.1 --epochs 200 --seed 1
+--name byol_all_e200_s1 --method byol --pool all --epochs 200 --seed 1
+--name ce_f0.1_e100_s2 --method ce --pool labeled --label_fraction 0.1 --epochs 100 --seed 2
+--name byol_all_e100_s2 --method byol --pool all --epochs 100 --seed 2
+--name ce_f0.1_e200_s2 --method ce --pool labeled --label_fraction 0.1 --epochs 200 --seed 2
+--name byol_all_e200_s2 --method byol --pool all --epochs 200 --seed 2
+--name simclr_all_t0.1_e100_s0 --method simclr --pool all --temperature 0.1 --epochs 100 --seed 0
+--name supcon_lab_f0.1_t0.5_e100_s0 --method supcon --pool labeled --label_fraction 0.1 --temperature 0.5 --epochs 100 --seed 0
+--name simclr_sub_cluster10_f0.1_e100_s0 --method simclr --pool labeled --pool_file results/pools/cluster10_f0.1_s0.npy --epochs 100 --seed 0
+--name r50_supcon_lab_f0.1_steps900_s0 --backbone resnet50 --method supcon --pool labeled --label_fraction 0.1 --epochs 9.28 --seed 0
+--name r50_supcon_lab_f0.1_steps900_lr0.05_s0 --backbone resnet50 --method supcon --pool labeled --label_fraction 0.1 --epochs 9.28 --lr 0.05 --seed 0
+--name r50_simclr_all_e200_s0 --backbone resnet50 --method simclr --pool all --epochs 200 --seed 0
+--name r50_supcon_lab_f0.1_e200_s0 --backbone resnet50 --method supcon --pool labeled --label_fraction 0.1 --epochs 200 --seed 0
