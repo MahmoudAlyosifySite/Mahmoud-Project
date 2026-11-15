@@ -35,10 +35,12 @@ comparison & seeds & $\Delta$ (points) & 95\% CI & $p$ (Holm) & equivalent withi
 \multicolumn{6}{l}{\emph{LP-50k, 4,850 steps}} \\
 \quad \simclr $-$ \supcon & 3/3 & -4.2 & [-5.1, -3.3] & $<$0.001 & no \\
 \multicolumn{6}{l}{\emph{FixMatch from encoder, 19,400 steps}} \\
-\quad \simclr $-$ \supcon & 3/3 & +0.4 & [+0.1, +0.7] & 0.039 & yes \\
+\quad \simclr $-$ \supcon & 3/3 & +0.4 & [+0.1, +0.7] & 0.049 & yes \\
 \quad \simclr $-$ \union & 3/3 & +0.7 & [+0.4, +1.0] & $<$0.001 & yes \\
+\multicolumn{6}{l}{\emph{same total compute (about 3x the reference budget)}} \\
+\quad FixMatch from scratch $-$ \simclr{}+FixMatch & 3/3 & +0.5 & [+0.1, +0.9] & 0.049 & yes \\
 \multicolumn{6}{l}{\emph{label-budget pipelines, 19,400 steps}} \\
 \quad \simclr{}+FT $-$ CE on 5k & 3/3 & +5.2 & [+4.5, +5.9] & $<$0.001 & no \\
-\quad \supcon{}+FT $-$ CE on 5k & 3/3 & -1.3 & [-2.1, -0.5] & 0.014 & no \\
+\quad \supcon{}+FT $-$ CE on 5k & 3/3 & -1.3 & [-2.1, -0.5] & 0.016 & no \\
 \bottomrule
 \end{tabular}

@@ -47,15 +47,24 @@ from the same \simclr encoder, is trained to match them. \pending{This reaches
 FixMatch and MixMatch trained from scratch reach \R{fixmatch_f0.1:clf:pm}\% and
 \R{mixmatch_f0.1:clf:pm}\% with the compute of a 9,700-step contrastive run. They use the labels from the
 first step and still beat every pretrain-then-fine-tune pipeline in the table, including \simclr with
-twice the pretraining budget. \pending{Starting FixMatch from the \simclr encoder gives
-\R{simclr_all_e200:fm:pm}\%, the best result of our study on CIFAR-10 with 5,000 labels; FixMatch from
-scratch with three times the budget, a comparable total compute, gives \R{fixmatch_b3_f0.1:clf:pm}\%.}
+twice the pretraining budget. Pretraining does help FixMatch when its cost is not counted: started from the
+\simclr encoder, FixMatch reaches \R{simclr_all_e200:fm:pm}\%, \R{d:fm-scratch:simclr}\pt above FixMatch from
+scratch with the same FixMatch budget. At equal \emph{total} compute the picture changes. 19,400 pretraining
+steps followed by FixMatch process three times the views of the reference budget (\cref{tab:compute}), and
+FixMatch from scratch with three times its budget reaches \R{fixmatch_b3_f0.1:clf:pm}\%,
+\R{cmp:fmb3-fmsimclr:diff}\pt more than \simclr followed by FixMatch (\R{cmp:fmb3-fmsimclr:ci}). A short
+\supcon stage between \simclr and FixMatch gives \R{twostage_simclr200_supcon25:fm:pm}\%, and BYOL as the
+starting point gives \R{byol_all_e200:fm:pm}\%, so no pretrained encoder we tested beats FixMatch from
+scratch at the same total compute.
 
 \paragraph{Summary}
 The answer to the question in the title is ``after''. Within the pipelines that end with supervised
-fine-tuning, the labels are better kept out of the contrastive loss until a label-free encoder exists.
-Overall, the best place for scarce labels in our experiments is not a contrastive loss at all but a
-pseudo-labeling objective, alone or after label-free pretraining. This is consistent with the semi-supervised
+fine-tuning, the labels are better kept out of the contrastive loss until a label-free encoder exists, and
+a short \supcon stage is the best way to put them into a contrastive loss. When semi-supervised training
+follows, the choice of encoder matters by less than a point. Overall, the best place for scarce labels in
+our experiments is not a contrastive loss at all but a pseudo-labeling objective: FixMatch is the strongest
+method at every budget we ran, and at equal total compute it does slightly better from scratch than after
+contrastive pretraining. This is consistent with the semi-supervised
 literature \citep{sohn2020fixmatch,li2021comatch,zheng2022simmatch,wang2022usb}, and it bounds the claim of
 this paper: we compare ways of using labels around contrastive pretraining, and we do not claim that
 contrastive pretraining is the best use of a label budget.

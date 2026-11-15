@@ -150,8 +150,9 @@ classes.}
 \paragraph{ResNet-50}
 With a ResNet-50 the crossover under the oracle-label probe comes later than with a ResNet-18. At 9,700
 steps \supcon is still slightly ahead (\R{r50_supcon_lab_f0.1_e100:lp50}\% against
-\R{r50_simclr_all_e100:lp50}\%, one seed); \pending{at 19,400 steps \simclr is ahead
-(\R{r50_simclr_all_e200:lp50}\% against \R{r50_supcon_lab_f0.1_e200:lp50}\%, three seeds).} Under \ftfive
+\R{r50_simclr_all_e100:lp50}\%, one seed); at 19,400 steps \simclr is clearly ahead
+(\R{r50_simclr_all_e200:lp50}\% against \R{r50_supcon_lab_f0.1_e200:lp50}\%; \pending{one seed, two more in
+progress}). Under \ftfive
 \simclr is ahead already at 9,700 steps (\R{r50_simclr_all_e100:ft}\% against
 \R{r50_supcon_lab_f0.1_e100:ft}\%). The larger encoder also makes very short budgets fragile: at 900 steps
 \supcon reaches \R{r50_supcon_lab_f0.1_steps900:lp50}\% with learning rate 0.25 but only

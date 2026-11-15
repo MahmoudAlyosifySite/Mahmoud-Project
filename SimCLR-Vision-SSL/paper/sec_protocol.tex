@@ -8,7 +8,7 @@ budget cannot run it. \Cref{tab:protocol} evaluates the same encoders at 19,400 
 \begin{table}[t]
 \centering
 \small
-\caption{One set of encoders, six protocols (CIFAR-10, 10\% labels, ResNet-18, 19,400 steps; test accuracy
+\caption{One set of encoders, every protocol (CIFAR-10, 10\% labels, ResNet-18, 19,400 steps; test accuracy
 in \%, mean $\pm$ standard deviation over seeds). The superscript is the rank of the encoder within the
 column. \simclr{}$\to$\supcon is \simclr followed by 485 steps of \supcon on the 5,000 labels
 (\cref{sec:where}).}
@@ -79,15 +79,22 @@ label-using encoders. With the oracle recipe the advantage of \simclr over \supc
 finding that recipe.}
 
 \paragraph{Semi-supervised fine-tuning}
-The pipeline a practitioner would use when unlabeled images are available is semi-supervised
-\citep{chen2020simclrv2}. We therefore started FixMatch from each encoder. \pending{FixMatch-init reaches
-\R{simclr_all_e200:fm:pm}\% from \simclr, \R{supcon_lab_f0.1_e200:fm:pm}\% from \supcon and
-\R{union_f0.1_e200:fm:pm}\% from \union. The difference between \simclr and \supcon is
-\R{cmp:simclr-supcon:fm:e200:sdiff}\pt (\R{cmp:simclr-supcon:fm:e200:ci}).}
+When unlabeled images are available, a practitioner would follow pretraining with semi-supervised training
+\citep{chen2020simclrv2}. We therefore started FixMatch from each encoder, with the same FixMatch budget as
+from scratch. The encoders end close together: \R{simclr_all_e200:fm:pm}\% from \simclr,
+\R{supcon_lab_f0.1_e200:fm:pm}\% from \supcon and \R{union_f0.1_e200:fm:pm}\% from \union. The order is the
+same as under \ftfive, and the opposite of \lpall, but the differences shrink to
+\R{cmp:simclr-supcon:fm:e200:diff}\pt (\R{cmp:simclr-supcon:fm:e200:ci}) and
+\R{cmp:simclr-union:fm:e200:diff}\pt (\R{cmp:simclr-union:fm:e200:ci}); both lie inside the $\pm1$-point
+equivalence margin (TOST $p=\R{cmp:simclr-supcon:fm:e200:tost}$ and $p=\R{cmp:simclr-union:fm:e200:tost}$).
+Pseudo-labeling the 45,000 unlabeled images recovers most of what the label-using encoders did not learn
+about them. The cost of putting the labels inside the loss is therefore large when the same 5,000 labels are
+reused in a supervised way, and small when the unlabeled images are revisited after pretraining.
 
 \paragraph{What we take from this}
 A statement such as ``method A learns better representations than method B with 10\% labels'' needs the
 protocol attached. In our experiments the all-label probe is the protocol most favourable to the
 label-using methods, and each protocol that respects the label budget moves the comparison towards
 label-free pretraining. We recommend reporting at least one label-budget protocol next to the oracle-label
-probe whenever the pretraining method itself uses labels.
+probe whenever the pretraining method itself uses labels, and to say which one is meant: in our
+experiments the gap between encoders is largest with \lpfive and \ftfive and smallest with FixMatch-init.

@@ -140,6 +140,8 @@ def MS(cfg, proto, d=1, bold=False):
     v = V(cfg, proto)
     if len(v) == 0:
         return "--"
+    if d == 2 and abs(v.mean()) < 0.05:
+        d = 3
     s = f"{v.mean():.{d}f}"
     if bold:
         s = r"\textbf{" + s + "}"
@@ -183,6 +185,8 @@ for cfg in CONFIGS:
         if len(v) == 0:
             continue
         d = 2 if "cdnv" in proto or "cka" in proto else 1
+        if d == 2 and abs(v.mean()) < 0.05:
+            d = 3
         M[f"{cfg}:{proto}"] = f"{v.mean():.{d}f}"
         M[f"{cfg}:{proto}:pm"] = f"{v.mean():.{d}f}" + (rf"\,$\pm$\,{v.std(ddof=1):.{d}f}" if len(v) > 1 else "")
         M[f"{cfg}:{proto}:n"] = str(len(v))
@@ -261,6 +265,8 @@ FAMILY.append(("simclr-supcon:fm:e200", "FixMatch from encoder, 19,400 steps", r
                "supcon_lab_f0.1_e200", "fm"))
 FAMILY.append(("simclr-union:fm:e200", "FixMatch from encoder, 19,400 steps", r"\simclr $-$ \union", "simclr_all_e200", "fm",
                "union_f0.1_e200", "fm"))
+FAMILY.append(("fmb3-fmsimclr", "same total compute (about 3x the reference budget)", r"FixMatch from scratch $-$ \simclr{}+FixMatch",
+               "fixmatch_b3_f0.1", "clf", "simclr_all_e200", "fm"))
 FAMILY.append(("twostage-simclr:lp5:e200", "LP-5k, 19,400 steps", r"\simclr{}$\to$\supcon $-$ \simclr",
                "twostage_simclr200_supcon5", "lp5", "simclr_all_e200", "lp5"))
 FAMILY.append(("simclrft-ce:e200", "label-budget pipelines, 19,400 steps", r"\simclr{}+FT $-$ CE on 5k", "simclr_all_e200", "ft",
@@ -441,6 +447,8 @@ BLOCKS = [("CIFAR-100, 10\\% labels (5,000), ResNet-18", "c100_", "_f0.1", [(100
           ("CIFAR-10, 10\\% labels, ResNet-50", "r50_", "_f0.1", [(100, "9,700"), (200, "19,400")])]
 rows = []
 for title, pre, suf, buds in BLOCKS:
+    if not any(nseeds(f"{pre}{a}{suf if a != 'simclr_all' else ''}_e{E}") for E, _ in buds for a in ("simclr_all", "supcon_lab", "union")):
+        continue      # no finished run for this dataset yet
     rows.append(rf"\multicolumn{{6}}{{l}}{{\emph{{{title}}}}} \\")
     for E, steps in buds:
         cfgs = {"sub": f"{pre}simclr_sub{suf}_e{E}", "simclr": f"{pre}simclr_all_e{E}", "supcon": f"{pre}supcon_lab{suf}_e{E}",
@@ -617,6 +625,9 @@ for k, cands, a_key in (("supcon", ["supcon_lab_f0.1_e1000", "supcon_lab_f0.1_e4
             ax.errorbar(xs, R.mean(0), yerr=R.std(0, ddof=1) if len(R) > 1 else None, color=col, marker=mk, ls=ls,
                         label=lab.split(" (")[0], capsize=2, elinewidth=0.8, markersize=3)
             M[f"geomcurve:{k}"] = c
+            M[f"geomcurve:{k}:first"], M[f"geomcurve:{k}:last"] = f"{R.mean(0)[0]:.1f}", f"{R.mean(0)[-1]:.1f}"
+            M[f"geomcurve:{k}:firststep"], M[f"geomcurve:{k}:laststep"] = f"{xs[0]:,}", f"{xs[-1]:,}"
+            M[f"geomcurve:{k}:n"] = str(len(R))
             break
 ax.set_xscale("log")
 ax.minorticks_off()
@@ -900,6 +911,10 @@ for E in (1000, 400, 200):
 regs = [mean(c, "lp50") for _, c in REG[1:] if nseeds(c)]
 if regs:
     M["reg:best"] = f"{max(regs):.1f}"
+diffmacro("fm-b3:simclr", "simclr_all_e200", "fm", "fixmatch_b3_f0.1", "clf")
+diffmacro("fm-b3:supcon", "supcon_lab_f0.1_e200", "fm", "fixmatch_b3_f0.1", "clf")
+diffmacro("fm-scratch:simclr", "simclr_all_e200", "fm", "fixmatch_f0.1", "clf")
+diffmacro("fm-ft:simclr", "simclr_all_e200", "fm", "simclr_all_e200", "ft")
 M["nruns"] = str(len(RUN))
 M["gpuhours"] = f"{sum(r.get('train_time_s', 0) for r in RUN.values()) / 3600:.0f}"
 

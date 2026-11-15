@@ -4,10 +4,12 @@
 encoder & recipe chosen on & chosen recipe & range of the selection score over the grid & test accuracy \\
 \midrule
 \simclr & label split & LP head, lr 0.01, 30 passes, label smoothing & 82.3--89.6 & 89.4{\scriptsize$\,\pm\,$0.1} \\
+\simclr & test set (oracle) & LP head, lr 0.01, 120 passes, label smoothing & 85.4--89.8 & -- \\
 \addlinespace
 \addlinespace
 \addlinespace
 \supcon & label split & LP head, lr 0.003, 30 passes, none & 93.2--100.0 & 81.3{\scriptsize$\,\pm\,$0.3} \\
+\supcon & test set (oracle) & LP head, lr 0.1, 120 passes, mixup & 80.9--87.3 & -- \\
 \addlinespace
 \union & label split & LP head, lr 0.003, 120 passes, label smoothing & 89.6--100.0 & 82.1{\scriptsize$\,\pm\,$0.1} \\
 \addlinespace
