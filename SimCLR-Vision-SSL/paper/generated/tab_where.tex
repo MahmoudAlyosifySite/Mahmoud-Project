@@ -18,14 +18,14 @@ pipeline & where the labels enter & seeds & test accuracy \\
 \quad \simclr, then \supcon on the 5k (485 steps), then FT-5k & after, contrastive & -- & -- \\
 \quad \simclr, then FT-5k, then self-distillation & after & -- & -- \\
 \multicolumn{4}{l}{\emph{labels in a semi-supervised objective}} \\
-\quad FixMatch from scratch & pseudo-labels & 1 & 90.8 \\
+\quad FixMatch from scratch & pseudo-labels & 2 & 90.6{\scriptsize$\,\pm\,$0.2} \\
 \quad FixMatch from scratch, 3$\times$ budget & pseudo-labels & -- & -- \\
 \quad MixMatch from scratch & pseudo-labels & 1 & 92.4 \\
-\quad \simclr, then FixMatch & after, pseudo-labels & -- & -- \\
-\quad BYOL, then FixMatch & after, pseudo-labels & -- & -- \\
-\quad \supcon, then FixMatch & both & -- & -- \\
-\quad \union, then FixMatch & both & -- & -- \\
-\quad \simclr, then \supcon (2,425 steps), then FixMatch & both & -- & -- \\
+\quad \simclr, then FixMatch & after, pseudo-labels & 3 & 94.3{\scriptsize$\,\pm\,$0.1} \\
+\quad BYOL, then FixMatch & after, pseudo-labels & 3 & 92.3{\scriptsize$\,\pm\,$0.2} \\
+\quad \supcon, then FixMatch & both & 3 & 93.9{\scriptsize$\,\pm\,$0.2} \\
+\quad \union, then FixMatch & both & 3 & 93.5{\scriptsize$\,\pm\,$0.1} \\
+\quad \simclr, then \supcon (2,425 steps), then FixMatch & both & 3 & 94.4{\scriptsize$\,\pm\,$0.2} \\
 \multicolumn{4}{l}{\emph{references}} \\
 \quad cross-entropy on the 5k, 9,700 steps & supervised only & 3 & 82.6{\scriptsize$\,\pm\,$0.3} \\
 \quad cross-entropy on the 5k, 19,400 steps & supervised only & 3 & 83.5{\scriptsize$\,\pm\,$0.5} \\
