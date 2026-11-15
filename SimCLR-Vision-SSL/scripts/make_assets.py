@@ -437,6 +437,7 @@ write("tab_fraction.tex", "\\begin{tabular}{rrcccccc}\n\\toprule\n & & \\multico
 # ----------------------------------------------------------------------------
 BLOCKS = [("CIFAR-100, 10\\% labels (5,000), ResNet-18", "c100_", "_f0.1", [(100, "9,700"), (200, "19,400")]),
           ("STL-10, 5,000 labels + 100,000 unlabeled images, 96 px, ResNet-18", "stl_", "", [(100, "20,500"), (200, "41,000")]),
+          ("Tiny-ImageNet, 10\\% labels (10,000), 64 px, ResNet-18", "tin_", "_f0.1", [(100, "19,500"), (200, "39,000")]),
           ("CIFAR-10, 10\\% labels, ResNet-50", "r50_", "_f0.1", [(100, "9,700"), (200, "19,400")])]
 rows = []
 for title, pre, suf, buds in BLOCKS:
@@ -872,7 +873,7 @@ for c in ("simclr_all_e200", "supcon_lab_f0.1_e200", "union_f0.1_e200", "byol_al
 diffmacro("twostage-simclr:lp5", "twostage_simclr200_supcon5", "lp5", "simclr_all_e200", "lp5")
 diffmacro("twostage-simclr:lp50", "twostage_simclr200_supcon5", "lp50", "simclr_all_e200", "lp50")
 diffmacro("twostage-simclr:ft", "twostage_simclr200_supcon5", "ft", "simclr_all_e200", "ft")
-for pre, tag in (("c100_", "c100"), ("r50_", "r50")):
+for pre, tag in (("c100_", "c100"), ("r50_", "r50"), ("tin_", "tin")):
     for E in (100, 200):
         for p in ("lp50", "lp5", "ft"):
             diffmacro(f"{tag}:simclr-supcon:{p}:e{E}", f"{pre}simclr_all_e{E}", p, f"{pre}supcon_lab_f0.1_e{E}", p)

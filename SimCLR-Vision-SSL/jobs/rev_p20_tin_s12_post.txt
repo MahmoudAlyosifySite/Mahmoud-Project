@@ -1,0 +1,16 @@
+-m dlt.finetune --name ft_tin_simclr_all_e100_s1 --from_run tin_simclr_all_e100_s1 --dataset tinyimagenet --backbone resnet18_mp --label_fraction 0.1 --seed 1
+-m dlt.finetune --name ft_tin_supcon_lab_f0.1_e100_s1 --from_run tin_supcon_lab_f0.1_e100_s1 --dataset tinyimagenet --backbone resnet18_mp --label_fraction 0.1 --seed 1
+-m dlt.finetune --name ft_tin_union_f0.1_e100_s1 --from_run tin_union_f0.1_e100_s1 --dataset tinyimagenet --backbone resnet18_mp --label_fraction 0.1 --seed 1
+-m dlt.finetune --name ft_tin_simclr_sub_f0.1_e100_s1 --from_run tin_simclr_sub_f0.1_e100_s1 --dataset tinyimagenet --backbone resnet18_mp --label_fraction 0.1 --seed 1
+-m dlt.finetune --name ft_tin_simclr_all_e100_s2 --from_run tin_simclr_all_e100_s2 --dataset tinyimagenet --backbone resnet18_mp --label_fraction 0.1 --seed 2
+-m dlt.finetune --name ft_tin_supcon_lab_f0.1_e100_s2 --from_run tin_supcon_lab_f0.1_e100_s2 --dataset tinyimagenet --backbone resnet18_mp --label_fraction 0.1 --seed 2
+-m dlt.finetune --name ft_tin_union_f0.1_e100_s2 --from_run tin_union_f0.1_e100_s2 --dataset tinyimagenet --backbone resnet18_mp --label_fraction 0.1 --seed 2
+-m dlt.finetune --name ft_tin_simclr_sub_f0.1_e100_s2 --from_run tin_simclr_sub_f0.1_e100_s2 --dataset tinyimagenet --backbone resnet18_mp --label_fraction 0.1 --seed 2
+-m dlt.finetune --name ft_tin_simclr_all_e200_s1 --from_run tin_simclr_all_e200_s1 --dataset tinyimagenet --backbone resnet18_mp --label_fraction 0.1 --seed 1
+-m dlt.finetune --name ft_tin_supcon_lab_f0.1_e200_s1 --from_run tin_supcon_lab_f0.1_e200_s1 --dataset tinyimagenet --backbone resnet18_mp --label_fraction 0.1 --seed 1
+-m dlt.finetune --name ft_tin_union_f0.1_e200_s1 --from_run tin_union_f0.1_e200_s1 --dataset tinyimagenet --backbone resnet18_mp --label_fraction 0.1 --seed 1
+-m dlt.finetune --name ft_tin_simclr_sub_f0.1_e200_s1 --from_run tin_simclr_sub_f0.1_e200_s1 --dataset tinyimagenet --backbone resnet18_mp --label_fraction 0.1 --seed 1
+-m dlt.finetune --name ft_tin_simclr_all_e200_s2 --from_run tin_simclr_all_e200_s2 --dataset tinyimagenet --backbone resnet18_mp --label_fraction 0.1 --seed 2
+-m dlt.finetune --name ft_tin_supcon_lab_f0.1_e200_s2 --from_run tin_supcon_lab_f0.1_e200_s2 --dataset tinyimagenet --backbone resnet18_mp --label_fraction 0.1 --seed 2
+-m dlt.finetune --name ft_tin_union_f0.1_e200_s2 --from_run tin_union_f0.1_e200_s2 --dataset tinyimagenet --backbone resnet18_mp --label_fraction 0.1 --seed 2
+-m dlt.finetune --name ft_tin_simclr_sub_f0.1_e200_s2 --from_run tin_simclr_sub_f0.1_e200_s2 --dataset tinyimagenet --backbone resnet18_mp --label_fraction 0.1 --seed 2

@@ -74,6 +74,25 @@ def _load_stl10(root):
     }
 
 
+def _load_tinyimagenet(root):
+    """Tiny-ImageNet (Le & Yang, 2015): 200 classes, 100,000 training images of 64 px; the official
+    validation split (10,000 images) is used as the test set. Built by scripts/prepare_tinyimagenet.py."""
+    path = os.path.join(root, "tinyimagenet_uint8.npz")
+    if not os.path.exists(path):
+        raise FileNotFoundError(f"{path} not found: run scripts/prepare_tinyimagenet.py first")
+    d = np.load(path)
+    return {
+        "name": "tinyimagenet",
+        "train_x": torch.from_numpy(d["train_x"]),
+        "train_y": torch.from_numpy(d["train_y"]).long(),
+        "test_x": torch.from_numpy(d["test_x"]),
+        "test_y": torch.from_numpy(d["test_y"]).long(),
+        "num_classes": 200,
+        "mean": tuple(float(v) for v in d["mean"]),
+        "std": tuple(float(v) for v in d["std"]),
+    }
+
+
 def labeled_subset(data, fraction, seed):
     """Indices of the training images whose labels may be used.
 
@@ -93,6 +112,8 @@ def load_dataset(name, root):
     """Return a dict with uint8 image tensors [N,3,H,W] and int64 labels."""
     if name == "stl10":
         return _load_stl10(root)
+    if name == "tinyimagenet":
+        return _load_tinyimagenet(root)
     folder = _maybe_download(name, root)
     if name == "cifar10":
         xs, ys = [], []
