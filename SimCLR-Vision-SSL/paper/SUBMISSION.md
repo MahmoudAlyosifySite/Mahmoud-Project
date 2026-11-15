@@ -1,47 +1,60 @@
 # Submitting the paper
 
-Both versions are built from the same source (`body.tex` and the `sec_*.tex` files):
+Title: **Inside the Loss or After It? Scarce Labels in Contrastive Pretraining**
 
-| file | purpose | authors shown |
-|------|---------|---------------|
-| `arxiv.tex` -> `arxiv.pdf` | arXiv preprint (TMLR style with the `preprint` option, no TMLR header) | yes, with ORCID links |
-| `tmlr_submission.tex` -> `tmlr_submission.pdf` | anonymous submission to TMLR (official `tmlr.sty`) | no |
+All versions are built from the same source (`frontmatter.tex`, `abstract.tex`, `body.tex`, the `sec_*.tex` files,
+`statements.tex`, `appendix.tex`) with the Elsevier `elsarticle` class.
 
-Build both with `bash build.sh` (needs a TeX Live with `lmodern`, `orcidlink`, `cleveref`).
-All numbers, tables and figures come from `scripts/make_assets.py`; never edit `generated/` by hand.
+| file | purpose |
+|------|---------|
+| `arxiv.tex` -> `arxiv.pdf` | preprint: compact single-column layout, authors with ORCID links |
+| `submission.tex` -> `submission.pdf` | journal submission: Elsevier review layout (double spacing, line numbers) |
+| `highlights.tex` -> `highlights.pdf` | the separate "Highlights" file that Elsevier journals ask for |
+| `old_tmlr/` | the first version of the paper (TMLR template), kept for reference |
+
+Build with `bash build.sh`. All numbers, tables and figures come from `scripts/make_assets.py` (`\R{...}` macros in
+`generated/numbers.tex`); never edit `generated/` by hand. Text in gray italics in a draft build depends on runs
+that are still in the queue (`\pending{...}`); none may remain in a submitted version.
+
+## Before submitting: things only the authors can decide
+
+1. **Author contributions (CRediT).** `statements.tex` contains a proposed split of roles. Check and correct it.
+2. **Funding and competing interests.** `statements.tex` uses the standard "no specific grant" and "no competing
+   interests" sentences. Replace them if they are not accurate.
+3. **Declaration of generative AI.** Elsevier and Springer journals require authors to declare the use of generative
+   AI in preparing a manuscript (Elsevier: a section "Declaration of generative AI and AI-assisted technologies in the
+   manuscript preparation process" before the references). The manuscript currently contains no such section. Read
+   the policy of the chosen journal and add the declaration it requires.
+4. **Anonymity.** If the journal is double-anonymised, set `\anontrue` in `submission.tex` (this hides the authors,
+   the CRediT section and the repository link) and prepare an anonymised copy of the repository.
+5. **Code archive.** Create a release of the repository and archive it on Zenodo to obtain a DOI; put the DOI and the
+   commit hash in the "Data and code availability" section (`statements.tex`) and upload the checkpoints of the main
+   runs with the release.
+
+## Journal
+
+The supervisor asked for a journal template and advised against TPAMI, IJCV and JMLR. The manuscript is prepared for
+an Elsevier journal (`\journal{Pattern Recognition}` in `submission.tex`; the same class serves Neural Networks,
+Neurocomputing, Computer Vision and Image Understanding and Image and Vision Computing). Requirements that we could
+verify on official pages, and those that still need a check in a browser, are listed in `JOURNAL_NOTES.md` in this
+folder. Points to confirm on the journal's "Guide for authors" before submitting: review model (single- or
+double-anonymised), abstract limit (ours is under 250 words), length limit, reference style, preprint policy.
+*Machine Learning* (Springer) is a good alternative for an empirical-methodology paper; it uses the Springer Nature
+`sn-jnl` class, 150-250-word abstracts and a "Statements and Declarations" section. Switching class only requires a new
+wrapper file next to `submission.tex`.
 
 ## arXiv
 
-1. `bash make_arxiv_package.sh` creates `arxiv_submission.tar.gz` (sources + `.bbl` + figures). It also
-   compiles the package on its own to check that nothing is missing.
+1. `bash make_arxiv_package.sh` creates `arxiv_submission.tar.gz` (sources, `.bbl`, figures) and checks that the
+   package compiles on its own.
 2. On arxiv.org: *Submit* -> upload the tar.gz -> main file `arxiv.tex`.
 3. Primary category **cs.LG**, cross-list **cs.CV**.
-4. Licence: CC BY 4.0 is the most common choice for ML preprints (allows later publication in TMLR).
-5. Title and abstract: copy them from `title.tex` and the abstract in `body.tex` (arXiv's form takes plain text,
-   so replace macros such as `\supcon` by "SupCon" and numbers by their values in `arxiv.pdf`).
-6. Comments field, for example: "18 pages, 7 figures. Code: https://github.com/MirnaEmbaby/SimCLR-Vision-SSL".
+4. Title and abstract: copy them from `arxiv.pdf` (arXiv's form takes plain text).
+5. Keep the arXiv version identical to the submitted version, or update it when the submission changes.
 
-## Recommended venue: TMLR (Transactions on Machine Learning Research)
+## Bibliography
 
-Why TMLR fits this paper:
-* It judges whether the claims are correct and supported by evidence, not whether they are surprising or
-  state of the art. A careful empirical study that corrects a negative result is exactly in scope.
-* Rolling submission (no deadline), no page limit, open reviews on OpenReview; decisions in about 2-4 months.
-* High acceptance rate among papers that pass desk review (about 69% in TMLR's 2024 report).
-* Posting the paper on arXiv first is allowed.
-
-How to submit:
-1. Create OpenReview accounts for all three authors (use the queensu.ca e-mails).
-2. Submit `tmlr_submission.pdf` at https://openreview.net/group?id=TMLR (anonymous; the repository link in the
-   anonymous version points to anonymous.4open.science - create an anonymised copy of the repo there and
-   replace the URL in `preamble.tex` (`\repo`) before submitting).
-3. After acceptance, switch to `\usepackage[accepted]{tmlr}` and fill `\month`, `\year`, `\openreview`.
-
-Other options (in order of fit):
-* **A workshop at ICLR 2027** (contributions due around 1 Feb 2027; workshops on 29-30 April 2027 in San
-  Francisco). Workshop papers are usually non-archival, so they can be presented while the TMLR review runs.
-  Check each workshop's call: look for workshops on representation learning, data-centric ML or evaluation.
-* **BMVC 2027** (deadline expected around May 2027; acceptance rate historically 30-38%). Needs reformatting to
-  the BMVC template and a 9-page limit.
-* **CRV 2027** (Canadian Conference on Robots and Vision, deadline usually in February) - a good Canadian venue
-  for a Queen's University paper; check computerrobotvision.org for the 2027 call.
+Entries added in the second revision were checked against the publishers' pages (PMLR, NeurIPS proceedings, CVF open
+access, iclr.cc, arXiv). Not checked against a primary source: pages of ICLR papers (omitted), Holm (1979) and
+Schuirmann (1987) (consistent secondary sources), Le & Yang (2015), the venue of Inoue & Goto (APSIPA ASC 2020), and
+the published venues of the three arXiv entries cited only in the budget audit.
