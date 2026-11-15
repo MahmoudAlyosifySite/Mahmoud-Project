@@ -1,44 +1,69 @@
 # SimCLR-Vision-SSL
 
-> **Paper:** *Spend Your Labels Last: Why Supervised Contrastive Pretraining Falls Behind Self-Supervision When Labels Are Scarce*
-> Mahmoud Alyosify, Mirna Imbabi, Natalie Nashed, Hazem M. Abbas (Queen's University). Preprint: [`paper/arxiv.pdf`](paper/arxiv.pdf).
+> **Paper:** *Inside the Loss or After It? Scarce Labels in Contrastive Pretraining*
+> Mahmoud Alyosify, Mirna Imbabi, Natalie Nashed, Hazem M. Abbas (Queen's University). Preprint: [`paper/arxiv.pdf`](paper/arxiv.pdf);
+> journal layout: [`paper/submission.pdf`](paper/submission.pdf).
 > The study behind the paper lives in [`dlt/`](dlt), [`scripts/`](scripts), [`jobs/`](jobs) and [`results/`](results); see
-> [Reproducing the paper](#reproducing-the-paper). The original course project (CISC 867) is kept below unchanged.
+> [Reproducing the paper](#reproducing-the-paper). The original course project is kept below unchanged.
 
 ## Reproducing the paper
 
-Everything runs on one GPU (all reported numbers: one NVIDIA A40, 121 runs, about 20 GPU-hours in total; the original
-course-project numbers further below were obtained on an NVIDIA RTX 5000 Ada).
+Everything runs on one GPU (all reported numbers: one NVIDIA A40). Budgets are stated in gradient steps:
+"`--epochs E`" means `E * (N // 512)` steps, where `N` is the size of the full training set (97 steps per unit on CIFAR).
 
 ```bash
 conda env create -f environment.yml && conda activate spend-labels-last   # or: docker build -t eic .
 export DLT_DATA=./data                       # CIFAR-10/100 are downloaded here on first use
 python -m tests.test_gpu_aug                 # checks GPU augmentations + loss against reference code
-python scripts/run_queue.py jobs/00_pilot.txt --out results/runs   # design choices on a validation split
-python scripts/run_queue.py jobs/01_main.txt  --out results/runs   # every test-set run of the paper
-python scripts/run_queue.py jobs/02_semisup.txt --out results/runs  # FixMatch, MixMatch baselines
-python scripts/run_queue.py jobs/03_finetune.txt --out results/runs # remaining fine-tuning runs
-python scripts/run_queue.py jobs/04_extra_finetune.txt --out results/runs # CIFAR-100, BYOL, SimSiam fine-tuning
-python scripts/make_pools.py --ref_run simclr_all_e100_s0 --ckpt_dir results/runs
-python scripts/reeval.py     --ckpt_dir results/runs                 # label-limited probes
-python scripts/diversity.py  --ref_run simclr_all_e100_s0 --ckpt_dir results/runs
-python scripts/ood_resolution.py --ckpt_dir results/runs --ood_dir <imagewoof2-320/val> \
-       --runs simclr_all_e100_s0 supcon_lab_f0.1_e100_s0 union_f0.1_e100_s0 ce_f1.0_e100_s0
-python scripts/make_assets.py                # all tables, figures and numbers -> paper/generated, paper/figures
-python scripts/stats.py union_f0.1_e100 simclr_all_e100 --key linear   # any pairwise bootstrap test
-cd paper && latexmk -pdf arxiv.tex && latexmk -pdf tmlr_submission.tex
+
+# STL-10 (optional): download the parquet export, then build one uint8 archive
+#   huggingface-cli download jxie/stl10 --repo-type dataset --local-dir $DLT_DATA/stl10_hf
+python scripts/prepare_stl10.py --src $DLT_DATA/stl10_hf --out $DLT_DATA
+
+# 1. first study (design choices on a validation split, main runs, baselines, fine-tuning)
+for f in jobs/00_pilot.txt jobs/01_main.txt jobs/02_semisup.txt jobs/03_finetune.txt jobs/04_extra_finetune.txt; do
+  python scripts/run_queue.py $f --out results/runs; done
+python scripts/make_pools.py --ref_run simclr_all_e100_s0 --ckpt_dir results/runs --mix 0.25 0.5 0.75
+
+# 2. everything else, in the order of jobs/phases.txt (finished runs are skipped; safe to stop and restart)
+scripts/run_phases.sh jobs/phases.txt results/runs results/_queue_logs 1
+
+# 3. analysis and paper
+python scripts/reeval.py    --ckpt_dir results/runs      # label-limited probes, CDNV on labeled / other / test images
+python scripts/diversity.py --ref_run simclr_all_e100_s0 --ckpt_dir results/runs --extra_refs supervised=ce_f1.0_e100_s0
+python scripts/make_assets.py                # every table, figure and number -> paper/generated, paper/figures
+python scripts/stats.py simclr_all_e200 supcon_lab_f0.1_e200 --key linear   # any pairwise hierarchical-bootstrap test
+cd paper && bash build.sh                    # arxiv.pdf, submission.pdf, highlights.pdf
+```
+
+Main runs by hand (CIFAR-10, 10% labels, 9,700 steps):
+
+```bash
+python -m dlt.train --name simclr     --method simclr --pool all     --epochs 100                          # SimCLR, all images
+python -m dlt.train --name simclr_sub --method simclr --pool labeled --label_fraction 0.1 --epochs 100     # SimCLR, labeled subset
+python -m dlt.train --name supcon     --method supcon --pool labeled --label_fraction 0.1 --epochs 100     # SupCon, labeled subset
+python -m dlt.train --name supcon_u   --method supcon --pool all     --label_fraction 0.1 --epochs 100 \
+       --temperature_unlabeled 0.5 --labeled_share 0.25                                                     # SupCon+U, all images
+python -m dlt.finetune  --name ft_simclr --from_run simclr --label_fraction 0.1                           # FT-5k (default recipe)
+python -m scripts.ft_search --name fts_simclr --from_run simclr --ckpt_dir results/runs --label_fraction 0.1  # recipe search
+python -m dlt.semisup   --name fm_simclr --method fixmatch --label_fraction 0.1 --init_run simclr          # FixMatch from the encoder
+python -m dlt.train     --name two_stage --method supcon --pool labeled --label_fraction 0.1 --epochs 5 --lr 0.02 --init_run simclr
+python -m dlt.distill   --name distill   --from_run simclr --label_fraction 0.1                           # fine-tune + self-distil
 ```
 
 | path | content |
 |------|---------|
-| `dlt/losses.py` | one grouped contrastive loss = SimCLR / SupCon / Union |
+| `dlt/losses.py` | one grouped contrastive loss = SimCLR / SupCon / SupCon+U |
 | `dlt/gpu_aug.py` | batched GPU augmentations, verified against torchvision |
-| `dlt/train.py` | pretraining (SimCLR, SupCon, Union, BYOL, SimSiam, supervised CE) + evaluation |
-| `dlt/semisup.py` | FixMatch and MixMatch on the same labeled split |
-| `dlt/finetune.py` | fine-tuning on the labeled subset |
-| `dlt/evaluate.py` | linear probe, kNN, CDNV / ETF geometry, colour-reliance probes |
+| `dlt/train.py` | pretraining (SimCLR, SupCon, SupCon+U, BYOL, SimSiam, cross-entropy) + evaluation; CIFAR-10/100, STL-10 |
+| `dlt/semisup.py` | FixMatch and MixMatch on the same labeled split, from scratch or from a pretrained encoder |
+| `dlt/finetune.py`, `scripts/ft_search.py` | fine-tuning on the labeled subset: default recipe, recipe search, oracle grid |
+| `dlt/distill.py` | SimCLR v2-style fine-tuning followed by self-distillation |
+| `dlt/evaluate.py` | linear probes, kNN, CDNV / ETF geometry, colour-reliance probes |
+| `scripts/stats.py` | hierarchical bootstrap (seeds and test images), Holm correction, TOST equivalence test |
+| `scripts/make_assets.py` | builds every table, figure and number of the paper from `results/` |
 | `results/runs/<run>/` | `result.json` (all metrics) and `preds.npz` (test predictions) of every run |
-| `paper/` | LaTeX source: `arxiv.tex` (preprint) and `tmlr_submission.tex` (anonymous TMLR version) |
+| `paper/` | LaTeX source (elsarticle): `arxiv.tex` (preprint), `submission.tex` (journal review layout), `highlights.tex` |
 
 ---
 
