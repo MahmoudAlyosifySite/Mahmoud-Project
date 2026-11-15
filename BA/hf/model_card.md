@@ -28,7 +28,7 @@ thumbnail: https://huggingface.co/mahmoudalyosify/BA/resolve/main/assets/social-
 
 BA speaks any text in your own voice, from a 10–15 second recording of you: **Egyptian Arabic**, **English**, and **French (beta)**. Every output carries an inaudible watermark. Use only your own voice or a voice whose owner has given you explicit permission.
 
-**Demo:** the BA Space (`mahmoudalyosify/BA`: record or upload your voice, tick the consent box, type, listen) is prepared but not online yet. Until it is, use the quick start below.
+**Demo:** [the BA Space](https://huggingface.co/spaces/mahmoudalyosify/BA): record or upload your voice, tick the consent box, type, listen and download. It runs on ZeroGPU; the first request after a pause takes about 30 s, later ones about 10 s for a short sentence.
 
 ## What BA is, and what it is built from
 
