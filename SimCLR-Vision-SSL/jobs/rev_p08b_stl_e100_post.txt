@@ -1,0 +1,15 @@
+-m dlt.finetune --name ft_stl_simclr_all_e100_s0 --from_run stl_simclr_all_e100_s0 --dataset stl10 --backbone resnet18_mp --label_fraction 1 --seed 0
+-m dlt.finetune --name ft_stl_supcon_lab_e100_s0 --from_run stl_supcon_lab_e100_s0 --dataset stl10 --backbone resnet18_mp --label_fraction 1 --seed 0
+-m dlt.finetune --name ft_stl_union_e100_s0 --from_run stl_union_e100_s0 --dataset stl10 --backbone resnet18_mp --label_fraction 1 --seed 0
+-m dlt.finetune --name ft_stl_simclr_sub_e100_s0 --from_run stl_simclr_sub_e100_s0 --dataset stl10 --backbone resnet18_mp --label_fraction 1 --seed 0
+-m dlt.finetune --name ft_stl_simclr_all_e100_s1 --from_run stl_simclr_all_e100_s1 --dataset stl10 --backbone resnet18_mp --label_fraction 1 --seed 1
+-m dlt.finetune --name ft_stl_supcon_lab_e100_s1 --from_run stl_supcon_lab_e100_s1 --dataset stl10 --backbone resnet18_mp --label_fraction 1 --seed 1
+-m dlt.finetune --name ft_stl_union_e100_s1 --from_run stl_union_e100_s1 --dataset stl10 --backbone resnet18_mp --label_fraction 1 --seed 1
+-m dlt.finetune --name ft_stl_simclr_sub_e100_s1 --from_run stl_simclr_sub_e100_s1 --dataset stl10 --backbone resnet18_mp --label_fraction 1 --seed 1
+-m dlt.finetune --name ft_stl_simclr_all_e100_s2 --from_run stl_simclr_all_e100_s2 --dataset stl10 --backbone resnet18_mp --label_fraction 1 --seed 2
+-m dlt.finetune --name ft_stl_supcon_lab_e100_s2 --from_run stl_supcon_lab_e100_s2 --dataset stl10 --backbone resnet18_mp --label_fraction 1 --seed 2
+-m dlt.finetune --name ft_stl_union_e100_s2 --from_run stl_union_e100_s2 --dataset stl10 --backbone resnet18_mp --label_fraction 1 --seed 2
+-m dlt.finetune --name ft_stl_simclr_sub_e100_s2 --from_run stl_simclr_sub_e100_s2 --dataset stl10 --backbone resnet18_mp --label_fraction 1 --seed 2
+-m dlt.semisup --name stl_fixmatch_s0 --method fixmatch --dataset stl10 --backbone resnet18_mp --label_fraction 1 --seed 0
+-m dlt.semisup --name stl_fixmatch_s1 --method fixmatch --dataset stl10 --backbone resnet18_mp --label_fraction 1 --seed 1
+-m dlt.semisup --name stl_fixmatch_s2 --method fixmatch --dataset stl10 --backbone resnet18_mp --label_fraction 1 --seed 2

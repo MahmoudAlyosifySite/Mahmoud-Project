@@ -31,7 +31,7 @@ import torch
 import torch.nn.functional as F
 from PIL import Image
 
-from .data import IndexSampler, load_dataset, stratified_subset
+from .data import IndexSampler, labeled_subset, load_dataset, stratified_subset
 from .evaluate import evaluate_encoder, to_numpy_preds
 from .gpu_aug import AugConfig, GPUAugment
 from .models import Classifier
@@ -126,17 +126,19 @@ RA_POOL = [(_autocontrast, None, None), (_brightness, 0.9, 0.05), (_color, 0.9, 
 
 
 def strong_augment(img, n=2, m=10):
-    """flip + reflect-padded crop + RandAugment(n, random magnitude < m) + 16x16 Cutout."""
+    """flip + reflect-padded crop (pad = size/8) + RandAugment(n, random magnitude < m) + Cutout of size/2."""
     if random.random() < 0.5:
         img = img.transpose(Image.FLIP_LEFT_RIGHT)
-    arr = np.pad(np.asarray(img), ((4, 4), (4, 4), (0, 0)), mode="reflect")
-    i, j = np.random.randint(0, 9), np.random.randint(0, 9)
-    img = Image.fromarray(arr[i:i + 32, j:j + 32])
+    size = img.size[0]
+    pad = size // 8
+    arr = np.pad(np.asarray(img), ((pad, pad), (pad, pad), (0, 0)), mode="reflect")
+    i, j = np.random.randint(0, 2 * pad + 1), np.random.randint(0, 2 * pad + 1)
+    img = Image.fromarray(arr[i:i + size, j:j + size])
     for op, max_v, bias in random.choices(RA_POOL, k=n):
         v = np.random.randint(1, m)
         if random.random() < 0.5:
             img = op(img, v, max_v, bias)
-    return _cutout_abs(img, 16)
+    return _cutout_abs(img, size // 2)
 
 
 class StrongViews(torch.utils.data.Dataset):
@@ -233,7 +235,7 @@ def main(argv=None):
         data[k] = data[k].to(dev)
     X, Y, C = data["train_x"], data["train_y"], data["num_classes"]
     N = X.shape[0]
-    labeled_idx = stratified_subset(Y.cpu().numpy(), args.label_fraction, args.seed)
+    labeled_idx = labeled_subset(data, args.label_fraction, args.seed)
 
     # image budget of a 100-epoch contrastive run: 100 * (N // 512) steps of 1024 views
     image_budget = 100 * (N // 512) * 1024 * args.budget
@@ -241,7 +243,7 @@ def main(argv=None):
     steps = args.steps or int(round(image_budget / per_step))
     print(f"[run] {args.name}: {args.method} | labeled {len(labeled_idx)} | {steps} steps", flush=True)
 
-    weak = GPUAugment(AugConfig(pad_crop=4, flip=True, pad_mode="reflection"), data["mean"], data["std"], dev, gen)
+    weak = GPUAugment(AugConfig(pad_crop=X.shape[-1] // 8, flip=True, pad_mode="reflection"), data["mean"], data["std"], dev, gen)
     model = Classifier(args.backbone, C)
     if args.init_run:
         src = torch.load(os.path.join(args.ckpt_dir or args.out, args.init_run, "model.pt"), map_location="cpu")["model"]
@@ -337,7 +339,12 @@ def main(argv=None):
 
     ema.eval()
     pred = predict(ema, data["test_x"], weak.normalize)
-    metrics, preds = evaluate_encoder(ema.encoder, data, weak.normalize, labeled_idx, np.arange(N), seed=args.seed)
+    if "labeled_idx" in data:      # STL-10: only the labeled split has ground-truth labels
+        ev = torch.as_tensor(data["labeled_idx"], device=dev)
+        eval_data, e_lab, e_pool = dict(data, train_x=X[ev], train_y=Y[ev]), None, np.arange(len(ev))
+    else:
+        eval_data, e_lab, e_pool = data, labeled_idx, np.arange(N)
+    metrics, preds = evaluate_encoder(ema.encoder, eval_data, weak.normalize, e_lab, e_pool, seed=args.seed)
     metrics["classifier_acc"] = 100 * (pred == data["test_y"]).float().mean().item()
     preds["classifier"] = pred
     result = {"name": args.name, "args": vars(args), "n_pool": N, "n_labeled": int(len(labeled_idx)),

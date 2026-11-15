@@ -25,9 +25,9 @@ import torch
 import torch.nn.functional as F
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from dlt.data import IndexSampler, load_dataset, stratified_subset   # noqa: E402
+from dlt.data import IndexSampler, labeled_subset, load_dataset, stratified_subset   # noqa: E402
 from dlt.evaluate import linear_probe                                  # noqa: E402
-from dlt.gpu_aug import GPUAugment                                     # noqa: E402
+from dlt.gpu_aug import GPUAugment, sup_pipeline                       # noqa: E402
 from dlt.models import Classifier, extract_features                    # noqa: E402
 
 GRID = {"head": ["lp", "random"], "lr": [0.003, 0.01, 0.03, 0.1], "epochs": [30, 60, 120],
@@ -42,7 +42,7 @@ def finetune(enc_sd, backbone, data, fit_idx, eval_x, eval_y, cfg, seed, dev="cu
     model = Classifier(backbone, C).to(dev)
     model.encoder.load_state_dict(enc_sd)
     model = model.to(memory_format=torch.channels_last)
-    aug = GPUAugment("sup", data["mean"], data["std"], dev, gen)
+    aug = GPUAugment(sup_pipeline(X.shape[-1]), data["mean"], data["std"], dev, gen)
     fi = torch.as_tensor(fit_idx, device=dev)
     if cfg["head"] == "lp":
         ftr = extract_features(model.encoder, X[fi], aug.normalize)
@@ -101,6 +101,8 @@ def main():
     p.add_argument("--seed", type=int, default=0, help="seed of the pretraining run (defines the labeled subset)")
     p.add_argument("--final_only", default=None, help="JSON of a configuration: skip the search and only run it")
     p.add_argument("--no_test_per_config", action="store_true")
+    p.add_argument("--grid", default="full", choices=["full", "small"],
+                   help="small: 2 heads x lr {0.01, 0.03, 0.1} x {30, 60} epochs x {none, mixup}")
     args = p.parse_args()
     out_dir = os.path.join(args.out, args.name)
     os.makedirs(out_dir, exist_ok=True)
@@ -117,7 +119,7 @@ def main():
     data = load_dataset(args.dataset, args.data_dir)
     for k in ("train_x", "train_y", "test_x", "test_y"):
         data[k] = data[k].to(dev)
-    labeled = stratified_subset(data["train_y"].cpu().numpy(), args.label_fraction, args.seed)
+    labeled = labeled_subset(data, args.label_fraction, args.seed)
     # split the LABELED images 80/20 (stratified); selection uses nothing else
     val = stratified_subset(data["train_y"].cpu().numpy()[labeled], 0.2, 777)
     val_idx = labeled[val]
@@ -131,7 +133,9 @@ def main():
     if args.final_only:
         best = json.loads(args.final_only)
     else:
-        for head, lr, ep, reg in itertools.product(GRID["head"], GRID["lr"], GRID["epochs"], GRID["reg"]):
+        grid = GRID if args.grid == "full" else {"head": ["lp", "random"], "lr": [0.01, 0.03, 0.1], "epochs": [30, 60],
+                                                 "reg": ["none", "mixup"]}
+        for head, lr, ep, reg in itertools.product(grid["head"], grid["lr"], grid["epochs"], grid["reg"]):
             cfg = {"head": head, "lr": lr, "epochs": ep, "reg": reg}
             val_acc, _ = finetune(enc_sd, args.backbone, data, fit_idx, data["train_x"][vi], data["train_y"][vi], cfg, args.seed)
             rows.append({**cfg, "val_acc": val_acc})

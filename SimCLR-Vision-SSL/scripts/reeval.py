@@ -40,10 +40,14 @@ for res_path in sorted(glob.glob(os.path.join(args.root, "*", "result.json"))):
         continue
     ck = os.path.join(args.ckpt_dir, name, "model.pt")
     out = os.path.join(d, "probes.json")
-    if not os.path.exists(ck) or (os.path.exists(out) and not args.force):
+    if not os.path.exists(ck):
+        continue
+    if os.path.exists(out) and not args.force and "cdnv_rest_0.1" in json.load(open(out)):
         continue
     enc, a = load_encoder(ck)
     ds = a.get("dataset", "cifar10")
+    if ds == "stl10":      # only the labeled split has labels; dlt.train already reports everything
+        continue
     if ds not in cache:
         data = load_dataset(ds, args.data_dir)
         for k in ("train_x", "train_y", "test_x", "test_y"):
@@ -75,6 +79,12 @@ for res_path in sorted(glob.glob(os.path.join(args.root, "*", "result.json"))):
             g_te, _m = geometry(fte, data["test_y"], C, ref_means=means_lab)
             res["cdnv_labeled_0.1"] = g_lab["cdnv"]
             res["cdnv_test_0.1"] = g_te["cdnv"]
+            # the training images outside the labeled subset (for methods trained on all images these
+            # were seen without a label; for methods trained on the labeled subset they were never seen)
+            rest = torch.ones(ftr.shape[0], dtype=torch.bool, device="cuda")
+            rest[li] = False
+            res["cdnv_rest_0.1"] = geometry(ftr[rest], data["train_y"][rest], C, ref_means=means_lab)[0]["cdnv"]
+            res["etf_dev_labeled_0.1"], res["etf_dev_test_0.1"] = g_lab["etf_dev"], g_te["etf_dev"]
             res["ncc_0.1"] = g_te["ncc_acc"]
     json.dump(res, open(out, "w"), indent=1)
     np.savez_compressed(os.path.join(d, "probes_preds.npz"), **preds)

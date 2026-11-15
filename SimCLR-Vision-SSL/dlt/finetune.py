@@ -19,9 +19,9 @@ import numpy as np
 import torch
 import torch.nn.functional as F
 
-from .data import IndexSampler, load_dataset, stratified_subset
+from .data import IndexSampler, labeled_subset, load_dataset, stratified_subset
 from .evaluate import linear_probe
-from .gpu_aug import GPUAugment
+from .gpu_aug import GPUAugment, sup_pipeline
 from .models import Classifier, extract_features
 
 
@@ -64,7 +64,7 @@ def main(argv=None):
     for k in ("train_x", "train_y", "test_x", "test_y"):
         data[k] = data[k].to(dev)
     X, Y, C = data["train_x"], data["train_y"], data["num_classes"]
-    labeled_idx = stratified_subset(Y.cpu().numpy(), args.label_fraction, args.seed)
+    labeled_idx = labeled_subset(data, args.label_fraction, args.seed)
     li = torch.as_tensor(labeled_idx, device=dev)
 
     ckpt_root = args.ckpt_dir or args.out
@@ -74,13 +74,18 @@ def main(argv=None):
               for k, v in ckpt["model"].items() if k.startswith("encoder.")}
     model.encoder.load_state_dict(enc_sd)
     model = model.to(memory_format=torch.channels_last)
-    aug = GPUAugment("sup", data["mean"], data["std"], dev, gen)
+    aug = GPUAugment(sup_pipeline(X.shape[-1]), data["mean"], data["std"], dev, gen)
 
     # linear-probe initialisation of the classifier (labels of the subset only)
-    ftr = extract_features(model.encoder, X, aug.normalize)
+    if "labeled_idx" in data:      # STL-10: features of the labeled images are enough
+        ftr_l = extract_features(model.encoder, X[li], aug.normalize)
+        stats = (ftr_l.mean(0, keepdim=True), ftr_l.std(0, keepdim=True) + 1e-6)
+    else:
+        ftr = extract_features(model.encoder, X, aug.normalize)
+        stats = (ftr.mean(0, keepdim=True), ftr.std(0, keepdim=True) + 1e-6)
+        ftr_l = ftr[li]
     fte = extract_features(model.encoder, data["test_x"], aug.normalize)
-    stats = (ftr.mean(0, keepdim=True), ftr.std(0, keepdim=True) + 1e-6)
-    pred, info, (w, b, mu, sd) = linear_probe(ftr[li], Y[li], fte, C, stats, args.seed)
+    pred, info, (w, b, mu, sd) = linear_probe(ftr_l, Y[li], fte, C, stats, args.seed)
     lp_acc = 100 * (pred == data["test_y"]).float().mean().item()
     with torch.no_grad():
         model.fc.weight.copy_((w / sd.t()).t())

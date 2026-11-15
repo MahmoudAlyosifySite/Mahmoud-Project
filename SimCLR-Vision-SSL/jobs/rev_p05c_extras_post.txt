@@ -1,0 +1,9 @@
+-m dlt.finetune --name ft_c100_simclr_sub_f0.1_e100_s0 --from_run c100_simclr_sub_f0.1_e100_s0 --dataset cifar100 --label_fraction 0.1 --seed 0
+-m dlt.finetune --name ft_c100_simclr_all_e100_s1 --from_run c100_simclr_all_e100_s1 --dataset cifar100 --label_fraction 0.1 --seed 1
+-m dlt.finetune --name ft_c100_supcon_lab_f0.1_e100_s1 --from_run c100_supcon_lab_f0.1_e100_s1 --dataset cifar100 --label_fraction 0.1 --seed 1
+-m dlt.finetune --name ft_c100_union_f0.1_e100_s1 --from_run c100_union_f0.1_e100_s1 --dataset cifar100 --label_fraction 0.1 --seed 1
+-m dlt.finetune --name ft_c100_simclr_sub_f0.1_e100_s1 --from_run c100_simclr_sub_f0.1_e100_s1 --dataset cifar100 --label_fraction 0.1 --seed 1
+-m dlt.finetune --name ft_c100_simclr_all_e100_s2 --from_run c100_simclr_all_e100_s2 --dataset cifar100 --label_fraction 0.1 --seed 2
+-m dlt.finetune --name ft_c100_supcon_lab_f0.1_e100_s2 --from_run c100_supcon_lab_f0.1_e100_s2 --dataset cifar100 --label_fraction 0.1 --seed 2
+-m dlt.finetune --name ft_c100_union_f0.1_e100_s2 --from_run c100_union_f0.1_e100_s2 --dataset cifar100 --label_fraction 0.1 --seed 2
+-m dlt.finetune --name ft_c100_simclr_sub_f0.1_e100_s2 --from_run c100_simclr_sub_f0.1_e100_s2 --dataset cifar100 --label_fraction 0.1 --seed 2

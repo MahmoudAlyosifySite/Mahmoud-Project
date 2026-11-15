@@ -30,7 +30,7 @@ import torch.nn.functional as F
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from dlt.data import load_dataset, stratified_subset   # noqa: E402
 from dlt.gpu_aug import GPUAugment                      # noqa: E402
-from dlt.models import ContrastiveModel, extract_features   # noqa: E402
+from dlt.models import ContrastiveModel, extract_features, load_encoder   # noqa: E402
 
 
 @torch.no_grad()
@@ -68,6 +68,7 @@ def main():
     p.add_argument("--fractions", type=float, nargs="+", default=[0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1.0])
     p.add_argument("--seeds", type=int, nargs="+", default=[0, 1, 2, 3, 4])
     p.add_argument("--pools", default="results/pools")
+    p.add_argument("--extra_refs", nargs="*", default=[], help="tag=run_name of further reference encoders")
     p.add_argument("--out", default="results/diversity.json")
     args = p.parse_args()
     dev = "cuda"
@@ -92,7 +93,20 @@ def main():
                 faug.append(model.encoder(v).float())
     faug = torch.cat(faug)
     spaces["simclr"] = (ftr, F.normalize(faug, dim=1), fte)
-    # second, model-free space: mean-centred pixels
+    # further reference encoders (e.g. a supervised network), to check that the result does not
+    # depend on measuring distances in a SimCLR feature space
+    for tag_ref in args.extra_refs:
+        tag, ref = tag_ref.split("=")
+        enc, _ = load_encoder(os.path.join(args.ckpt_dir, ref, "model.pt"))
+        fa = []
+        with torch.no_grad():
+            for i in range(0, X.shape[0], 2000):
+                v = aug(X[i:i + 2000]).contiguous(memory_format=torch.channels_last)
+                with torch.autocast("cuda", dtype=torch.float16):
+                    fa.append(enc(v).float())
+        spaces[tag] = (F.normalize(extract_features(enc, X, aug.normalize), dim=1), F.normalize(torch.cat(fa), dim=1),
+                       F.normalize(extract_features(enc, Xt, aug.normalize), dim=1))
+    # a model-free space: mean-centred pixels
     px = aug.normalize(X).flatten(1)
     pxa = aug(X).flatten(1)
     pxt = aug.normalize(Xt).flatten(1)
