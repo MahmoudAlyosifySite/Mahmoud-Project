@@ -74,10 +74,13 @@ adds little. Cross-entropy on the 5,000 labels is in fact tighter on test images
 
 \paragraph{Dynamics}
 \Cref{fig:geometry}(b) follows the ratio between the CDNV on test images and on the labeled images during
-training. \pending{For \supcon the ratio grows during the first few thousand steps, the phase in which its
-accuracy saturates, and stays high afterwards; for \simclr it stays at one.} The evidence is consistent with
-the plateau of \supcon being reached when the labeled images are fitted; it is correlational and we do not
-claim more.
+the 19,400-step runs (the two seeds for which it was logged). For \supcon the ratio is already
+\R{geomcurve:supcon:first} at \R{geomcurve:supcon:firststep} steps, when its accuracy has almost stopped
+improving, and keeps rising to \R{geomcurve:supcon:last}; for \union it rises from \R{geomcurve:union:first}
+to \R{geomcurve:union:last}; for \simclr, measured between all training images and test images, it stays at
+\R{geomcurve:simclr:last}. The labeled images keep getting tighter relative to new images while the accuracy
+no longer improves. This is consistent with the plateau of \supcon being reached once the labeled images are
+fitted; the evidence is correlational and we do not claim more.
 
 \subsection{Does the coverage of the labeled pool explain the limit of \supcon?}
 \label{sec:coverage}

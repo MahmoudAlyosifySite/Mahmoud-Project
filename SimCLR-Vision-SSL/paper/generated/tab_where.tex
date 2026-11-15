@@ -18,9 +18,9 @@ pipeline & where the labels enter & seeds & test accuracy \\
 \quad \simclr, then \supcon on the 5k (485 steps), then FT-5k & after, contrastive & -- & -- \\
 \quad \simclr, then FT-5k, then self-distillation & after & -- & -- \\
 \multicolumn{4}{l}{\emph{labels in a semi-supervised objective}} \\
-\quad FixMatch from scratch & pseudo-labels & 2 & 90.6{\scriptsize$\,\pm\,$0.2} \\
-\quad FixMatch from scratch, 3$\times$ budget & pseudo-labels & -- & -- \\
-\quad MixMatch from scratch & pseudo-labels & 1 & 92.4 \\
+\quad FixMatch from scratch & pseudo-labels & 3 & 90.6{\scriptsize$\,\pm\,$0.2} \\
+\quad FixMatch from scratch, 3$\times$ budget & pseudo-labels & 3 & 94.8{\scriptsize$\,\pm\,$0.1} \\
+\quad MixMatch from scratch & pseudo-labels & 3 & 92.4{\scriptsize$\,\pm\,$0.1} \\
 \quad \simclr, then FixMatch & after, pseudo-labels & 3 & 94.3{\scriptsize$\,\pm\,$0.1} \\
 \quad BYOL, then FixMatch & after, pseudo-labels & 3 & 92.3{\scriptsize$\,\pm\,$0.2} \\
 \quad \supcon, then FixMatch & both & 3 & 93.9{\scriptsize$\,\pm\,$0.2} \\

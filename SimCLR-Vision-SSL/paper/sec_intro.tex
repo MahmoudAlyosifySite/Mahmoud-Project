@@ -49,7 +49,8 @@ steps, and \R{long:d:simclr-supcon}\pt behind after \R{long:steps} steps
 probe ranks a semi-supervised \supcon that trains on all images (\union) first and \simclr last; fine-tuning
 on the 5,000 labels gives exactly the opposite order (\cref{sec:protocol}). A conclusion about label-scarce
 pretraining that rests on the all-label probe can therefore be reversed by the protocol the practitioner
-would actually use.
+would actually use. Semi-supervised fine-tuning keeps the order of fine-tuning but shrinks the differences
+to less than one point.
 \item \textbf{A seen/unseen diagnostic.} Comparing the tightness of classes on the labeled images, on the
 other training images and on test images shows where the label information ends up. Encoders that use
 labels make the labeled images very tight, but the gain does not reach images without labels, including
@@ -62,5 +63,6 @@ out-of-distribution unlabeled images, small ResNets), scarce labels should not b
 loss. Pretraining without labels on all images and using the labels afterwards is better, whether
 ``afterwards'' means fine-tuning, a short \supcon stage, or semi-supervised training. The last option is
 the strongest overall: FixMatch and MixMatch \citep{sohn2020fixmatch,berthelot2019mixmatch} beat every
-pretrain-then-fine-tune pipeline in our comparison (\cref{sec:where}), and we say so plainly, because the
-question of this paper is where labels belong, not which contrastive method wins.
+pretrain-then-fine-tune pipeline in our comparison, and at equal total compute FixMatch from scratch is
+slightly better than FixMatch started from a contrastive encoder (\cref{sec:where}). We say so plainly,
+because the question of this paper is where labels belong, not which contrastive method wins.

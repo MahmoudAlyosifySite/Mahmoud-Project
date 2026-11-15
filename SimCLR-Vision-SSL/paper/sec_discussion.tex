@@ -6,7 +6,9 @@ For a practitioner with a small labeled set, a large unlabeled set and a contras
 our results support three rules.
 \begin{enumerate}[leftmargin=1.6em]
 \item \emph{Do not spend scarce labels in a \supcon-style loss from the start; keep them for fine-tuning or
-for semi-supervised training.} A brief \supcon stage after label-free pretraining is a good use of them.
+for semi-supervised training.} A brief \supcon stage after label-free pretraining is a good use of them. If
+semi-supervised training follows pretraining, the choice of pretraining matters little, and with a fixed
+compute budget semi-supervised training alone was the best option we found.
 \item \emph{If pretraining compute is very limited, labels in the loss are the faster route.} Below roughly
 5,000 steps in our setting, \supcon on the labeled subset is ahead under every protocol we ran.
 \item \emph{Evaluate with the labels you have.} Report a label-budget protocol next to the all-label probe,
@@ -50,6 +52,7 @@ and removed the two confounds that make the question hard: unequal compute and e
 are not available. At equal steps, labels inside the loss give a fast start and an early plateau, and
 label-free pretraining on all images overtakes them. Which method looks better at the crossover depends on
 the protocol: the all-label probe favours the label-using methods, and every protocol that respects the label
-budget favours label-free pretraining. The reason is visible in the geometry of the features, where the
+budget favours label-free pretraining, strongly under supervised fine-tuning and weakly under semi-supervised
+fine-tuning. The reason is visible in the geometry of the features, where the
 labels tighten the labeled images and leave the others unchanged. Within contrastive pretraining the labels
 are best spent last; across all methods we tested, they are best spent in semi-supervised training.
