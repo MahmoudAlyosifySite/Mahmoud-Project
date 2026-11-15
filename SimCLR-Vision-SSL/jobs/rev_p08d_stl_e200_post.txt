@@ -19,6 +19,6 @@
 -m dlt.semisup --name stl_fixmatch_from_simclr_all_e200_s2 --method fixmatch --dataset stl10 --backbone resnet18_mp --label_fraction 1 --seed 2 --init_run stl_simclr_all_e200_s2
 -m dlt.semisup --name stl_fixmatch_from_supcon_lab_e200_s2 --method fixmatch --dataset stl10 --backbone resnet18_mp --label_fraction 1 --seed 2 --init_run stl_supcon_lab_e200_s2
 -m dlt.semisup --name stl_fixmatch_from_union_e200_s2 --method fixmatch --dataset stl10 --backbone resnet18_mp --label_fraction 1 --seed 2 --init_run stl_union_e200_s2
--m scripts.ft_search --name ftsearch_stl_simclr_all_e200_s0 --from_run stl_simclr_all_e200_s0 --dataset stl10 --backbone resnet18_mp --label_fraction 1 --seed 0 --grid small
--m scripts.ft_search --name ftsearch_stl_supcon_lab_e200_s0 --from_run stl_supcon_lab_e200_s0 --dataset stl10 --backbone resnet18_mp --label_fraction 1 --seed 0 --grid small
--m scripts.ft_search --name ftsearch_stl_union_e200_s0 --from_run stl_union_e200_s0 --dataset stl10 --backbone resnet18_mp --label_fraction 1 --seed 0 --grid small
+-m scripts.ft_search --name ftoracle_stl_simclr_all_e200_s0 --from_run stl_simclr_all_e200_s0 --dataset stl10 --backbone resnet18_mp --label_fraction 1 --seed 0 --oracle --grid small
+-m scripts.ft_search --name ftoracle_stl_supcon_lab_e200_s0 --from_run stl_supcon_lab_e200_s0 --dataset stl10 --backbone resnet18_mp --label_fraction 1 --seed 0 --oracle --grid small
+-m scripts.ft_search --name ftoracle_stl_union_e200_s0 --from_run stl_union_e200_s0 --dataset stl10 --backbone resnet18_mp --label_fraction 1 --seed 0 --oracle --grid small

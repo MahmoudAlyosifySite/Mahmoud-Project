@@ -1,13 +1,24 @@
-"""Build every number, table and figure of the paper from results/.
+r"""Build every number, table and figure of the paper from results/.
 
-    python scripts/make_assets.py
+    python scripts/make_assets.py            # writes paper/generated/*.tex and paper/figures/*.pdf
 
-Writes
-    paper/generated/numbers.tex   \\newcommand macros for every number quoted in the text
-    paper/generated/*.tex         tables
-    paper/figures/*.pdf           figures
-    results/summary.csv           one row per run
-Missing runs are skipped (their macros print "--"), so the script can be run at any time.
+Nothing in the paper is typed by hand: paper/generated/numbers.tex defines \R{<config>:<protocol>} for
+every configuration, and the tables are written as tabular bodies. A cell whose runs are not finished
+is printed as "--".
+
+Protocols (columns)
+    lp50   linear probe trained with all training labels (the oracle-label probe)
+    knn    weighted kNN with all training labels as memory bank
+    lp5    linear probe trained with the labeled subset only
+    ft     fine-tuning on the labeled subset, default recipe (dlt.finetune)
+    ftt    fine-tuning on the labeled subset, recipe selected on a split of the labeled subset
+    ftx    the recipe that the labeled subset selects for SimCLR, applied to another encoder
+    fts    "selected recipe": ftt for label-free encoders, ftx for encoders that were trained with the labels
+           (their own labeled images cannot serve as a validation set)
+    fto    recipe chosen on the TEST set of seed 0 (an upper bound), evaluated on the other seeds
+    fm     FixMatch initialised from the encoder
+    dist   SimCLR v2-style fine-tune + self-distillation
+    clf    accuracy of the method's own classifier (cross-entropy, FixMatch, MixMatch)
 """
 import glob
 import json
@@ -16,16 +27,14 @@ import re
 import sys
 
 import matplotlib
-import numpy as np
-import pandas as pd
-
 matplotlib.use("Agg")
-import matplotlib.pyplot as plt   # noqa: E402
+import matplotlib.pyplot as plt     # noqa: E402
+import numpy as np                  # noqa: E402
+from scipy import stats as sps      # noqa: E402
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-sys.path.insert(0, ROOT)
 sys.path.insert(0, os.path.join(ROOT, "scripts"))
-from stats import compare, test_labels   # noqa: E402
+import stats as st                  # noqa: E402
 
 RUNS = os.path.join(ROOT, "results", "runs")
 GEN = os.path.join(ROOT, "paper", "generated")
@@ -33,695 +42,868 @@ FIG = os.path.join(ROOT, "paper", "figures")
 os.makedirs(GEN, exist_ok=True)
 os.makedirs(FIG, exist_ok=True)
 
-# entity colours (fixed per method, never by rank)
-COL = {"simclr": "#2a78d6", "supcon": "#eb6834", "union": "#1baf7a", "sub": "#7f7f7f",
-       "ce": "#6250d6", "fixmatch": "#e87ba4", "mixmatch": "#008300", "byol": "#eda100", "simsiam": "#e34948"}
-INK, MUTED, GRID = "#1f1f1f", "#5f5f5f", "#e6e6e6"
-plt.rcParams.update({
-    "font.family": "serif", "font.size": 8.5, "axes.titlesize": 9, "axes.labelsize": 8.5,
-    "legend.fontsize": 7.5, "xtick.labelsize": 7.5, "ytick.labelsize": 7.5,
-    "axes.edgecolor": MUTED, "axes.labelcolor": INK, "xtick.color": MUTED, "ytick.color": MUTED,
-    "axes.spines.top": False, "axes.spines.right": False, "axes.grid": True, "grid.color": GRID,
-    "grid.linewidth": 0.6, "lines.linewidth": 1.6, "lines.markersize": 5, "legend.frameon": False,
-    "pdf.fonttype": 42, "savefig.bbox": "tight", "savefig.pad_inches": 0.02,
-})
-
+plt.rcParams.update({"font.family": "serif", "font.size": 8, "axes.labelsize": 8, "axes.titlesize": 8.5,
+                     "legend.fontsize": 7, "xtick.labelsize": 7, "ytick.labelsize": 7, "axes.spines.top": False,
+                     "axes.spines.right": False, "axes.linewidth": 0.6, "lines.linewidth": 1.4,
+                     "lines.markersize": 4, "pdf.fonttype": 42, "savefig.bbox": "tight", "savefig.pad_inches": 0.02,
+                     "axes.grid": True, "grid.color": "#e3e3e3", "grid.linewidth": 0.5})
+# Okabe-Ito colours; every series also has its own marker and line style
+STYLE = {"simclr": ("#0072B2", "o", "-", "SimCLR (all images, no labels)"),
+         "sub": ("#56B4E9", "s", "--", "SimCLR (labeled images only)"),
+         "supcon": ("#D55E00", "^", "-", "SupCon (labeled images only)"),
+         "union": ("#CC79A7", "D", "-.", "SupCon+U (all images)")}
+ARMS = {"simclr": "simclr_all_e{E}", "sub": "simclr_sub_f0.1_e{E}", "supcon": "supcon_lab_f0.1_e{E}",
+        "union": "union_f0.1_e{E}"}
+ARM_TEX = {"simclr": r"\simclr", "sub": r"\simclrsub", "supcon": r"\supcon", "union": r"\union"}
 
 # ----------------------------------------------------------------------------
 # loading
 # ----------------------------------------------------------------------------
-
-def load():
-    rows = []
-    for path in sorted(glob.glob(os.path.join(RUNS, "*", "result.json"))):
-        d = os.path.dirname(path)
-        name = os.path.basename(d)
-        if name.startswith("pilot") or name.startswith("smoke"):
-            continue
-        r = json.load(open(path))
-        row = {"name": name, "config": re.sub(r"_s\d+$", "", name), "seed": r["args"].get("seed"),
-               "train_min": r.get("train_time_s", 0) / 60, "steps": r.get("steps")}
-        row.update(r["metrics"])
-        pj = os.path.join(d, "probes.json")
-        if os.path.exists(pj):
-            row.update({"p_" + k: v for k, v in json.load(open(pj)).items()})
-        rows.append(row)
-    return pd.DataFrame(rows)
+RUN = {}
+for path in glob.glob(os.path.join(RUNS, "*", "result.json")):
+    d = os.path.dirname(path)
+    name = os.path.basename(d)
+    r = json.load(open(path))
+    pj = os.path.join(d, "probes.json")
+    r["probes"] = json.load(open(pj)) if os.path.exists(pj) else {}
+    r["dir"] = d
+    RUN[name] = r
+CONFIGS = sorted({re.sub(r"_s\d+$", "", n) for n in RUN if re.search(r"_s\d+$", n)})
 
 
-DF = load()
-# every macro used in the paper exists even before its run has finished ("--")
-DEFAULT_MACROS = """radiusTen spreadTen radiusOne spreadOne radiusFull spreadFull radiusKc spreadKc neffKc neffClFifty
-oodSimclrCifar oodSimclrOod oodSimclrPCifar oodSimclrPOod oodSimclrTopWrong oodUnionCifar oodUnionOod oodUnionPCifar
-oodUnionPOod oodUnionTopWrong oodSupconCifar oodSupconOod oodSupconPCifar oodSupconPOod oodSupconTopWrong oodCeCifar
-oodCeOod oodCePCifar oodCePOod oodCeTopWrong histProbe clipCifar clipResSixteen clipResThirtyTwo clipResSixtyFour
-clipResOneTwoEight clipResTwoTwoFour clipTest nOod""".split()
-DF.to_csv(os.path.join(ROOT, "results", "summary.csv"), index=False)
-MACROS = {}
+def seeds(cfg):
+    return sorted(int(m.group(1)) for n in RUN for m in [re.fullmatch(re.escape(cfg) + r"_s(\d+)", n)] if m)
 
 
-def vals(config, key):
-    if DF.empty or key not in DF.columns:
-        return np.array([])
-    return DF.loc[DF["config"] == config, key].dropna().to_numpy(dtype=float)
+def companion(name, kind):
+    """Name of the run that post-processes encoder ``name`` (fine-tuning, FixMatch, ...)."""
+    if kind == "fm" and name.startswith("stl_"):
+        return "stl_fixmatch_from_" + name[4:]
+    return {"ft": "ft_", "ftt": "ftsearch_", "ftd": "ftsearch_", "fm": "fixmatch_from_", "dist": "distill_",
+            "fto": "ftoracle_", "fto0": "ftoracle_", "ftx": "fttransfer_"}[kind] + name
 
 
-def ms(config, key, digits=1, pm=True):
-    v = vals(config, key)
-    if len(v) == 0:
-        return "--"
-    if len(v) == 1 or not pm:
-        return f"{v.mean():.{digits}f}"
-    return f"{v.mean():.{digits}f}{{\\scriptsize$\\pm${v.std(ddof=1):.{digits}f}}}"
+def label_free(name):
+    return name.startswith(("simclr_all", "byol_all", "simsiam_all", "stl_simclr_all"))
 
 
-def mean(config, key):
-    v = vals(config, key)
+def metric(name, proto):
+    r = RUN.get(name)
+    if r is None:
+        return None
+    m, p = r["metrics"], r["probes"]
+    stl = name.startswith("stl_")
+    if proto == "lp50":
+        return None if stl else m.get("linear_acc")
+    if proto == "knn":
+        return m.get("knn_acc")
+    if proto == "lp5":
+        return m.get("linear_acc") if stl else m.get("linear_lab_acc", p.get("linear_0.1"))
+    if proto.startswith("lpf:"):
+        return p.get("linear_" + proto[4:])
+    if proto == "fts":
+        proto = "ftt" if label_free(name) else "ftx"
+    if proto in ("ft", "ftt", "ftd", "fm", "dist", "fto", "fto0", "ftx"):
+        c = RUN.get(companion(name, proto))
+        key = {"ft": "finetune_acc", "ftt": "finetune_tuned_acc", "ftd": "finetune_default_acc",
+               "fm": "classifier_acc", "dist": "classifier_acc", "fto": "finetune_tuned_acc",
+               "fto0": "finetune_oracle_acc", "ftx": "finetune_tuned_acc"}[proto]
+        return None if c is None else c["metrics"].get(key)
+    if proto == "clf":
+        return m.get("classifier_acc")
+    if proto == "cdnv_lab":
+        return m.get("seen_cdnv") if stl else p.get("cdnv_labeled_0.1")
+    if proto == "cdnv_rest":
+        return p.get("cdnv_rest_0.1")
+    if proto == "cdnv_test":
+        return m.get("test_cdnv") if stl else p.get("cdnv_test_0.1")
+    if proto == "lp5_train":
+        return p.get("linear_0.1_train")
+    if proto == "etf_lab":
+        return p.get("etf_dev_labeled_0.1")
+    if proto == "time":
+        return r.get("train_time_s", 0) / 60
+    return m.get(proto, p.get(proto))
+
+
+def V(cfg, proto, only=None):
+    out = [metric(f"{cfg}_s{s}", proto) for s in seeds(cfg) if only is None or s in only]
+    return np.array([v for v in out if v is not None], dtype=float)
+
+
+def mean(cfg, proto):
+    v = V(cfg, proto)
     return float(v.mean()) if len(v) else float("nan")
 
 
-def macro(name, value):
-    MACROS[name] = value
+def MS(cfg, proto, d=1, bold=False):
+    v = V(cfg, proto)
+    if len(v) == 0:
+        return "--"
+    s = f"{v.mean():.{d}f}"
+    if bold:
+        s = r"\textbf{" + s + "}"
+    if len(v) > 1:
+        s += rf"{{\scriptsize$\,\pm\,${v.std(ddof=1):.{d}f}}}"
+    return s
+
+
+def nseeds(cfg, proto="knn"):
+    return len(V(cfg, proto))
 
 
 def fmt(x, d=1, sign=False):
-    if x is None or (isinstance(x, float) and not np.isfinite(x)):
+    if x is None or not np.isfinite(x):
         return "--"
     return f"{x:+.{d}f}" if sign else f"{x:.{d}f}"
 
 
-# ----------------------------------------------------------------------------
-# headline numbers + significance tests
-# ----------------------------------------------------------------------------
-CORE = {"simclr": "simclr_all_e100", "supcon": "supcon_lab_f0.1_e100",
-        "sub": "simclr_sub_f0.1_e100", "union": "union_f0.1_e100"}
-Y = test_labels()
-
-
-def stat_macros(tag, a, b, key):
-    try:
-        r = compare(a, b, Y, key, RUNS, n_boot=10000)
-    except (FileNotFoundError, ValueError):
-        return None
-    macro(f"diff{tag}", fmt(r["diff"], 1, True))
-    macro(f"ci{tag}", f"[{r['ci_lo']:+.1f}, {r['ci_hi']:+.1f}]")
-    p = r["p_boot"]
-    macro(f"p{tag}", "<10^{-4}" if p <= 1e-4 else f"={p:.3f}" if p >= 0.001 else f"={p:.1e}")
-    return r
-
-
-STATS = []
-for key, label in (("linear", "Lin"), ("knn", "Knn")):
-    for tag, a, b in (("UnionSimclr", "union", "simclr"), ("UnionSupcon", "union", "supcon"),
-                      ("SupconSimclr", "supcon", "simclr"), ("SimclrSub", "simclr", "sub"),
-                      ("SupconSub", "supcon", "sub")):
-        r = stat_macros(tag + label, CORE[a], CORE[b], key)
-        if r:
-            STATS.append((label, a, b, r))
-for tag, a, b in (("UnionSimclr", "union", "simclr"), ("UnionSupcon", "union", "supcon"), ("SupconSimclr", "supcon", "simclr")):
-    for key, label in (("finetune", "Ft"),):
-        r = stat_macros(tag + label, "ft_" + CORE[a], "ft_" + CORE[b], key)
-        if r:
-            STATS.append((label, a, b, r))
-r = stat_macros("LongLin", "simclr_all_e200", "supcon_lab_f0.1_e200", "linear")
-if r:
-    STATS.append(("Lin", "simclr@e200", "supcon@e200", r))
-r = stat_macros("LongUnionLin", "union_f0.1_e200", "supcon_lab_f0.1_e200", "linear")
-if r:
-    STATS.append(("Lin", "union@e200", "supcon@e200", r))
-r = stat_macros("LongSimclrUnionLin", "simclr_all_e200", "union_f0.1_e200", "linear")
-if r:
-    STATS.append(("Lin", "simclr@e200", "union@e200", r))
-for tag, a_, b_ in (("FtLongSupcon", "ft_simclr_all_e200", "ft_supcon_lab_f0.1_e200"),
-                    ("FtLongUnion", "ft_simclr_all_e200", "ft_union_f0.1_e200")):
-    r = stat_macros(tag, a_, b_, "finetune")
-    if r:
-        STATS.append(("Ft", a_.replace("ft_", "") + "@ft", b_.replace("ft_", "") + "@ft", r))
-r = stat_macros("ShortLin", "supcon_lab_f0.1_e10", "simclr_all_e10", "linear")
-if r:
-    STATS.append(("Lin", "supcon@e10", "simclr@e10", r))
-# the original report's budget: SupCon trained 100 epochs over 5,000 images (= 10 full-data epochs)
-r = stat_macros("BudgetLin", "supcon_lab_f0.1_e10", "simclr_all_e100", "linear")
-if r:
-    STATS.append(("Lin", "supcon@e10", "simclr@e100", r))
-
-for m, c in CORE.items():
-    for key, short in (("linear_acc", "Lin"), ("knn_acc", "Knn"), ("p_linear_0.1", "LinTen"),
-                       ("seen_cdnv", "CdnvSeen"), ("heldout_cdnv", "CdnvHeld"), ("test_cdnv", "CdnvTest"),
-                       ("test_ncc_acc", "Ncc"), ("test_etf_dev", "Etf")):
-        macro(f"{m}{short}", ms(c, key, 2 if "cdnv" in key or "etf" in key else 1, pm=False))
-    macro(f"{m}LinPm", ms(c, "linear_acc"))
-    macro(f"{m}FtPm", ms("ft_" + c, "finetune_acc"))
-    macro(f"{m}Ft", ms("ft_" + c, "finetune_acc", pm=False))
-macro("supconTenLin", ms("supcon_lab_f0.1_e10", "linear_acc", pm=False))
-macro("supconTenLinPm", ms("supcon_lab_f0.1_e10", "linear_acc"))
-macro("simclrTenLin", ms("simclr_all_e10", "linear_acc", pm=False))
-macro("gapBudget", fmt(mean("simclr_all_e100", "linear_acc") - mean("supcon_lab_f0.1_e10", "linear_acc")))
-macro("gapMatched", fmt(mean("simclr_all_e100", "linear_acc") - mean("supcon_lab_f0.1_e100", "linear_acc"), 1, True))
-macro("rFiftySupconTen", ms("r50_supcon_lab_f0.1_e10", "linear_acc", pm=False))
-macro("rFiftySupconTenLow", ms("r50_supcon_lab_f0.1_e10_lr0.05", "linear_acc", pm=False))
-macro("rFiftySimclrTen", ms("r50_simclr_all_e10", "linear_acc", pm=False))
-macro("gapBudgetSimclr", fmt(mean("supcon_lab_f0.1_e10", "linear_acc") - mean("simclr_all_e10", "linear_acc"), 1, True))
-for e, w in ((25, "TwentyFive"), (50, "Fifty"), (200, "TwoHundred")):
-    macro(f"supcon{w}Lin", ms(f"supcon_lab_f0.1_e{e}", "linear_acc", pm=False))
-    macro(f"simclr{w}Lin", ms(f"simclr_all_e{e}", "linear_acc", pm=False))
-    macro(f"union{w}Lin", ms(f"union_f0.1_e{e}", "linear_acc", pm=False))
-    macro(f"supcon{w}LinPm", ms(f"supcon_lab_f0.1_e{e}", "linear_acc"))
-    macro(f"simclr{w}LinPm", ms(f"simclr_all_e{e}", "linear_acc"))
-    macro(f"union{w}LinPm", ms(f"union_f0.1_e{e}", "linear_acc"))
-    macro(f"supcon{w}Knn", ms(f"supcon_lab_f0.1_e{e}", "knn_acc", pm=False))
-    macro(f"simclr{w}Knn", ms(f"simclr_all_e{e}", "knn_acc", pm=False))
-    macro(f"union{w}Knn", ms(f"union_f0.1_e{e}", "knn_acc", pm=False))
-macro("unionUnifTwoHundredLin", ms("unionunif_f0.1_e200", "linear_acc", pm=False))
-macro("unionUnifLin", ms("unionunif_f0.1_e100", "linear_acc", pm=False))
-macro("gapLong", fmt(mean("simclr_all_e200", "linear_acc") - mean("supcon_lab_f0.1_e200", "linear_acc"), 1))
-macro("gapShort", fmt(mean("supcon_lab_f0.1_e10", "linear_acc") - mean("simclr_all_e10", "linear_acc"), 1))
-macro("ceTen", ms("ce_f0.1_e100", "classifier_acc", pm=False))
-macro("ceFull", ms("ce_f1.0_e100", "classifier_acc", pm=False))
-for k in ("fixmatch", "mixmatch"):
-    macro(f"{k}Acc", ms(f"{k}_f0.1", "classifier_acc", pm=False))
-    macro(f"{k}Lin", ms(f"{k}_f0.1", "linear_acc", pm=False))
-for k in ("byol", "simsiam"):
-    macro(f"{k}Lin", ms(f"{k}_all_e100", "linear_acc", pm=False))
-    macro(f"{k}Knn", ms(f"{k}_all_e100", "knn_acc", pm=False))
-    macro(f"{k}Ft", ms(f"ft_{k}_all_e100", "finetune_acc", pm=False))
-macro("nSeeds", str(len(vals(CORE["simclr"], "linear_acc"))))
-
-# ----------------------------------------------------------------------------
-# Table: main results at two budgets and three protocols
-# ----------------------------------------------------------------------------
 def write(name, text):
     with open(os.path.join(GEN, name), "w") as f:
-        f.write(text)
+        f.write("% generated by scripts/make_assets.py -- do not edit\n" + text.rstrip() + "\n")
 
 
-MAIN_ROWS = [
-    ("SimCLR", "all 50k", "--", "simclr_all_e{}"),
-    ("SimCLR (subset)", "5k", "--", "simclr_sub_f0.1_e{}"),
-    ("SupCon (label-only)", "5k", "5k", "supcon_lab_f0.1_e{}"),
-    ("Union", "all 50k", "5k", "union_f0.1_e{}"),
-    ("Union, uniform batches", "all 50k", "5k", "unionunif_f0.1_e{}"),
-]
-PROTS = (("linear_acc", None), ("p_linear_0.1", None), ("finetune_acc", "ft_"))
+M = {}   # macros: key -> text, used in the paper as \R{key}
 
 
-def cell(cfg, key, prefix, best):
-    c = (prefix or "") + cfg
-    out = ms(c, key)
-    m = mean(c, key)
-    if np.isfinite(m) and best is not None and abs(m - best) < 0.05:
-        out = r"\textbf{" + out + "}"
-    return out
+def best_of(cfgs, proto):
+    vals = {c: mean(c, proto) for c in cfgs}
+    vals = {c: v for c, v in vals.items() if np.isfinite(v)}
+    return max(vals, key=vals.get) if vals else None
 
-
-lines = [r"\begin{tabular}{l cc ccc ccc}", r"\toprule",
-         r" & \multicolumn{2}{c}{pretraining uses} & \multicolumn{3}{c}{9,700 steps (100 epochs)} & \multicolumn{3}{c}{19,400 steps (200 epochs)} \\",
-         r"\cmidrule(lr){2-3}\cmidrule(lr){4-6}\cmidrule(lr){7-9}",
-         r"method & images & labels & probe, 50k & probe, 5k & fine-tune, 5k & probe, 50k & probe, 5k & fine-tune, 5k \\", r"\midrule"]
-best = {}
-for e in (100, 200):
-    for key, prefix in PROTS:
-        ms_ = [mean((prefix or "") + r[3].format(e), key) for r in MAIN_ROWS]
-        ms_ = [m for m in ms_ if np.isfinite(m)]
-        best[(e, key)] = max(ms_) if ms_ else None
-for label, imgs, labs, pat in MAIN_ROWS:
-    cells = [cell(pat.format(e), key, prefix, best[(e, key)]) for e in (100, 200) for key, prefix in PROTS]
-    lines.append(f"{label} & {imgs} & {labs} & " + " & ".join(cells) + r" \\")
-lines += [r"\bottomrule", r"\end{tabular}"]
-write("table_main.tex", "\n".join(lines) + "\n")
-
-# kNN and short-budget table (appendix)
-lines = [r"\begin{tabular}{l ccccc}", r"\toprule", r"method & 970 & 2,425 & 4,850 & 9,700 & 19,400 steps \\", r"\midrule"]
-for label, pat in (("SimCLR", "simclr_all_e{}"), ("SupCon (label-only)", "supcon_lab_f0.1_e{}"), ("Union", "union_f0.1_e{}")):
-    for key, nm in (("linear_acc", "linear"), ("knn_acc", "$k$NN")):
-        lines.append(f"{label}, {nm} & " + " & ".join(ms(pat.format(e), key) for e in (10, 25, 50, 100, 200)) + r" \\")
-lines += [r"\midrule",
-          r"ResNet-50 SupCon (label-only), lr 0.25 & " + ms("r50_supcon_lab_f0.1_e10", "linear_acc") + r" & & & " + ms("r50_supcon_lab_f0.1_e100", "linear_acc") + r" & \\",
-          r"ResNet-50 SupCon (label-only), lr 0.05 & " + ms("r50_supcon_lab_f0.1_e10_lr0.05", "linear_acc") + r" & & & & \\",
-          r"ResNet-50 SimCLR & " + ms("r50_simclr_all_e10", "linear_acc") + r" & & & " + ms("r50_simclr_all_e100", "linear_acc") + r" & \\",
-          r"\bottomrule", r"\end{tabular}"]
-write("table_budget.tex", "\n".join(lines) + "\n")
-
-for e, w in ((100, ""), (200, "TwoHundred")):
-    for k, pat in (("simclr", "simclr_all_e{}"), ("supcon", "supcon_lab_f0.1_e{}"), ("union", "union_f0.1_e{}"),
-                   ("unionUnif", "unionunif_f0.1_e{}"), ("sub", "simclr_sub_f0.1_e{}")):
-        macro(f"{k}{w}Ft", ms("ft_" + pat.format(e), "finetune_acc", pm=False))
-        macro(f"{k}{w}FtPm", ms("ft_" + pat.format(e), "finetune_acc"))
-        macro(f"{k}{w}ProbeFive", ms(pat.format(e), "p_linear_0.1", pm=False))
-        macro(f"{k}{w}ProbeTrain", ms(pat.format(e), "p_linear_0.1_train", pm=False))
-        macro(f"{k}{w}CdnvLab", ms(pat.format(e), "p_cdnv_labeled_0.1", 2, pm=False))
-        macro(f"{k}{w}CdnvTestLab", ms(pat.format(e), "p_cdnv_test_0.1", 2, pm=False))
-
-# significance table
-lines = [r"\begin{tabular}{llcc}", r"\toprule", r"comparison & protocol & difference [95\% CI] & $p$ \\", r"\midrule"]
-NICE = {"simclr": "SimCLR", "supcon": "SupCon (label-only)", "union": "Union", "sub": "SimCLR (subset)",
-        "supcon@e10": "SupCon, 970 steps", "simclr@e100": "SimCLR, 9,700 steps", "simclr@e10": "SimCLR, 970 steps",
-        "simclr@e200": "SimCLR, 19,400 steps", "supcon@e200": "SupCon, 19,400 steps", "union@e200": "Union, 19,400 steps",
-        "simclr_all_e200@ft": "SimCLR, 19,400 steps", "supcon_lab_f0.1_e200@ft": "SupCon, 19,400 steps",
-        "union_f0.1_e200@ft": "Union, 19,400 steps"}
-PROT = {"Lin": "linear (all labels)", "Knn": "$k$NN (all labels)", "Ft": "fine-tune (5k labels)"}
-for label, a, b, r in STATS:
-    p = r["p_boot"]
-    ps = r"$<10^{-4}$" if p <= 1e-4 else f"{p:.3f}" if p >= 0.001 else f"{p:.1e}"
-    lines.append(f"{NICE[a]} $-$ {NICE[b]} & {PROT[label]} & {r['diff']:+.2f} [{r['ci_lo']:+.2f}, {r['ci_hi']:+.2f}] & {ps} \\\\")
-lines += [r"\bottomrule", r"\end{tabular}"]
-write("table_stats.tex", "\n".join(lines) + "\n")
 
 # ----------------------------------------------------------------------------
-# Figure 1: the epoch trap (accuracy vs. gradient steps)
+# macros for every configuration and protocol
 # ----------------------------------------------------------------------------
-fig, axes = plt.subplots(1, 2, figsize=(6.9, 2.5), gridspec_kw={"width_ratios": [1.25, 1]})
-ax = axes[0]
-series = [("SimCLR, all images", "simclr", "simclr_all_e{}"), ("SupCon, 10% labeled only", "supcon", "supcon_lab_f0.1_e{}"),
-          ("Union", "union", "union_f0.1_e{}")]
-for label, k, pat in series:
-    xs, ys, es = [], [], []
-    for e in (10, 25, 50, 100, 200):
-        v = vals(pat.format(e), "linear_acc")
-        if len(v):
-            steps = DF.loc[DF["config"] == pat.format(e), "steps"].iloc[0]
-            xs.append(steps)
-            ys.append(v.mean())
-            es.append(v.std(ddof=1) if len(v) > 1 else 0)
-    if xs:
-        ax.errorbar(xs, ys, yerr=es, color=COL[k], marker="o", label=label, capsize=2, ms=4)
-# the original report's comparison, in step units of this study
-r_sup, r_sim = vals("supcon_lab_f0.1_e10", "linear_acc"), vals("simclr_all_e100", "linear_acc")
-if len(r_sup) and len(r_sim):
-    x0 = DF.loc[DF["config"] == "supcon_lab_f0.1_e10", "steps"].iloc[0]
-    x1 = DF.loc[DF["config"] == "simclr_all_e100", "steps"].iloc[0]
-    ax.annotate("", xy=(x0, r_sup.mean()), xytext=(x1, r_sim.mean()),
-                arrowprops=dict(arrowstyle="<->", color=MUTED, lw=0.8, ls="--", shrinkA=4, shrinkB=4))
-    ax.text(np.sqrt(x0 * x1) * 0.95, (r_sup.mean() + r_sim.mean()) / 2 - 1.3,
-            "\"100 epochs\" each:\nthe comparison\nin our report", fontsize=6.5, color=MUTED, ha="center", va="top")
-ax.set_xscale("log")
-ax.set_xlabel("gradient steps (batch 512)")
-ax.set_ylabel("linear-probe accuracy (%)")
-ax.set_title("(a) Labels buy speed, images buy accuracy", loc="left")
-ax.legend(loc="lower right")
-
-ax = axes[1]
-groups = [("SimCLR", "simclr", "simclr_all_e{}"), ("SupCon\n(label-only)", "supcon", "supcon_lab_f0.1_e{}"),
-          ("Union", "union", "union_f0.1_e{}")]
-w = 0.36
-for i, (label, k, pat) in enumerate(groups):
-    for j, (key, prefix, hatch, lab) in enumerate((("linear_acc", "", None, "probe trained on all 50k labels"),
-                                                     ("finetune_acc", "ft_", "////", "fine-tuned on the 5k labels"))):
-        v = vals(prefix + pat.format(200), key)
-        if not len(v):
+PROTOS = ["lp50", "knn", "lp5", "ft", "ftt", "ftd", "fts", "ftx", "fto", "fto0", "fm", "dist", "clf", "cdnv_lab", "cdnv_rest", "cdnv_test",
+          "lp5_train", "seen_cdnv", "heldout_cdnv", "test_cdnv", "linear_acc_gray", "cka_hist", "cka_label"]
+for cfg in CONFIGS:
+    for proto in PROTOS:
+        v = V(cfg, proto)
+        if len(v) == 0:
             continue
-        x = i + (j - 0.5) * (w + 0.03)
-        ax.bar(x, v.mean(), w, color=COL[k] if hatch is None else "white", edgecolor=COL[k], hatch=hatch, linewidth=1.0,
-               label=lab if i == 0 else None)
-        if len(v) > 1:
-            ax.errorbar(x, v.mean(), yerr=v.std(ddof=1), color=INK, capsize=2, lw=0.8)
-        ax.text(x, v.mean() + 0.35, f"{v.mean():.1f}", ha="center", va="bottom", fontsize=6.5, color=INK)
-ax.set_xticks(range(len(groups)))
-ax.set_xticklabels([g[0] for g in groups], fontsize=7.5)
-ax.set_ylim(78, 93.5)
-ax.set_ylabel("test accuracy (%)")
-ax.set_title("(b) Labels spent in pretraining are gone", loc="left")
-from matplotlib.patches import Patch
-ax.legend(handles=[Patch(facecolor=MUTED, label="probe trained on all 50k labels"),
-                   Patch(facecolor="white", edgecolor=MUTED, hatch="////", label="fine-tuned on the 5k labels only")],
-          loc="upper right", fontsize=6.5, bbox_to_anchor=(1.0, 1.02))
-ax.grid(axis="x", visible=False)
-fig.savefig(os.path.join(FIG, "fig_main.pdf"))
-plt.close(fig)
+        d = 2 if "cdnv" in proto or "cka" in proto else 1
+        M[f"{cfg}:{proto}"] = f"{v.mean():.{d}f}"
+        M[f"{cfg}:{proto}:pm"] = f"{v.mean():.{d}f}" + (rf"\,$\pm$\,{v.std(ddof=1):.{d}f}" if len(v) > 1 else "")
+        M[f"{cfg}:{proto}:n"] = str(len(v))
+    t = V(cfg, "time")
+    if len(t):
+        M[f"{cfg}:time"] = f"{t.min():.0f}"
 
-# fraction figure: (a) all-label probe, (b) fine-tuning with the labeled subset only
-fig, axes = plt.subplots(1, 2, figsize=(6.9, 2.3))
-fr = [0.01, 0.05, 0.1, 0.2]
-FTF = {"simclr": lambda f: "ft_simclr_all_e100" if f == 0.1 else f"ft_simclr_all_e100_f{f}",
-       "supcon": lambda f: f"ft_supcon_lab_f{f}_e100", "union": lambda f: f"ft_union_f{f}_e100"}
-for ax, mode in ((axes[0], "probe"), (axes[1], "ft")):
-    for label, k, pat in (("SimCLR, all images", "simclr", None), ("SimCLR, labeled images only", "sub", "simclr_sub_f{}_e100"),
-                          ("SupCon, labeled images only", "supcon", "supcon_lab_f{}_e100"), ("Union", "union", "union_f{}_e100")):
-        if mode == "ft" and k == "sub":
+
+def diffmacro(tag, a, pa, b, pb, d=1):
+    x, y = mean(a, pa), mean(b, pb)
+    if np.isfinite(x) and np.isfinite(y):
+        M[f"d:{tag}"] = f"{abs(x - y):.{d}f}"
+        M[f"ds:{tag}"] = f"{x - y:+.{d}f}"
+
+
+# ----------------------------------------------------------------------------
+# statistics: hierarchical bootstrap, Holm correction, TOST
+# ----------------------------------------------------------------------------
+PRED = {"lp50": [("{c}", "linear")], "knn": [("{c}", "knn")], "lp5": [("{c}", "linear_lab"), ("{c}", "linear_0.1")],
+        "ft": [("ft_{c}", "finetune")], "ftt": [("ftsearch_{c}", "finetune_tuned")],
+        "ftx": [("fttransfer_{c}", "finetune_tuned")],
+        "fm": [("fixmatch_from_{c}", "classifier")], "clf": [("{c}", "classifier")]}
+_Y = {}
+
+
+def correct(cfg, proto, dataset="cifar10"):
+    if dataset not in _Y:
+        _Y[dataset] = st.test_labels(dataset)
+    if proto == "fts":
+        proto = "ftt" if label_free(cfg) else "ftx"
+    if proto == "fto":      # seed 0 chose the recipe on its test set and is left out
+        c = st.load_correct(f"ftoracle_{cfg}", "finetune_tuned", _Y[dataset], RUNS)
+        return {k: v for k, v in c.items() if k != 0}
+    for tmpl, key in PRED[proto]:
+        c = st.load_correct(tmpl.format(c=cfg), key, _Y[dataset], RUNS)
+        if c:
+            return c
+    return {}
+
+
+N_BOOT = 100000
+CACHE_PATH = os.path.join(ROOT, "results", "stats_cache.json")
+CACHE = json.load(open(CACHE_PATH)) if os.path.exists(CACHE_PATH) else {}
+
+
+def cmp(a, pa, b, pb=None, dataset="cifar10"):
+    ca, cb = correct(a, pa, dataset), correct(b, pb or pa, dataset)
+    if len(ca) < 2 or len(cb) < 2:
+        return None
+    key = f"{a}|{pa}|{sorted(ca)}|{b}|{pb or pa}|{sorted(cb)}|{N_BOOT}"
+    if key not in CACHE:
+        CACHE[key] = {k: (float(v) if not isinstance(v, (bool, int)) else v)
+                      for k, v in st.hierarchical_bootstrap(ca, cb, n_boot=N_BOOT).items()}
+    return dict(CACHE[key])
+
+
+BUDGETS = [(100, "9,700"), (200, "19,400"), (400, "38,800"), (1000, "97,000")]
+FAMILY = []   # (tag, group label, text of the comparison, a, pa, b, pb)
+for E, steps in BUDGETS:
+    s, c, u, sub = (ARMS[k].format(E=E) for k in ("simclr", "supcon", "union", "sub"))
+    for proto, pname in (("lp50", "LP-50k"), ("lp5", "LP-5k"), ("ft", "FT-5k")):
+        FAMILY.append((f"simclr-supcon:{proto}:e{E}", f"{pname}, {steps} steps", r"\simclr $-$ \supcon", s, proto, c, proto))
+        FAMILY.append((f"simclr-union:{proto}:e{E}", f"{pname}, {steps} steps", r"\simclr $-$ \union", s, proto, u, proto))
+    FAMILY.append((f"union-supcon:lp50:e{E}", f"LP-50k, {steps} steps", r"\union $-$ \supcon", u, "lp50", c, "lp50"))
+    FAMILY.append((f"simclr-sub:lp50:e{E}", f"LP-50k, {steps} steps", r"\simclr $-$ \simclrsub", s, "lp50", sub, "lp50"))
+    FAMILY.append((f"supcon-sub:lp50:e{E}", f"LP-50k, {steps} steps", r"\supcon $-$ \simclrsub", c, "lp50", sub, "lp50"))
+for E, steps in ((10, "970"), (25, "2,425"), (50, "4,850")):
+    FAMILY.append((f"simclr-supcon:lp50:e{E}", f"LP-50k, {steps} steps", r"\simclr $-$ \supcon",
+                   ARMS["simclr"].format(E=E), "lp50", ARMS["supcon"].format(E=E), "lp50"))
+for _p, _n in (("fts", "FT-5k (selected recipe)"), ("fto", "FT-5k (oracle recipe)")):
+    FAMILY.append((f"simclr-supcon:{_p}:e200", f"{_n}, 19,400 steps", r"\simclr $-$ \supcon", "simclr_all_e200", _p,
+                   "supcon_lab_f0.1_e200", _p))
+    FAMILY.append((f"simclr-union:{_p}:e200", f"{_n}, 19,400 steps", r"\simclr $-$ \union", "simclr_all_e200", _p,
+                   "union_f0.1_e200", _p))
+FAMILY.append(("simclr-supcon:fm:e200", "FixMatch from encoder, 19,400 steps", r"\simclr $-$ \supcon", "simclr_all_e200", "fm",
+               "supcon_lab_f0.1_e200", "fm"))
+FAMILY.append(("simclr-union:fm:e200", "FixMatch from encoder, 19,400 steps", r"\simclr $-$ \union", "simclr_all_e200", "fm",
+               "union_f0.1_e200", "fm"))
+FAMILY.append(("twostage-simclr:lp5:e200", "LP-5k, 19,400 steps", r"\simclr{}$\to$\supcon $-$ \simclr",
+               "twostage_simclr200_supcon5", "lp5", "simclr_all_e200", "lp5"))
+FAMILY.append(("simclrft-ce:e200", "label-budget pipelines, 19,400 steps", r"\simclr{}+FT $-$ CE on 5k", "simclr_all_e200", "ft",
+               "ce_f0.1_e200", "clf"))
+FAMILY.append(("supconft-ce:e200", "label-budget pipelines, 19,400 steps", r"\supcon{}+FT $-$ CE on 5k", "supcon_lab_f0.1_e200", "ft",
+               "ce_f0.1_e200", "clf"))
+STATS = []
+for tag, group, text, a, pa, b, pb in FAMILY:
+    r = cmp(a, pa, b, pb)
+    if r is not None:
+        STATS.append((tag, group, text, r))
+json.dump(CACHE, open(CACHE_PATH, "w"), indent=0)
+_first = {}
+for i, (_t, g, *_r) in enumerate(STATS):
+    _first.setdefault(g, i)
+STATS.sort(key=lambda x: _first[x[1]])
+if STATS:
+    adj = st.holm([r["p"] for *_x, r in STATS])
+    for (tag, group, text, r), pa_ in zip(STATS, adj):
+        r["p_holm"] = float(pa_)
+
+        def pf(p):
+            return "$<$0.001" if p < 0.001 else f"{p:.3f}"
+        M[f"cmp:{tag}:diff"] = f"{abs(r['diff']):.1f}"
+        M[f"cmp:{tag}:sdiff"] = f"{r['diff']:+.1f}"
+        M[f"cmp:{tag}:ci"] = f"[{r['ci_lo']:+.1f}, {r['ci_hi']:+.1f}]"
+        M[f"cmp:{tag}:p"] = pf(r["p_holm"])
+        M[f"cmp:{tag}:tost"] = pf(r["p_tost"])
+    rows, last = [], None
+    for tag, group, text, r in STATS:
+        if group != last:
+            rows.append(rf"\multicolumn{{6}}{{l}}{{\emph{{{group}}}}} \\")
+            last = group
+        eq = "yes" if r["p_tost"] < 0.05 else "no"
+        rows.append(f"\\quad {text} & {r['n_a']}/{r['n_b']} & {r['diff']:+.1f} & [{r['ci_lo']:+.1f}, {r['ci_hi']:+.1f}] & "
+                    f"{M[f'cmp:{tag}:p']} & {eq} \\\\")
+    write("tab_stats.tex", "\\begin{tabular}{lccccc}\n\\toprule\ncomparison & seeds & $\\Delta$ (points) & 95\\% CI & "
+          "$p$ (Holm) & equivalent within $\\pm1$? \\\\\n\\midrule\n" + "\n".join(rows) + "\n\\bottomrule\n\\end{tabular}")
+    M["stats:ntests"] = str(len(STATS))
+
+# ----------------------------------------------------------------------------
+# Table: main results on CIFAR-10 (four arms x budgets x protocols)
+# ----------------------------------------------------------------------------
+rows = []
+for E, steps in BUDGETS:
+    cfgs = {k: ARMS[k].format(E=E) for k in ("sub", "simclr", "supcon", "union")}
+    if not any(nseeds(c) for c in cfgs.values()):
+        continue
+    rows.append(rf"\multicolumn{{6}}{{l}}{{\emph{{{steps} steps}}}} \\")
+    best = {p: best_of(cfgs.values(), p) for p in ("lp50", "knn", "lp5", "ft")}
+    for k, c in cfgs.items():
+        if not nseeds(c):
             continue
-        xs, ys = [], []
-        for f in fr:
-            if mode == "probe":
-                v = vals(CORE["simclr"] if pat is None else pat.format(f), "linear_acc")
-            else:
-                v = vals(FTF[k](f), "finetune_acc")
+        rows.append(f"\\quad {ARM_TEX[k]} & {nseeds(c)} & " + " & ".join(MS(c, p, bold=(best[p] == c)) for p in ("lp50", "knn", "lp5", "ft")) + r" \\")
+write("tab_main.tex", "\\begin{tabular}{lccccc}\n\\toprule\n & & \\multicolumn{2}{c}{oracle labels (50k)} & "
+      "\\multicolumn{2}{c}{label budget (5k)} \\\\\n\\cmidrule(lr){3-4}\\cmidrule(lr){5-6}\n"
+      "method & seeds & LP-50k & $k$NN-50k & LP-5k & FT-5k \\\\\n\\midrule\n" + "\n".join(rows) + "\n\\bottomrule\n\\end{tabular}")
+
+# all budgets (appendix)
+rows = []
+for E in (10, 25, 50, 100, 200, 400, 1000):
+    line = [f"{97 * E:,}"]
+    for k in ("simclr", "sub", "supcon", "union"):
+        c = ARMS[k].format(E=E)
+        line += [MS(c, "lp50"), MS(c, "lp5")]
+    rows.append(" & ".join(line) + r" \\")
+write("tab_budgets.tex", "\\begin{tabular}{rcccccccc}\n\\toprule\n & \\multicolumn{2}{c}{\\simclr} & \\multicolumn{2}{c}{\\simclrsub} & "
+      "\\multicolumn{2}{c}{\\supcon} & \\multicolumn{2}{c}{\\union} \\\\\n"
+      "\\cmidrule(lr){2-3}\\cmidrule(lr){4-5}\\cmidrule(lr){6-7}\\cmidrule(lr){8-9}\n"
+      "steps & LP-50k & LP-5k & LP-50k & LP-5k & LP-50k & LP-5k & LP-50k & LP-5k \\\\\n\\midrule\n" + "\n".join(rows)
+      + "\n\\bottomrule\n\\end{tabular}")
+
+# ----------------------------------------------------------------------------
+# Figure 1: accuracy against the number of steps, three protocols
+# ----------------------------------------------------------------------------
+ES = (10, 25, 50, 100, 200, 400, 1000)
+fig, axes = plt.subplots(1, 3, figsize=(7.2, 2.3), sharey=True)
+for ax, (proto, title) in zip(axes, (("lp50", "(a) LP-50k (oracle labels)"), ("lp5", "(b) LP-5k"), ("ft", "(c) FT-5k"))):
+    for k, tmpl in ARMS.items():
+        xs, ys, es = [], [], []
+        for E in ES:
+            v = V(tmpl.format(E=E), proto)
             if len(v):
-                xs.append(100 * f)
-                ys.append(v.mean())
+                xs.append(97 * E), ys.append(v.mean()), es.append(v.std(ddof=1) if len(v) > 1 else 0)
         if xs:
-            ax.plot(xs, ys, color=COL[k], marker="o", ls="--" if k == "sub" else "-", label=label, ms=4)
+            col, mk, ls, lab = STYLE[k]
+            ax.errorbar(xs, ys, yerr=es, color=col, marker=mk, ls=ls, label=lab, capsize=2, elinewidth=0.8)
     ax.set_xscale("log")
-    ax.set_xticks([1, 5, 10, 20])
-    ax.set_xticklabels(["1%", "5%", "10%", "20%"])
-    ax.set_xlabel("labeled fraction")
-axes[0].set_ylabel("test accuracy (%)")
-axes[0].set_title("(a) Probe trained on all labels", loc="left")
-axes[1].set_title("(b) Fine-tuned on the labeled images only", loc="left")
-axes[0].legend(loc="lower right", fontsize=6.3)
-fig.savefig(os.path.join(FIG, "fig_fraction.pdf"))
+    ax.set_xticks([970, 2425, 4850, 9700, 19400, 38800, 97000])
+    ax.set_xticklabels(["970", "2.4k", "4.9k", "9.7k", "19.4k", "38.8k", "97k"], rotation=40)
+    ax.minorticks_off()
+    ax.set_xlabel("gradient steps")
+    ax.set_title(title, loc="left")
+axes[0].set_ylabel("CIFAR-10 test accuracy (%)")
+axes[0].set_ylim(60, 93)
+h_, l_ = axes[0].get_legend_handles_labels()
+fig.legend(h_, l_, loc="lower center", ncol=4, frameon=False, bbox_to_anchor=(0.5, -0.22), columnspacing=1.2, handlelength=2.6)
+fig.savefig(os.path.join(FIG, "fig_budget.pdf"))
 plt.close(fig)
 
-# fraction-sweep table (both protocols)
-fr = [0.01, 0.05, 0.1, 0.2]
-lines = [r"\begin{tabular}{l cccc cccc}", r"\toprule",
-         r" & \multicolumn{4}{c}{linear probe, all labels} & \multicolumn{4}{c}{fine-tuned, labeled subset only} \\",
-         r"\cmidrule(lr){2-5}\cmidrule(lr){6-9}",
-         r"labeled fraction & 1\% & 5\% & 10\% & 20\% & 1\% & 5\% & 10\% & 20\% \\", r"\midrule"]
-FT = {"simclr": lambda f: "ft_simclr_all_e100" if f == 0.1 else f"ft_simclr_all_e100_f{f}",
-      "sub": lambda f: None,
-      "supcon": lambda f: f"ft_supcon_lab_f{f}_e100",
-      "union": lambda f: f"ft_union_f{f}_e100"}
-for label, k, pat in (("SimCLR (all images)", "simclr", None), ("SimCLR (labeled images only)", "sub", "simclr_sub_f{}_e100"),
-                      ("SupCon (label-only)", "supcon", "supcon_lab_f{}_e100"), ("Union", "union", "union_f{}_e100")):
-    cells = [ms(CORE["simclr"] if pat is None else pat.format(f), "linear_acc", pm=False) for f in fr]
-    cells += [ms(FT[k](f), "finetune_acc", pm=False) if FT[k](f) else "--" for f in fr]
-    lines.append(label + " & " + " & ".join(cells) + r" \\")
-lines += [r"\bottomrule", r"\end{tabular}"]
-write("table_fraction.tex", "\n".join(lines) + "\n")
-for f, w in ((0.01, "One"), (0.05, "Five"), (0.2, "Twenty")):
-    macro(f"fracSimclrFt{w}", ms(FT["simclr"](f), "finetune_acc", pm=False))
-    macro(f"fracSupconFt{w}", ms(FT["supcon"](f), "finetune_acc", pm=False))
-    macro(f"fracUnionFt{w}", ms(FT["union"](f), "finetune_acc", pm=False))
-    macro(f"fracSupconLin{w}", ms(f"supcon_lab_f{f}_e100", "linear_acc", pm=False))
-    macro(f"fracUnionLin{w}", ms(f"union_f{f}_e100", "linear_acc", pm=False))
-    macro(f"fracSubLin{w}", ms(f"simclr_sub_f{f}_e100", "linear_acc", pm=False))
+# ----------------------------------------------------------------------------
+# Figure 2: which method wins, as a function of steps and label fraction
+# ----------------------------------------------------------------------------
+FRS = (0.01, 0.05, 0.1, 0.2, 0.5, 1.0)
+GES = (25, 100, 400)
+
+
+def frac_cfg(kind, f, E):
+    if kind == "simclr":
+        return f"simclr_all_e{E}"
+    return f"{'supcon_lab' if kind == 'supcon' else 'union'}_f{f}_e{E}"
+
+
+def frac_val(kind, f, E, proto):
+    """proto: 'oracle' (LP with all labels) or 'budget' (LP with the f labels)."""
+    cfg = frac_cfg(kind, f, E)
+    if proto == "oracle" or f >= 1.0:
+        return mean(cfg, "lp50")
+    v = V(cfg, "linear_lab_acc") if kind != "simclr" else V(cfg, f"lpf:{f}")
+    if len(v) == 0:
+        v = V(cfg, f"lpf:{f}")
+    return float(v.mean()) if len(v) else float("nan")
+
+
+fig, axes = plt.subplots(2, 2, figsize=(7.2, 3.5), sharey=True, sharex=True, gridspec_kw={"hspace": 0.32, "wspace": 0.06})
+panels = [("supcon", "oracle", r"(a) SupCon $-$ SimCLR, probe with all labels (LP-all)"),
+          ("supcon", "budget", r"(b) SupCon $-$ SimCLR, probe with the $f$ labels (LP-$f$)"),
+          ("union", "oracle", r"(c) SupCon+U $-$ SimCLR, LP-all"), ("union", "budget", r"(d) SupCon+U $-$ SimCLR, LP-$f$")]
+rows_frac = []
+for ax, (kind, proto, title) in zip(axes.ravel(), panels):
+    G = np.full((len(GES), len(FRS)), np.nan)
+    for i, E in enumerate(GES):
+        for j, f in enumerate(FRS):
+            if kind == "union" and f >= 1.0:
+                continue        # with all labels SupCon+U is SupCon
+            G[i, j] = frac_val(kind, f, E, proto) - frac_val("simclr", f, E, proto)
+    im = ax.imshow(G, cmap="RdBu_r", vmin=-12, vmax=12, aspect="auto", origin="lower")
+    for i in range(len(GES)):
+        for j in range(len(FRS)):
+            if np.isfinite(G[i, j]):
+                ax.text(j, i, f"{G[i, j]:+.1f}", ha="center", va="center", fontsize=7,
+                        color="white" if abs(G[i, j]) > 7 else "black")
+    ax.set_xticks(range(len(FRS)))
+    ax.set_xticklabels([f"{100 * f:g}" for f in FRS])
+    ax.set_yticks(range(len(GES)))
+    ax.set_yticklabels([f"{97 * E:,}" for E in GES])
+    ax.set_title(title, loc="left", fontsize=7.5)
+    ax.grid(False)
+for ax in axes[1]:
+    ax.set_xlabel("labeled fraction $f$ (%)")
+for ax in axes[:, 0]:
+    ax.set_ylabel("gradient steps")
+cb = fig.colorbar(im, ax=axes, fraction=0.025, pad=0.02)
+cb.set_label("difference (points)")
+fig.savefig(os.path.join(FIG, "fig_wins.pdf"))
+plt.close(fig)
+rows = []
+for E in GES:
+    for f in FRS:
+        line = [f"{97 * E:,}", f"{100 * f:g}\\%"]
+        for kind in ("simclr", "supcon", "union"):
+            for proto in ("oracle", "budget"):
+                x = float("nan") if (kind == "union" and f >= 1) else frac_val(kind, f, E, proto)
+                line.append(fmt(x))
+        rows.append(" & ".join(line) + r" \\")
+    rows.append(r"\addlinespace")
+write("tab_fraction.tex", "\\begin{tabular}{rrcccccc}\n\\toprule\n & & \\multicolumn{2}{c}{\\simclr} & \\multicolumn{2}{c}{\\supcon} & "
+      "\\multicolumn{2}{c}{\\union} \\\\\n\\cmidrule(lr){3-4}\\cmidrule(lr){5-6}\\cmidrule(lr){7-8}\n"
+      "steps & $f$ & LP-all & LP-$f$ & LP-all & LP-$f$ & LP-all & LP-$f$ \\\\\n\\midrule\n" + "\n".join(rows[:-1])
+      + "\n\\bottomrule\n\\end{tabular}")
 
 # ----------------------------------------------------------------------------
-# Figure: coverage vs spread (diversity of the labeled pool)
+# Table: other datasets and architectures
 # ----------------------------------------------------------------------------
-div_path = os.path.join(ROOT, "results", "diversity.json")
-if os.path.exists(div_path):
-    div = json.load(open(div_path))["simclr"]["pools"]
-    pts = []
-    for name, v in div.items():
-        f, kind, s = v["fraction"], v["kind"], v["seed"]
-        if s != 0 or f >= 1:
+BLOCKS = [("CIFAR-100, 10\\% labels (5,000), ResNet-18", "c100_", "_f0.1", [(100, "9,700"), (200, "19,400")]),
+          ("STL-10, 5,000 labels + 100,000 unlabeled images, 96 px, ResNet-18", "stl_", "", [(100, "20,500"), (200, "41,000")]),
+          ("CIFAR-10, 10\\% labels, ResNet-50", "r50_", "_f0.1", [(100, "9,700"), (200, "19,400")])]
+rows = []
+for title, pre, suf, buds in BLOCKS:
+    rows.append(rf"\multicolumn{{6}}{{l}}{{\emph{{{title}}}}} \\")
+    for E, steps in buds:
+        cfgs = {"sub": f"{pre}simclr_sub{suf}_e{E}", "simclr": f"{pre}simclr_all_e{E}", "supcon": f"{pre}supcon_lab{suf}_e{E}",
+                "union": f"{pre}union{suf}_e{E}"}
+        best = {p: best_of(cfgs.values(), p) for p in ("lp50", "lp5", "ft")}
+        for k, c in cfgs.items():
+            if nseeds(c):
+                rows.append(f"\\quad {ARM_TEX[k]} & {steps} & {nseeds(c)} & "
+                            + " & ".join(MS(c, p, bold=(best[p] == c)) for p in ("lp50", "lp5", "ft")) + r" \\")
+    rows.append(r"\addlinespace")
+write("tab_datasets.tex", "\\begin{tabular}{lrcccc}\n\\toprule\nmethod & steps & seeds & LP-all & LP-budget & FT-budget \\\\\n\\midrule\n"
+      + "\n".join(rows[:-1]) + "\n\\bottomrule\n\\end{tabular}")
+
+# ----------------------------------------------------------------------------
+# Table: the protocol decides the ranking (encoders at 19,400 steps)
+# ----------------------------------------------------------------------------
+ENC = [(r"\simclr", "simclr_all_e200"), ("BYOL", "byol_all_e200"), (r"\simclrsub", "simclr_sub_f0.1_e200"),
+       (r"\supcon", "supcon_lab_f0.1_e200"), (r"\union", "union_f0.1_e200"),
+       (r"\simclr{}$\to$\supcon", "twostage_simclr200_supcon5")]
+PCOLS = ("lp50", "knn", "lp5", "ft", "fts", "fto", "fm")
+
+
+def ranks(cfgs, proto):
+    vals = {c: mean(c, proto) for c in cfgs}
+    order = sorted([c for c in vals if np.isfinite(vals[c])], key=lambda c: -vals[c])
+    return {c: i + 1 for i, c in enumerate(order)}
+
+
+RK = {p: ranks([c for _, c in ENC], p) for p in PCOLS}
+rows = []
+for name, c in ENC:
+    cells = []
+    for p in PCOLS:
+        s = MS(c, p)
+        if c in RK[p]:
+            s += rf"\,\textsuperscript{{({RK[p][c]})}}"
+        cells.append(s)
+    rows.append(f"{name} & " + " & ".join(cells) + r" \\")
+write("tab_protocol.tex", "\\begin{tabular}{lccccccc}\n\\toprule\n & \\multicolumn{2}{c}{oracle labels} & \\multicolumn{5}{c}{label budget (5,000 labels)} \\\\\n"
+      "\\cmidrule(lr){2-3}\\cmidrule(lr){4-8}\n & & & & \\multicolumn{3}{c}{FT-5k, by recipe} & \\\\\n\\cmidrule(lr){5-7}\n"
+      "encoder & LP-50k & $k$NN-50k & LP-5k & default & selected & oracle & FixMatch-init \\\\\n\\midrule\n"
+      + "\n".join(rows) + "\n\\bottomrule\n\\end{tabular}")
+# rank agreement between the oracle probe and each label-budget protocol
+main_enc = [c for _, c in ENC[:5]]
+for p in ("lp5", "ft", "fts", "fto", "fm"):
+    a = [mean(c, "lp50") for c in main_enc]
+    b = [mean(c, p) for c in main_enc]
+    ok = [i for i in range(len(a)) if np.isfinite(a[i]) and np.isfinite(b[i])]
+    if len(ok) >= 4:
+        M[f"kendall:{p}"] = f"{sps.kendalltau([a[i] for i in ok], [b[i] for i in ok]).statistic:.2f}"
+
+# fine-tuning search: label-split selection and oracle selection side by side
+REGN = {"none": "none", "ls": "label smoothing", "mixup": "mixup"}
+
+
+def recipe(b):
+    return f"{'LP' if b['head'] == 'lp' else 'random'} head, lr {b['lr']:g}, {b['epochs']} passes, {REGN[b['reg']]}"
+
+
+rows = []
+for name, c in ENC:
+    a, o = RUN.get(f"ftsearch_{c}_s0"), RUN.get(f"ftoracle_{c}_s0")
+    if a and a.get("grid"):
+        g = a["grid"]
+        vals = [x["val_acc"] for x in g]
+        M[f"ftgrid:{c}:valmin"], M[f"ftgrid:{c}:valmax"] = f"{min(vals):.1f}", f"{max(vals):.1f}"
+        M[f"ftgrid:{c}:valrange"] = f"{max(vals) - min(vals):.1f}"
+        rows.append(f"{name} & label split & {recipe(a['best'])} & {min(vals):.1f}--{max(vals):.1f} & {MS(c, 'ftt')} \\\\")
+    if o and o.get("grid"):
+        g = o["grid"]
+        tv = [x["test_acc"] for x in g]
+        M[f"ftgrid:{c}:testmin"], M[f"ftgrid:{c}:testmax"] = f"{min(tv):.1f}", f"{max(tv):.1f}"
+        for head in ("lp", "random"):
+            M[f"ftgrid:{c}:{head}"] = f"{max(x['test_acc'] for x in g if x['head'] == head):.1f}"
+        for reg in ("none", "ls", "mixup"):
+            M[f"ftgrid:{c}:{reg}"] = f"{max(x['test_acc'] for x in g if x['reg'] == reg):.1f}"
+        M[f"ftgrid:{c}:recipe"] = recipe(o["best"])
+        rows.append(f"{name} & test set (oracle) & {recipe(o['best'])} & {min(tv):.1f}--{max(tv):.1f} & {MS(c, 'fto')} \\\\")
+    if nseeds("fttransfer_" + c, "finetune_tuned_acc") or len(V(c, "ftx")):
+        rows.append(f"{name} & recipe of \\simclr & -- & -- & {MS(c, 'ftx')} \\\\")
+    rows.append(r"\addlinespace")
+write("tab_ftsearch.tex", "\\begin{tabular}{lllcc}\n\\toprule\nencoder & recipe chosen on & chosen recipe & range of the selection score over the grid & "
+      "test accuracy \\\\\n\\midrule\n" + ("\n".join(rows[:-1]) if rows else r"\multicolumn{5}{c}{--} \\")
+      + "\n\\bottomrule\n\\end{tabular}")
+
+# ----------------------------------------------------------------------------
+# Table: where the labels should go (pipelines, CIFAR-10, 5,000 labels)
+# ----------------------------------------------------------------------------
+PIPE = [
+    ("\\emph{labels inside the contrastive loss from the first step}", None, None, None),
+    (r"\supcon, then FT-5k", "inside the loss", "supcon_lab_f0.1_e200", "ft"),
+    (r"\supcon, then FT-5k (oracle recipe)", "inside the loss", "supcon_lab_f0.1_e200", "fto"),
+    (r"\union, then FT-5k", "inside the loss", "union_f0.1_e200", "ft"),
+    (r"\union, then FT-5k (oracle recipe)", "inside the loss", "union_f0.1_e200", "fto"),
+    ("\\emph{labels after label-free pretraining}", None, None, None),
+    (r"\simclr, then LP-5k", "after", "simclr_all_e200", "lp5"),
+    (r"\simclr, then FT-5k", "after", "simclr_all_e200", "ft"),
+    (r"\simclr, then FT-5k (selected recipe)", "after", "simclr_all_e200", "ftt"),
+    (r"\simclr, then FT-5k (oracle recipe)", "after", "simclr_all_e200", "fto"),
+    (r"BYOL, then FT-5k", "after", "byol_all_e200", "ft"),
+    (r"\simclr, then \supcon on the 5k (485 steps), then LP-5k", "after, contrastive", "twostage_simclr200_supcon5", "lp5"),
+    (r"\simclr, then \supcon on the 5k (485 steps), then FT-5k", "after, contrastive", "twostage_simclr200_supcon5", "ft"),
+    (r"\simclr, then FT-5k, then self-distillation", "after", "simclr_all_e200", "dist"),
+    ("\\emph{labels in a semi-supervised objective}", None, None, None),
+    (r"FixMatch from scratch", "pseudo-labels", "fixmatch_f0.1", "clf"),
+    (r"FixMatch from scratch, 3$\times$ budget", "pseudo-labels", "fixmatch_b3_f0.1", "clf"),
+    (r"MixMatch from scratch", "pseudo-labels", "mixmatch_f0.1", "clf"),
+    (r"\simclr, then FixMatch", "after, pseudo-labels", "simclr_all_e200", "fm"),
+    (r"BYOL, then FixMatch", "after, pseudo-labels", "byol_all_e200", "fm"),
+    (r"\supcon, then FixMatch", "both", "supcon_lab_f0.1_e200", "fm"),
+    (r"\union, then FixMatch", "both", "union_f0.1_e200", "fm"),
+    (r"\simclr, then \supcon (2,425 steps), then FixMatch", "both", "twostage_simclr200_supcon25", "fm"),
+    ("\\emph{references}", None, None, None),
+    (r"cross-entropy on the 5k, 9,700 steps", "supervised only", "ce_f0.1_e100", "clf"),
+    (r"cross-entropy on the 5k, 19,400 steps", "supervised only", "ce_f0.1_e200", "clf"),
+    (r"cross-entropy on all 50k labels", "all labels", "ce_f1.0_e100", "clf"),
+]
+rows = []
+for name, where, c, p in PIPE:
+    if c is None:
+        rows.append(rf"\multicolumn{{4}}{{l}}{{{name}}} \\")
+    else:
+        rows.append(f"\\quad {name} & {where} & {len(V(c, p)) or '--'} & {MS(c, p)} \\\\")
+write("tab_where.tex", "\\begin{tabular}{llcc}\n\\toprule\npipeline & where the labels enter & seeds & test accuracy \\\\\n\\midrule\n"
+      + "\n".join(rows) + "\n\\bottomrule\n\\end{tabular}")
+
+# ----------------------------------------------------------------------------
+# Table + figure: geometry on the labeled images, the other training images and the test set
+# ----------------------------------------------------------------------------
+GEO = [(r"\simclr", "simclr_all_e200", "seen, no label"), (r"\simclrsub", "simclr_sub_f0.1_e200", "not seen"),
+       (r"\supcon", "supcon_lab_f0.1_e200", "not seen"), (r"\union", "union_f0.1_e200", "seen, no label"),
+       ("cross-entropy on 5k", "ce_f0.1_e200", "not seen"), (r"\simclr{}$\to$\supcon", "twostage_simclr200_supcon5", "seen, no label")]
+rows = []
+for name, c, rest in GEO:
+    a, b, t = (V(c, k) for k in ("cdnv_lab", "cdnv_rest", "cdnv_test"))
+    ratio = f"{(t / a).mean():.1f}" if len(a) and len(a) == len(t) and (a > 1e-6).all() else ("$>$100" if len(a) and len(t) else "--")
+    rows.append(f"{name} & {MS(c, 'cdnv_lab', 2)} & {MS(c, 'cdnv_rest', 2)} & {MS(c, 'cdnv_test', 2)} & {ratio} & "
+                f"{MS(c, 'lp5_train')} & {MS(c, 'lp5')} \\\\")
+    if ratio not in ("--",):
+        M[f"{c}:cdnv_ratio"] = ratio
+write("tab_geometry.tex", "\\begin{tabular}{lcccccc}\n\\toprule\n & \\multicolumn{3}{c}{CDNV ($\\downarrow$ tighter classes)} & & \\multicolumn{2}{c}{LP-5k accuracy} \\\\\n"
+      "\\cmidrule(lr){2-4}\\cmidrule(lr){6-7}\nencoder (19,400 steps) & labeled 5k & other 45k & test 10k & test / labeled & on its 5k & test \\\\\n\\midrule\n"
+      + "\n".join(rows) + "\n\\bottomrule\n\\end{tabular}")
+
+fig, axes = plt.subplots(1, 2, figsize=(7.2, 2.5), gridspec_kw={"width_ratios": [1.35, 1], "wspace": 0.28})
+ax = axes[0]
+labs = ["SimCLR", "SimCLR\n-sub", "SupCon", "SupCon\n+U", "CE\non 5k", "SimCLR\n→SupCon"]
+w = 0.26
+for j, (key, lab, col, hatch) in enumerate((("cdnv_lab", "labeled 5k", "#555555", None), ("cdnv_rest", "other 45k training images", "#aaaaaa", "//"),
+                                            ("cdnv_test", "test images", "#e6e6e6", None))):
+    ms_ = [(V(c, key).mean() if len(V(c, key)) else np.nan) for _, c, _ in GEO]
+    sd_ = [(V(c, key).std(ddof=1) if len(V(c, key)) > 1 else 0) for _, c, _ in GEO]
+    ms_ = [max(m_, 2e-3) if np.isfinite(m_) else m_ for m_ in ms_]
+    ax.bar(np.arange(len(GEO)) + (j - 1) * w, ms_, w, yerr=sd_, label=lab, color=col, edgecolor="black", linewidth=0.4,
+           hatch=hatch, error_kw={"elinewidth": 0.7, "capsize": 1.5})
+ax.set_yscale("log")
+ax.set_xticks(range(len(GEO)))
+ax.set_xticklabels(labs, fontsize=6.5)
+ax.set_ylabel("CDNV (log scale)")
+ax.set_title("(a) CDNV on three sets of images", loc="left")
+ax.legend(frameon=False, loc="upper center", bbox_to_anchor=(0.5, -0.2), ncol=3, fontsize=6.5, columnspacing=1.0)
+ax.grid(axis="x", visible=False)
+ax = axes[1]
+for k, cands, a_key in (("supcon", ["supcon_lab_f0.1_e1000", "supcon_lab_f0.1_e400", "supcon_lab_f0.1_e200"], "pool_cdnv"),
+                        ("union", ["union_f0.1_e1000", "union_f0.1_e400", "union_f0.1_e200"], "labeled_cdnv"),
+                        ("simclr", ["simclr_all_e1000", "simclr_all_e400", "simclr_all_e200"], "pool_cdnv")):
+    for c in cands:
+        curves = [RUN[f"{c}_s{s}"].get("geom_curve") for s in seeds(c)]
+        curves = [g for g in curves if g and a_key in g[0]]
+        if curves:
+            xs = [p["step"] for p in curves[0]]
+            R = np.array([[p["test_cdnv"] / max(p[a_key], 1e-9) for p in g] for g in curves if len(g) == len(xs)])
+            col, mk, ls, lab = STYLE[k]
+            ax.errorbar(xs, R.mean(0), yerr=R.std(0, ddof=1) if len(R) > 1 else None, color=col, marker=mk, ls=ls,
+                        label=lab.split(" (")[0], capsize=2, elinewidth=0.8, markersize=3)
+            M[f"geomcurve:{k}"] = c
+            break
+ax.set_xscale("log")
+ax.minorticks_off()
+tk = [t for t in (2425, 4850, 9700, 19400, 38800, 97000) if ax.get_xlim()[0] <= t <= ax.get_xlim()[1]]
+ax.set_xticks(tk)
+ax.set_xticklabels([f"{t / 1000:.1f}k".replace(".0k", "k") for t in tk])
+ax.axhline(1, color="black", lw=0.6, ls=":")
+ax.set_xlabel("gradient steps")
+ax.set_ylabel("CDNV(test) / CDNV(labeled)")
+ax.set_title("(b) the gap during training", loc="left")
+ax.legend(frameon=False, fontsize=6.5)
+fig.savefig(os.path.join(FIG, "fig_geometry.pdf"))
+plt.close(fig)
+
+# ----------------------------------------------------------------------------
+# Coverage intervention: pools of fixed size whose coverage is varied
+# ----------------------------------------------------------------------------
+DIV = {}
+dj = os.path.join(ROOT, "results", "diversity.json")
+if os.path.exists(dj):
+    DIV = json.load(open(dj))
+KINDS = [("random", "random", ""), ("mixkcenter25", "25% k-center", "mixkcenter25_"), ("mixkcenter50", "50% k-center", "mixkcenter50_"),
+         ("mixkcenter75", "75% k-center", "mixkcenter75_"), ("kcenter", "k-center", "kcenter_"),
+         ("mixcluster5025", "25% redundant", "mixcluster5025_"), ("mixcluster5050", "50% redundant", "mixcluster5050_"),
+         ("mixcluster5075", "75% redundant", "mixcluster5075_"), ("cluster10", "redundant (k=10)", "cluster10_"),
+         ("cluster50", "redundant (k=50)", "cluster50_")]
+
+
+def pool_stat(space, kind, seed, key):
+    try:
+        return DIV[space]["pools"][f"{kind}_f0.1_s{seed}"][key]
+    except KeyError:
+        return None
+
+
+PTS = []   # one point per (kind, seed): pool statistics and accuracies
+for kind, label, infix in KINDS:
+    for s in range(5):
+        row = {"kind": kind, "label": label, "seed": s}
+        for space in ("simclr", "supervised", "pixel"):
+            for key in ("radius", "spread"):
+                row[f"{key}_{space}"] = pool_stat(space, kind, s, key)
+        row["supcon"] = metric(f"supcon_lab_{infix}f0.1_e100_s{s}", "lp50")
+        row["supcon_lp5"] = metric(f"supcon_lab_{infix}f0.1_e100_s{s}", "lp5")
+        row["sub"] = metric(f"simclr_sub_{infix}f0.1_e100_s{s}", "lp50")
+        if row["radius_simclr"] is not None and (row["supcon"] is not None or row["sub"] is not None):
+            PTS.append(row)
+
+
+def agg(kind, key):
+    v = [p[key] for p in PTS if p["kind"] == kind and p.get(key) is not None]
+    return (float(np.mean(v)), float(np.std(v, ddof=1)) if len(v) > 1 else 0.0, len(v)) if v else None
+
+
+rows = []
+for kind, label, _ in KINDS:
+    cells = []
+    for key, d in (("radius_simclr", 3), ("radius_supervised", 3), ("spread_simclr", 3), ("supcon", 1), ("supcon_lp5", 1), ("sub", 1)):
+        a = agg(kind, key)
+        cells.append("--" if a is None else (f"{a[0]:.{d}f}" + (rf"{{\scriptsize$\,\pm\,${a[1]:.{d}f}}}" if a[2] > 1 and d == 1 else "")))
+    n = agg(kind, "supcon")
+    if any(c != "--" for c in cells[3:]):
+        rows.append(f"{label} & {n[2] if n else '--'} & " + " & ".join(cells) + r" \\")
+write("tab_coverage.tex", "\\begin{tabular}{lccccccc}\n\\toprule\n & & \\multicolumn{2}{c}{coverage radius $\\downarrow$} & spread & "
+      "\\multicolumn{2}{c}{\\supcon on the pool} & \\simclr on the pool \\\\\n\\cmidrule(lr){3-4}\\cmidrule(lr){6-7}\n"
+      "pool (5,000 images) & seeds & \\simclr space & supervised space & & LP-50k & LP-5k & LP-50k \\\\\n\\midrule\n"
+      + ("\n".join(rows) if rows else r"\multicolumn{8}{c}{--} \\") + "\n\\bottomrule\n\\end{tabular}")
+
+
+def spearman(xk, yk, pts):
+    x = [p[xk] for p in pts if p.get(xk) is not None and p.get(yk) is not None]
+    y = [p[yk] for p in pts if p.get(xk) is not None and p.get(yk) is not None]
+    if len(x) < 5:
+        return None
+    r = sps.spearmanr(x, y)
+    return r.statistic, r.pvalue, len(x)
+
+
+for subset, pts in (("all", PTS), ("nokc", [p for p in PTS if "kcenter" not in p["kind"]]),
+                    ("red", [p for p in PTS if "kcenter" not in p["kind"]]),
+                    ("kc", [p for p in PTS if "cluster" not in p["kind"]])):
+    for xk in ("radius_simclr", "radius_supervised", "spread_simclr"):
+        for yk in ("supcon", "sub", "supcon_lp5"):
+            r = spearman(xk, yk, pts)
+            if r:
+                M[f"rho:{subset}:{xk}:{yk}"] = f"{r[0]:+.2f}"
+                M[f"rho:{subset}:{xk}:{yk}:p"] = "$<$0.001" if r[1] < 0.001 else f"{r[1]:.3f}"
+                M[f"rho:{subset}:{xk}:{yk}:n"] = str(r[2])
+
+# partial rank correlation between coverage radius and accuracy across pool SIZES, controlling for log n
+if DIV:
+    xs, ys, ns = [], [], []
+    for f in (0.01, 0.05, 0.1, 0.2):
+        for s in range(5):
+            rad = None
+            try:
+                rad = DIV["simclr"]["pools"][f"random_f{f}_s{s}"]["radius"]
+            except KeyError:
+                pass
+            acc = metric(f"supcon_lab_f{f}_e100_s{s}", "lp50")
+            if rad is not None and acc is not None:
+                xs.append(rad), ys.append(acc), ns.append(np.log(f))
+    for p in PTS:
+        if p["kind"] != "random" and p["supcon"] is not None:
+            xs.append(p["radius_simclr"]), ys.append(p["supcon"]), ns.append(np.log(0.1))
+    if len(xs) >= 8:
+        rx, ry, rn = (sps.rankdata(v) for v in (xs, ys, ns))
+        cxy, cxn, cyn = np.corrcoef(rx, ry)[0, 1], np.corrcoef(rx, rn)[0, 1], np.corrcoef(ry, rn)[0, 1]
+        M["rho:partial"] = f"{(cxy - cxn * cyn) / np.sqrt((1 - cxn ** 2) * (1 - cyn ** 2)):+.2f}"
+        M["rho:partial:raw"] = f"{cxy:+.2f}"
+        M["rho:partial:n"] = str(len(xs))
+
+fig, axes = plt.subplots(1, 2, figsize=(7.2, 2.6), sharex=True)
+fam = {"random": ("#000000", "o"), "kcenter": ("#009E73", "^"), "cluster": ("#D55E00", "s")}
+for ax, (yk, title) in zip(axes, (("supcon", "(a) SupCon trained on the pool"), ("sub", "(b) SimCLR trained on the pool"))):
+    for kind, label, _ in KINDS:
+        a, r = agg(kind, yk), agg(kind, "radius_simclr")
+        if a is None or r is None:
             continue
-        c = f"supcon_lab_f{f}_e100" if kind == "random" else f"supcon_lab_{kind}_f{f}_e100"
-        acc = vals(c, "linear_acc")
-        acc_sub = vals(c.replace("supcon_lab", "simclr_sub"), "linear_acc")
-        if len(acc):
-            pts.append((kind, f, v, acc.mean(), acc_sub.mean() if len(acc_sub) else None))
-    if pts:
-        fig, axes = plt.subplots(1, 2, figsize=(6.9, 2.3), sharey=True)
-        mk = {"random": "o", "cluster10": "s", "cluster50": "D", "kcenter": "^"}
-        nm = {"random": "random pool", "cluster10": "redundant pool (k=10)", "cluster50": "redundant pool (k=50)",
-              "kcenter": "k-center pool"}
-        for ax, key, xl in ((axes[0], "radius", "coverage radius (lower = better covered)"),
-                            (axes[1], "spread_aug", "within-class spread of augmented views")):
-            seen = set()
-            for kind, f, v, acc, acc_sub in pts:
-                ax.scatter(v[key], acc, marker=mk[kind], s=30, color=COL["supcon"],
-                           edgecolor="white", linewidth=0.6, zorder=3, label=None if kind in seen else nm[kind])
-                if acc_sub is not None:
-                    ax.scatter(v[key], acc_sub, marker=mk[kind], s=30, facecolor="white", edgecolor=COL["simclr"],
-                               linewidth=1.0, zorder=3)
-                seen.add(kind)
-                if kind == "random":
-                    ax.annotate(f"{100 * f:g}%", (v[key], acc), textcoords="offset points", xytext=(4, 2), fontsize=6.5, color=MUTED)
-            ax.set_xlabel(xl)
-        axes[0].invert_xaxis()
-        axes[0].set_ylabel("linear-probe acc. (%)")
-        axes[0].set_title("(a) Coverage of unseen images", loc="left")
-        axes[1].set_title("(b) Spread within the pool", loc="left")
-        from matplotlib.lines import Line2D
-        handles = [Line2D([], [], marker=mk[k], ls="", color=MUTED, label=nm[k]) for k in mk if k in {p_[0] for p_ in pts}]
-        handles += [Line2D([], [], marker="o", ls="", color=COL["supcon"], label="SupCon (filled)"),
-                    Line2D([], [], marker="o", ls="", markerfacecolor="white", markeredgecolor=COL["simclr"], label="SimCLR (hollow)")]
-        axes[1].legend(handles=handles, loc="center left", bbox_to_anchor=(1.02, 0.5), fontsize=6.3)
-        fig.savefig(os.path.join(FIG, "fig_coverage.pdf"))
-        plt.close(fig)
-    # diversity table
-    rows = [r"\begin{tabular}{l r cccc cc c}", r"\toprule",
-            r" & & \multicolumn{4}{c}{diversity of the pool} & \multicolumn{2}{c}{SupCon on the pool} & SimCLR on the pool \\",
-            r"\cmidrule(lr){3-6}\cmidrule(lr){7-8}\cmidrule(lr){9-9}",
-            r"pool & images & spread (pairs) & spread (aug.\ views) & Vendi & coverage radius & probe, 50k & probe, own labels & probe, 50k \\", r"\midrule"]
-    order = [f"random_f{f}_s0" for f in (0.01, 0.05, 0.1, 0.2, 1.0)] + ["cluster10_f0.1_s0", "cluster50_f0.1_s0", "kcenter_f0.1_s0"]
-    nice = {"random": "random", "cluster10": "redundant ($k{=}10$)", "cluster50": "redundant ($k{=}50$)", "kcenter": "$k$-center"}
-    for name in order:
-        if name not in div:
-            continue
-        v = div[name]
-        if v["fraction"] >= 1:
-            c = CORE["supcon"].replace("f0.1", "f1.0")
-        elif v["kind"] == "random":
-            c = f"supcon_lab_f{v['fraction']}_e100"
-        else:
-            c = f"supcon_lab_{v['kind']}_f{v['fraction']}_e100"
-        lab = nice[v["kind"]] + (f" {100 * v['fraction']:g}\\%" if v["kind"] == "random" else "")
-        rows.append(f"{lab} & {v['n']:,} & {v['spread']:.3f} & {v['spread_aug']:.3f} & {v['vendi']:.1f} & "
-                    f"{v['radius']:.4f} & {ms(c, 'linear_acc', pm=False)} & {ms(c, 'linear_lab_acc', pm=False)} & "
-                    f"{ms(c.replace('supcon_lab', 'simclr_sub'), 'linear_acc', pm=False) if v['fraction'] < 1 else ms(CORE['simclr'], 'linear_acc', pm=False)} \\\\")
-        if v["kind"] == "random" and v["fraction"] == 0.1:
-            macro("radiusTen", f"{v['radius']:.3f}")
-            macro("spreadTen", f"{v['spread_aug']:.3f}")
-        if v["kind"] == "random" and v["fraction"] == 0.01:
-            macro("radiusOne", f"{v['radius']:.3f}")
-            macro("spreadOne", f"{v['spread_aug']:.3f}")
-        if v["kind"] == "random" and v["fraction"] == 1.0:
-            macro("radiusFull", f"{v['radius']:.3f}")
-            macro("spreadFull", f"{v['spread_aug']:.3f}")
-        if v["kind"] == "kcenter":
-            macro("radiusKc", f"{v['radius']:.3f}")
-            macro("spreadKc", f"{v['spread_aug']:.3f}")
-            macro("neffKc", f"{v['n_eff']:,.0f}")
-        if v["kind"] == "cluster50":
-            macro("neffClFifty", f"{v['n_eff']:,.0f}")
-    rows += [r"\bottomrule", r"\end{tabular}"]
-    write("table_diversity.tex", "\n".join(rows) + "\n")
-for k in ("cluster10", "cluster50", "kcenter"):
-    nm_ = {"cluster10": "clTen", "cluster50": "clFifty", "kcenter": "kc"}[k]
-    macro(nm_ + "Acc", ms(f"supcon_lab_{k}_f0.1_e100", "linear_acc", pm=False))
-    macro(nm_ + "LabAcc", ms(f"supcon_lab_{k}_f0.1_e100", "linear_lab_acc", pm=False))
-macro("supconLabAcc", ms("supcon_lab_f0.1_e100", "linear_lab_acc", pm=False))
-macro("subKcAcc", ms("simclr_sub_kcenter_f0.1_e100", "linear_acc", pm=False))
-macro("subClFiftyAcc", ms("simclr_sub_cluster50_f0.1_e100", "linear_acc", pm=False))
+        col, mk = fam["kcenter" if "kcenter" in kind else "cluster" if "cluster" in kind else "random"]
+        ax.errorbar(r[0], a[0], yerr=a[1], xerr=r[1], color=col, marker=mk, capsize=2, elinewidth=0.8, ls="none")
+        ax.annotate(label, (r[0], a[0]), textcoords="offset points", xytext=(4, 3), fontsize=6, color=col)
+    ax.set_xlabel("coverage radius of the pool (larger = worse coverage)")
+    ax.set_title(title, loc="left")
+axes[0].set_ylabel("LP-50k accuracy (%)")
+fig.savefig(os.path.join(FIG, "fig_coverage.pdf"))
+plt.close(fig)
 
 # ----------------------------------------------------------------------------
-# Figure: geometry -- collapse on seen vs unseen images
+# Table: labels make colour jitter less necessary
 # ----------------------------------------------------------------------------
-geo = [("SimCLR", "simclr"), ("SimCLR (subset)", "sub"), ("SupCon (label-only)", "supcon"), ("Union", "union")]
-have = [g for g in geo if len(vals(CORE[g[1]], "seen_cdnv"))]
-if have:
-    fig, ax = plt.subplots(figsize=(3.3, 2.2))
-    w = 0.38
-    for i, (label, k) in enumerate(have):
-        c = CORE[k]
-        seen = vals(c, "seen_cdnv").mean()
-        # images that were not in the pretraining pool: held-out training images for label-only pools,
-        # the test set otherwise (identical numbers within 0.02 for full-pool methods)
-        held = vals(c, "heldout_cdnv")
-        held = held.mean() if len(held) else vals(c, "test_cdnv").mean()
-        ax.bar(i - w / 2 - 0.01, seen, w, color=COL[k], edgecolor="white", linewidth=0.8)
-        ax.bar(i + w / 2 + 0.01, held, w, color="white", edgecolor=COL[k], hatch="////", linewidth=1.0)
-        ax.text(i - w / 2, seen, f"{seen:.2f}", ha="center", va="bottom", fontsize=6.5, color=INK)
-        ax.text(i + w / 2, held, f"{held:.2f}", ha="center", va="bottom", fontsize=6.5, color=INK)
-    ax.set_xticks(range(len(have)))
-    ax.set_xticklabels([h[0].replace(" (", "\n(") for h in have], fontsize=6.8)
-    ax.set_ylabel("class-distance normalised\nvariance (CDNV, lower = tighter)")
-    from matplotlib.patches import Patch
-    ax.legend(handles=[Patch(facecolor=MUTED, label="images seen in pretraining"),
-                       Patch(facecolor="white", edgecolor=MUTED, hatch="////", label="unseen images")], loc="upper right", fontsize=6.5)
-    ax.grid(axis="x", visible=False)
-    fig.savefig(os.path.join(FIG, "fig_geometry.pdf"))
-    plt.close(fig)
-
-# geometry table
-lines = [r"\begin{tabular}{l ccc ccc}", r"\toprule",
-         r" & \multicolumn{3}{c}{CDNV $\downarrow$} & \multicolumn{3}{c}{test set} \\",
-         r"\cmidrule(lr){2-4}\cmidrule(lr){5-7}",
-         r"method & seen & unseen & ratio & NCC acc. & ETF dev.\ $\downarrow$ & equinorm CV $\downarrow$ \\", r"\midrule"]
-for label, k in geo:
-    c = CORE[k]
-    s, h = mean(c, "seen_cdnv"), mean(c, "heldout_cdnv")
-    if not np.isfinite(h):
-        h = mean(c, "test_cdnv")
-    lines.append(f"{label} & {fmt(s, 2)} & {fmt(h, 2)} & {fmt(h / s if np.isfinite(s) else float('nan'), 1)}$\\times$ & "
-                 f"{fmt(mean(c, 'test_ncc_acc'))} & {fmt(mean(c, 'test_etf_dev'), 3)} & {fmt(mean(c, 'test_etf_norm_cv'), 3)} \\\\")
-lines += [r"\bottomrule", r"\end{tabular}"]
-write("table_geometry.tex", "\n".join(lines) + "\n")
-for k in ("simclr", "supcon", "union", "sub"):
-    c = CORE[k]
-    s, h = mean(c, "seen_cdnv"), mean(c, "heldout_cdnv")
-    if not np.isfinite(h):
-        h = mean(c, "test_cdnv")
-    macro(f"{k}CdnvRatio", fmt(h / s, 1) if np.isfinite(s) and s > 0 else "--")
+rows = []
+for name, full, nojit in ((r"\simclr", "simclr_all_e100", "simclr_exp6_e100"), (r"\supcon", "supcon_lab_f0.1_e100", "supcon_lab_f0.1_exp6_e100"),
+                          (r"\union", "union_f0.1_e100", "union_f0.1_exp6_e100")):
+    common = sorted(set(seeds(full)) & set(seeds(nojit)))
+    a, b = V(full, "lp50", common), V(nojit, "lp50", common)
+    if len(a) and len(a) == len(b):
+        dlt_ = b - a
+        M[f"jitter:{full}"] = f"{abs(dlt_.mean()):.1f}"
+        M[f"jitter:{full}:n"] = str(len(a))
+        sd = lambda v: (rf"{{\scriptsize$\,\pm\,${v.std(ddof=1):.1f}}}" if len(v) > 1 else "")   # noqa: E731
+        rows.append(f"{name} & {len(a)} & {a.mean():.1f}{sd(a)} & {b.mean():.1f}{sd(b)} & {dlt_.mean():+.1f}{sd(dlt_)} \\\\")
+write("tab_jitter.tex", "\\begin{tabular}{lcccc}\n\\toprule\nmethod & seeds & full augmentation & without colour jitter & change \\\\\n\\midrule\n"
+      + ("\n".join(rows) if rows else r"\multicolumn{5}{c}{--} \\") + "\n\\bottomrule\n\\end{tabular}")
 
 # ----------------------------------------------------------------------------
-# Table: baselines
+# Table: is the SupCon plateau a regularisation failure? (38,800 steps)
 # ----------------------------------------------------------------------------
-lines = [r"\begin{tabular}{l l c ccc}", r"\toprule",
-         r"method & family & labels used & linear (all labels) & $k$NN & accuracy with 5k labels$^\ddagger$ \\", r"\midrule"]
-BASE = [("Supervised CE", "supervised", "5k", "ce_f0.1_e100", "classifier_acc"),
-        ("SimCLR", "contrastive SSL", "--", CORE["simclr"], "ft"),
-        ("BYOL", "non-contrastive SSL", "--", "byol_all_e100", "ft"),
-        ("SimSiam", "non-contrastive SSL", "--", "simsiam_all_e100", "ft"),
-        ("SupCon (label-only)", "supervised contrastive", "5k", CORE["supcon"], "ft"),
-        ("MixMatch$^\\S$", "semi-supervised", "5k", "mixmatch_f0.1", "classifier_acc"),
-        ("FixMatch$^\\S$", "semi-supervised", "5k", "fixmatch_f0.1", "classifier_acc"),
-        ("Union", "semi-supervised contrastive", "5k", CORE["union"], "ft"),
-        ("Supervised CE, all labels (reference)", "supervised", "50k", "ce_f1.0_e100", "classifier_acc")]
-for label, fam, labs, c, key in BASE:
-    last = ms("ft_" + c, "finetune_acc") if key == "ft" else ms(c, key)
-    lines.append(f"{label} & {fam} & {labs} & {ms(c, 'linear_acc')} & {ms(c, 'knn_acc')} & {last} \\\\")
-lines += [r"\bottomrule", r"\end{tabular}"]
-write("table_baselines.tex", "\n".join(lines) + "\n")
+REG = [("default (weight decay $10^{-4}$)", "supcon_lab_f0.1_e400"), ("weight decay $5\\times10^{-4}$", "supcon_lab_f0.1_wd0.0005_e400"),
+       ("weight decay $10^{-3}$", "supcon_lab_f0.1_wd0.001_e400"), ("stronger augmentation", "supcon_lab_f0.1_strongaug_e400"),
+       ("weight decay $5\\times10^{-4}$ + stronger augmentation", "supcon_lab_f0.1_wd0.0005_strongaug_e400")]
+rows = []
+for name, c in REG:
+    if not nseeds(c):
+        continue
+    best_knn = [max(a for _, a in RUN[f"{c}_s{s}"]["knn_curve"]) for s in seeds(c)]
+    M[f"{c}:bestknn"] = f"{np.mean(best_knn):.1f}"
+    rows.append(f"{name} & {nseeds(c)} & {MS(c, 'lp50')} & {MS(c, 'lp5')} & {MS(c, 'knn')} & {np.mean(best_knn):.1f} \\\\")
+write("tab_reg.tex", "\\begin{tabular}{lccccc}\n\\toprule\n\\supcon, 38,800 steps & seeds & LP-50k & LP-5k & $k$NN-50k (final) & $k$NN-50k (best checkpoint) \\\\\n\\midrule\n"
+      + ("\n".join(rows) if rows else r"\multicolumn{6}{c}{--} \\") + "\n\\bottomrule\n\\end{tabular}")
+for k, tmpl in ARMS.items():      # best checkpoint along the longest run of every arm (an upper bound on early stopping)
+    for E in (1000, 400, 200):
+        c = tmpl.format(E=E)
+        if nseeds(c):
+            M[f"bestknn:{k}"] = f"{np.mean([max(a for _, a in RUN[f'{c}_s{s}']['knn_curve']) for s in seeds(c)]):.1f}"
+            M[f"bestknn:{k}:E"] = f"{97 * E:,}"
+            break
 
 # ----------------------------------------------------------------------------
-# CIFAR-100 and ResNet-50
+# Table: steps, architecture and learning rate (ResNet-18 vs ResNet-50)
 # ----------------------------------------------------------------------------
-lines = [r"\begin{tabular}{l ccc ccc}", r"\toprule",
-         r" & \multicolumn{3}{c}{CIFAR-100, ResNet-18} & \multicolumn{3}{c}{CIFAR-10, ResNet-50} \\",
-         r"\cmidrule(lr){2-4}\cmidrule(lr){5-7}", r"method & probe, 50k & $k$NN & fine-tune, 5k & probe, 50k & $k$NN & fine-tune, 5k \\", r"\midrule"]
-for label, k in (("SimCLR", "simclr_all_e100"), ("SimCLR (subset)", "simclr_sub_f0.1_e100"),
-                 ("SupCon (label-only)", "supcon_lab_f0.1_e100"), ("Union", "union_f0.1_e100")):
-    lines.append(f"{label} & {ms('c100_' + k, 'linear_acc')} & {ms('c100_' + k, 'knn_acc')} & {ms('ft_c100_' + k, 'finetune_acc')} & "
-                 f"{ms('r50_' + k, 'linear_acc')} & {ms('r50_' + k, 'knn_acc')} & {ms('ft_r50_' + k, 'finetune_acc')} \\\\")
-lines += [r"\bottomrule", r"\end{tabular}"]
-write("table_generalization.tex", "\n".join(lines) + "\n")
-for k, short in (("simclr_all_e100", "Simclr"), ("supcon_lab_f0.1_e100", "Supcon"), ("union_f0.1_e100", "Union"),
-                 ("simclr_sub_f0.1_e100", "Sub")):
-    macro(f"cHundred{short}", ms("c100_" + k, "linear_acc", pm=False))
-    macro(f"rFifty{short}", ms("r50_" + k, "linear_acc", pm=False))
-    macro(f"cHundred{short}Ft", ms("ft_c100_" + k, "finetune_acc", pm=False))
-    macro(f"rFifty{short}Ft", ms("ft_r50_" + k, "finetune_acc", pm=False))
+R50 = [("ResNet-18", r"\supcon", "900", "0.25", "supcon_lab_f0.1_steps900"), ("ResNet-18", r"\supcon", "970", "0.25", "supcon_lab_f0.1_e10"),
+       ("ResNet-18", r"\supcon", "9,700", "0.25", "supcon_lab_f0.1_e100"), ("ResNet-18", r"\supcon", "19,400", "0.25", "supcon_lab_f0.1_e200"),
+       ("ResNet-18", r"\simclr", "970", "0.25", "simclr_all_e10"), ("ResNet-18", r"\simclr", "9,700", "0.25", "simclr_all_e100"),
+       ("ResNet-18", r"\simclr", "19,400", "0.25", "simclr_all_e200"),
+       ("ResNet-50", r"\supcon", "900", "0.25", "r50_supcon_lab_f0.1_steps900"), ("ResNet-50", r"\supcon", "900", "0.05", "r50_supcon_lab_f0.1_steps900_lr0.05"),
+       ("ResNet-50", r"\supcon", "9,700", "0.25", "r50_supcon_lab_f0.1_e100"), ("ResNet-50", r"\supcon", "19,400", "0.25", "r50_supcon_lab_f0.1_e200"),
+       ("ResNet-50", r"\simclr", "970", "0.25", "r50_simclr_all_e10"), ("ResNet-50", r"\simclr", "9,700", "0.25", "r50_simclr_all_e100"),
+       ("ResNet-50", r"\simclr", "19,400", "0.25", "r50_simclr_all_e200")]
+rows = [f"{a} & {m} & {s} & {lr} & {nseeds(c)} & {MS(c, 'lp50')} & {MS(c, 'lp5')} \\\\" for a, m, s, lr, c in R50 if nseeds(c)]
+write("tab_r50.tex", "\\begin{tabular}{llrcccc}\n\\toprule\nencoder & method & steps & learning rate & seeds & LP-50k & LP-5k \\\\\n\\midrule\n"
+      + "\n".join(rows) + "\n\\bottomrule\n\\end{tabular}")
 
 # ----------------------------------------------------------------------------
-# colour shortcut + augmentation tiers
+# Table: compute accounting (per step and for the reference budget)
 # ----------------------------------------------------------------------------
-AUG = [("crop + flip", "Tier 1", "simclr_exp2_e100"), ("crop + flip + jitter", "Tier 2", "simclr_exp5_e100"),
-       ("crop + flip + grayscale", "Tier 2", "simclr_exp6_e100"), ("crop + flip + jitter + grayscale", "Tier 3", CORE["simclr"])]
-lines = [r"\begin{tabular}{l l ccc ccc}", r"\toprule",
-         r" & & \multicolumn{3}{c}{accuracy (\%)} & \multicolumn{3}{c}{colour reliance} \\",
-         r"\cmidrule(lr){3-5}\cmidrule(lr){6-8}",
-         r"augmentation & tier & linear & gray test & $\Delta$ & CKA(hist.) & CKA(label) & hist.\ $R^2$ \\", r"\midrule"]
-for label, tier, c in AUG:
-    lin, gray = mean(c, "linear_acc"), mean(c, "linear_acc_gray")
-    lines.append(f"{label} & {tier} & {fmt(lin)} & {fmt(gray)} & {fmt(gray - lin, 1, True)} & "
-                 f"{fmt(mean(c, 'cka_hist'), 2)} & {fmt(mean(c, 'cka_label'), 2)} & {fmt(mean(c, 'hist_r2'), 2)} \\\\")
+COMP = [(r"\simclr, \supcon, \union", "1,024", "1,024", "1,024", "9,700", "simclr_all_e100"),
+        ("BYOL", "1,024", "2,048", "1,024", "9,700", "byol_all_e100"),
+        ("SimSiam", "1,024", "1,024", "1,024", "9,700", "simsiam_all_e100"),
+        ("cross-entropy", "512", "512", "512", "9,700", "ce_f0.1_e100"),
+        ("FixMatch", "64 + 448 + 448", "960", "960", "10,347", "fixmatch_f0.1"),
+        ("MixMatch", "64 + 2$\\times$64", "320", "192", "51,733", "mixmatch_f0.1"),
+        ("fine-tuning on the 5k (FT-5k)", "128", "128", "128", "2,344", "ft_simclr_all_e100")]
+rows = []
+for name, views, fw, bw, steps, c in COMP:
+    t = V(c, "time")
+    tot = float(fw.replace(",", "")) * float(steps.replace(",", "")) / 1e6
+    rows.append(f"{name} & {views} & {fw} & {bw} & {steps} & {tot:.1f} & {t.min():.0f} \\\\" if len(t) else
+                f"{name} & {views} & {fw} & {bw} & {steps} & {tot:.1f} & -- \\\\")
+write("tab_compute.tex", "\\begin{tabular}{lcccrcc}\n\\toprule\n & \\multicolumn{3}{c}{per step} & & \\multicolumn{2}{c}{reference budget} \\\\\n"
+      "\\cmidrule(lr){2-4}\\cmidrule(lr){6-7}\nmethod & augmented views & forward passes & backward passes & steps & forward passes ($10^6$) & minutes \\\\\n"
+      "\\midrule\n" + "\n".join(rows) + "\n\\bottomrule\n\\end{tabular}")
+
+# ----------------------------------------------------------------------------
+# Appendix tables: colour reliance of SimCLR, and the validation-split choice of the SupCon+U variant
+# ----------------------------------------------------------------------------
+COL = [("crop + flip", "simclr_exp2_e100"), ("crop + flip + colour jitter", "simclr_exp5_e100"),
+       ("crop + flip + grayscale", "simclr_exp6_e100"), ("crop + flip + colour jitter + grayscale (default)", "simclr_all_e100")]
+rows = []
+for name, c in COL:
+    if nseeds(c):
+        rows.append(f"{name} & {nseeds(c)} & {MS(c, 'lp50')} & {MS(c, 'linear_acc_gray')} & {fmt(mean(c, 'cka_hist'), 2)} & "
+                    f"{fmt(mean(c, 'cka_label'), 2)} & {fmt(mean(c, 'hist_r2'), 2)} \\\\")
 hp = os.path.join(ROOT, "results", "hist_probe.json")
 if os.path.exists(hp):
-    h = json.load(open(hp))["cifar10_bins8"]["acc"]
-    lines.append(r"\midrule")
-    lines.append(f"colour histogram only ($8^3$ bins, no encoder) & -- & {h:.1f} & -- & -- & 1.00 & -- & 1.00 \\\\")
-    macro("histProbe", f"{h:.1f}")
-lines += [r"\bottomrule", r"\end{tabular}"]
-write("table_color.tex", "\n".join(lines) + "\n")
-lines = [r"\begin{tabular}{l l ccccc}", r"\toprule",
-         r"augmentation & tier & linear & CDNV$\downarrow$ & ETF dev.$\downarrow$ & $\cos$ mean (target $-0.111$) & equinorm CV$\downarrow$ \\", r"\midrule"]
-for label, tier, c in AUG:
-    lines.append(f"{label} & {tier} & {fmt(mean(c, 'linear_acc'))} & {fmt(mean(c, 'test_cdnv'), 2)} & {fmt(mean(c, 'test_etf_dev'), 3)} & "
-                 f"{fmt(mean(c, 'test_etf_cos_mean'), 3)} & {fmt(mean(c, 'test_etf_norm_cv'), 3)} \\\\")
-lines += [r"\bottomrule", r"\end{tabular}"]
-write("table_etf.tex", "\n".join(lines) + "\n")
-for short, c in (("Two", "simclr_exp2_e100"), ("Five", "simclr_exp5_e100"), ("Six", "simclr_exp6_e100"), ("Eight", CORE["simclr"])):
-    macro(f"aug{short}Lin", fmt(mean(c, "linear_acc")))
-    macro(f"aug{short}Gray", fmt(mean(c, "linear_acc_gray") - mean(c, "linear_acc"), 1, True))
-    macro(f"aug{short}Cka", fmt(mean(c, "cka_hist"), 2))
-    macro(f"aug{short}CkaLabel", fmt(mean(c, "cka_label"), 2))
-    macro(f"aug{short}GrayDrop", fmt(mean(c, "linear_acc") - mean(c, "linear_acc_gray"), 1))
-    macro(f"aug{short}GrayAcc", fmt(mean(c, "linear_acc_gray"), 1))
-    macro(f"aug{short}Etf", fmt(mean(c, "test_etf_dev"), 3))
-    macro(f"aug{short}Cdnv", fmt(mean(c, "test_cdnv"), 2))
-macro("supconNoJitterLin", ms("supcon_lab_f0.1_exp6_e100", "linear_acc", pm=False))
-macro("augJitterCost", fmt(mean(CORE["simclr"], "linear_acc") - mean("simclr_exp6_e100", "linear_acc"), 1))
-macro("supconJitterCost", fmt(mean(CORE["supcon"], "linear_acc") - mean("supcon_lab_f0.1_exp6_e100", "linear_acc"), 1))
+    h = json.load(open(hp))
+    if "cifar10_bins8" in h:
+        M["histprobe"] = f"{h['cifar10_bins8']['acc']:.1f}"
+write("tab_color.tex", "\\begin{tabular}{lcccccc}\n\\toprule\n & & \\multicolumn{2}{c}{LP-50k accuracy} & \\multicolumn{3}{c}{colour reliance} \\\\\n"
+      "\\cmidrule(lr){3-4}\\cmidrule(lr){5-7}\n\\simclr augmentation & seeds & colour test & gray test & CKA(histogram) & CKA(label) & histogram $R^2$ \\\\\n\\midrule\n"
+      + "\n".join(rows) + "\n\\bottomrule\n\\end{tabular}")
+PIL = [(r"\simclr, $\tau=0.5$", "pilot_simclr_t0.5"), (r"\simclr, $\tau=0.2$", "pilot_simclr_t0.2"), (r"\simclr, $\tau=0.1$", "pilot_simclr_t0.1"),
+       (r"\supcon, $\tau=0.1$", "pilot_supconL_t0.1"), (r"\supcon, $\tau=0.5$", "pilot_supconL_t0.5"),
+       (r"\union, $\tau=0.1$ for all anchors", "pilot_union_t0.1"), (r"\union, $\tau=0.5$ for all anchors", "pilot_union_t0.5"),
+       (r"\union, $\tau_\ell=0.1$, $\tau_u=0.5$, uniform batches", "pilot_union_mixed"),
+       (r"\union, $\tau_\ell=0.1$, $\tau_u=0.5$, 50\% labeled per batch", "pilot_union_mixed_sh0.5"),
+       (r"\union, $\tau_\ell=0.1$, $\tau_u=0.5$, 25\% labeled per batch (chosen)", "pilot_union_mixed_sh0.25")]
+rows = []
+for name, c in PIL:
+    r = RUN.get(c) or RUN.get(c + "_s0")
+    if r:
+        m = r["metrics"]
+        rows.append(f"{name} & {m['linear_acc']:.1f} & {m['knn_acc']:.1f} & {fmt(m.get('linear_lab_acc', float('nan')))} \\\\")
+write("tab_pilot.tex", "\\begin{tabular}{lccc}\n\\toprule\nconfiguration (validation split, 4,850 steps) & LP (all labels) & $k$NN & LP (10\\% labels) \\\\\n\\midrule\n"
+      + "\n".join(rows) + "\n\\bottomrule\n\\end{tabular}")
 
 # ----------------------------------------------------------------------------
-# OOD resolution study
+# a few derived numbers used in the text
 # ----------------------------------------------------------------------------
-ood_path = os.path.join(ROOT, "results", "ood_resolution.json")
-if os.path.exists(ood_path):
-    ood = json.load(open(ood_path))
-    enc = ood["encoders"]
-    lines = [r"\begin{tabular}{l cc cc}", r"\toprule",
-             r" & \multicolumn{2}{c}{dog recall (\%)} & \multicolumn{2}{c}{retrieval P@5 (\%)} \\",
-             r"\cmidrule(lr){2-3}\cmidrule(lr){4-5}",
-             r"encoder & CIFAR-10 dogs & ImageNet dogs$\to$32px & CIFAR-10 dogs & ImageNet dogs$\to$32px \\", r"\midrule"]
-    names = {"simclr_all_e100_s0": "SimCLR", "simclr_all_e200_s0": "SimCLR, 19,400 steps",
-             "supcon_lab_f0.1_e100_s0": "SupCon (label-only)",
-             "union_f0.1_e100_s0": "Union", "ce_f1.0_e100_s0": "Supervised CE (all labels)",
-             "simclr_sub_f0.1_e100_s0": "SimCLR (subset)"}
-    for run, r in enc.items():
-        lo, hi = r["dog_recall_ood_ci"]
-        lines.append(f"{names.get(run, run)} & {r['dog_recall_cifar']:.1f} & {r['dog_recall_ood']:.1f} {{\\scriptsize[{lo:.1f}, {hi:.1f}]}} & "
-                     f"{r['p_at_5_cifar']:.1f} & {r['p_at_5_ood']:.1f} \\\\")
-        key = {"simclr_all_e100_s0": "Simclr", "union_f0.1_e100_s0": "Union", "supcon_lab_f0.1_e100_s0": "Supcon",
-               "ce_f1.0_e100_s0": "Ce"}.get(run)
-        if key:
-            macro(f"ood{key}Cifar", f"{r['dog_recall_cifar']:.1f}")
-            macro(f"ood{key}Ood", f"{r['dog_recall_ood']:.1f}")
-            macro(f"ood{key}PCifar", f"{r['p_at_5_cifar']:.1f}")
-            macro(f"ood{key}POod", f"{r['p_at_5_ood']:.1f}")
-            top = max(r["ood_prediction_hist"].items(), key=lambda kv: kv[1] if kv[0] != "dog" else -1)
-            macro(f"ood{key}TopWrong", f"{top[0]} ({top[1]:.0f}\\%)")
-    if "clip" in ood:
-        c = ood["clip"]
-        res = c["dog_recall_ood_by_resolution"]
-        lines.append(r"\midrule")
-        lines.append(f"CLIP ViT-B/32 zero-shot (reference) & {c['dog_recall_cifar']:.1f} & {res['32']:.1f} & -- & -- \\\\")
-        macro("clipCifar", f"{c['dog_recall_cifar']:.1f}")
-        for rr, v in res.items():
-            macro("clipRes" + {"16": "Sixteen", "32": "ThirtyTwo", "64": "SixtyFour", "128": "OneTwoEight", "224": "TwoTwoFour"}[rr], f"{v:.1f}")
-        macro("clipTest", f"{c['test_acc']:.1f}")
-    lines += [r"\bottomrule", r"\end{tabular}"]
-    write("table_ood.tex", "\n".join(lines) + "\n")
-    macro("nOod", f"{ood['n_ood']:,}")
+for E in (10, 25, 50, 100, 200, 400, 1000):
+    s, c, u, sub = (ARMS[k].format(E=E) for k in ("simclr", "supcon", "union", "sub"))
+    for p in ("lp50", "lp5", "ft", "fts", "fto", "fm", "knn"):
+        diffmacro(f"simclr-supcon:{p}:e{E}", s, p, c, p)
+        diffmacro(f"simclr-union:{p}:e{E}", s, p, u, p)
+        diffmacro(f"union-supcon:{p}:e{E}", u, p, c, p)
+        diffmacro(f"simclr-sub:{p}:e{E}", s, p, sub, p)
+        diffmacro(f"supcon-sub:{p}:e{E}", c, p, sub, p)
+for c in ("simclr_all_e200", "supcon_lab_f0.1_e200", "union_f0.1_e200", "byol_all_e200"):
+    diffmacro(f"ftt-ft:{c}", c, "ftt", c, "ft")
+    diffmacro(f"ftt-ftd:{c}", c, "ftt", c, "ftd")
+    diffmacro(f"fto-ft:{c}", c, "fto", c, "ft")
+    diffmacro(f"ftx-ft:{c}", c, "ftx", c, "ft")
+    diffmacro(f"fm-ft:{c}", c, "fm", c, "ft")
+diffmacro("twostage-simclr:lp5", "twostage_simclr200_supcon5", "lp5", "simclr_all_e200", "lp5")
+diffmacro("twostage-simclr:lp50", "twostage_simclr200_supcon5", "lp50", "simclr_all_e200", "lp50")
+diffmacro("twostage-simclr:ft", "twostage_simclr200_supcon5", "ft", "simclr_all_e200", "ft")
+for pre, tag in (("c100_", "c100"), ("r50_", "r50")):
+    for E in (100, 200):
+        for p in ("lp50", "lp5", "ft"):
+            diffmacro(f"{tag}:simclr-supcon:{p}:e{E}", f"{pre}simclr_all_e{E}", p, f"{pre}supcon_lab_f0.1_e{E}", p)
+            diffmacro(f"{tag}:simclr-union:{p}:e{E}", f"{pre}simclr_all_e{E}", p, f"{pre}union_f0.1_e{E}", p)
+for E in (100, 200):
+    for p in ("lp5", "ft", "knn", "fm"):
+        diffmacro(f"stl:simclr-supcon:{p}:e{E}", f"stl_simclr_all_e{E}", p, f"stl_supcon_lab_e{E}", p)
+        diffmacro(f"stl:simclr-union:{p}:e{E}", f"stl_simclr_all_e{E}", p, f"stl_union_e{E}", p)
+        diffmacro(f"stl:simclr-sub:{p}:e{E}", f"stl_simclr_all_e{E}", p, f"stl_simclr_sub_e{E}", p)
+diffmacro("steps900", "supcon_lab_f0.1_e100", "lp50", "supcon_lab_f0.1_steps900", "lp50")
+diffmacro("twostage-supcon:lp5", "twostage_simclr200_supcon5", "lp5", "supcon_lab_f0.1_e200", "lp5")
+# the longest budget with at least two seeds for both SimCLR and SupCon
+for E in (1000, 400, 200):
+    if nseeds(ARMS["simclr"].format(E=E)) >= 2 and nseeds(ARMS["supcon"].format(E=E)) >= 2:
+        M["long:steps"] = f"{97 * E:,}"
+        for k in ARMS:
+            if nseeds(ARMS[k].format(E=E)):
+                M[f"long:{k}"] = f"{mean(ARMS[k].format(E=E), 'lp50'):.1f}"
+        for p in ("lp50", "lp5", "ft"):
+            x, y = mean(ARMS["simclr"].format(E=E), p), mean(ARMS["supcon"].format(E=E), p)
+            if np.isfinite(x) and np.isfinite(y):
+                M["long:d:simclr-supcon" + ("" if p == "lp50" else ":" + p)] = f"{abs(x - y):.1f}"
+        break
+regs = [mean(c, "lp50") for _, c in REG[1:] if nseeds(c)]
+if regs:
+    M["reg:best"] = f"{max(regs):.1f}"
+M["nruns"] = str(len(RUN))
+M["gpuhours"] = f"{sum(r.get('train_time_s', 0) for r in RUN.values()) / 3600:.0f}"
 
-# ----------------------------------------------------------------------------
-# validation-split design ablation for the union objective (pilot runs)
-# ----------------------------------------------------------------------------
-PIL = [("SimCLR, $\\tau{=}0.5$", "pilot_simclr_t0.5"), ("SimCLR, $\\tau{=}0.2$", "pilot_simclr_t0.2"),
-       ("SimCLR, $\\tau{=}0.1$", "pilot_simclr_t0.1"),
-       ("SupCon label-only, $\\tau{=}0.1$", "pilot_supconL_t0.1"), ("SupCon label-only, $\\tau{=}0.5$", "pilot_supconL_t0.5"),
-       ("Union, $\\tau{=}0.1$ for all anchors", "pilot_union_t0.1"), ("Union, $\\tau{=}0.5$ for all anchors", "pilot_union_t0.5"),
-       ("Union, $\\tau_\\ell{=}0.1$, $\\tau_u{=}0.5$, uniform batches", "pilot_union_mixed"),
-       ("Union, $\\tau_\\ell{=}0.1$, $\\tau_u{=}0.5$, 50\\% labeled per batch", "pilot_union_mixed_sh0.5"),
-       ("Union, $\\tau_\\ell{=}0.1$, $\\tau_u{=}0.5$, 25\\% labeled per batch (chosen)", "pilot_union_mixed_sh0.25")]
-lines = [r"\begin{tabular}{l ccc}", r"\toprule", r"configuration (validation split, 50 epochs) & linear & $k$NN & linear, 10\% labels \\", r"\midrule"]
-for label, n in PIL:
-    p = os.path.join(RUNS, n, "result.json")
-    if os.path.exists(p):
-        m = json.load(open(p))["metrics"]
-        lines.append(f"{label} & {m['linear_acc']:.2f} & {m['knn_acc']:.2f} & {m.get('linear_lab_acc', float('nan')):.2f} \\\\".replace("nan", "--"))
-lines += [r"\bottomrule", r"\end{tabular}"]
-write("table_pilot.tex", "\n".join(lines) + "\n")
-
-# ----------------------------------------------------------------------------
-# Appendix figure: colour-jitter pairs of the original report (ResNet-50, 200 epochs, single runs,
-# NVIDIA RTX 5000 Ada). Numbers are copied from the report (Table V); no run of this study.
-# ----------------------------------------------------------------------------
-REPORT = [("pure rotation\n(36 / 38)", 34.40, 51.21), ("weak crop\n(35 / 39)", 59.22, 80.53),
-          ("crop + blur\n(9 / 40)", 63.01, 80.65), ("crop + flip + blur\n(13 / 41)", 64.49, 84.30),
-          ("crop + cutout\n(10 / 42)", 66.27, 81.21)]
-fig, ax = plt.subplots(figsize=(6.0, 2.2))
-x = np.arange(len(REPORT))
-w = 0.38
-ax.bar(x - w / 2 - 0.01, [r[1] for r in REPORT], w, color="#86b6ef", edgecolor="white", label="without colour jitter")
-ax.bar(x + w / 2 + 0.01, [r[2] for r in REPORT], w, color=COL["simclr"], edgecolor="white", label="with colour jitter")
-for i, (_, a, b) in enumerate(REPORT):
-    ax.text(i - w / 2, a + 1, f"{a:.1f}", ha="center", va="bottom", fontsize=6.5, color=INK)
-    ax.text(i + w / 2, b + 1, f"{b:.1f}", ha="center", va="bottom", fontsize=6.5, color=INK)
-ax.set_xticks(x)
-ax.set_xticklabels([r[0] for r in REPORT], fontsize=6.8)
-ax.set_ylabel("linear-probe acc. (%)")
-ax.set_ylim(0, 95)
-ax.grid(axis="x", visible=False)
-ax.legend(loc="upper left", ncol=2)
-fig.savefig(os.path.join(FIG, "fig_report_jitter.pdf"))
-plt.close(fig)
-
-# ----------------------------------------------------------------------------
-# write macros
-# ----------------------------------------------------------------------------
-for k in DEFAULT_MACROS:
-    MACROS.setdefault(k, "--")
-for name in ("table_ood.tex", "table_diversity.tex"):
-    if not os.path.exists(os.path.join(GEN, name)):
-        write(name, "\\begin{tabular}{l}\\toprule (not yet computed) \\\\ \\bottomrule\\end{tabular}\n")
-with open(os.path.join(GEN, "numbers.tex"), "w") as f:
-    f.write("% generated by scripts/make_assets.py -- do not edit\n")
-    for k, v in sorted(MACROS.items()):
-        assert re.fullmatch(r"[A-Za-z]+", k), k
-        f.write(f"\\newcommand{{\\{k}}}{{{v}\\xspace}}\n")
-print(f"{len(DF)} runs, {len(MACROS)} macros, tables in {GEN}, figures in {FIG}")
+lines = [r"\newcommand{\R}[1]{\ifcsname R@#1\endcsname\csname R@#1\endcsname\else\textbf{??}\fi}"]
+for k in sorted(M):
+    lines.append(rf"\expandafter\def\csname R@{k}\endcsname{{{M[k]}}}")
+write("numbers.tex", "\n".join(lines))
+print(f"{len(RUN)} runs, {len(CONFIGS)} configurations, {len(M)} macros, {len(STATS)} tests")

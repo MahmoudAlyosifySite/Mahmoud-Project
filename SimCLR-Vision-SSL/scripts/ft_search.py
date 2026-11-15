@@ -101,6 +101,9 @@ def main():
     p.add_argument("--seed", type=int, default=0, help="seed of the pretraining run (defines the labeled subset)")
     p.add_argument("--final_only", default=None, help="JSON of a configuration: skip the search and only run it")
     p.add_argument("--no_test_per_config", action="store_true")
+    p.add_argument("--oracle", action="store_true",
+                   help="score every recipe on the TEST set after training on all labeled images. This is not a "
+                        "legitimate selection rule; it gives an upper bound on what recipe selection can achieve")
     p.add_argument("--grid", default="full", choices=["full", "small"],
                    help="small: 2 heads x lr {0.01, 0.03, 0.1} x {30, 60} epochs x {none, mixup}")
     args = p.parse_args()
@@ -137,6 +140,11 @@ def main():
                                                  "reg": ["none", "mixup"]}
         for head, lr, ep, reg in itertools.product(grid["head"], grid["lr"], grid["epochs"], grid["reg"]):
             cfg = {"head": head, "lr": lr, "epochs": ep, "reg": reg}
+            if args.oracle:
+                acc, _ = finetune(enc_sd, args.backbone, data, labeled, data["test_x"], data["test_y"], cfg, args.seed)
+                rows.append({**cfg, "test_acc": acc, "val_acc": acc})
+                print(f"{args.from_run} {cfg} test {acc:.2f} ({time.time() - t0:.0f}s)", flush=True)
+                continue
             val_acc, _ = finetune(enc_sd, args.backbone, data, fit_idx, data["train_x"][vi], data["train_y"][vi], cfg, args.seed)
             rows.append({**cfg, "val_acc": val_acc})
             print(f"{args.from_run} {cfg} val {val_acc:.2f} ({time.time() - t0:.0f}s)", flush=True)
@@ -147,7 +155,9 @@ def main():
     default_acc, _ = finetune(enc_sd, args.backbone, data, labeled, data["test_x"], data["test_y"], default, args.seed)
     res = {"name": args.name, "args": vars(args), "from_run": args.from_run, "n_labeled": int(len(labeled)),
            "grid": rows, "best": best, "default": default, "train_time_s": time.time() - t0,
-           "metrics": {"finetune_tuned_acc": test_acc, "finetune_default_acc": default_acc}}
+           "oracle": bool(args.oracle),
+           "metrics": {("finetune_oracle_acc" if args.oracle else "finetune_tuned_acc"): test_acc,
+                       "finetune_default_acc": default_acc}}
     np.savez_compressed(os.path.join(out_dir, "preds.npz"), finetune_tuned=pred.cpu().numpy().astype(np.int16))
     json.dump(res, open(out_path, "w"), indent=1)
     print(f"[done] {args.from_run}: best {best} -> test {test_acc:.2f} (default recipe {default_acc:.2f})", flush=True)

@@ -1,6 +1,6 @@
--m scripts.ft_search --name ftsearch_stl_simclr_all_e200_s1 --from_run stl_simclr_all_e200_s1 --dataset stl10 --backbone resnet18_mp --label_fraction 1 --seed 1 --config_from ftsearch_stl_simclr_all_e200_s0
--m scripts.ft_search --name ftsearch_stl_simclr_all_e200_s2 --from_run stl_simclr_all_e200_s2 --dataset stl10 --backbone resnet18_mp --label_fraction 1 --seed 2 --config_from ftsearch_stl_simclr_all_e200_s0
--m scripts.ft_search --name ftsearch_stl_supcon_lab_e200_s1 --from_run stl_supcon_lab_e200_s1 --dataset stl10 --backbone resnet18_mp --label_fraction 1 --seed 1 --config_from ftsearch_stl_supcon_lab_e200_s0
--m scripts.ft_search --name ftsearch_stl_supcon_lab_e200_s2 --from_run stl_supcon_lab_e200_s2 --dataset stl10 --backbone resnet18_mp --label_fraction 1 --seed 2 --config_from ftsearch_stl_supcon_lab_e200_s0
--m scripts.ft_search --name ftsearch_stl_union_e200_s1 --from_run stl_union_e200_s1 --dataset stl10 --backbone resnet18_mp --label_fraction 1 --seed 1 --config_from ftsearch_stl_union_e200_s0
--m scripts.ft_search --name ftsearch_stl_union_e200_s2 --from_run stl_union_e200_s2 --dataset stl10 --backbone resnet18_mp --label_fraction 1 --seed 2 --config_from ftsearch_stl_union_e200_s0
+-m scripts.ft_search --name ftoracle_stl_simclr_all_e200_s1 --from_run stl_simclr_all_e200_s1 --dataset stl10 --backbone resnet18_mp --label_fraction 1 --seed 1 --config_from ftoracle_stl_simclr_all_e200_s0
+-m scripts.ft_search --name ftoracle_stl_simclr_all_e200_s2 --from_run stl_simclr_all_e200_s2 --dataset stl10 --backbone resnet18_mp --label_fraction 1 --seed 2 --config_from ftoracle_stl_simclr_all_e200_s0
+-m scripts.ft_search --name ftoracle_stl_supcon_lab_e200_s1 --from_run stl_supcon_lab_e200_s1 --dataset stl10 --backbone resnet18_mp --label_fraction 1 --seed 1 --config_from ftoracle_stl_supcon_lab_e200_s0
+-m scripts.ft_search --name ftoracle_stl_supcon_lab_e200_s2 --from_run stl_supcon_lab_e200_s2 --dataset stl10 --backbone resnet18_mp --label_fraction 1 --seed 2 --config_from ftoracle_stl_supcon_lab_e200_s0
+-m scripts.ft_search --name ftoracle_stl_union_e200_s1 --from_run stl_union_e200_s1 --dataset stl10 --backbone resnet18_mp --label_fraction 1 --seed 1 --config_from ftoracle_stl_union_e200_s0
+-m scripts.ft_search --name ftoracle_stl_union_e200_s2 --from_run stl_union_e200_s2 --dataset stl10 --backbone resnet18_mp --label_fraction 1 --seed 2 --config_from ftoracle_stl_union_e200_s0

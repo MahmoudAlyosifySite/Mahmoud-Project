@@ -1,31 +1,37 @@
-% shared preamble of arxiv.tex and tmlr_submission.tex
-\input{math_commands.tex}
+% shared preamble of arxiv.tex and submission.tex
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
-\usepackage{hyperref}
-\usepackage{url}
-\usepackage{booktabs}
+\usepackage{lmodern}
 \usepackage{amsmath,amssymb,mathtools}
+\usepackage{booktabs}
 \usepackage{graphicx}
 \usepackage{xcolor}
 \usepackage{multirow}
-\usepackage{subcaption}
 \usepackage{enumitem}
 \usepackage{microtype}
-\usepackage{orcidlink}
-\usepackage[capitalise,noabbrev]{cleveref}
 \usepackage{adjustbox}
 \usepackage{xspace}
-\xspaceaddexceptions{\% \pp }
-
+\usepackage{url}
+\usepackage[hidelinks]{hyperref}
+\usepackage{orcidlink}
+\usepackage[capitalise,noabbrev]{cleveref}
+\crefformat{appendix}{#2#1#3}\Crefformat{appendix}{#2#1#3}
 \hypersetup{colorlinks=true, linkcolor=[rgb]{0.1,0.25,0.6}, citecolor=[rgb]{0.1,0.25,0.6}, urlcolor=[rgb]{0.1,0.25,0.6}}
 \setlist{itemsep=2pt, topsep=3pt}
+\xspaceaddexceptions{\%}
 
 \input{generated/numbers.tex}
 
+% names used throughout
 \newcommand{\simclr}{SimCLR\xspace}
+\newcommand{\simclrsub}{SimCLR-sub\xspace}
 \newcommand{\supcon}{SupCon\xspace}
-\newcommand{\union}{Union\xspace}
-\newcommand{\pp}{\,pp\xspace}
-\newcommand{\finding}[1]{\par\smallskip\noindent\fbox{\parbox{\dimexpr\linewidth-2\fboxsep-2\fboxrule}{\textbf{Finding.} #1}}\par\smallskip}
-\newcommand{\repo}{\ifanon\url{https://anonymous.4open.science}\else\url{https://github.com/MirnaEmbaby/SimCLR-Vision-SSL}\fi}
+\newcommand{\union}{SupCon+U\xspace}
+\newcommand{\lpall}{LP-50k\xspace}
+\newcommand{\lpfive}{LP-5k\xspace}
+\newcommand{\ftfive}{FT-5k\xspace}
+\newcommand{\pt}{\,points\xspace}
+\newcommand{\repo}{\ifanon\url{https://anonymous.4open.science} (anonymised for review)\else\url{https://github.com/MahmoudAlyosifySite/Mahmoud-Project/tree/main/SimCLR-Vision-SSL}\fi}
+\newcommand{\papertitle}{Inside the Loss or After It?\\ Scarce Labels in Contrastive Pretraining}
+% text that depends on runs still in the queue (draft builds only; removed before submission)
+\newcommand{\pending}[1]{{\color{gray}\itshape #1}}

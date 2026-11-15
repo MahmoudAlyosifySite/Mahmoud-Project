@@ -1,74 +1,15 @@
-\begin{abstract}
-When only a few images carry labels, should the labels go into the contrastive pretraining loss, as in
-supervised contrastive learning (\supcon), or be kept for after self-supervised pretraining on all images
-(\simclr)? In an earlier study we found \supcon on the labeled 10\% of CIFAR-10 to be 9 points worse
-than \simclr on all images, and attributed this to lost data diversity. We revisit this negative result with a
-controlled design: one loss for all methods, equal numbers of gradient steps, a $2{\times}2$ split of
-\emph{labels} and \emph{images}, \nSeeds seeds, paired bootstrap tests, and two evaluation protocols (a probe
-trained on all labels, and fine-tuning with only the labels that exist). We find that (i) the original gap was
-an artefact of counting epochs: an epoch over a ten times smaller pool is ten times fewer steps; (ii) labels buy
-speed and unlabeled images buy accuracy: at equal steps, label-only \supcon is far ahead early
-(\supconTenLin\% vs.\ \simclrTenLin\% after 970 steps) but saturates near 84\%, while \simclr keeps improving to
-\simclrTwoHundredLin\%; (iii) labels used inside the loss are spent: fine-tuned with the same 5,000 labels, a
-\simclr encoder reaches \simclrTwoHundredFt\%, against \supconTwoHundredFt\% for \supcon and
-\unionTwoHundredFt\% for \supcon on all images with unlabeled images as their own class, no better than
-plain supervised training on the labeled images (\ceTen\%); and (iv) the mechanism is
-memorisation limited by coverage: \supcon collapses the classes of its labeled images \supconCdnvRatio times more
-tightly than those of unseen images, and a random labeled subset is as spread out as the full data set: what it lacks is
-coverage of unseen images. The standard all-label linear probe hides the third finding. We also quantify the colour shortcut
-behind the effect of colour jitter and a resolution failure of CIFAR-trained encoders on ImageNet photographs.
-The practical rule: pretrain on every image without labels, count steps rather than epochs, and spend your
-labels last.
-\end{abstract}
-
 \input{sec_intro.tex}
 \input{sec_related.tex}
 \input{sec_setup.tex}
 \input{sec_results.tex}
+\input{sec_protocol.tex}
+\input{sec_where.tex}
 \input{sec_analysis.tex}
+\input{sec_discussion.tex}
+\input{statements.tex}
 
-\section{Limitations}
-\label{sec:limits}
-
-We state the limits of each claim rather than a list of further experiments.
-\begin{itemize}[leftmargin=*]
-\item \textbf{Scale and budget.} All runs use 32-pixel images, mostly a ResNet-18, and at most 19,400 steps. The
-crossover of \cref{sec:trap} is a statement about this range of budgets; we do not know how the picture changes
-at ImageNet scale, where \citet{cole2022when} observe that more pretraining images stop helping beyond a few
-hundred thousand. The epoch trap, being a statement about step counts, does not depend on scale.
-\item \textbf{One way to combine labels and images.} We tested one family of semi-supervised contrastive
-objectives (\cref{eq:loss}, two batch compositions). Methods that use the labels only late in pretraining, that
-weight the supervised term down over time, or that propagate labels to unlabeled images
-\citep{assran2021paws,sohn2020fixmatch} may avoid spending the labels; our claim is about putting the labels into
-a \supcon-style loss from the start.
-\item \textbf{Fine-tuning recipe.} We used one fine-tuning recipe for all encoders. A recipe tuned for
-\supcon-pretrained encoders might recover part of the gap; we did not tune it, because the same recipe gains
-several points on \simclr encoders.
-\item \textbf{Class balance.} CIFAR-10 and CIFAR-100 are balanced and our labeled subsets are stratified. With
-imbalanced labels, label-only \supcon would also see a skewed class distribution, and we have not tested
-whether coverage or imbalance would then dominate.
-\item \textbf{The coverage experiment} uses one seed per pool and a reference encoder that was itself trained
-on CIFAR-10, so coverage is measured in a learned space. We show that coverage tracks accuracy across pool
-constructions where spread does not; we do not show that it is the only factor.
-\item \textbf{Which photometric transform matters.} Our colour analysis separates colour jitter from grayscale,
-but not brightness, contrast, saturation and hue from one another.
-\item \textbf{Baselines} are budget-matched rather than tuned to convergence. Even so, MixMatch and FixMatch are the most
-accurate methods in this study; with its original schedule the margin would be larger. Our results say how to use
-labels within contrastive pretraining, not which semi-supervised method is best.
-\end{itemize}
-
-\section{Conclusion}
-\label{sec:conclusion}
-
-A 9-point deficit of supervised contrastive learning with 10\% labels turned out to be a 21-fold deficit in
-training steps. Once compute is matched, a clearer picture appears. Labels inside the contrastive loss make an
-encoder learn much faster, but on a small labeled pool it memorises its images and stops improving, while
-\simclr on all images keeps getting better. And labels that have been memorised during pretraining cannot be
-used a second time: with the 5,000 labels that exist, an encoder pretrained without them and fine-tuned with them
-is the best choice. For practitioners this gives three rules: compare methods at equal steps, never drop an
-image from the pretraining pool, and spend your labels last.
-
+\bibliographystyle{elsarticle-num-names}
 \bibliography{references}
-\bibliographystyle{tmlr}
 
+\appendix
 \input{appendix.tex}

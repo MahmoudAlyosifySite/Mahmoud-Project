@@ -1,58 +1,108 @@
-\section{Related work and the belief we test}
+\section{Related work}
 \label{sec:related}
 
-\paragraph{Contrastive and non-contrastive self-supervised learning.}
-Instance discrimination \citep{wu2018instance} and InfoNCE \citep{oord2018cpc,sohn2016npair} led to \simclr
-\citep{chen2020simclr}, which showed that strong augmentation, a non-linear projection head and many
-negatives are enough to learn linearly separable features without labels. MoCo \citep{he2020moco,chen2021mocov3}
-replaces large batches by a queue of negatives; BYOL \citep{grill2020byol}, SimSiam \citep{chen2021simsiam}
-and DINO \citep{caron2021dino} remove negatives altogether. \citet{wang2020alignment} describe the learned
-geometry through alignment and uniformity, and \citet{arora2019theoretical} bound downstream error by the
-contrastive loss under a latent-class model. On CIFAR-10 with a ResNet-18 and 1,000 epochs, these methods
-reach 90--93\% linear accuracy \citep{dacosta2022sololearn}; we train for 100 epochs and use them as
-reference points, not as competitors.
+\paragraph{Contrastive learning with and without labels}
+\simclr \citep{chen2020simclr} contrasts two views of an image against the other images of a large batch;
+MoCo replaces the large batch by a queue of past embeddings \citep{he2020moco,chen2020mocov2}; BYOL and
+SimSiam remove the negatives \citep{grill2020byol,chen2021simsiam}. \supcon \citep{khosla2020supcon} treats all
+images of a class as positives and, with all labels and a ResNet-50, reports 96.0\% on CIFAR-10 against
+93.6\% for \simclr and 95.0\% for cross-entropy. That comparison uses every label; this paper asks what
+happens when only a small fraction is available.
 
-\paragraph{Supervised contrastive learning with few labels.}
-\supcon \citep{khosla2020supcon} uses all same-class samples as positives and outperforms cross-entropy
-when labels are plentiful. \citet{graf2021dissecting} show that its minimisers are a regular simplex of
-collapsed classes, and \citet{luthra2025approximately} show that \simclr approximates a negatives-only
-\supcon loss whose gap shrinks with the number of classes. Several works combine the two signals when labels
-are scarce: S4L \citep{zhai2019s4l} adds a self-supervised pretext loss to a supervised one, SuNCEt
-\citep{assran2020suncet} adds a supervised contrastive term on a few labeled images to \simclr and finds that
-it mainly speeds up pretraining, PAWS \citep{assran2021paws} predicts pseudo-labels from a labeled support
-set, and \citet{islam2021broad} find that a joint \simclr+\supcon loss transfers better than either term
-alone. \simclr v2 \citep{chen2020simclrv2} instead pretrains without labels and uses them only to fine-tune and
-distil. Our \union objective belongs to this family; our contribution is not the objective but a controlled
-answer to \emph{when and why} its label-only counterpart falls short.
+\paragraph{Labels inside the loss}
+SuNCEt \citep{assran2020suncet} adds a supervised contrastive term on the labeled images to \simclr and
+shows that, with 10\% of the ImageNet labels, it matches the semi-supervised accuracy of \simclr with less
+than half of the pretraining compute. \citet{inoue2020semi} write supervised and unsupervised contrastive
+learning as one generalised loss, and \citet{islam2021broad} study joint \simclr and \supcon objectives with
+all labels. PAWS \citep{assran2021paws} and S$^4$L \citep{zhai2019s4l} combine self-supervised and supervised
+signals in other ways. A second family starts from pseudo-labeling and adds a contrastive regulariser:
+CoMatch \citep{li2021comatch}, SimMatch \citep{zheng2022simmatch}, class-aware contrastive semi-supervised
+learning \citep{yang2022classaware} and the clustering-based method of \citet{fini2023semi} all combine labels
+and instance-level learning successfully, and USB \citep{wang2022usb} standardises their evaluation. Our
+\union arm is the simplest member of the first family; we use it as a controlled probe, not as a
+competitor to these methods.
 
-\paragraph{Semi-supervised learning.}
-Consistency-regularisation methods such as MixMatch \citep{berthelot2019mixmatch} and FixMatch
-\citep{sohn2020fixmatch}, building on pseudo-labelling \citep{lee2013pseudo}, reach 94--96\% on CIFAR-10 with
-4,000 labels, using a Wide ResNet-28-2 \citep{zagoruyko2016wrn} trained for about one million steps.
-\citet{oliver2018realistic} showed that many reported gains in this field disappear under a shared
-implementation and budget; our epoch-counting artefact is another instance of the same lesson.
+\paragraph{Labels after pretraining}
+SimCLR~v2 \citep{chen2020simclrv2} pretrains without labels, fine-tunes on the few labels and then distils
+the fine-tuned network on unlabeled data; CPC~v2 \citep{henaff2020data} showed earlier that self-supervised
+features allow training with far fewer labels. \citet{zoph2020rethinking} compare pretraining with
+self-training across label fractions, and \citet{newell2020useful} measure how the benefit of
+self-supervised pretraining shrinks as labels grow. These works establish that the pretrain-then-use-labels
+recipe is strong. They do not compare it, at matched compute, with putting the same labels inside the
+contrastive loss.
 
-\paragraph{Geometry and generalisation of class clusters.}
-Neural collapse \citep{papyan2020neural} describes the end of supervised training: features of a class
-collapse to their mean and the class means form a simplex equiangular tight frame (ETF).
-\citet{galanti2022role} measure collapse with the class-distance normalised variance (CDNV) and relate it
-to transfer, while \citet{hui2022limitations} show that collapse on training data need not carry over to
-unseen data. We measure CDNV separately on images seen and unseen during pretraining, which turns this
-observation into a diagnostic for label-scarce pretraining.
+\paragraph{Class collapse and transfer}
+At the end of supervised training the features of a class collapse to their mean
+\citep{papyan2020neural}; \citet{galanti2022role} measure this with the class-distance normalised variance
+(CDNV), and \citet{hui2022limitations} show that collapse on training data need not carry over to test data.
+For \supcon, \citet{graf2021dissecting} analyse the collapsed optimum, \citet{chen2022perfectly} show that
+class collapse hurts transfer and robustness and counter it with a class-conditional instance term, and
+\citet{xue2023which} explain collapse through the simplicity bias of gradient descent.
+\citet{kornblith2021better} find that losses with tighter class separation give features that transfer worse,
+and \citet{zhao2021what} that the within-class invariance of supervised pretraining discards information
+that transfer needs. Our diagnostic applies these ideas to the label-scarce case, where the question is
+whether tightness on the \emph{labeled} images reaches the \emph{unlabeled} ones.
 
-\paragraph{How much data, and which data?}
-\citet{cole2022when} find that contrastive pretraining on ImageNet saturates at a few hundred thousand
-images and is sensitive to domain and quality. Diversity can be measured in many ways, from pairwise
-distances to the Vendi score \citep{friedman2023vendi}; core-set selection \citep{sener2018coreset} instead
-maximises coverage of the data by the chosen subset. We compare these notions directly by building pools of
-identical size and label count but different coverage.
+\paragraph{Coverage and selection of small sets}
+Core-set selection picks points that cover the data \citep{sener2018coreset}. For small budgets, typical
+examples beat atypical ones \citep{hacohen2022active}, coverage of the embedding space is the right
+selection objective \citep{yehuda2022active}, and data pruning should keep easy examples when data are
+scarce \citep{sorscher2022beyond,zheng2023coverage}. We do not propose a selection method; we use pools of
+controlled coverage to test whether these findings also explain how a labeled pool limits \supcon.
 
-\paragraph{The belief we test.}
-Taken together, the literature supports a simple picture that is often used as a default:
-\emph{when labels are available, supervised contrastive learning dominates self-supervised contrastive
-learning, and a semi-supervised variant should interpolate between the two}. Our earlier result seemed to
-refute the first half for 10\% labels. We show that the truth depends on two things that are rarely
-controlled: the training budget, measured in steps rather than epochs, and whether the same labels must also
-serve downstream. With matched steps, labels in the loss help early and hurt later; and with only the labels
-that exist, putting them into the loss is worse than keeping them for fine-tuning, which is in line with the
-``pretrain without labels, then fine-tune'' recipe of \simclr v2 \citep{chen2020simclrv2}.
+\paragraph{Budgets and evaluation}
+\citet{li2020budgeted} argue for comparing methods at a fixed iteration budget, and
+\citet{dehghani2022efficiency} show that a single cost indicator can mislead.
+\citet{oliver2018realistic} criticise semi-supervised evaluations that tune on validation sets larger than
+the labeled set, and \citet{newell2020useful} note that linear evaluation does not predict fine-tuning
+performance. \citet{kumar2022lpft} show that fine-tuning can distort pretrained features and propose to
+start from a linear probe. For reference, the solo-learn library reports CIFAR-10 linear accuracies between
+88.7\% and 92.9\% for eleven self-supervised methods trained much longer than our reference budget
+(\citealp{dacosta2022sololearn}, Table~1).
+
+\paragraph{What is new here}
+\Cref{tab:novelty} places each of our findings next to the closest earlier evidence. The individual
+phenomena have precedents. What was missing is (i) a comparison in which labels and images are varied
+separately at equal compute, (ii) a demonstration that the choice between the all-label probe and a
+label-budget protocol changes the answer, and (iii) a measurement of tightness on labeled, unlabeled and
+unseen images for label-scarce pretraining.
+
+\begin{table}[t]
+\centering
+\small
+\caption{Our findings next to the closest prior evidence.}
+\label{tab:novelty}
+\begin{adjustbox}{max width=\linewidth}
+\begin{tabular}{p{0.24\linewidth} p{0.34\linewidth} p{0.38\linewidth}}
+\toprule
+finding & closest prior evidence & what this paper adds \\
+\midrule
+Labels in the contrastive loss speed up pretraining &
+SuNCEt reaches the accuracy of \simclr with less than half the compute at 10\% ImageNet labels
+\citep{assran2020suncet} &
+The speed-up is isolated from the choice of images in a $2\times2$ design at equal steps, and followed to
+long budgets, where it turns into a deficit \\
+\addlinespace
+Labels are best used after label-free pretraining &
+SimCLR~v2 \citep{chen2020simclrv2}; pretraining versus self-training \citep{zoph2020rethinking} &
+A direct, compute-matched comparison with the same labels inside a \supcon loss, including two-stage and
+semi-supervised alternatives \\
+\addlinespace
+The evaluation protocol can change conclusions &
+Unrealistic validation sets in semi-supervised learning \citep{oliver2018realistic}; linear evaluation does
+not predict fine-tuning \citep{newell2020useful} &
+A documented ranking reversal between the all-label probe and label-budget protocols for the same encoders \\
+\addlinespace
+Tight classes on training data need not generalise &
+Collapse on train but not on test \citep{hui2022limitations}; class collapse in \supcon hurts transfer
+\citep{chen2022perfectly,kornblith2021better,xue2023which} &
+A three-way split (labeled, unlabeled, test) for label-scarce pretraining, with a cross-entropy control \\
+\addlinespace
+Coverage matters for small pools &
+Low-budget active learning and data pruning
+\citep{hacohen2022active,yehuda2022active,sorscher2022beyond} &
+An intervention on the labeled pool of \supcon at fixed size; coverage explains part of the effect \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\end{table}

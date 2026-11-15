@@ -1,94 +1,162 @@
-\section{Setup: one loss, two knobs, one budget}
+\section{Setup}
 \label{sec:setup}
 
-\paragraph{One loss for every method.}
-All contrastive methods in this paper are the same loss with a different definition of ``positive pair''.
-A batch holds $B$ images; each is augmented twice, giving $2B$ views with $\ell_2$-normalised
-projections $z_1,\dots,z_{2B}$. Every image $n$ carries a \emph{group id} $g_n$, and two different views are
-positives exactly when their images share a group id:
+\subsection{One loss for all contrastive methods}
+A batch holds $B$ images. Each is augmented twice, which gives $2B$ views with $\ell_2$-normalised
+projections $z_1,\dots,z_{2B}$. Let $n(i)$ be the image from which view $i$ was made. Every image $n$
+carries a \emph{group} $g_n$, and two different views are positives when their images are in the same
+group:
 \begin{equation}
 \label{eq:loss}
 \mathcal{L} \;=\; \frac{1}{2B}\sum_{i=1}^{2B} \frac{-1}{|P(i)|}\sum_{p\in P(i)}
 \log\frac{\exp(z_i^\top z_p/\tau_i)}{\sum_{a\neq i}\exp(z_i^\top z_a/\tau_i)},
-\qquad P(i)=\{p\neq i : g_{n(p)} = g_{n(i)}\}.
+\qquad P(i)=\{\,p\neq i : g_{n(p)} = g_{n(i)}\,\}.
 \end{equation}
-\begin{itemize}
-\item \textbf{\simclr} \citep{chen2020simclr}: no labels are used, every image is its own group ($g_n = n$), so
-$P(i)$ is just the other view of the same image and \cref{eq:loss} is the NT-Xent loss.
-\item \textbf{\supcon} \citep{khosla2020supcon}: every image is labeled and its group is its class
-($g_n = y_n$); \cref{eq:loss} is the $\mathcal{L}^{sup}_{out}$ loss of \citet{khosla2020supcon}.
-\item \textbf{\union}: labeled images use their class ($g_n=y_n$) and unlabeled images are their own group
-($g_n = n$). An unlabeled image is still contrasted against every other view in the batch, so it keeps
-providing \emph{negatives} and its own \emph{instance} positive; it simply never claims a class.
+The temperature $\tau_i\in\{\tau_\ell,\tau_u\}$ depends on the anchor: $\tau_\ell$ if image $n(i)$ is used
+with its label and $\tau_u$ otherwise. Three choices of groups give the three methods.
+\begin{itemize}[leftmargin=1.4em]
+\item \textbf{\simclr} \citep{chen2020simclr}: no label is used and every image is its own group
+($g_n=n$). $P(i)$ is the other view of the same image, and \cref{eq:loss} is the NT-Xent loss with
+temperature $\tau_u$.
+\item \textbf{\supcon} \citep{khosla2020supcon}: every image in the batch is labeled and its group is its
+class ($g_n=y_n$). \Cref{eq:loss} is the $\mathcal{L}^{\mathrm{sup}}_{\mathrm{out}}$ loss of
+\citet{khosla2020supcon} with temperature $\tau_\ell$.
+\item \textbf{\union} (\supcon with unlabeled images): labeled images use their class and unlabeled images
+are their own group. An unlabeled image is still contrasted against every other view in the batch, so it
+supplies negatives and its own instance-level positive; it never claims a class.
 \end{itemize}
-\union is not a new idea: it is the natural semi-supervised reading of \cref{eq:loss}, and close to
-SuNCEt \citep{assran2020suncet} and to the joint SimCLR+SupCon objectives of \citet{islam2021broad}.
-We use it as a \emph{probe} rather than as a proposed method: it differs from label-only \supcon only in
-which images are in the pool, and from \simclr only in whether the labels are used. Two details of \union were chosen on a held-out
-validation split of the \emph{training} set before any test-set number was computed (\cref{app:pilot}):
-labeled anchors use $\tau_i=0.1$ and unlabeled anchors $\tau_i=0.5$ (the standard temperatures of
-\supcon and \simclr on CIFAR), and 25\% of every batch is drawn from the labeled images. A variant with uniform batches was added after we saw the long-budget results and is reported only as an ablation.
-We verified our implementation of \cref{eq:loss} numerically against the official \supcon code and our own
-NT-Xent implementation (maximum absolute difference below $10^{-6}$, \cref{app:impl}).
+We use $\tau_\ell=0.1$ and $\tau_u=0.5$, the standard CIFAR values of \supcon and \simclr
+\citep{khosla2020supcon}. Because the temperature depends on the anchor, the loss of \union is not symmetric
+in a labeled--unlabeled pair: the pair is weighted with $\tau_\ell$ when the labeled view is the anchor and
+with $\tau_u$ when the unlabeled one is. \union is close to SuNCEt \citep{assran2020suncet} and to the
+generalised loss of \citet{inoue2020semi}. Its temperatures and the share of labeled images per batch (25\%)
+were chosen on a validation split of the training set before any test number was computed
+(\cref{app:pilot}). Temperature is thus a second difference between the label-free and the label-using
+rows of our design; \cref{sec:plateau} shows that swapping the temperatures does not change the picture.
+Our implementation of \cref{eq:loss} agrees with the official \supcon code to $10^{-6}$ (\cref{app:impl}).
 
-\paragraph{Two knobs: labels and images.}
-With a labeled fraction $f$ (10\% unless stated), the two quantities that the label-scarce setting couples
-are the \emph{labels} the loss may use and the \emph{images} in the pretraining pool. We vary them
-independently (\cref{tab:main}):
-\begin{center}
+\subsection{The \texorpdfstring{$2\times2$}{2x2} design}
+With a labeled fraction $f$ (10\% unless stated), the label-scarce setting couples two things: the
+\emph{labels} that the loss may use and the \emph{images} in the pretraining pool. \Cref{tab:design} varies
+them independently. Comparing the rows gives the effect of the labels at a fixed pool. Comparing the columns
+gives the effect of the unlabeled images at a fixed use of labels. The labeled subsets are class-balanced
+and nested across fractions for a given seed.
+
+\begin{table}[t]
+\centering
 \small
+\caption{The $2\times2$ design. Each cell is one pretraining method; all four receive the same number of
+gradient steps.}
+\label{tab:design}
 \begin{tabular}{lcc}
 \toprule
- & pool = the $f$ labeled images & pool = all images \\
+ & pool = the labeled images only & pool = all images \\
 \midrule
-labels not used & \simclr (subset) & \simclr \\
-labels used     & \supcon (label-only) & \union \\
+labels not used in the loss & \simclrsub & \simclr \\
+labels used in the loss & \supcon & \union \\
 \bottomrule
 \end{tabular}
-\end{center}
-Comparing the rows isolates the effect of the labels at a fixed pool; comparing the columns isolates the
-effect of the unlabeled images at a fixed use of labels. The labeled subsets are stratified (the same
-number of images per class) and nested across fractions for a given seed, so the 1\% subset is part of
-the 5\% subset, and so on.
+\end{table}
 
-\paragraph{One budget: steps, not epochs.}
-In every run we fix the number of gradient steps to $E\cdot\lfloor N/B\rfloor$, where $N=50{,}000$ is the size
-of the \emph{full} training set, $B=512$ and $E=100$ unless stated. ``100 epochs'' therefore means 9,700
-steps of 1,024 augmented views for every method, whatever the size of its pool; a method with a
-5,000-image pool simply cycles through it ten times as often. We also report budgets from 970 to 19,400 steps
-(``10'' to ``200 epochs''); \cref{sec:trap} shows why this matters.
+\subsection{Compute accounting}
+\label{sec:compute}
+\paragraph{Steps, not epochs}
+Every contrastive run performs $T=E\cdot\lfloor N/B\rfloor$ gradient steps with batch size $B=512$, where $N$
+is the size of the \emph{full} training set, whatever the size of the method's own pool. On CIFAR
+($N=50{,}000$) this is $97E$ steps of 1,024 augmented views. We report $E$ from 10 to 1,000, that is, 970 to
+97,000 steps, and always state budgets in steps. A method whose pool has 5,000 images simply cycles through
+it ten times as often.
 
-\paragraph{Training details.}
-All encoders are ResNet-18 \citep{he2016resnet} with the CIFAR stem (a $3{\times}3$ stride-1 first
-convolution and no max-pooling) and a two-layer projection head with batch normalisation in the hidden
-layer only, as in the official \supcon code (adding batch normalisation on the output made \supcon
-collapse in our earlier experiments, \cref{app:report}). We train with SGD (momentum 0.9, weight decay
-$10^{-4}$), learning rate $0.25$ for batch 512 (the official recipe's $0.5$ at batch 1024), 5\% linear
-warm-up and a cosine schedule, in mixed precision with the loss computed in float32. The augmentation is
-the CIFAR recipe of \citet{chen2020simclr}: random resized crop (scale $0.2$--$1$), horizontal flip, colour
-jitter with strength $s=0.5$ applied with probability $0.8$, and random grayscale ($p=0.2$). We wrote
-batched GPU versions of these transforms and checked each of them against \texttt{torchvision} (maximum
-absolute pixel difference below $3\times10^{-7}$; \cref{app:impl}); this makes a 100-epoch ResNet-18 run take
-about 13 minutes on one NVIDIA A40. Full hyper-parameters, including those of the baselines, are listed in
+The distinction matters. If each method were instead given ``100 epochs'' over its own pool, \supcon on
+5,000 images would run $100\cdot\lfloor 5{,}000/512\rfloor = 900$ steps against 9,700 for \simclr on all
+images, and the effect of supervision would be mixed with an eleven-fold difference in compute. In our
+experiments this alone moves \supcon by \R{d:steps900}\pt (\R{supcon_lab_f0.1_steps900:lp50} at 900 steps
+against \R{supcon_lab_f0.1_e100:lp50} at 9,700). We do not claim that the confusion is widespread: in the
+audit of \cref{app:audit}, 7 of 17 applicable papers matched or accounted for the difference, 2 compared
+arms at equal epochs over pools of different size, and 5 did not state the budget of one arm in a way a
+reader can check. Stating budgets in steps or in images processed removes the ambiguity.
+
+\paragraph{Cost per step}
+\Cref{tab:compute} lists, for every method, the number of augmented views, forward passes and backward
+passes per step, the number of steps at the reference budget and the wall-clock time on one NVIDIA A40.
+The three contrastive methods have identical cost. BYOL adds a forward pass through its target network. The
+semi-supervised baselines are given the same number of processed views as a 9,700-step contrastive run
+unless stated; their per-step composition differs, so we report it explicitly.
+
+\begin{table}[t]
+\centering
+\small
+\caption{Compute accounting on CIFAR-10 with a ResNet-18. ``Reference budget'' is the budget labeled 9,700
+steps in the text. FixMatch processes 64 labeled, 448 weakly and 448 strongly augmented unlabeled views per
+step; MixMatch needs an extra forward pass to guess labels. Minutes are wall-clock training time on one
+NVIDIA A40 with no other job on the GPU.}
+\label{tab:compute}
+\begin{adjustbox}{max width=\linewidth}
+\input{generated/tab_compute.tex}
+\end{adjustbox}
+\end{table}
+
+\subsection{Evaluation protocols}
+\label{sec:protocols}
+The encoder is frozen (except in fine-tuning) and its average-pooled features are used in four ways. We
+name the protocols once and use the names throughout.
+\begin{itemize}[leftmargin=1.4em]
+\item \textbf{\lpall, the oracle-label probe.} A linear classifier trained on the features of all
+50,000 training images with all their labels \citep{chen2020simclr}. It is the standard measure of
+representation quality, but it uses ten times more labels than the setting provides. We also report a
+weighted $k$NN classifier with the same 50,000 labels ($k$NN-50k; \citealp{wu2018instance}).
+\item \textbf{\lpfive.} The same linear probe trained only on the 5,000 labeled images, the ones the
+label-using methods saw during pretraining.
+\item \textbf{\ftfive.} Fine-tuning of the whole network on the 5,000 labeled images. The default recipe
+starts from the \lpfive solution \citep{kumar2022lpft} and trains for 60 passes over the labeled images
+with learning rate 0.01. \Cref{sec:protocol} replaces it by a recipe selected on a split of the 5,000
+labels.
+\item \textbf{FixMatch-init.} FixMatch \citep{sohn2020fixmatch} started from the pretrained encoder, using
+the 5,000 labels and all images without labels.
+\end{itemize}
+\lpfive, \ftfive and FixMatch-init respect the label budget, and we refer to them together as
+\emph{label-budget protocols}. For other fractions we write LP-all and LP-$f$. On STL-10 only 5,000 training
+labels exist, so there is no oracle-label probe and every protocol is a label-budget protocol. We consider
+the pair (oracle-label probe, label-budget protocol) to be part of the method of this paper: the first says
+what an encoder has learned, the second what a practitioner can extract from it, and \cref{sec:protocol}
+shows that the two can disagree about which encoder is better.
+
+The linear probes are $\ell_2$-regularised multinomial logistic regressions on standardised features, fitted
+with L-BFGS; the regularisation strength is selected on a stratified 20\% of the labels available to the
+probe. No design decision in this paper was taken on test data.
+
+\subsection{Data, models and training}
+\paragraph{Datasets}
+CIFAR-10 and CIFAR-100 \citep{krizhevsky2009cifar} have 50,000 training and 10,000 test images of 32 px; we
+use $f=10\%$ (5,000 labels) unless stated and fractions from 1\% to 100\% in \cref{sec:fractions}. STL-10
+\citep{coates2011analysis} has 5,000 labeled training images, 8,000 test images and 100,000 unlabeled images
+at 96 px. Its unlabeled set comes from a broader distribution than the ten classes, so it tests the
+``all images'' column with data that are not curated to match the labels.
+
+\paragraph{Models and optimisation}
+The encoder is a ResNet-18 \citep{he2016resnet} with a $3\times3$ stride-1 first convolution and no max-pooling
+for 32-px images; for STL-10 the max-pooling layer is kept. A ResNet-50 is used in \cref{sec:datasets}. The
+projection head is linear--batch-norm--ReLU--linear with 128 outputs. We train with SGD (momentum 0.9,
+weight decay $10^{-4}$, learning rate 0.25 for batch 512, 5\% linear warm-up, cosine decay), the recipe of the
+official \supcon code, in mixed precision with the loss computed in float32. The augmentation is the CIFAR
+recipe of \citet{chen2020simclr}: random resized crop (scale 0.2--1), horizontal flip, colour jitter of
+strength 0.5 applied with probability 0.8, and random grayscale with probability 0.2. Baselines (BYOL,
+SimSiam, cross-entropy, FixMatch, MixMatch) and all remaining hyper-parameters are described in
 \cref{app:hparams}.
 
-\paragraph{Evaluation.}
-The encoder is frozen and its 512-d average-pooled features are used in four ways:
-(i) \textbf{linear probe} with all 50,000 training labels, the standard protocol of
-\citet{chen2020simclr}: an $\ell_2$-regularised multinomial logistic regression on standardised features,
-fit with L-BFGS, with the regularisation strength picked on a stratified 20\% split of the
-\emph{training} labels; (ii) \textbf{weighted $k$NN} ($k=200$, temperature $0.1$; \citealp{wu2018instance});
-(iii) the same linear probe but trained \textbf{only on the labeled subset}; and (iv) \textbf{fine-tuning} of the
-whole network on the labeled subset (linear-probe initialisation followed by 60 epochs of SGD over the labeled
-images; \citealp{kumar2022lpft}). Protocols (i) and (ii) measure representation quality as the
-self-supervised literature does; (iii) and (iv) are what a practitioner who has only $f$ of the labels can
-actually do, and for the label-using methods they reuse the labels seen in pretraining. The test set is used
-only for these final numbers.
-
-\paragraph{Statistics.}
-Main configurations are run with \nSeeds seeds; the seed changes the labeled subset, the initialisation
-and the augmentation stream. We report mean $\pm$ standard deviation over seeds and, for every key
-comparison, a 95\% confidence interval and $p$-value from a bootstrap that resamples test images
-(paired: both methods are scored on the same resampled images) \emph{and} seeds, so that the interval
-reflects both sources of noise \citep{efron1993bootstrap}. Exploratory sweeps use one seed and are
-labeled as such.
+\subsection{Statistics}
+\label{sec:stats}
+The main configurations are run with five seeds at 9,700 and 19,400 steps and with three seeds elsewhere;
+the seed sets the labeled subset, the initialisation and the augmentation stream. We report the mean and
+the standard deviation over seeds. Differences between two configurations are tested with a
+\emph{hierarchical bootstrap} \citep{efron1993bootstrap}. One replicate first resamples the seeds with
+replacement (jointly for the two configurations when they share seeds, because runs with the same seed share
+the labeled subset) and then resamples the test images with replacement, using the same resampled images
+for both configurations. We draw 100,000 replicates of the difference in mean accuracy and report its
+percentile 95\% interval and a two-sided $p$-value. The \R{stats:ntests} planned comparisons of
+\cref{tab:stats} form one family, and their $p$-values are adjusted with the Holm--Bonferroni procedure
+\citep{holm1979simple}. A statement that two methods perform the same is backed by an equivalence test: two
+one-sided tests \citep{schuirmann1987comparison} on the bootstrap distribution with a margin of $\pm1$ point.
+With three to five seeds the between-seed variance is estimated coarsely, so we treat intervals as
+approximate and do not interpret differences below about one point. Results from a single seed are marked
+as such.

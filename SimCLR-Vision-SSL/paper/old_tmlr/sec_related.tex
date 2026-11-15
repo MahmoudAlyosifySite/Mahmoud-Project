@@ -1,0 +1,58 @@
+\section{Related work and the belief we test}
+\label{sec:related}
+
+\paragraph{Contrastive and non-contrastive self-supervised learning.}
+Instance discrimination \citep{wu2018instance} and InfoNCE \citep{oord2018cpc,sohn2016npair} led to \simclr
+\citep{chen2020simclr}, which showed that strong augmentation, a non-linear projection head and many
+negatives are enough to learn linearly separable features without labels. MoCo \citep{he2020moco,chen2021mocov3}
+replaces large batches by a queue of negatives; BYOL \citep{grill2020byol}, SimSiam \citep{chen2021simsiam}
+and DINO \citep{caron2021dino} remove negatives altogether. \citet{wang2020alignment} describe the learned
+geometry through alignment and uniformity, and \citet{arora2019theoretical} bound downstream error by the
+contrastive loss under a latent-class model. On CIFAR-10 with a ResNet-18 and 1,000 epochs, these methods
+reach 90--93\% linear accuracy \citep{dacosta2022sololearn}; we train for 100 epochs and use them as
+reference points, not as competitors.
+
+\paragraph{Supervised contrastive learning with few labels.}
+\supcon \citep{khosla2020supcon} uses all same-class samples as positives and outperforms cross-entropy
+when labels are plentiful. \citet{graf2021dissecting} show that its minimisers are a regular simplex of
+collapsed classes, and \citet{luthra2025approximately} show that \simclr approximates a negatives-only
+\supcon loss whose gap shrinks with the number of classes. Several works combine the two signals when labels
+are scarce: S4L \citep{zhai2019s4l} adds a self-supervised pretext loss to a supervised one, SuNCEt
+\citep{assran2020suncet} adds a supervised contrastive term on a few labeled images to \simclr and finds that
+it mainly speeds up pretraining, PAWS \citep{assran2021paws} predicts pseudo-labels from a labeled support
+set, and \citet{islam2021broad} find that a joint \simclr+\supcon loss transfers better than either term
+alone. \simclr v2 \citep{chen2020simclrv2} instead pretrains without labels and uses them only to fine-tune and
+distil. Our \union objective belongs to this family; our contribution is not the objective but a controlled
+answer to \emph{when and why} its label-only counterpart falls short.
+
+\paragraph{Semi-supervised learning.}
+Consistency-regularisation methods such as MixMatch \citep{berthelot2019mixmatch} and FixMatch
+\citep{sohn2020fixmatch}, building on pseudo-labelling \citep{lee2013pseudo}, reach 94--96\% on CIFAR-10 with
+4,000 labels, using a Wide ResNet-28-2 \citep{zagoruyko2016wrn} trained for about one million steps.
+\citet{oliver2018realistic} showed that many reported gains in this field disappear under a shared
+implementation and budget; our epoch-counting artefact is another instance of the same lesson.
+
+\paragraph{Geometry and generalisation of class clusters.}
+Neural collapse \citep{papyan2020neural} describes the end of supervised training: features of a class
+collapse to their mean and the class means form a simplex equiangular tight frame (ETF).
+\citet{galanti2022role} measure collapse with the class-distance normalised variance (CDNV) and relate it
+to transfer, while \citet{hui2022limitations} show that collapse on training data need not carry over to
+unseen data. We measure CDNV separately on images seen and unseen during pretraining, which turns this
+observation into a diagnostic for label-scarce pretraining.
+
+\paragraph{How much data, and which data?}
+\citet{cole2022when} find that contrastive pretraining on ImageNet saturates at a few hundred thousand
+images and is sensitive to domain and quality. Diversity can be measured in many ways, from pairwise
+distances to the Vendi score \citep{friedman2023vendi}; core-set selection \citep{sener2018coreset} instead
+maximises coverage of the data by the chosen subset. We compare these notions directly by building pools of
+identical size and label count but different coverage.
+
+\paragraph{The belief we test.}
+Taken together, the literature supports a simple picture that is often used as a default:
+\emph{when labels are available, supervised contrastive learning dominates self-supervised contrastive
+learning, and a semi-supervised variant should interpolate between the two}. Our earlier result seemed to
+refute the first half for 10\% labels. We show that the truth depends on two things that are rarely
+controlled: the training budget, measured in steps rather than epochs, and whether the same labels must also
+serve downstream. With matched steps, labels in the loss help early and hurt later; and with only the labels
+that exist, putting them into the loss is worse than keeping them for fine-tuning, which is in line with the
+``pretrain without labels, then fine-tune'' recipe of \simclr v2 \citep{chen2020simclrv2}.

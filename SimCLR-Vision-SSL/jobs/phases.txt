@@ -2,6 +2,8 @@ jobs/rev_p01_short.txt
 jobs/rev_p02_ftsearch_s0.txt
 jobs/rev_p03_ftsearch_s12.txt
 jobs/rev_p04_fixmatch_from.txt
+jobs/rev_p04b_ftoracle_s0.txt
+jobs/rev_p04c_ftoracle_s12.txt
 jobs/rev_p05_ft_ready.txt
 jobs/rev_p05b_extras.txt
 jobs/rev_p05c_extras_post.txt
