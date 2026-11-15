@@ -170,3 +170,23 @@ Against `engine.md` (held-out means): Egyptian sentences CER 0.030, ECAPA 0.769,
 - **Owner:** revoke the write token once the Space is published (execution plan, section 7).
 - **Planner:** nothing was committed or pushed. New files: `BA/LICENSE`, `BA/hf/{publish.py, make_samples.py, score_samples.py, validate_snippet.py, space_check.py, model_card.md}`, `BA/src/ba_tts/config.py`, `BA/tests/test_config.py`, this report. Modified: `BA/pyproject.toml`, `BA/space/{app.py, README.md}`, `BA/src/ba_tts/{__init__, asr, cli, defaults, engine}.py`, `BA/tests/test_gpu_smoke.py`. (`BA/docs/decisions.md` was changed by the planner, not by this run.) `BA/README.md` is still the "vision only, no code yet" document.
 - **Not done:** `BA/docs/reproduce.md` (a Phase 3 item); `publish.py` docstring has the commands.
+
+
+## Public Space validation (2026-11-15, planner)
+
+The account's second ZeroGPU slot was freed by deleting `mahmoudalyosify/horus-chat-api` at the owner's request (its files and settings were first backed up to `hf-space-backups/horus-chat-api/` in this GitHub repo; the value of its one secret, `API_KEY`, cannot be read and was not kept). `publish.py upload-space` then created the Space on `zero-a10g`; it built and reached RUNNING in about 210 s and was made public.
+
+Anonymous check (no token) with `BA/hf/space_check.py mahmoudalyosify/BA`, FLEURS `ar_eg_f6` reference (measurement only), no transcript:
+
+- consent unticked: refused with the bilingual consent message (3.07 s);
+- request 1: 29.85 s (includes GPU allocation after idle); request 2: 10.17 s;
+- both outputs 48 kHz and watermarked (AudioSeal score 1.0, all bits match).
+
+Scored with `BA/hf/score_samples.py` (Phase 1 scorer):
+
+| output | CER (best of spelled/digit reference) | similarity (ECAPA) | dialect | DNSMOS P.808 |
+|---|---|---|---|---|
+| space_0 | 0.049 (bound 0.171) | 0.821 | Egyptian | 3.82 |
+| space_1 | 0.059 (bound 0.171) | 0.810 | Egyptian | 3.54 |
+
+Model card updated to link the live Space (model repo commit `34c70a06`).

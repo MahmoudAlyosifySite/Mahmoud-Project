@@ -6,7 +6,7 @@
 
 > **Your Voice. Your Identity.**
 
-**Status:** v0.1.0 published as a model on Hugging Face: **https://huggingface.co/mahmoudalyosify/BA** (Egyptian Arabic, English, French beta). The demo Space is prepared in `space/` but not online yet (the account's free ZeroGPU slots are in use).
+**Status:** v0.1.0 published as a model on Hugging Face: **https://huggingface.co/mahmoudalyosify/BA** (Egyptian Arabic, English, French beta). Demo Space (ZeroGPU): **https://huggingface.co/spaces/mahmoudalyosify/BA**.
 
 | Folder | What is in it |
 |---|---|

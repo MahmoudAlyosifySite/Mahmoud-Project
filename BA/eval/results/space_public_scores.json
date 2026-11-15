@@ -1,0 +1,56 @@
+[
+ {
+  "utt_id": "space_0",
+  "lang": "arz",
+  "dur": 6.365,
+  "active_dur": 6.013,
+  "peak": 0.991,
+  "asr": "القطر هيقوم الساعة 7 ونص الصبح من محطة مصر والتذكرة بـ 150 جنيه",
+  "cer": 0.18309859154929578,
+  "wer": 0.23076923076923078,
+  "cer_vs_digit_text": 0.04918032786885246,
+  "wer_vs_digit_text": 0.07692307692307693,
+  "sim_ecapa": 0.8208,
+  "sim_wavlm": 0.9728,
+  "dialect": "Egyptian",
+  "dialect_scores": {
+   "Egyptian": 0.9962,
+   "MSA": 0.0025,
+   "Levantine": 0.001,
+   "Maghrebi": 0.0002,
+   "Gulf": 0.0001
+  },
+  "mos_p808": 3.823,
+  "mos_ovrl": 3.566,
+  "error_best": 0.04918032786885246,
+  "error_metric": "cer",
+  "g3_bound": 0.1712,
+  "within_g3_bound": true
+ },
+ {
+  "utt_id": "space_1",
+  "lang": "arz",
+  "dur": 2.639,
+  "active_dur": 2.592,
+  "peak": 0.9737,
+  "asr": "انا مبسوط قوي انك جريت وحشتني والله",
+  "cer": 0.058823529411764705,
+  "wer": 0.2857142857142857,
+  "sim_ecapa": 0.8096,
+  "sim_wavlm": 0.9571,
+  "dialect": "Egyptian",
+  "dialect_scores": {
+   "Egyptian": 0.9962,
+   "MSA": 0.0026,
+   "Levantine": 0.0008,
+   "Maghrebi": 0.0002,
+   "Gulf": 0.0001
+  },
+  "mos_p808": 3.538,
+  "mos_ovrl": 3.188,
+  "error_best": 0.058823529411764705,
+  "error_metric": "cer",
+  "g3_bound": 0.1712,
+  "within_g3_bound": true
+ }
+]

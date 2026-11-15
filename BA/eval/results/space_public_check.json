@@ -1,0 +1,26 @@
+{
+ "target": "mahmoudalyosify/BA",
+ "api_endpoints": [
+  "/generate"
+ ],
+ "consent_unticked": "refused: لازم تأكد إن ده صوتك أو إن معاك إذن صاحب الصوت.\nPlease confirm that this is your voice or that you have the speaker's explicit permission.",
+ "consent_unticked_seconds": 3.07,
+ "request_0_seconds": 29.85,
+ "request_1_seconds": 10.17,
+ "watermark": [
+  {
+   "watermarked": true,
+   "score": 1.0,
+   "bits_match": 1.0
+  },
+  {
+   "watermarked": true,
+   "score": 1.0,
+   "bits_match": 1.0
+  }
+ ],
+ "sample_rates": [
+  48000,
+  48000
+ ]
+}
