@@ -1,0 +1,15 @@
+--name stl_simclr_all_e100_s0 --dataset stl10 --backbone resnet18_mp --method simclr --pool all --epochs 100 --seed 0 --curve_points 8
+--name stl_supcon_lab_e100_s0 --dataset stl10 --backbone resnet18_mp --method supcon --pool labeled --label_fraction 1 --epochs 100 --seed 0 --curve_points 8
+--name stl_union_e100_s0 --dataset stl10 --backbone resnet18_mp --method supcon --pool all --label_fraction 1 --temperature_unlabeled 0.5 --labeled_share 0.25 --epochs 100 --seed 0 --curve_points 8
+--name stl_simclr_sub_e100_s0 --dataset stl10 --backbone resnet18_mp --method simclr --pool labeled --label_fraction 1 --epochs 100 --seed 0 --curve_points 8
+--name stl_simclr_all_e100_s1 --dataset stl10 --backbone resnet18_mp --method simclr --pool all --epochs 100 --seed 1 --curve_points 8
+--name stl_supcon_lab_e100_s1 --dataset stl10 --backbone resnet18_mp --method supcon --pool labeled --label_fraction 1 --epochs 100 --seed 1 --curve_points 8
+--name stl_union_e100_s1 --dataset stl10 --backbone resnet18_mp --method supcon --pool all --label_fraction 1 --temperature_unlabeled 0.5 --labeled_share 0.25 --epochs 100 --seed 1 --curve_points 8
+--name stl_simclr_sub_e100_s1 --dataset stl10 --backbone resnet18_mp --method simclr --pool labeled --label_fraction 1 --epochs 100 --seed 1 --curve_points 8
+--name stl_simclr_all_e100_s2 --dataset stl10 --backbone resnet18_mp --method simclr --pool all --epochs 100 --seed 2 --curve_points 8
+--name stl_supcon_lab_e100_s2 --dataset stl10 --backbone resnet18_mp --method supcon --pool labeled --label_fraction 1 --epochs 100 --seed 2 --curve_points 8
+--name stl_union_e100_s2 --dataset stl10 --backbone resnet18_mp --method supcon --pool all --label_fraction 1 --temperature_unlabeled 0.5 --labeled_share 0.25 --epochs 100 --seed 2 --curve_points 8
+--name stl_simclr_sub_e100_s2 --dataset stl10 --backbone resnet18_mp --method simclr --pool labeled --label_fraction 1 --epochs 100 --seed 2 --curve_points 8
+--name stl_ce_e100_s0 --dataset stl10 --backbone resnet18_mp --method ce --pool labeled --label_fraction 1 --epochs 100 --seed 0
+--name stl_ce_e100_s1 --dataset stl10 --backbone resnet18_mp --method ce --pool labeled --label_fraction 1 --epochs 100 --seed 1
+--name stl_ce_e100_s2 --dataset stl10 --backbone resnet18_mp --method ce --pool labeled --label_fraction 1 --epochs 100 --seed 2

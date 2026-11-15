@@ -73,6 +73,11 @@ PIPELINES = {
 }
 
 
+def sup_pipeline(size, pad_mode="zeros"):
+    """Supervised augmentation: random crop with padding of size/8 (4 px at 32 px, 12 px at 96 px) and flip."""
+    return AugConfig(pad_crop=size // 8, flip=True, pad_mode=pad_mode)
+
+
 def get_pipeline(name):
     """Look up a pipeline. ``name+nojitter`` / ``name+nogray`` remove one component."""
     base, *mods = name.split("+")

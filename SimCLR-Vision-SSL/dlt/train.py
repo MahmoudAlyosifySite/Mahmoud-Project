@@ -33,9 +33,9 @@ import numpy as np
 import torch
 import torch.nn.functional as F
 
-from .data import IndexSampler, load_dataset, stratified_subset
+from .data import IndexSampler, labeled_subset, load_dataset, stratified_subset
 from .evaluate import evaluate_encoder, geometry, knn_predict, to_numpy_preds
-from .gpu_aug import GPUAugment
+from .gpu_aug import GPUAugment, sup_pipeline
 from .losses import grouped_contrastive_loss, make_groups, negative_cosine
 from .models import BYOLModel, Classifier, ContrastiveModel, SimSiamModel, extract_features
 
@@ -55,9 +55,9 @@ def parse_args(argv=None):
     p.add_argument("--out", default="results/runs")
     p.add_argument("--ckpt_dir", default=None, help="where to store the final encoder (default: <out>/<name>)")
     p.add_argument("--data_dir", default=os.environ.get("DLT_DATA", "./data"))
-    p.add_argument("--dataset", default="cifar10", choices=["cifar10", "cifar100"])
+    p.add_argument("--dataset", default="cifar10", choices=["cifar10", "cifar100", "stl10"])
     p.add_argument("--method", default="simclr", choices=list(DEFAULTS))
-    p.add_argument("--backbone", default="resnet18", choices=["resnet18", "resnet50"])
+    p.add_argument("--backbone", default="resnet18", choices=["resnet18", "resnet50", "resnet18_mp", "resnet50_mp"])
     p.add_argument("--aug", default="simclr")
     p.add_argument("--pool", default="all", choices=["all", "labeled"])
     p.add_argument("--label_fraction", type=float, default=0.0)
@@ -138,12 +138,8 @@ def main(argv=None):
     # ---- which labels may be used, and which images are in the pretraining pool
     if args.pool_file:
         labeled_idx = np.sort(np.load(args.pool_file))
-    elif args.label_fraction >= 1.0:
-        labeled_idx = np.arange(N)
-    elif args.label_fraction <= 0.0:
-        labeled_idx = np.arange(0)
     else:
-        labeled_idx = stratified_subset(Y.cpu().numpy(), args.label_fraction, args.split_seed)
+        labeled_idx = labeled_subset(data, args.label_fraction, args.split_seed)
     labeled_mask = torch.zeros(N, dtype=torch.bool, device=dev)
     labeled_mask[torch.as_tensor(labeled_idx, device=dev, dtype=torch.long)] = True
     pool_idx = np.arange(N) if args.pool == "all" else labeled_idx
@@ -151,6 +147,17 @@ def main(argv=None):
     uses_labels = args.method in ("supcon", "ce")
     if args.method == "ce":
         assert args.pool == "labeled" or len(labeled_idx) == N, "ce needs --pool labeled"
+    # Images with a ground-truth label, used by every evaluation. On STL-10 only the labeled split has
+    # labels, so probes, kNN and geometry use those 5,000 images and the test set.
+    has_unl = "labeled_idx" in data
+    if has_unl:
+        assert args.holdout == 0
+        ev = torch.as_tensor(data["labeled_idx"], device=dev)
+        Xe, Ye = X[ev], Y[ev]
+        eval_data = dict(data, train_x=Xe, train_y=Ye)
+        eval_pool, eval_lab = np.arange(Xe.shape[0]), None
+    else:
+        Xe, Ye, eval_data, eval_pool, eval_lab = X, Y, data, pool_idx, labeled_idx
 
     B = args.batch_size
     total_steps = int(round(args.epochs * (N // B)))
@@ -171,7 +178,7 @@ def main(argv=None):
         return torch.cat([s.next(n) for s, n in samplers])
 
     # ---- model
-    aug = GPUAugment("sup" if args.method == "ce" else args.aug, data["mean"], data["std"], dev, gen)
+    aug = GPUAugment(sup_pipeline(X.shape[-1]) if args.method == "ce" else args.aug, data["mean"], data["std"], dev, gen)
     if args.method in ("simclr", "supcon"):
         model = ContrastiveModel(args.backbone)
     elif args.method == "simsiam":
@@ -208,15 +215,15 @@ def main(argv=None):
     curve_at = sorted({int(round(total_steps * (i + 1) / args.curve_points)) for i in range(args.curve_points)})
     curve, loss_log, run_loss, run_n = [], [], 0.0, 0
     geom_curve = []
-    pool_t = torch.as_tensor(pool_idx, device=dev)
-    lab_t = torch.as_tensor(labeled_idx, device=dev, dtype=torch.long)
+    pool_t = torch.as_tensor(eval_pool, device=dev)
+    lab_t = torch.as_tensor(np.arange(0) if has_unl else labeled_idx, device=dev, dtype=torch.long)
 
     def geom_point(at, ftr, fte):
         """Class tightness (CDNV) on the pretraining pool, on the labeled images and on the test set."""
-        out = {"step": at, "pool_cdnv": geometry(ftr[pool_t], Y[pool_t], C)[0]["cdnv"],
+        out = {"step": at, "pool_cdnv": geometry(ftr[pool_t], Ye[pool_t], C)[0]["cdnv"],
                "test_cdnv": geometry(fte, data["test_y"], C)[0]["cdnv"]}
         if 0 < lab_t.numel() < N:
-            out["labeled_cdnv"] = geometry(ftr[lab_t], Y[lab_t], C)[0]["cdnv"]
+            out["labeled_cdnv"] = geometry(ftr[lab_t], Ye[lab_t], C)[0]["cdnv"]
         return out
     t0 = time.time()
     model.train()
@@ -272,9 +279,9 @@ def main(argv=None):
             loss_log.append([step + 1, avg])
             run_loss, run_n = 0.0, 0
         if (step + 1) in curve_at and step + 1 < total_steps:
-            ftr = extract_features(model.encoder, X, aug.normalize)
+            ftr = extract_features(model.encoder, Xe, aug.normalize)
             fte = extract_features(model.encoder, data["test_x"], aug.normalize)
-            acc = 100 * (knn_predict(ftr, Y, fte, C) == data["test_y"]).float().mean().item()
+            acc = 100 * (knn_predict(ftr, Ye, fte, C) == data["test_y"]).float().mean().item()
             curve.append([step + 1, acc])
             geom_curve.append(geom_point(step + 1, ftr, fte))
             print(f"  step {step + 1:6d}/{total_steps}  loss {loss.item():.4f}  knn {acc:.2f}  "
@@ -286,7 +293,7 @@ def main(argv=None):
     model.eval()
     t1 = time.time()
     head = getattr(model, "head", None) if args.method in ("simclr", "supcon") else None
-    metrics, preds = evaluate_encoder(model.encoder, data, aug.normalize, labeled_idx, pool_idx,
+    metrics, preds = evaluate_encoder(model.encoder, eval_data, aug.normalize, eval_lab, eval_pool,
                                       seed=args.seed, head=head, aug=aug)
     curve.append([total_steps, metrics["knn_acc"]])
     if args.method == "ce":

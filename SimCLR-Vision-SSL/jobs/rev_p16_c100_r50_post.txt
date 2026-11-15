@@ -1,0 +1,15 @@
+-m dlt.finetune --name ft_c100_simclr_all_e200_s0 --from_run c100_simclr_all_e200_s0 --dataset cifar100 --label_fraction 0.1 --seed 0
+-m dlt.finetune --name ft_c100_supcon_lab_f0.1_e200_s0 --from_run c100_supcon_lab_f0.1_e200_s0 --dataset cifar100 --label_fraction 0.1 --seed 0
+-m dlt.finetune --name ft_c100_union_f0.1_e200_s0 --from_run c100_union_f0.1_e200_s0 --dataset cifar100 --label_fraction 0.1 --seed 0
+-m dlt.finetune --name ft_c100_simclr_all_e200_s1 --from_run c100_simclr_all_e200_s1 --dataset cifar100 --label_fraction 0.1 --seed 1
+-m dlt.finetune --name ft_c100_supcon_lab_f0.1_e200_s1 --from_run c100_supcon_lab_f0.1_e200_s1 --dataset cifar100 --label_fraction 0.1 --seed 1
+-m dlt.finetune --name ft_c100_union_f0.1_e200_s1 --from_run c100_union_f0.1_e200_s1 --dataset cifar100 --label_fraction 0.1 --seed 1
+-m dlt.finetune --name ft_c100_simclr_all_e200_s2 --from_run c100_simclr_all_e200_s2 --dataset cifar100 --label_fraction 0.1 --seed 2
+-m dlt.finetune --name ft_c100_supcon_lab_f0.1_e200_s2 --from_run c100_supcon_lab_f0.1_e200_s2 --dataset cifar100 --label_fraction 0.1 --seed 2
+-m dlt.finetune --name ft_c100_union_f0.1_e200_s2 --from_run c100_union_f0.1_e200_s2 --dataset cifar100 --label_fraction 0.1 --seed 2
+-m dlt.finetune --name ft_r50_simclr_all_e200_s0 --from_run r50_simclr_all_e200_s0 --backbone resnet50 --label_fraction 0.1 --seed 0
+-m dlt.finetune --name ft_r50_supcon_lab_f0.1_e200_s0 --from_run r50_supcon_lab_f0.1_e200_s0 --backbone resnet50 --label_fraction 0.1 --seed 0
+-m dlt.finetune --name ft_r50_simclr_all_e200_s1 --from_run r50_simclr_all_e200_s1 --backbone resnet50 --label_fraction 0.1 --seed 1
+-m dlt.finetune --name ft_r50_supcon_lab_f0.1_e200_s1 --from_run r50_supcon_lab_f0.1_e200_s1 --backbone resnet50 --label_fraction 0.1 --seed 1
+-m dlt.finetune --name ft_r50_simclr_all_e200_s2 --from_run r50_simclr_all_e200_s2 --backbone resnet50 --label_fraction 0.1 --seed 2
+-m dlt.finetune --name ft_r50_supcon_lab_f0.1_e200_s2 --from_run r50_supcon_lab_f0.1_e200_s2 --backbone resnet50 --label_fraction 0.1 --seed 2

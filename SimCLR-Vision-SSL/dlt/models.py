@@ -11,6 +11,8 @@ import torchvision
 
 
 def _cifar_resnet(name):
+    # "<name>_mp": the same 3x3 stem followed by the standard max-pooling layer, for 64-96 px images
+    name, _, variant = name.partition("_")
     if name == "resnet18":
         net = torchvision.models.resnet18(weights=None)
         dim = 512
@@ -20,7 +22,8 @@ def _cifar_resnet(name):
     else:
         raise ValueError(name)
     net.conv1 = nn.Conv2d(3, 64, kernel_size=3, stride=1, padding=1, bias=False)
-    net.maxpool = nn.Identity()
+    if variant != "mp":
+        net.maxpool = nn.Identity()
     net.fc = nn.Identity()
     return net, dim
 

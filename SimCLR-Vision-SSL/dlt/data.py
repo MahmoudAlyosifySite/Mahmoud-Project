@@ -50,8 +50,49 @@ def _maybe_download(name, root):
     return folder
 
 
+def _load_stl10(root):
+    """STL-10 (Coates et al., 2011): 5,000 labeled + 100,000 unlabeled training images and
+    8,000 test images at 96 px. The training tensor holds the labeled images first; the
+    unlabeled images follow with label -1. Built by scripts/prepare_stl10.py."""
+    path = os.path.join(root, "stl10_uint8.npz")
+    if not os.path.exists(path):
+        raise FileNotFoundError(f"{path} not found: run scripts/prepare_stl10.py first")
+    d = np.load(path)
+    n_lab = d["train_x"].shape[0]
+    train_x = np.concatenate([d["train_x"], d["unlabeled_x"]])
+    train_y = np.concatenate([d["train_y"], -np.ones(d["unlabeled_x"].shape[0], dtype=np.int64)])
+    return {
+        "name": "stl10",
+        "train_x": torch.from_numpy(train_x),
+        "train_y": torch.from_numpy(train_y).long(),
+        "test_x": torch.from_numpy(d["test_x"]),
+        "test_y": torch.from_numpy(d["test_y"]).long(),
+        "num_classes": 10,
+        "mean": tuple(float(v) for v in d["mean"]),
+        "std": tuple(float(v) for v in d["std"]),
+        "labeled_idx": np.arange(n_lab),
+    }
+
+
+def labeled_subset(data, fraction, seed):
+    """Indices of the training images whose labels may be used.
+
+    CIFAR: a nested class-balanced random subset. STL-10: the fixed labeled split
+    (any positive fraction selects all of it)."""
+    if "labeled_idx" in data:
+        return data["labeled_idx"] if fraction > 0 else np.arange(0)
+    n = data["train_y"].shape[0]
+    if fraction >= 1.0:
+        return np.arange(n)
+    if fraction <= 0.0:
+        return np.arange(0)
+    return stratified_subset(data["train_y"].cpu().numpy(), fraction, seed)
+
+
 def load_dataset(name, root):
-    """Return a dict with uint8 image tensors [N,3,32,32] and int64 labels."""
+    """Return a dict with uint8 image tensors [N,3,H,W] and int64 labels."""
+    if name == "stl10":
+        return _load_stl10(root)
     folder = _maybe_download(name, root)
     if name == "cifar10":
         xs, ys = [], []

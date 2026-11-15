@@ -1,0 +1,189 @@
+{
+ "name": "r50_supcon_lab_f0.1_steps900_lr0.05_s0",
+ "args": {
+  "name": "r50_supcon_lab_f0.1_steps900_lr0.05_s0",
+  "out": "results/runs",
+  "ckpt_dir": "/tmp/claude-1000/-home-jovyan-SimCLR-Vision-SSL/d9e8e4cb-36d5-5896-9064-1fe1d907057f/scratchpad/ckpt",
+  "data_dir": "/tmp/claude-1000/-home-jovyan-SimCLR-Vision-SSL/d9e8e4cb-36d5-5896-9064-1fe1d907057f/scratchpad/data",
+  "dataset": "cifar10",
+  "method": "supcon",
+  "backbone": "resnet50",
+  "aug": "simclr",
+  "pool": "labeled",
+  "label_fraction": 0.1,
+  "pool_file": null,
+  "labeled_share": null,
+  "epochs": 9.28,
+  "batch_size": 512,
+  "lr": 0.05,
+  "wd": 0.0001,
+  "temperature": 0.1,
+  "temperature_unlabeled": null,
+  "holdout": 0,
+  "warmup_frac": 0.05,
+  "seed": 0,
+  "split_seed": 0,
+  "curve_points": 8,
+  "compile": 1,
+  "init_run": null,
+  "force": false,
+  "no_save_ckpt": false
+ },
+ "n_pool": 5000,
+ "n_labeled": 5000,
+ "steps": 900,
+ "train_time_s": 589.6020708084106,
+ "eval_time_s": 319.99591517448425,
+ "final_loss": 6.462556838989258,
+ "loss_log": [
+  [
+   100,
+   6.935682773590088
+  ],
+  [
+   200,
+   6.81162691116333
+  ],
+  [
+   300,
+   6.761323928833008
+  ],
+  [
+   400,
+   6.708790302276611
+  ],
+  [
+   500,
+   6.648477554321289
+  ],
+  [
+   600,
+   6.585149765014648
+  ],
+  [
+   700,
+   6.525180339813232
+  ],
+  [
+   800,
+   6.482658386230469
+  ],
+  [
+   900,
+   6.462556838989258
+  ]
+ ],
+ "knn_curve": [
+  [
+   112,
+   36.010000109672546
+  ],
+  [
+   225,
+   40.87999761104584
+  ],
+  [
+   338,
+   43.59000027179718
+  ],
+  [
+   450,
+   47.39999771118164
+  ],
+  [
+   562,
+   50.74999928474426
+  ],
+  [
+   675,
+   53.15999984741211
+  ],
+  [
+   788,
+   54.32000160217285
+  ],
+  [
+   900,
+   54.589998722076416
+  ]
+ ],
+ "geom_curve": [
+  {
+   "step": 112,
+   "pool_cdnv": 23.132789641311966,
+   "test_cdnv": 35.15231108037327,
+   "labeled_cdnv": 23.132789641311962
+  },
+  {
+   "step": 225,
+   "pool_cdnv": 16.58681986343365,
+   "test_cdnv": 20.72942872917963,
+   "labeled_cdnv": 16.586819863433654
+  },
+  {
+   "step": 338,
+   "pool_cdnv": 17.626293841094785,
+   "test_cdnv": 26.21518665683044,
+   "labeled_cdnv": 17.626293841094785
+  },
+  {
+   "step": 450,
+   "pool_cdnv": 12.304411969757783,
+   "test_cdnv": 18.84330884692626,
+   "labeled_cdnv": 12.304411969757778
+  },
+  {
+   "step": 562,
+   "pool_cdnv": 9.994598999223106,
+   "test_cdnv": 15.88222444777138,
+   "labeled_cdnv": 9.99459899922311
+  },
+  {
+   "step": 675,
+   "pool_cdnv": 10.284458792002475,
+   "test_cdnv": 15.489492816750753,
+   "labeled_cdnv": 10.284458792002473
+  },
+  {
+   "step": 788,
+   "pool_cdnv": 11.469903380116037,
+   "test_cdnv": 18.013778343077632,
+   "labeled_cdnv": 11.469903380116042
+  }
+ ],
+ "metrics": {
+  "linear_acc": 58.789998292922974,
+  "linear_l2": 0.01,
+  "linear_val_acc": 59.22999978065491,
+  "knn_acc": 54.589998722076416,
+  "linear_lab_acc": 54.47999835014343,
+  "linear_lab_l2": 0.1,
+  "seen_cdnv": 10.263055793522861,
+  "seen_etf_cos_mean": -0.06135764400604838,
+  "seen_etf_cos_std": 0.6338879683207339,
+  "seen_etf_norm_cv": 0.31800906191652145,
+  "seen_etf_dev": 0.5776455678510249,
+  "seen_ncc_acc": 50.41999816894531,
+  "test_cdnv": 16.81548406257746,
+  "test_etf_cos_mean": -0.0610336163541694,
+  "test_etf_cos_std": 0.6461789267016474,
+  "test_etf_norm_cv": 0.31448334360261376,
+  "test_etf_dev": 0.5957459922033759,
+  "test_ncc_acc": 46.75999879837036,
+  "heldout_cdnv": 12.159473554470374,
+  "heldout_etf_cos_mean": -0.060918705925390844,
+  "heldout_etf_cos_std": 0.6522950992716982,
+  "heldout_etf_norm_cv": 0.31440113071661585,
+  "heldout_etf_dev": 0.6044789026269277,
+  "heldout_ncc_acc": 47.306665778160095,
+  "linear_acc_gray": 51.62999629974365,
+  "linear_acc_chperm": 39.90999758243561,
+  "cka_hist": 0.03815224267943702,
+  "cka_label": 0.02923426946592743,
+  "hist_r2": 0.4461874779661805,
+  "align": 0.12159989774227142,
+  "uniform": -0.7156785130500793
+ },
+ "torch": "2.11.0+cu126",
+ "gpu": "NVIDIA A40"
+}
