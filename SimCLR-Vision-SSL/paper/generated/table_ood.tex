@@ -1,0 +1,15 @@
+\begin{tabular}{l cc cc}
+\toprule
+ & \multicolumn{2}{c}{dog recall (\%)} & \multicolumn{2}{c}{retrieval P@5 (\%)} \\
+\cmidrule(lr){2-3}\cmidrule(lr){4-5}
+encoder & CIFAR-10 dogs & ImageNet dogs$\to$32px & CIFAR-10 dogs & ImageNet dogs$\to$32px \\
+\midrule
+SimCLR & 73.4 & 42.2 {\scriptsize[40.6, 43.7]} & 61.1 & 36.6 \\
+SupCon (label-only) & 74.5 & 49.6 {\scriptsize[48.1, 51.2]} & 63.9 & 41.9 \\
+Union & 77.6 & 47.0 {\scriptsize[45.4, 48.6]} & 66.1 & 42.0 \\
+SimCLR, 19,400 steps & 77.6 & 46.8 {\scriptsize[45.2, 48.4]} & 68.4 & 44.6 \\
+Supervised CE (all labels) & 90.8 & 64.7 {\scriptsize[63.3, 66.2]} & 87.8 & 61.8 \\
+\midrule
+CLIP ViT-B/32 zero-shot (reference) & 87.1 & 83.7 & -- & -- \\
+\bottomrule
+\end{tabular}

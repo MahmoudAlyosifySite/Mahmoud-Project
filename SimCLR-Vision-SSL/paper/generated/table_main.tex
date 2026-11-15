@@ -1,0 +1,13 @@
+\begin{tabular}{l cc ccc ccc}
+\toprule
+ & \multicolumn{2}{c}{pretraining uses} & \multicolumn{3}{c}{9,700 steps (100 epochs)} & \multicolumn{3}{c}{19,400 steps (200 epochs)} \\
+\cmidrule(lr){2-3}\cmidrule(lr){4-6}\cmidrule(lr){7-9}
+method & images & labels & probe, 50k & probe, 5k & fine-tune, 5k & probe, 50k & probe, 5k & fine-tune, 5k \\
+\midrule
+SimCLR & all 50k & -- & 83.8{\scriptsize$\pm$0.1} & 81.4{\scriptsize$\pm$0.1} & \textbf{85.9{\scriptsize$\pm$0.4}} & \textbf{87.8{\scriptsize$\pm$0.2}} & \textbf{85.8{\scriptsize$\pm$0.2}} & \textbf{88.6{\scriptsize$\pm$0.4}} \\
+SimCLR (subset) & 5k & -- & 77.3{\scriptsize$\pm$0.2} & 72.2{\scriptsize$\pm$0.8} & 81.0{\scriptsize$\pm$0.4} & -- & -- & -- \\
+SupCon (label-only) & 5k & 5k & 83.9{\scriptsize$\pm$0.1} & 81.2{\scriptsize$\pm$0.3} & 82.3{\scriptsize$\pm$0.1} & 84.0{\scriptsize$\pm$0.3} & 81.6{\scriptsize$\pm$0.2} & 82.2{\scriptsize$\pm$0.2} \\
+Union & all 50k & 5k & 85.6{\scriptsize$\pm$0.2} & 81.1{\scriptsize$\pm$0.5} & 81.9{\scriptsize$\pm$0.4} & 86.3{\scriptsize$\pm$0.5} & 81.1{\scriptsize$\pm$0.3} & 81.7{\scriptsize$\pm$0.3} \\
+Union, uniform batches & all 50k & 5k & \textbf{86.1} & \textbf{82.9} & 83.8 & 87.3 & 81.7 & 83.1 \\
+\bottomrule
+\end{tabular}

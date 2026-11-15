@@ -1,0 +1,153 @@
+{
+ "n_ood": 3929,
+ "encoders": {
+  "simclr_all_e100_s0": {
+   "test_acc": 83.89999866485596,
+   "dog_recall_cifar": 73.4000027179718,
+   "dog_recall_ood": 42.1990305185318,
+   "dog_recall_ood_ci": [
+    40.646474930007635,
+    43.72613896665818
+   ],
+   "p_at_5_cifar": 61.11999750137329,
+   "p_at_5_ood": 36.58946454524994,
+   "top1_cifar": 62.10000514984131,
+   "top1_ood": 36.67599856853485,
+   "ood_prediction_hist": {
+    "airplane": 2.37,
+    "automobile": 0.31,
+    "bird": 8.88,
+    "cat": 25.4,
+    "deer": 10.44,
+    "dog": 42.2,
+    "frog": 3.13,
+    "horse": 6.03,
+    "ship": 0.46,
+    "truck": 0.79
+   }
+  },
+  "supcon_lab_f0.1_e100_s0": {
+   "test_acc": 83.93999934196472,
+   "dog_recall_cifar": 74.50000643730164,
+   "dog_recall_ood": 49.55459237098694,
+   "dog_recall_ood_ci": [
+    48.05293967930771,
+    51.18350725375414
+   ],
+   "p_at_5_cifar": 63.89999985694885,
+   "p_at_5_ood": 41.89870357513428,
+   "top1_cifar": 65.10000228881836,
+   "top1_ood": 42.300838232040405,
+   "ood_prediction_hist": {
+    "airplane": 2.24,
+    "automobile": 0.56,
+    "bird": 6.54,
+    "cat": 16.98,
+    "deer": 9.47,
+    "dog": 49.55,
+    "frog": 5.42,
+    "horse": 7.46,
+    "ship": 0.59,
+    "truck": 1.2
+   }
+  },
+  "union_f0.1_e100_s0": {
+   "test_acc": 85.68999767303467,
+   "dog_recall_cifar": 77.60000228881836,
+   "dog_recall_ood": 47.034868597984314,
+   "dog_recall_ood_ci": [
+    45.431407482820056,
+    48.63896665818274
+   ],
+   "p_at_5_cifar": 66.11999869346619,
+   "p_at_5_ood": 42.04632341861725,
+   "top1_cifar": 67.70000457763672,
+   "top1_ood": 43.293458223342896,
+   "ood_prediction_hist": {
+    "airplane": 2.32,
+    "automobile": 0.31,
+    "bird": 7.18,
+    "cat": 20.08,
+    "deer": 10.33,
+    "dog": 47.03,
+    "frog": 3.95,
+    "horse": 6.85,
+    "ship": 0.56,
+    "truck": 1.4
+   }
+  },
+  "simclr_all_e200_s0": {
+   "test_acc": 87.97999620437622,
+   "dog_recall_cifar": 77.60000228881836,
+   "dog_recall_ood": 46.80580198764801,
+   "dog_recall_ood_ci": [
+    45.17625349961823,
+    48.383812674980916
+   ],
+   "p_at_5_cifar": 68.39999556541443,
+   "p_at_5_ood": 44.58131790161133,
+   "top1_cifar": 72.10000157356262,
+   "top1_ood": 44.54059600830078,
+   "ood_prediction_hist": {
+    "airplane": 1.78,
+    "automobile": 0.46,
+    "bird": 5.96,
+    "cat": 25.43,
+    "deer": 9.49,
+    "dog": 46.81,
+    "frog": 3.23,
+    "horse": 5.75,
+    "ship": 0.53,
+    "truck": 0.56
+   }
+  },
+  "ce_f1.0_e100_s0": {
+   "test_acc": 94.74999904632568,
+   "dog_recall_cifar": 90.80000519752502,
+   "dog_recall_ood": 64.69839215278625,
+   "dog_recall_ood_ci": [
+    63.29791295495038,
+    66.2000509035378
+   ],
+   "p_at_5_cifar": 87.83999681472778,
+   "p_at_5_ood": 61.76635026931763,
+   "top1_cifar": 87.10000514984131,
+   "top1_ood": 61.08424663543701,
+   "ood_prediction_hist": {
+    "airplane": 1.43,
+    "automobile": 0.43,
+    "bird": 4.02,
+    "cat": 14.61,
+    "deer": 5.8,
+    "dog": 64.7,
+    "frog": 2.11,
+    "horse": 5.22,
+    "ship": 0.76,
+    "truck": 0.92
+   }
+  }
+ },
+ "clip": {
+  "test_acc": 88.29999566078186,
+  "dog_recall_cifar": 87.10000514984131,
+  "dog_recall_ood_by_resolution": {
+   "16": 52.099770307540894,
+   "32": 83.73631834983826,
+   "64": 94.75693106651306,
+   "128": 96.69126868247986,
+   "224": 96.64036631584167
+  },
+  "ood_prediction_hist": {
+   "airplane": 0.23,
+   "automobile": 0.46,
+   "bird": 1.71,
+   "cat": 7.64,
+   "deer": 1.91,
+   "dog": 83.74,
+   "frog": 0.25,
+   "horse": 3.44,
+   "ship": 0.56,
+   "truck": 0.08
+  }
+ }
+}

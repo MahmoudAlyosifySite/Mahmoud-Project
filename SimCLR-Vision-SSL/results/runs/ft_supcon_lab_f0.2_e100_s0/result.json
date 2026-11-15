@@ -1,0 +1,27 @@
+{
+ "name": "ft_supcon_lab_f0.2_e100_s0",
+ "args": {
+  "name": "ft_supcon_lab_f0.2_e100_s0",
+  "from_run": "supcon_lab_f0.2_e100_s0",
+  "out": "results/runs",
+  "ckpt_dir": "/tmp/claude-1000/-home-jovyan-SimCLR-Vision-SSL/d9e8e4cb-36d5-5896-9064-1fe1d907057f/scratchpad/ckpt",
+  "data_dir": "/tmp/claude-1000/-home-jovyan-SimCLR-Vision-SSL/d9e8e4cb-36d5-5896-9064-1fe1d907057f/scratchpad/data",
+  "dataset": "cifar10",
+  "backbone": "resnet18",
+  "label_fraction": 0.2,
+  "seed": 0,
+  "epochs": 60.0,
+  "batch_size": 128,
+  "lr": 0.01,
+  "wd": 0.0005,
+  "holdout": 0,
+  "force": false
+ },
+ "n_labeled": 10000,
+ "steps": 4688,
+ "train_time_s": 127.80483293533325,
+ "metrics": {
+  "finetune_acc": 87.91999816894531,
+  "linear_lab_acc": 86.5399956703186
+ }
+}

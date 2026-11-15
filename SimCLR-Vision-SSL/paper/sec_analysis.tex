@@ -1,0 +1,99 @@
+\section{The colour shortcut, measured}
+\label{sec:shortcut}
+
+Our report found that colour jitter added 15--21 points to every structural pipeline (\cref{app:report}) and
+attributed this to a colour-histogram shortcut \citep{chen2020simclr,geirhos2020shortcut}: without colour
+distortion, two crops of an image can be matched by their colour statistics alone. The reviewer asked for
+evidence of the mechanism rather than of its effect. We trained \simclr on all images with four augmentation
+pipelines that form the three tiers of the report and measured how much each encoder relies on colour
+(\cref{tab:color}):
+\begin{itemize}[leftmargin=*]
+\item \textbf{Gray test images.} We convert the test images to grayscale and apply the unchanged linear probe.
+An encoder that matches views by colour should suffer most.
+\item \textbf{Histogram alignment.} Linear CKA \citep{kornblith2019cka} between the encoder features of the test
+images and their joint RGB histograms ($8^3$ bins, no spatial information), next to the CKA with the class
+labels; and the $R^2$ of a ridge regression that predicts the histogram from the features.
+\end{itemize}
+
+\begin{table}[t]
+\centering
+\small
+\caption{Colour reliance of \simclr encoders trained with different augmentations (all images, one seed).
+$\Delta$: change in linear accuracy when the test images are converted to grayscale. CKA(hist.): linear CKA
+between features and colour histograms; CKA(label): between features and one-hot labels.}
+\label{tab:color}
+\begin{adjustbox}{max width=\linewidth}
+\input{generated/table_color.tex}
+\end{adjustbox}
+\end{table}
+
+Without colour distortion (crop + flip, \augTwoLin\% linear accuracy) the encoder is a colour detector: its
+features are more aligned with the colour histogram than with the class labels (CKA \augTwoCka against
+\augTwoCkaLabel), the histogram can be read off them almost linearly, and converting the test images to gray
+costs \augTwoGrayDrop points (to \augTwoGrayAcc\%), which is less than a linear classifier on the raw colour
+histogram achieves on its own (\histProbe\%). This is the shortcut, measured directly. Each colour transform removes part of it.
+Random grayscale lowers the histogram alignment most and, as expected, makes the encoder insensitive to gray
+test images (a drop of \augSixGrayDrop points), while colour jitter alone leaves a large gray-image penalty (\augFiveGrayDrop points) because
+it perturbs but rarely removes colour. Accuracy needs both (\augFiveLin and \augSixLin\% with one of them,
+\augEightLin\% with both). With grayscale alone the encoder is about as aligned with the colour histogram as with
+the labels (CKA \augSixCka vs.\ \augSixCkaLabel); with both transforms the label alignment is twice the histogram
+alignment (\augEightCkaLabel vs.\ \augEightCka). The tiers of our report thus order the encoders by how much colour information they keep.
+
+Labels make the shortcut much less important. Removing colour jitter from the full pipeline costs \simclr
+\augJitterCost points (\augSixLin\% instead of \augEightLin\%), but label-only \supcon only \supconJitterCost
+(\supconNoJitterLin\% instead of \supconLin\%): when two images of the same class are positives, matching colour
+statistics is no longer enough to solve the task, so the labels themselves break the shortcut. This is a second
+way in which labels buy speed: they substitute for part of the augmentation that a self-supervised method needs.
+
+\paragraph{Geometry of the augmentation tiers.}
+\citet{luthra2025approximately} predict that stronger invariances push the representation towards a collapsed
+simplex ETF. \Cref{tab:etf} confirms this quantitatively on the test set: from crop + flip to the full pipeline,
+the CDNV falls from \augTwoCdnv to \augEightCdnv and the mean deviation of the class-mean angles from those of a
+simplex ETF halves (\augTwoEtf to \augEightEtf), with the single-transform tiers in between. The class means
+are equiangular on average for every encoder (mean cosine close to $-1/9$); what changes is how evenly the
+angles are spread around that value. The t-SNE plots of our report showed this qualitatively; the ETF
+statistics turn it into a measurement.
+
+\begin{table}[t]
+\centering
+\small
+\caption{Neural-collapse statistics on the CIFAR-10 test set for the augmentation tiers (one seed). A simplex
+ETF has pairwise cosines of $-1/9=-0.111$ between centred class means, ETF deviation 0 and equinorm CV 0.}
+\label{tab:etf}
+\begin{adjustbox}{max width=\linewidth}
+\input{generated/table_etf.tex}
+\end{adjustbox}
+\end{table}
+
+\section{A resolution boundary, quantified}
+\label{sec:ood}
+
+The retrieval demo of our original project returned horses and deer when queried with a high-resolution
+photograph of a German Shepherd. To check that this is a systematic effect and not an anecdote, we took all
+\nOod validation images of Imagewoof \citep{howard2019imagewoof}, ten dog breeds from ImageNet
+\citep{deng2009imagenet}, centre-cropped them and downsampled them to $32{\times}32$ with an antialiased
+bicubic filter, as the demo does. We then measured how often each encoder's linear probe calls them ``dog''
+and how many of their five nearest CIFAR-10 test images are dogs (\cref{tab:ood}).
+
+\begin{table}[t]
+\centering
+\small
+\caption{Resolution shift: ImageNet dog photographs ($\geq$320\,px) downsampled to 32\,px, compared with CIFAR-10
+test dogs. Dog recall of the linear probe (95\% bootstrap CI) and retrieval precision@5 in the CIFAR-10 test
+set (seed 0 encoders). CLIP (zero-shot, ViT-B/32) is an external reference trained on 400M image--text
+pairs.}
+\label{tab:ood}
+\begin{adjustbox}{max width=\linewidth}
+\input{generated/table_ood.tex}
+\end{adjustbox}
+\end{table}
+
+Every CIFAR-trained encoder recognises far fewer of the downsampled ImageNet dogs than of the CIFAR-10 dogs
+(\simclr: \oodSimclrCifar\% $\to$ \oodSimclrOod\%), and the most frequent wrong answer is
+\oodSimclrTopWrong. The drop is not specific to self-supervision: the supervised encoder trained with all labels
+falls from \oodCeCifar\% to \oodCeOod\%. CLIP shows that most of the information survives the
+downsampling (dog recall \clipResThirtyTwo\% at 32\,px vs.\ \clipResTwoTwoFour\% at 224\,px). The failure is
+therefore a distribution shift between ImageNet photographs and CIFAR-10 images at the same resolution
+(framing, pose, and the downsampling filter), which all of our encoders inherit from CIFAR-10. We had
+attributed the demo failure to the lack of language supervision; the supervised baseline shows that the
+training distribution, not the kind of supervision, is the main cause.

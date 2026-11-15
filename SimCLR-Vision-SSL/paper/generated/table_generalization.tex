@@ -1,0 +1,12 @@
+\begin{tabular}{l ccc ccc}
+\toprule
+ & \multicolumn{3}{c}{CIFAR-100, ResNet-18} & \multicolumn{3}{c}{CIFAR-10, ResNet-50} \\
+\cmidrule(lr){2-4}\cmidrule(lr){5-7}
+method & probe, 50k & $k$NN & fine-tune, 5k & probe, 50k & $k$NN & fine-tune, 5k \\
+\midrule
+SimCLR & 54.2 & 42.6 & 51.8 & 85.8 & 80.4 & 85.6 \\
+SimCLR (subset) & 44.6 & 37.1 & -- & -- & -- & -- \\
+SupCon (label-only) & 50.5 & 48.9 & 44.7 & 86.4 & 84.1 & 83.6 \\
+Union & 56.1 & 51.7 & 46.8 & 87.2 & 84.2 & 82.4 \\
+\bottomrule
+\end{tabular}

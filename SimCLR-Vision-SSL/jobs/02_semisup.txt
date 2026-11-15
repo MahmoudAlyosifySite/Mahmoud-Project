@@ -1,0 +1,3 @@
+# FixMatch / MixMatch on the same split; they are light on the GPU and ran in parallel with jobs/01_main.txt
+-m dlt.semisup --name fixmatch_f0.1_s0 --method fixmatch --label_fraction 0.1 --seed 0
+-m dlt.semisup --name mixmatch_f0.1_s0 --method mixmatch --label_fraction 0.1 --seed 0

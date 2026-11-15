@@ -1,0 +1,99 @@
+# Main study. ResNet-18, CIFAR-10, epochs = passes over the FULL training set (same number of steps for every method).
+# Union variant (tau_lab 0.1, tau_unl 0.5, 25% labeled per batch) was chosen on the validation split (jobs/00_pilot.txt).
+# 1) core 2x2 + union, 3 seeds
+--name simclr_all_e100_s0 --method simclr --pool all --epochs 100 --seed 0
+--name supcon_lab_f0.1_e100_s0 --method supcon --pool labeled --label_fraction 0.1 --epochs 100 --seed 0
+--name simclr_sub_f0.1_e100_s0 --method simclr --pool labeled --label_fraction 0.1 --epochs 100 --seed 0
+--name union_f0.1_e100_s0 --method supcon --pool all --temperature_unlabeled 0.5 --labeled_share 0.25 --label_fraction 0.1 --epochs 100 --seed 0
+--name simclr_all_e100_s1 --method simclr --pool all --epochs 100 --seed 1
+--name supcon_lab_f0.1_e100_s1 --method supcon --pool labeled --label_fraction 0.1 --epochs 100 --seed 1
+--name simclr_sub_f0.1_e100_s1 --method simclr --pool labeled --label_fraction 0.1 --epochs 100 --seed 1
+--name union_f0.1_e100_s1 --method supcon --pool all --temperature_unlabeled 0.5 --labeled_share 0.25 --label_fraction 0.1 --epochs 100 --seed 1
+--name simclr_all_e100_s2 --method simclr --pool all --epochs 100 --seed 2
+--name supcon_lab_f0.1_e100_s2 --method supcon --pool labeled --label_fraction 0.1 --epochs 100 --seed 2
+--name simclr_sub_f0.1_e100_s2 --method simclr --pool labeled --label_fraction 0.1 --epochs 100 --seed 2
+--name union_f0.1_e100_s2 --method supcon --pool all --temperature_unlabeled 0.5 --labeled_share 0.25 --label_fraction 0.1 --epochs 100 --seed 2
+# 2) the original report's budget: SupCon for 100 epochs over the 5,000 images = 10 full-data epochs
+--name supcon_lab_f0.1_e10_s0 --method supcon --pool labeled --label_fraction 0.1 --epochs 10 --seed 0
+--name simclr_all_e10_s0 --method simclr --pool all --epochs 10 --seed 0
+--name supcon_lab_f0.1_e10_s1 --method supcon --pool labeled --label_fraction 0.1 --epochs 10 --seed 1
+--name simclr_all_e10_s1 --method simclr --pool all --epochs 10 --seed 1
+--name supcon_lab_f0.1_e10_s2 --method supcon --pool labeled --label_fraction 0.1 --epochs 10 --seed 2
+--name simclr_all_e10_s2 --method simclr --pool all --epochs 10 --seed 2
+--name supcon_lab_f0.1_e25_s0 --method supcon --pool labeled --label_fraction 0.1 --epochs 25 --seed 0
+--name simclr_all_e25_s0 --method simclr --pool all --epochs 25 --seed 0
+--name union_f0.1_e25_s0 --method supcon --pool all --temperature_unlabeled 0.5 --labeled_share 0.25 --label_fraction 0.1 --epochs 25 --seed 0
+--name supcon_lab_f0.1_e50_s0 --method supcon --pool labeled --label_fraction 0.1 --epochs 50 --seed 0
+--name simclr_all_e50_s0 --method simclr --pool all --epochs 50 --seed 0
+--name union_f0.1_e50_s0 --method supcon --pool all --temperature_unlabeled 0.5 --labeled_share 0.25 --label_fraction 0.1 --epochs 50 --seed 0
+# 2b) the original report used a ResNet-50: same short budget with ResNet-50 (report lr 0.05 and our lr 0.25)
+--name r50_supcon_lab_f0.1_e10_s0 --backbone resnet50 --method supcon --pool labeled --label_fraction 0.1 --epochs 10 --seed 0
+--name r50_supcon_lab_f0.1_e10_lr0.05_s0 --backbone resnet50 --method supcon --pool labeled --label_fraction 0.1 --epochs 10 --lr 0.05 --seed 0
+--name r50_simclr_all_e10_s0 --backbone resnet50 --method simclr --pool all --epochs 10 --seed 0
+# 2c) longer budget (200 epochs = 19,400 steps): does label-only SupCon saturate?
+--name supcon_lab_f0.1_e200_s0 --method supcon --pool labeled --label_fraction 0.1 --epochs 200 --seed 0
+--name simclr_all_e200_s0 --method simclr --pool all --epochs 200 --seed 0
+--name union_f0.1_e200_s0 --method supcon --pool all --temperature_unlabeled 0.5 --labeled_share 0.25 --label_fraction 0.1 --epochs 200 --seed 0
+# 2c') union without oversampling the labeled images (uniform batches), to test whether oversampling causes the long-budget drop
+--name unionunif_f0.1_e200_s0 --method supcon --pool all --temperature_unlabeled 0.5 --label_fraction 0.1 --epochs 200 --seed 0
+--name unionunif_f0.1_e100_s0 --method supcon --pool all --temperature_unlabeled 0.5 --label_fraction 0.1 --epochs 100 --seed 0
+# 2d) more seeds for the 200-epoch budget
+--name supcon_lab_f0.1_e200_s1 --method supcon --pool labeled --label_fraction 0.1 --epochs 200 --seed 1
+--name simclr_all_e200_s1 --method simclr --pool all --epochs 200 --seed 1
+--name union_f0.1_e200_s1 --method supcon --pool all --temperature_unlabeled 0.5 --labeled_share 0.25 --label_fraction 0.1 --epochs 200 --seed 1
+--name supcon_lab_f0.1_e200_s2 --method supcon --pool labeled --label_fraction 0.1 --epochs 200 --seed 2
+--name simclr_all_e200_s2 --method simclr --pool all --epochs 200 --seed 2
+--name union_f0.1_e200_s2 --method supcon --pool all --temperature_unlabeled 0.5 --labeled_share 0.25 --label_fraction 0.1 --epochs 200 --seed 2
+# 3) supervised cross-entropy
+--name ce_f0.1_e100_s0 --method ce --pool labeled --label_fraction 0.1 --epochs 100 --seed 0
+--name ce_f1.0_e100_s0 --method ce --pool labeled --label_fraction 1.0 --epochs 100 --seed 0
+# 4) label-fraction sweep (seed 0)
+--name supcon_lab_f0.01_e100_s0 --method supcon --pool labeled --label_fraction 0.01 --epochs 100 --seed 0
+--name union_f0.01_e100_s0 --method supcon --pool all --temperature_unlabeled 0.5 --labeled_share 0.25 --label_fraction 0.01 --epochs 100 --seed 0
+--name simclr_sub_f0.01_e100_s0 --method simclr --pool labeled --label_fraction 0.01 --epochs 100 --seed 0
+--name supcon_lab_f0.05_e100_s0 --method supcon --pool labeled --label_fraction 0.05 --epochs 100 --seed 0
+--name union_f0.05_e100_s0 --method supcon --pool all --temperature_unlabeled 0.5 --labeled_share 0.25 --label_fraction 0.05 --epochs 100 --seed 0
+--name simclr_sub_f0.05_e100_s0 --method simclr --pool labeled --label_fraction 0.05 --epochs 100 --seed 0
+--name supcon_lab_f0.2_e100_s0 --method supcon --pool labeled --label_fraction 0.2 --epochs 100 --seed 0
+--name union_f0.2_e100_s0 --method supcon --pool all --temperature_unlabeled 0.5 --labeled_share 0.25 --label_fraction 0.2 --epochs 100 --seed 0
+--name simclr_sub_f0.2_e100_s0 --method simclr --pool labeled --label_fraction 0.2 --epochs 100 --seed 0
+# 4b) fixed-size labeled pools (5,000 images, 500/class) with controlled coverage (built by scripts/make_pools.py)
+--name supcon_lab_cluster10_f0.1_e100_s0 --method supcon --pool labeled --pool_file results/pools/cluster10_f0.1_s0.npy --epochs 100 --seed 0
+--name supcon_lab_cluster50_f0.1_e100_s0 --method supcon --pool labeled --pool_file results/pools/cluster50_f0.1_s0.npy --epochs 100 --seed 0
+--name supcon_lab_kcenter_f0.1_e100_s0 --method supcon --pool labeled --pool_file results/pools/kcenter_f0.1_s0.npy --epochs 100 --seed 0
+--name simclr_sub_cluster50_f0.1_e100_s0 --method simclr --pool labeled --pool_file results/pools/cluster50_f0.1_s0.npy --epochs 100 --seed 0
+--name simclr_sub_kcenter_f0.1_e100_s0 --method simclr --pool labeled --pool_file results/pools/kcenter_f0.1_s0.npy --epochs 100 --seed 0
+# 4c) fine-tuning every 10%-label encoder on its 5,000 labeled images (LP-FT, 60 epochs over the labeled set)
+-m dlt.finetune --name ft_simclr_all_e100_s0 --from_run simclr_all_e100_s0 --label_fraction 0.1 --seed 0
+-m dlt.finetune --name ft_supcon_lab_f0.1_e100_s0 --from_run supcon_lab_f0.1_e100_s0 --label_fraction 0.1 --seed 0
+-m dlt.finetune --name ft_simclr_sub_f0.1_e100_s0 --from_run simclr_sub_f0.1_e100_s0 --label_fraction 0.1 --seed 0
+-m dlt.finetune --name ft_union_f0.1_e100_s0 --from_run union_f0.1_e100_s0 --label_fraction 0.1 --seed 0
+-m dlt.finetune --name ft_simclr_all_e100_s1 --from_run simclr_all_e100_s1 --label_fraction 0.1 --seed 1
+-m dlt.finetune --name ft_supcon_lab_f0.1_e100_s1 --from_run supcon_lab_f0.1_e100_s1 --label_fraction 0.1 --seed 1
+-m dlt.finetune --name ft_simclr_sub_f0.1_e100_s1 --from_run simclr_sub_f0.1_e100_s1 --label_fraction 0.1 --seed 1
+-m dlt.finetune --name ft_union_f0.1_e100_s1 --from_run union_f0.1_e100_s1 --label_fraction 0.1 --seed 1
+-m dlt.finetune --name ft_simclr_all_e100_s2 --from_run simclr_all_e100_s2 --label_fraction 0.1 --seed 2
+-m dlt.finetune --name ft_supcon_lab_f0.1_e100_s2 --from_run supcon_lab_f0.1_e100_s2 --label_fraction 0.1 --seed 2
+-m dlt.finetune --name ft_simclr_sub_f0.1_e100_s2 --from_run simclr_sub_f0.1_e100_s2 --label_fraction 0.1 --seed 2
+-m dlt.finetune --name ft_union_f0.1_e100_s2 --from_run union_f0.1_e100_s2 --label_fraction 0.1 --seed 2
+# 5) other self-supervised methods
+--name byol_all_e100_s0 --method byol --pool all --epochs 100 --seed 0
+--name simsiam_all_e100_s0 --method simsiam --pool all --epochs 100 --seed 0
+# 6) colour shortcut / augmentation tiers (SimCLR, all images)
+--name simclr_exp2_e100_s0 --method simclr --pool all --aug exp2 --epochs 100 --seed 0
+--name simclr_exp5_e100_s0 --method simclr --pool all --aug exp5 --epochs 100 --seed 0
+--name simclr_exp6_e100_s0 --method simclr --pool all --aug exp6 --epochs 100 --seed 0
+--name supcon_lab_f0.1_exp6_e100_s0 --method supcon --pool labeled --label_fraction 0.1 --aug exp6 --epochs 100 --seed 0
+# 7) CIFAR-100
+--name c100_simclr_all_e100_s0 --dataset cifar100 --method simclr --pool all --epochs 100 --seed 0
+--name c100_supcon_lab_f0.1_e100_s0 --dataset cifar100 --method supcon --pool labeled --label_fraction 0.1 --epochs 100 --seed 0
+--name c100_union_f0.1_e100_s0 --dataset cifar100 --method supcon --pool all --temperature_unlabeled 0.5 --labeled_share 0.25 --label_fraction 0.1 --epochs 100 --seed 0
+--name c100_simclr_sub_f0.1_e100_s0 --dataset cifar100 --method simclr --pool labeled --label_fraction 0.1 --epochs 100 --seed 0
+# 8) semi-supervised baselines on the same split (same number of processed images)
+# 9) ResNet-50
+--name r50_simclr_all_e100_s0 --backbone resnet50 --method simclr --pool all --epochs 100 --seed 0
+--name r50_supcon_lab_f0.1_e100_s0 --backbone resnet50 --method supcon --pool labeled --label_fraction 0.1 --epochs 100 --seed 0
+--name r50_union_f0.1_e100_s0 --backbone resnet50 --method supcon --pool all --temperature_unlabeled 0.5 --labeled_share 0.25 --label_fraction 0.1 --epochs 100 --seed 0
+# 10) fine-tuning of the other encoders
+-m dlt.finetune --name ft_supcon_lab_cluster50_f0.1_e100_s0 --from_run supcon_lab_cluster50_f0.1_e100_s0 --label_fraction 0.1 --seed 0
+-m dlt.finetune --name ft_supcon_lab_kcenter_f0.1_e100_s0 --from_run supcon_lab_kcenter_f0.1_e100_s0 --label_fraction 0.1 --seed 0

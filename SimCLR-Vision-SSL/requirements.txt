@@ -1,0 +1,14 @@
+# Versions used for every result in paper/ (NVIDIA A40, CUDA 12.6, Python 3.12).
+torch==2.11.0
+torchvision==0.26.0
+numpy==2.5.2
+scipy==1.18.0
+pandas==3.0.5
+matplotlib==3.11.1
+pillow==12.3.0
+pyyaml>=6.0
+# only for the CLIP reference in scripts/ood_resolution.py
+transformers==5.15.1
+# only for the original course-project code in src/ and deployment/
+scikit-learn
+tqdm

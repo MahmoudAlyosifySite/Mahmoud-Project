@@ -1,0 +1,27 @@
+{
+ "name": "ft_supcon_lab_cluster50_f0.1_e100_s0",
+ "args": {
+  "name": "ft_supcon_lab_cluster50_f0.1_e100_s0",
+  "from_run": "supcon_lab_cluster50_f0.1_e100_s0",
+  "out": "results/runs",
+  "ckpt_dir": "/tmp/claude-1000/-home-jovyan-SimCLR-Vision-SSL/d9e8e4cb-36d5-5896-9064-1fe1d907057f/scratchpad/ckpt",
+  "data_dir": "/tmp/claude-1000/-home-jovyan-SimCLR-Vision-SSL/d9e8e4cb-36d5-5896-9064-1fe1d907057f/scratchpad/data",
+  "dataset": "cifar10",
+  "backbone": "resnet18",
+  "label_fraction": 0.1,
+  "seed": 0,
+  "epochs": 60.0,
+  "batch_size": 128,
+  "lr": 0.01,
+  "wd": 0.0005,
+  "holdout": 0,
+  "force": false
+ },
+ "n_labeled": 5000,
+ "steps": 2344,
+ "train_time_s": 93.46072602272034,
+ "metrics": {
+  "finetune_acc": 83.25999975204468,
+  "linear_lab_acc": 77.81999707221985
+ }
+}
