@@ -41,6 +41,12 @@ double-spaced pages; the review layout of this paper has about 30 pages of text 
 appendix, so it would need cutting, with the appendix moved to supplementary material.
 Official acceptance rates are on each journal's ScienceDirect "Insights" page (open it in a browser).
 
+Quartile (checked 2026-11-15 from public sources only): both journals are listed as **Q1** in Web of Science's
+"Computer Science, Artificial Intelligence" category (JCR 2023, as reported by Peeref) and as Q1 in Scopus-based
+rankings; impact factors on the Elsevier pages are 7.2 (Neural Networks) and 9.1 (Pattern Recognition). The JCR
+itself needs an institutional login: Queen's Library -> Databases -> Journal Citation Reports -> search the ISSN
+(Neural Networks 0893-6080, Pattern Recognition 0031-3203) -> "Rank by JIF" shows the category quartile.
+
 
 The supervisor asked for a journal template and advised against TPAMI, IJCV and JMLR. The manuscript is prepared for
 an Elsevier journal (`\journal{Neurocomputing}` in `submission.tex`, the main target since 2026-11-15; the same class serves Neural Networks,
