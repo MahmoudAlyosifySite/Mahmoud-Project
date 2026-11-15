@@ -33,10 +33,12 @@ that are still in the queue (`\pending{...}`); none may remain in a submitted ve
 
 ## Journal
 
-Current choice: **Neurocomputing** (Elsevier). It accepts empirical studies of learning systems, including computer
-vision, uses the same `elsarticle` class (no reformatting), and is less selective than Pattern Recognition or Neural
-Networks. Pattern Recognition (the supervisor's example) requires 20-35 single-column, double-spaced pages; the review
-layout of this paper has about 30 pages of text and 9 of references before the appendix, so it would need cutting.
+Current choice: **Neural Networks** (Elsevier), with **Pattern Recognition** as the second choice; both use the same
+`elsarticle` class, so switching is one line (`\journal{...}` in `submission.tex`). Neural Networks fits a study of
+learning objectives, representation geometry (neural collapse) and evaluation protocols, and has no page range that this
+paper violates as far as we could check. Pattern Recognition (the supervisor's example) requires 20-35 single-column,
+double-spaced pages; the review layout of this paper has about 30 pages of text and 9 of references before the
+appendix, so it would need cutting, with the appendix moved to supplementary material.
 Official acceptance rates are on each journal's ScienceDirect "Insights" page (open it in a browser).
 
 
