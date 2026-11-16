@@ -3,8 +3,8 @@
 STORE=${STORE:-/home/jovyan/simclr_store}
 cd "$(dirname "$0")/.." || exit 1
 date -u +"now: %F %H:%M UTC"
-if ps -eo args | grep -v grep | grep -q "scripts/run_phases.sh jobs/phases.txt"; then echo "queue: RUNNING"; else echo "queue: NOT RUNNING  ->  bash scripts/resume_queue.sh"; fi
-if ps -eo args | grep -v grep | grep -q "scripts/queue_watchdog.sh"; then echo "watchdog: running"; else echo "watchdog: not running"; fi
+if ps -ww -eo args | grep -v grep | grep -q "scripts/run_phases.sh jobs/phases.txt"; then echo "queue: RUNNING"; else echo "queue: NOT RUNNING  ->  bash scripts/resume_queue.sh"; fi
+if ps -ww -eo args | grep -v grep | grep -q "scripts/queue_watchdog.sh"; then echo "watchdog: running"; else echo "watchdog: not running"; fi
 echo "jobs on the GPU now:"; ps -eo etime,args | grep -E "python .*-m (dlt|scripts)\." | grep -v grep | sed -E 's/.*--name ([^ ]+).*/  \1/' 
 nvidia-smi --query-gpu=utilization.gpu,memory.used,memory.total --format=csv,noheader 2> /dev/null | sed 's/^/GPU: /'
 python - <<'PY'

@@ -1,7 +1,8 @@
 """Run a list of jobs on one GPU, a few at a time, skipping finished ones.
 
 Each line of the jobs file is the argument string of ``python -m <module>``
-(default module: dlt.train) and must contain ``--name <run name>``. A job counts
+(default module: dlt.train) and must contain ``--name <run name>``. Header lines
+``# parallel: N`` and ``# retries: N`` override the command-line settings for that file. A job counts
 as finished when ``<out>/<name>/result.json`` exists, so the queue can be
 stopped and restarted at any time.
 
@@ -20,8 +21,14 @@ p.add_argument("--out", default="results/runs")
 p.add_argument("--ckpt_dir", default=None)
 p.add_argument("--log_dir", default=None)
 p.add_argument("--parallel", type=int, default=1)
-p.add_argument("--retries", type=int, default=1)
+p.add_argument("--retries", type=int, default=2)
 args = p.parse_args()
+# a jobs file may override the queue settings with header lines such as "# parallel: 1" or "# retries: 3"
+for line in open(args.jobs):
+    if line.startswith("#") and ":" in line:
+        key, _, val = line[1:].partition(":")
+        if key.strip() in ("parallel", "retries") and val.strip().isdigit():
+            setattr(args, key.strip(), int(val.strip()))
 
 log_dir = args.log_dir or os.path.join(args.out, "_logs")
 os.makedirs(log_dir, exist_ok=True)

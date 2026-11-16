@@ -74,7 +74,8 @@ adds little. Cross-entropy on the 5,000 labels is in fact tighter on test images
 
 \paragraph{Dynamics}
 \Cref{fig:geometry}(b) follows the ratio between the CDNV on test images and on the labeled images during
-the 19,400-step runs (the two seeds for which it was logged). For \supcon the ratio is already
+the longest runs for which it was logged (\R{geomcurve:supcon:n} seeds, checkpoints up to
+\R{geomcurve:supcon:laststep} steps). For \supcon the ratio is already
 \R{geomcurve:supcon:first} at \R{geomcurve:supcon:firststep} steps, when its accuracy has almost stopped
 improving, and keeps rising to \R{geomcurve:supcon:last}; for \union it rises from \R{geomcurve:union:first}
 to \R{geomcurve:union:last}; for \simclr, measured between all training images and test images, it stays at
@@ -141,8 +142,9 @@ accuracy of \supcon.
 colour histogram alone \citep{chen2020simclr,chen2021intriguing,robinson2021can}. Labels offer another way
 out of this shortcut, because two different images of a class do not share a histogram. \Cref{tab:jitter}
 removes colour jitter (keeping random grayscale) from the three methods. \simclr loses
-\R{jitter:simclr_all_e100}\pt, and \supcon only \R{jitter:supcon_lab_f0.1_e100}\pt. \pending{\union, which sees
-labels for a quarter of each batch, loses \R{jitter:union_f0.1_e100}\pt.} Where good augmentations are not
+\R{jitter:simclr_all_e100}\pt, and \supcon only \R{jitter:supcon_lab_f0.1_e100}\pt. \union loses \R{jitter:union_f0.1_e100}\pt, in between: only the quarter of each batch that is labeled has
+class positives, while the unlabeled three quarters are trained by instance discrimination and are exposed to
+the colour shortcut like \simclr. Where good augmentations are not
 known, for example outside natural images, this is an argument for using labels in the loss that our
 accuracy comparison does not capture. The full analysis of colour reliance in \simclr is in
 \cref{app:colour}.

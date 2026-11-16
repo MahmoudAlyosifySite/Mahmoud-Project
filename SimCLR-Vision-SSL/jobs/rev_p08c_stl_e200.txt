@@ -1,3 +1,5 @@
+# parallel: 1
+# (96-px runs: two at once can exceed the memory of the GPU)
 --name stl_simclr_all_e200_s0 --dataset stl10 --backbone resnet18_mp --method simclr --pool all --epochs 200 --seed 0 --curve_points 8
 --name stl_supcon_lab_e200_s0 --dataset stl10 --backbone resnet18_mp --method supcon --pool labeled --label_fraction 1 --epochs 200 --seed 0 --curve_points 8
 --name stl_union_e200_s0 --dataset stl10 --backbone resnet18_mp --method supcon --pool all --label_fraction 1 --temperature_unlabeled 0.5 --labeled_share 0.25 --epochs 200 --seed 0 --curve_points 8

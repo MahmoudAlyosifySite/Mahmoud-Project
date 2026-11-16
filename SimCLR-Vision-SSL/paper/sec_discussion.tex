@@ -15,9 +15,9 @@ compute budget semi-supervised training alone was the best option we found.
 and state budgets in steps or processed images.
 \end{enumerate}
 These rules are supported for class-balanced data, unlabeled images from the same or a broader distribution
-(CIFAR, STL-10), ResNet-18 and ResNet-50 encoders, label fractions around 1--20\% and budgets up to 97,000
-steps. At label fractions of 50\% and above \supcon is the better pretraining method again
-(\cref{sec:fractions}).
+(CIFAR, STL-10), ResNet-18 and ResNet-50 encoders, label fractions around 1--20\% and budgets up to
+\R{long:steps} steps. With all labels \supcon is the better pretraining method \citep{khosla2020supcon};
+\pending{in our grid it overtakes \simclr again from a label fraction of about ...\% (\cref{sec:fractions}).}
 
 \paragraph{Limitations}
 \emph{Scale.} All experiments use images of at most 96 px, at most 105,000 training images and ResNets. We

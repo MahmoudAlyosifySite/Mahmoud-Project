@@ -12,10 +12,10 @@ echo "$(date -u +%F_%T) watchdog started" >> "$LOG"
 while true; do
   # a queue started from another log directory (e.g. a Claude session scratchpad): mirror its logs
   if [ -n "$EXTRA_LOG_DIR" ] && [ -d "$EXTRA_LOG_DIR" ] && \
-     ps -eo args | grep -v grep | grep -q "run_phases.sh jobs/phases.txt .* $EXTRA_LOG_DIR"; then
+     ps -ww -eo args | grep -v grep | grep -q "run_phases.sh jobs/phases.txt .* $EXTRA_LOG_DIR"; then
     cp -a "$EXTRA_LOG_DIR"/. "$STORE/logs/" 2> /dev/null
   fi
-  if ! ps -eo args | grep -v grep | grep -q "scripts/run_phases.sh jobs/phases.txt"; then
+  if ! ps -ww -eo args | grep -v grep | grep -q "scripts/run_phases.sh jobs/phases.txt"; then
     left=0
     while read -r f; do
       [ -z "$f" ] && continue
@@ -30,5 +30,5 @@ while true; do
     DLT_DATA="$STORE/data" setsid nohup scripts/run_phases.sh jobs/phases.txt "$STORE/ckpt" "$STORE/logs" 2 \
       > /dev/null 2>&1 < /dev/null &
   fi
-  sleep 300
+  sleep 300 9>&-      # the child must not keep the lock
 done

@@ -276,8 +276,9 @@ def evaluate_encoder(encoder, data, normalize_fn, labeled_idx, pool_idx, seed=0,
         v2 = aug(sub).contiguous(memory_format=torch.channels_last)
         was = (encoder.training, head.training)
         encoder.eval(), head.eval()
-        with torch.autocast("cuda", dtype=torch.float16):
-            z1, z2 = head(encoder(v1)), head(encoder(v2))
+        with torch.autocast("cuda", dtype=torch.float16):   # in chunks: 5,000 views at 96 px do not fit at once
+            z1 = torch.cat([head(encoder(v1[i:i + 500])) for i in range(0, v1.shape[0], 500)])
+            z2 = torch.cat([head(encoder(v2[i:i + 500])) for i in range(0, v2.shape[0], 500)])
         encoder.train(was[0]), head.train(was[1])
         m["align"], m["uniform"] = align_uniform(z1, z2)
     return m, preds

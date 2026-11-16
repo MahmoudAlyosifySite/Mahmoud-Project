@@ -60,13 +60,14 @@ Writing rule (from the authors): every negative result is followed by a one- or 
 Integrated in the paper: compute-matched 2x2 at 970-19,400 steps (5 seeds at 9,700 and 19,400); protocol table;
 fine-tuning recipe search with the label budget (fails for label-using encoders: their validation images are already
 separated) and oracle grid (3 seeds: about half of the fine-tuning gap is the recipe; SimCLR stays ~3 points ahead);
-two-stage fine-tuning; SimCLR v2-style self-distillation; BYOL fine-tuning; FixMatch from every encoder (3 seeds) and the
+two-stage fine-tuning; SimCLR v2-style self-distillation; BYOL fine-tuning;
+38,800-step runs (3 seeds: SupCon flat at ~84, SimCLR 89.9); colour jitter with 3 seeds incl. SupCon+U; CIFAR-100
+at 9,700 steps with 3 seeds; FixMatch from every encoder (3 seeds) and the
 equal-total-compute comparison with FixMatch from scratch; three-way CDNV split with a cross-entropy control; CDNV
 ratio during training; ResNet-50 at 19,400 steps (1 seed); compute table; statistics (hierarchical bootstrap, Holm,
 TOST); new related work, audit of budget reporting, journal statements, elsarticle template.
 
-Waiting for runs (phase in `jobs/phases.txt`): colour jitter with seeds and SupCon+U, CIFAR-100 seeds, self-distillation (p05b/p05c); 38,800 steps (p06/p07);
-STL-10 (p08*); 97,000 steps (p10/p11); coverage intervention (p09); label fraction x budget grid (p12/p13); SupCon
+Waiting for runs (phase in `jobs/phases.txt`): STL-10 (p08*; 96-px phases run one job at a time); 97,000 steps (p10/p11); coverage intervention (p09); label fraction x budget grid (p12/p13); SupCon
 regularisation and ResNet-50 seeds (p14); CIFAR-100 at 19,400 steps (p15/p16); Tiny-ImageNet (p17-p20).
 
 Before submission (authors' decisions, see `paper/SUBMISSION.md`): CRediT roles, funding, the journal's
