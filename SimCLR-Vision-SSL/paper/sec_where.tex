@@ -58,7 +58,7 @@ starting point gives \R{byol_all_e200:fm:pm}\%, so no pretrained encoder we test
 scratch at the same total compute.
 
 \paragraph{Summary}
-The answer to the question in the title is ``after''. Within the pipelines that end with supervised
+The answer to the question in the title is: not inside a contrastive loss from the first step. Within the pipelines that end with supervised
 fine-tuning, the labels are better kept out of the contrastive loss until a label-free encoder exists, and
 a short \supcon stage is the best way to put them into a contrastive loss. When semi-supervised training
 follows, the choice of encoder matters by less than a point. Overall, the best place for scarce labels in

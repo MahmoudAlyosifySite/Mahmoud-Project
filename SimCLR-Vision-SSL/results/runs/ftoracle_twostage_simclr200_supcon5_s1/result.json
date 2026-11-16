@@ -1,0 +1,40 @@
+{
+ "name": "ftoracle_twostage_simclr200_supcon5_s1",
+ "args": {
+  "name": "ftoracle_twostage_simclr200_supcon5_s1",
+  "from_run": "twostage_simclr200_supcon5_s1",
+  "ckpt_dir": "/tmp/claude-1000/-home-jovyan-SimCLR-Vision-SSL/d9e8e4cb-36d5-5896-9064-1fe1d907057f/scratchpad/ckpt",
+  "out": "results/runs",
+  "config_from": "ftoracle_twostage_simclr200_supcon5_s0",
+  "data_dir": "/tmp/claude-1000/-home-jovyan-SimCLR-Vision-SSL/d9e8e4cb-36d5-5896-9064-1fe1d907057f/scratchpad/data",
+  "dataset": "cifar10",
+  "backbone": "resnet18",
+  "label_fraction": 0.1,
+  "seed": 1,
+  "final_only": "{\"head\": \"lp\", \"lr\": 0.01, \"epochs\": 120, \"reg\": \"mixup\"}",
+  "no_test_per_config": false,
+  "oracle": false,
+  "grid": "full"
+ },
+ "from_run": "twostage_simclr200_supcon5_s1",
+ "n_labeled": 5000,
+ "grid": [],
+ "best": {
+  "head": "lp",
+  "lr": 0.01,
+  "epochs": 120,
+  "reg": "mixup"
+ },
+ "default": {
+  "head": "lp",
+  "lr": 0.01,
+  "epochs": 60,
+  "reg": "none"
+ },
+ "train_time_s": 198.25483226776123,
+ "oracle": false,
+ "metrics": {
+  "finetune_tuned_acc": 89.6299958229065,
+  "finetune_default_acc": 88.11999559402466
+ }
+}
