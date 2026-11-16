@@ -1,0 +1,40 @@
+{
+ "name": "ftsearch_byol_all_e200_s2",
+ "args": {
+  "name": "ftsearch_byol_all_e200_s2",
+  "from_run": "byol_all_e200_s2",
+  "ckpt_dir": "/tmp/claude-1000/-home-jovyan-SimCLR-Vision-SSL/d9e8e4cb-36d5-5896-9064-1fe1d907057f/scratchpad/ckpt",
+  "out": "results/runs",
+  "config_from": "ftsearch_byol_all_e200_s0",
+  "data_dir": "/tmp/claude-1000/-home-jovyan-SimCLR-Vision-SSL/d9e8e4cb-36d5-5896-9064-1fe1d907057f/scratchpad/data",
+  "dataset": "cifar10",
+  "backbone": "resnet18",
+  "label_fraction": 0.1,
+  "seed": 2,
+  "final_only": "{\"head\": \"lp\", \"lr\": 0.003, \"epochs\": 60, \"reg\": \"ls\"}",
+  "no_test_per_config": false,
+  "oracle": false,
+  "grid": "full"
+ },
+ "from_run": "byol_all_e200_s2",
+ "n_labeled": 5000,
+ "grid": [],
+ "best": {
+  "head": "lp",
+  "lr": 0.003,
+  "epochs": 60,
+  "reg": "ls"
+ },
+ "default": {
+  "head": "lp",
+  "lr": 0.01,
+  "epochs": 60,
+  "reg": "none"
+ },
+ "train_time_s": 149.18512725830078,
+ "oracle": false,
+ "metrics": {
+  "finetune_tuned_acc": 91.16999506950378,
+  "finetune_default_acc": 87.73999810218811
+ }
+}
