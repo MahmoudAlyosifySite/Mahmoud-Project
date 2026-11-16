@@ -4,14 +4,21 @@
 encoder & recipe chosen on & chosen recipe & range of the selection score over the grid & test accuracy \\
 \midrule
 \simclr & label split & LP head, lr 0.01, 30 passes, label smoothing & 82.3--89.6 & 89.4{\scriptsize$\,\pm\,$0.1} \\
-\simclr & test set (oracle) & LP head, lr 0.01, 120 passes, label smoothing & 85.4--89.8 & -- \\
+\simclr & test set (oracle) & LP head, lr 0.01, 120 passes, label smoothing & 85.4--89.8 & 89.7{\scriptsize$\,\pm\,$0.2} \\
 \addlinespace
+BYOL & label split & LP head, lr 0.003, 60 passes, label smoothing & 44.1--92.0 & 91.3{\scriptsize$\,\pm\,$0.2} \\
+BYOL & test set (oracle) & LP head, lr 0.003, 120 passes, label smoothing & 67.2--91.4 & 91.1{\scriptsize$\,\pm\,$0.0} \\
 \addlinespace
 \addlinespace
 \supcon & label split & LP head, lr 0.003, 30 passes, none & 93.2--100.0 & 81.3{\scriptsize$\,\pm\,$0.3} \\
-\supcon & test set (oracle) & LP head, lr 0.1, 120 passes, mixup & 80.9--87.3 & -- \\
+\supcon & test set (oracle) & LP head, lr 0.1, 120 passes, mixup & 80.9--87.3 & 86.8{\scriptsize$\,\pm\,$0.3} \\
+\supcon & recipe of \simclr & -- & -- & 82.6{\scriptsize$\,\pm\,$0.1} \\
 \addlinespace
 \union & label split & LP head, lr 0.003, 120 passes, label smoothing & 89.6--100.0 & 82.1{\scriptsize$\,\pm\,$0.1} \\
+\union & test set (oracle) & random head, lr 0.1, 60 passes, label smoothing & 79.7--87.0 & 86.8{\scriptsize$\,\pm\,$0.1} \\
+\union & recipe of \simclr & -- & -- & 82.1{\scriptsize$\,\pm\,$0.2} \\
 \addlinespace
+\simclr{}$\to$\supcon & test set (oracle) & LP head, lr 0.01, 120 passes, mixup & 84.8--89.7 & 89.7{\scriptsize$\,\pm\,$0.1} \\
+\simclr{}$\to$\supcon & recipe of \simclr & -- & -- & 89.0{\scriptsize$\,\pm\,$0.3} \\
 \bottomrule
 \end{tabular}

@@ -35,13 +35,16 @@ a small learning rate (0.02) and for a short time. Five passes of the full-data 
 \R{twostage_simclr200_supcon5:lp50}\%. Longer second stages are worse (\R{twostage_simclr200_supcon25:lp5}\%
 \lpfive after 2,425 steps), and with the first-stage learning rate of 0.25 the benefit of pretraining is
 largely lost. The labels thus help inside a contrastive loss when they arrive late and briefly; the same
-loss applied from the first step ends \R{d:twostage-supcon:lp5}\pt lower. \pending{Fine-tuning after the
-short \supcon stage gives \R{twostage_simclr200_supcon5:ft:pm}\%.}
+loss applied from the first step ends \R{d:twostage-supcon:lp5}\pt lower. The short stage helps the linear
+probe but not fine-tuning: fine-tuning after it gives \R{twostage_simclr200_supcon5:ft:pm}\% with the default
+recipe and \R{twostage_simclr200_supcon5:fto:pm}\% with the best one, no better than fine-tuning \simclr
+directly (\R{simclr_all_e200:ft:pm}\% and \R{simclr_all_e200:fto:pm}\%).
 
 \emph{\simclr, then fine-tuning, then self-distillation.} In the style of SimCLR~v2 \citep{chen2020simclrv2},
 the fine-tuned network labels all 50,000 training images with class probabilities and a student, started
-from the same \simclr encoder, is trained to match them. \pending{This reaches
-\R{simclr_all_e200:dist:pm}\%.}
+from the same \simclr encoder, is trained to match them. This reaches \R{simclr_all_e200:dist:pm}\%,
+\R{d:dist-ft:simclr}\pt above the teacher's fine-tuning alone, at the cost of another 9,700 steps over all
+images.
 
 \paragraph{Labels in a semi-supervised objective}
 FixMatch and MixMatch trained from scratch reach \R{fixmatch_f0.1:clf:pm}\% and

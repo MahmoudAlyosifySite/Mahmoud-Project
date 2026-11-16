@@ -911,6 +911,7 @@ for E in (1000, 400, 200):
 regs = [mean(c, "lp50") for _, c in REG[1:] if nseeds(c)]
 if regs:
     M["reg:best"] = f"{max(regs):.1f}"
+diffmacro("dist-ft:simclr", "simclr_all_e200", "dist", "simclr_all_e200", "ft")
 diffmacro("fm-b3:simclr", "simclr_all_e200", "fm", "fixmatch_b3_f0.1", "clf")
 diffmacro("fm-b3:supcon", "supcon_lab_f0.1_e200", "fm", "fixmatch_b3_f0.1", "clf")
 diffmacro("fm-scratch:simclr", "simclr_all_e200", "fm", "fixmatch_f0.1", "clf")
