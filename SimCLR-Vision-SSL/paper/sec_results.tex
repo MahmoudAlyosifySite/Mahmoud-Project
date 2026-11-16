@@ -42,15 +42,16 @@ loss reach a given accuracy with much less compute.
 
 \paragraph{The lead does not last}
 \supcon stops improving early, because once its 5,000 images are separated by class the loss has little
-left to learn from them (\cref{sec:geometry}). It is at \R{supcon_lab_f0.1_e25:lp50}\% after 2,425 steps and at
-\R{supcon_lab_f0.1_e200:lp50}\% after 19,400; \pending{at 38,800 and 97,000 steps it reaches
-\R{supcon_lab_f0.1_e400:lp50}\% and \R{supcon_lab_f0.1_e1000:lp50}\%.} \simclr keeps climbing:
-\R{simclr_all_e100:lp50}\% at 9,700 steps, \R{simclr_all_e200:lp50}\% at 19,400 \pending{and
-\R{simclr_all_e400:lp50}\% and \R{simclr_all_e1000:lp50}\% at the two long budgets}. At 19,400 steps \simclr is
-ahead by \R{cmp:simclr-supcon:lp50:e200:diff}\pt (\R{cmp:simclr-supcon:lp50:e200:ci},
-$p\,\R{cmp:simclr-supcon:lp50:e200:p}$ after correction), \pending{and by \R{long:d:simclr-supcon}\pt at
-\R{long:steps} steps}. The crossover is therefore not an artefact of a short budget: it widens as training
-gets longer.
+left to learn from them (\cref{sec:geometry}). It is at \R{supcon_lab_f0.1_e25:lp50}\% after 2,425 steps, \R{supcon_lab_f0.1_e200:lp50}\% after 19,400 and
+\R{supcon_lab_f0.1_e400:lp50}\% after 38,800. \simclr keeps climbing: \R{simclr_all_e100:lp50}\% at 9,700 steps,
+\R{simclr_all_e200:lp50}\% at 19,400 and \R{simclr_all_e400:lp50}\% at 38,800. It is ahead by
+\R{cmp:simclr-supcon:lp50:e200:diff}\pt at 19,400 steps (\R{cmp:simclr-supcon:lp50:e200:ci},
+$p\,\R{cmp:simclr-supcon:lp50:e200:p}$ after correction) and by \R{cmp:simclr-supcon:lp50:e400:diff}\pt at
+38,800 (\R{cmp:simclr-supcon:lp50:e400:ci}). The crossover is therefore not an artefact of a short budget: it
+widens as training gets longer. \pending{The 97,000-step runs reach \R{supcon_lab_f0.1_e1000:lp50}\% for \supcon
+and \R{simclr_all_e1000:lp50}\% for \simclr.} \union, which also sees all images, keeps improving too
+(\R{union_f0.1_e400:lp50}\% at 38,800 steps), because three quarters of each of its batches are unlabeled
+images trained by instance discrimination; it stays \R{d:simclr-union:lp50:e400}\pt behind \simclr.
 
 \paragraph{Reading the $2\times2$}
 The two columns of the design answer what the unlabeled images are worth. Without labels the answer is
@@ -137,11 +138,15 @@ standard deviation over seeds). LP-all uses all training labels and is not avail
 \end{table}
 
 \paragraph{CIFAR-100}
-With 10\% labels there are 50 labeled images per class. At 9,700 steps \union is the best arm under the
-oracle-label probe (\R{c100_union_f0.1_e100:lp50}\%), ahead of \simclr (\R{c100_simclr_all_e100:lp50}\%)
-and \supcon (\R{c100_supcon_lab_f0.1_e100:lp50}\%); after fine-tuning on the 5,000 labels the order is
-\simclr (\R{c100_simclr_all_e100:ft}\%), \union (\R{c100_union_f0.1_e100:ft}\%), \supcon
-(\R{c100_supcon_lab_f0.1_e100:ft}\%). \pending{The same holds at 19,400 steps.}
+With 10\% labels there are 50 labeled images per class (three seeds). At 9,700 steps \union is the best arm
+under the oracle-label probe (\R{c100_union_f0.1_e100:lp50}\%), ahead of \simclr
+(\R{c100_simclr_all_e100:lp50}\%) and \supcon (\R{c100_supcon_lab_f0.1_e100:lp50}\%), and it is still first with
+\lpfive (\R{c100_union_f0.1_e100:lp5}\% against \R{c100_simclr_all_e100:lp5}\%). After fine-tuning on the 5,000
+labels the order is \simclr (\R{c100_simclr_all_e100:ft}\%), \union (\R{c100_union_f0.1_e100:ft}\%), \supcon
+(\R{c100_supcon_lab_f0.1_e100:ft}\%). That \lpfive does not yet reverse the order matches CIFAR-10, where at
+9,700 steps \simclr and \union are also within a point under \lpfive (\cref{tab:main}): \simclr is still far
+from its end point at this budget, and the gap opens only with longer training. \pending{CIFAR-100 at 19,400
+steps is in progress.}
 
 \paragraph{STL-10}
 \pending{STL-10 has no oracle labels, and its unlabeled images are not restricted to the ten classes. With

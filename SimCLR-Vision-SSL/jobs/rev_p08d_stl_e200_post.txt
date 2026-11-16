@@ -1,3 +1,5 @@
+# parallel: 1
+# (96-px runs: two at once can exceed the memory of the GPU)
 -m dlt.finetune --name ft_stl_simclr_all_e200_s0 --from_run stl_simclr_all_e200_s0 --dataset stl10 --backbone resnet18_mp --label_fraction 1 --seed 0
 -m dlt.finetune --name ft_stl_supcon_lab_e200_s0 --from_run stl_supcon_lab_e200_s0 --dataset stl10 --backbone resnet18_mp --label_fraction 1 --seed 0
 -m dlt.finetune --name ft_stl_union_e200_s0 --from_run stl_union_e200_s0 --dataset stl10 --backbone resnet18_mp --label_fraction 1 --seed 0
