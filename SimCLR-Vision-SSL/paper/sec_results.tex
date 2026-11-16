@@ -41,7 +41,8 @@ two are level: the difference is \R{cmp:simclr-supcon:lp50:e100:sdiff}\pt (95\% 
 loss reach a given accuracy with much less compute.
 
 \paragraph{The lead does not last}
-\supcon stops improving early. It is at \R{supcon_lab_f0.1_e25:lp50}\% after 2,425 steps and at
+\supcon stops improving early, because once its 5,000 images are separated by class the loss has little
+left to learn from them (\cref{sec:geometry}). It is at \R{supcon_lab_f0.1_e25:lp50}\% after 2,425 steps and at
 \R{supcon_lab_f0.1_e200:lp50}\% after 19,400; \pending{at 38,800 and 97,000 steps it reaches
 \R{supcon_lab_f0.1_e400:lp50}\% and \R{supcon_lab_f0.1_e1000:lp50}\%.} \simclr keeps climbing:
 \R{simclr_all_e100:lp50}\% at 9,700 steps, \R{simclr_all_e200:lp50}\% at 19,400 \pending{and
@@ -56,7 +57,9 @@ The two columns of the design answer what the unlabeled images are worth. Withou
 ``a lot, and more with time'': \simclr on all images beats \simclr on the labeled subset by
 \R{cmp:simclr-sub:lp50:e100:diff}\pt at 9,700 steps and by \R{cmp:simclr-sub:lp50:e200:diff}\pt at 19,400,
 because \simclrsub gets \emph{worse} with more steps (\R{simclr_sub_f0.1_e100:lp50}\% $\to$
-\R{simclr_sub_f0.1_e200:lp50}\%): instance discrimination on 5,000 images overfits. With labels the unlabeled
+\R{simclr_sub_f0.1_e200:lp50}\%). With 5,000 images, each one returns in every tenth batch, and instance
+discrimination can then be solved with features that identify individual images rather than features shared
+within a class: more steps lower the loss on the pool without improving the representation. With labels the unlabeled
 images help less: \union beats \supcon by \R{cmp:union-supcon:lp50:e100:diff}\pt and
 \R{cmp:union-supcon:lp50:e200:diff}\pt.
 
@@ -76,7 +79,9 @@ A plateau after a few thousand steps on 5,000 images could simply mean that \sup
 \emph{Temperature.} The rows of the design differ in temperature. Swapping them does not help either
 method: \simclr with $\tau=0.1$ reaches \R{simclr_all_t0.1_e100:lp50}\% (default
 \R{simclr_all_e100:lp50}\%) and \supcon with $\tau=0.5$ reaches \R{supcon_lab_f0.1_t0.5_e100:lp50}\% (default
-\R{supcon_lab_f0.1_e100:lp50}\%) at 9,700 steps (one seed each).
+\R{supcon_lab_f0.1_e100:lp50}\%) at 9,700 steps (one seed each). A low temperature makes \simclr
+concentrate on its most similar negatives, which are often images of the same class, and push them apart;
+a high temperature weakens the class-level attraction that \supcon gets from its labels.
 
 \emph{Weight decay and augmentation.} \pending{At 38,800 steps we raised the weight decay of \supcon from
 $10^{-4}$ to $5\times10^{-4}$ and $10^{-3}$, strengthened the augmentation (crop scale 0.08--1 and
@@ -148,7 +153,9 @@ the unlabeled images are worth \R{d:stl:simclr-sub:lp5:e100}\pt even though many
 classes.}
 
 \paragraph{ResNet-50}
-With a ResNet-50 the crossover under the oracle-label probe comes later than with a ResNet-18. At 9,700
+With a ResNet-50 the crossover under the oracle-label probe comes later than with a ResNet-18, as expected
+from the finding that label-free contrastive learning gains more than supervised training from larger
+encoders and longer training \citep{chen2020simclr}. At 9,700
 steps \supcon is still slightly ahead (\R{r50_supcon_lab_f0.1_e100:lp50}\% against
 \R{r50_simclr_all_e100:lp50}\%, one seed); at 19,400 steps \simclr is clearly ahead
 (\R{r50_simclr_all_e200:lp50}\% against \R{r50_supcon_lab_f0.1_e200:lp50}\%; \pending{one seed, two more in
@@ -156,4 +163,5 @@ progress}). Under \ftfive
 \simclr is ahead already at 9,700 steps (\R{r50_simclr_all_e100:ft}\% against
 \R{r50_supcon_lab_f0.1_e100:ft}\%). The larger encoder also makes very short budgets fragile: at 900 steps
 \supcon reaches \R{r50_supcon_lab_f0.1_steps900:lp50}\% with learning rate 0.25 but only
-\R{r50_supcon_lab_f0.1_steps900_lr0.05:lp50}\% with 0.05 (\cref{tab:r50}).
+\R{r50_supcon_lab_f0.1_steps900_lr0.05:lp50}\% with 0.05 (\cref{tab:r50}): with so few steps and a cosine
+schedule, the smaller learning rate leaves the larger network far from convergence.

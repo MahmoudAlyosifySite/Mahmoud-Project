@@ -124,7 +124,10 @@ reference space gives \R{rho:all:radius_supervised:supcon} and \R{rho:nokc:radiu
 pool sizes from 1\% to 20\%, the partial rank correlation that controls for the pool size is
 \R{rho:partial}.} The $k$-center pool is the kind of set that \citet{hacohen2022active} show to be a poor
 choice at low budgets for \emph{supervised} learners; here the labels make \supcon robust to it, and the
-label-free learner is the one that fails.
+label-free learner is the one that fails. $k$-center selection picks the images farthest from all others,
+that is, atypical images and outliers. Without labels, each of them has few similar images in the pool, so
+instance discrimination learns features specific to single images; with labels, the atypical images of a
+class are positives of each other, and the class-level positives bridge the gaps between them.
 
 We conclude that coverage explains part of the effect of pool composition, namely the cost of redundancy,
 and that no single statistic of the pool predicts the accuracy of both learners. Spread, a natural

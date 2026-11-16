@@ -22,7 +22,9 @@ many where stated; FixMatch after pretraining adds the same amount to the 19,400
 \R{union_f0.1_e200:ft:pm}\%. Plain cross-entropy training on the same 5,000 images for the same 19,400
 steps reaches \R{ce_f0.1_e200:clf:pm}\%. With the default fine-tuning recipe, contrastive pretraining with
 the labels is therefore no better than not pretraining at all
-(\R{cmp:supconft-ce:e200:sdiff}\pt, \R{cmp:supconft-ce:e200:ci}).
+(\R{cmp:supconft-ce:e200:sdiff}\pt, \R{cmp:supconft-ce:e200:ci}). This is expected for \supcon: it sees the
+same 5,000 images and labels as cross-entropy, so it can change how this information is used but cannot add
+to it.
 
 \paragraph{Labels after label-free pretraining}
 \simclr followed by fine-tuning reaches \R{simclr_all_e200:ft:pm}\%, \R{cmp:simclrft-ce:e200:diff}\pt above
@@ -34,11 +36,15 @@ a small learning rate (0.02) and for a short time. Five passes of the full-data 
 (\R{cmp:twostage-simclr:lp5:e200:ci}) and \lpall from \R{simclr_all_e200:lp50}\% to
 \R{twostage_simclr200_supcon5:lp50}\%. Longer second stages are worse (\R{twostage_simclr200_supcon25:lp5}\%
 \lpfive after 2,425 steps), and with the first-stage learning rate of 0.25 the benefit of pretraining is
-largely lost. The labels thus help inside a contrastive loss when they arrive late and briefly; the same
+largely lost. The second stage optimises only the 5,000 labeled images, so the longer or stronger it is,
+the more it overwrites features learned from the other 45,000, which no term of its loss maintains. The
+labels thus help inside a contrastive loss when they arrive late and briefly; the same
 loss applied from the first step ends \R{d:twostage-supcon:lp5}\pt lower. The short stage helps the linear
 probe but not fine-tuning: fine-tuning after it gives \R{twostage_simclr200_supcon5:ft:pm}\% with the default
 recipe and \R{twostage_simclr200_supcon5:fto:pm}\% with the best one, no better than fine-tuning \simclr
-directly (\R{simclr_all_e200:ft:pm}\% and \R{simclr_all_e200:fto:pm}\%).
+directly (\R{simclr_all_e200:ft:pm}\% and \R{simclr_all_e200:fto:pm}\%). Fine-tuning uses the same 5,000
+labels to adapt the whole network, so it produces on its own the class structure that the \supcon stage
+provides; the two steps use the same information twice.
 
 \emph{\simclr, then fine-tuning, then self-distillation.} In the style of SimCLR~v2 \citep{chen2020simclrv2},
 the fine-tuned network labels all 50,000 training images with class probabilities and a student, started
@@ -58,7 +64,12 @@ FixMatch from scratch with three times its budget reaches \R{fixmatch_b3_f0.1:cl
 \R{cmp:fmb3-fmsimclr:diff}\pt more than \simclr followed by FixMatch (\R{cmp:fmb3-fmsimclr:ci}). A short
 \supcon stage between \simclr and FixMatch gives \R{twostage_simclr200_supcon25:fm:pm}\%, and BYOL as the
 starting point gives \R{byol_all_e200:fm:pm}\%, so no pretrained encoder we tested beats FixMatch from
-scratch at the same total compute.
+scratch at the same total compute. The \supcon stage adds nothing because FixMatch's pseudo-labels already
+impose class structure on all images. BYOL falls behind because its features are sensitive to the learning
+rate: its best fine-tuning recipe uses 0.003 (\cref{tab:ftsearch}), while FixMatch uses 0.03. That FixMatch
+from scratch wins at equal compute is most likely because it optimises the classification of all 50,000
+images directly; given enough steps it learns the features that pretraining would supply, whereas pretraining
+spends two thirds of the budget on an objective that is only indirectly related to the task.
 
 \paragraph{Summary}
 The answer to the question in the title is: not inside a contrastive loss from the first step. Within the pipelines that end with supervised
