@@ -52,6 +52,8 @@ cd paper && bash build.sh && bash make_arxiv_package.sh
 Text that depends on unfinished runs is wrapped in `\pending{...}` (gray italics in the PDF; `??` marks a number
 whose runs are missing). Once the runs behind a `\pending` sentence are finished, rewrite the sentence from the real
 numbers (the conclusion may change!) and remove the wrapper. A version with any `\pending` left is a draft.
+Writing rule (from the authors): every negative result is followed by a one- or two-sentence scientific reason
+(the mechanism, from the loss, the data or our measurements; say "likely" if untested). No long discussions.
 
 ## State of the revision (keep this list current)
 

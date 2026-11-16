@@ -31,6 +31,9 @@ At 19,400 steps \simclr is first under every protocol, but the order of the two 
 flips: \union is \R{cmp:union-supcon:lp50:e200:diff}\pt \emph{above} \supcon with the oracle-label probe and
 \R{d:union-supcon:lp5:e200}\pt \emph{below} it with \lpfive. The unlabeled images that \union adds to \supcon
 improve what an oracle can read out of the features, and do not improve what the 5,000 labels can read out.
+The loss explains why: in \cref{eq:loss} an unlabeled image has no positive except its own second view, so no
+term pulls it towards the images of its class, and its class information can only come from features it
+happens to share with labeled images (\cref{sec:geometry}).
 The size of the effect is also protocol-dependent: the advantage of \simclr over \supcon is
 \R{cmp:simclr-supcon:lp50:e200:diff}\pt with \lpall, \R{cmp:simclr-supcon:lp5:e200:diff}\pt with \lpfive and
 \R{cmp:simclr-supcon:ft:e200:diff}\pt with \ftfive.
