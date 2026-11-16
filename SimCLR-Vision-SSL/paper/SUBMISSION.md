@@ -1,6 +1,6 @@
 # Submitting the paper
 
-Title: **Inside the Loss or After It? Scarce Labels in Contrastive Pretraining**
+Title: **Where Do Scarce Labels Belong? A Compute-Matched Study of Contrastive Pretraining**
 
 All versions are built from the same source (`frontmatter.tex`, `abstract.tex`, `body.tex`, the `sec_*.tex` files,
 `statements.tex`, `appendix.tex`) with the Elsevier `elsarticle` class.
