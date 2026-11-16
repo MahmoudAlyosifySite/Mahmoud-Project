@@ -1,0 +1,32 @@
+{
+ "name": "distill_simclr_all_e200_s2",
+ "args": {
+  "name": "distill_simclr_all_e200_s2",
+  "from_run": "simclr_all_e200_s2",
+  "out": "results/runs",
+  "ckpt_dir": "/tmp/claude-1000/-home-jovyan-SimCLR-Vision-SSL/d9e8e4cb-36d5-5896-9064-1fe1d907057f/scratchpad/ckpt",
+  "data_dir": "/tmp/claude-1000/-home-jovyan-SimCLR-Vision-SSL/d9e8e4cb-36d5-5896-9064-1fe1d907057f/scratchpad/data",
+  "dataset": "cifar10",
+  "backbone": "resnet18",
+  "label_fraction": 0.1,
+  "seed": 2,
+  "ft_epochs": 60.0,
+  "ft_lr": 0.01,
+  "epochs": 100.0,
+  "batch_size": 512,
+  "lr": 0.1,
+  "wd": 0.0005,
+  "temperature": 1.0
+ },
+ "n_labeled": 5000,
+ "steps": 9700,
+ "train_time_s": 1145.9375822544098,
+ "metrics": {
+  "linear_acc": 90.63999652862549,
+  "linear_l2": 0.0001,
+  "linear_val_acc": 91.51999950408936,
+  "knn_acc": 89.89999890327454,
+  "classifier_acc": 89.84999656677246,
+  "teacher_acc": 88.52999806404114
+ }
+}

@@ -57,13 +57,13 @@ numbers (the conclusion may change!) and remove the wrapper. A version with any 
 
 Integrated in the paper: compute-matched 2x2 at 970-19,400 steps (5 seeds at 9,700 and 19,400); protocol table;
 fine-tuning recipe search with the label budget (fails for label-using encoders: their validation images are already
-separated) and oracle grid (seed 0 of the oracle grid is done); FixMatch from every encoder (3 seeds) and the
+separated) and oracle grid (3 seeds: about half of the fine-tuning gap is the recipe; SimCLR stays ~3 points ahead);
+two-stage fine-tuning; SimCLR v2-style self-distillation; BYOL fine-tuning; FixMatch from every encoder (3 seeds) and the
 equal-total-compute comparison with FixMatch from scratch; three-way CDNV split with a cross-entropy control; CDNV
 ratio during training; ResNet-50 at 19,400 steps (1 seed); compute table; statistics (hierarchical bootstrap, Holm,
 TOST); new related work, audit of budget reporting, journal statements, elsarticle template.
 
-Waiting for runs (phase in `jobs/phases.txt`): oracle-grid seeds 1-2 numbers in the text (done, text not yet
-updated); colour jitter with seeds and SupCon+U, CIFAR-100 seeds, self-distillation (p05b/p05c); 38,800 steps (p06/p07);
+Waiting for runs (phase in `jobs/phases.txt`): colour jitter with seeds and SupCon+U, CIFAR-100 seeds, self-distillation (p05b/p05c); 38,800 steps (p06/p07);
 STL-10 (p08*); 97,000 steps (p10/p11); coverage intervention (p09); label fraction x budget grid (p12/p13); SupCon
 regularisation and ResNet-50 seeds (p14); CIFAR-100 at 19,400 steps (p15/p16); Tiny-ImageNet (p17-p20).
 

@@ -69,14 +69,20 @@ for \simclr.
 
 \emph{An upper bound.} To see what any selection rule could achieve, we scored all 72 recipes on the test
 set of seed 0, took the best one for each encoder, and applied it to the other seeds (``oracle'' column;
-\cref{tab:ftsearch}). \pending{The best recipe for \supcon uses \R{ftgrid:supcon_lab_f0.1_e200:recipe} and
-reaches \R{supcon_lab_f0.1_e200:fto:pm}\%, \R{d:fto-ft:supcon_lab_f0.1_e200}\pt above the default; for \union
-it reaches \R{union_f0.1_e200:fto:pm}\% and for \simclr \R{simclr_all_e200:fto:pm}\%. The concern is
-therefore partly justified: starting from the linear probe without regularisation under-uses the
-label-using encoders. With the oracle recipe the advantage of \simclr over \supcon shrinks from
-\R{cmp:simclr-supcon:ft:e200:diff}\pt to \R{cmp:simclr-supcon:fto:e200:diff}\pt
-(\R{cmp:simclr-supcon:fto:e200:ci}); it does not close, and a practitioner has no label-budget way of
-finding that recipe.}
+\cref{tab:ftsearch}). The best recipe for \supcon (\R{ftgrid:supcon_lab_f0.1_e200:recipe}) reaches
+\R{supcon_lab_f0.1_e200:fto:pm}\%, \R{d:fto-ft:supcon_lab_f0.1_e200}\pt above the default; for \union the best
+recipe (\R{ftgrid:union_f0.1_e200:recipe}) reaches \R{union_f0.1_e200:fto:pm}\%, and for \simclr
+(\R{ftgrid:simclr_all_e200:recipe}) \R{simclr_all_e200:fto:pm}\%. The concern is therefore partly justified:
+starting from the linear probe without regularisation under-uses the label-using encoders, and about half of
+their fine-tuning deficit is the recipe. With the best recipe for each encoder, the advantage of \simclr over
+\supcon shrinks from \R{cmp:simclr-supcon:ft:e200:diff}\pt to \R{cmp:simclr-supcon:fto:e200:diff}\pt
+(\R{cmp:simclr-supcon:fto:e200:ci}), and over \union to \R{cmp:simclr-union:fto:e200:diff}\pt
+(\R{cmp:simclr-union:fto:e200:ci}); it does not close. The recipes that rescue \supcon and \union use a ten
+times larger learning rate than the one that suits \simclr, together with mixup or label smoothing, and the
+recipe selected for \simclr does nothing for them (\R{supcon_lab_f0.1_e200:ftx:pm}\% and
+\R{union_f0.1_e200:ftx:pm}\%). Without a validation set, which the label-using encoders have used up, a
+practitioner has no way of finding them. For the label-free encoders the label-budget selection does work,
+and matters: it raises BYOL from \R{byol_all_e200:ft:pm}\% to \R{byol_all_e200:ftt:pm}\%.
 
 \paragraph{Semi-supervised fine-tuning}
 When unlabeled images are available, a practitioner would follow pretraining with semi-supervised training
