@@ -273,9 +273,18 @@ FAMILY.append(("simclrft-ce:e200", "label-budget pipelines, 19,400 steps", r"\si
                "ce_f0.1_e200", "clf"))
 FAMILY.append(("supconft-ce:e200", "label-budget pipelines, 19,400 steps", r"\supcon{}+FT $-$ CE on 5k", "supcon_lab_f0.1_e200", "ft",
                "ce_f0.1_e200", "clf"))
+# STL-10 has only the 5,000 labels: its "linear" predictions are the LP-5k probe
+for E, steps in ((100, "20,500"), (200, "41,000")):
+    for proto, pname in (("lp50", "LP-5k"), ("ft", "FT-5k")):
+        FAMILY.append((f"stl:simclr-supcon:{proto}:e{E}", f"STL-10, {pname}, {steps} steps", r"\simclr $-$ \supcon",
+                       f"stl_simclr_all_e{E}", proto, f"stl_supcon_lab_e{E}", proto, "stl10"))
+        FAMILY.append((f"stl:simclr-union:{proto}:e{E}", f"STL-10, {pname}, {steps} steps", r"\simclr $-$ \union",
+                       f"stl_simclr_all_e{E}", proto, f"stl_union_e{E}", proto, "stl10"))
+    FAMILY.append((f"stl:simclr-sub:lp50:e{E}", f"STL-10, LP-5k, {steps} steps", r"\simclr $-$ \simclrsub",
+                   f"stl_simclr_all_e{E}", "lp50", f"stl_simclr_sub_e{E}", "lp50", "stl10"))
 STATS = []
-for tag, group, text, a, pa, b, pb in FAMILY:
-    r = cmp(a, pa, b, pb)
+for tag, group, text, a, pa, b, pb, *ds in FAMILY:
+    r = cmp(a, pa, b, pb, dataset=ds[0] if ds else "cifar10")
     if r is not None:
         STATS.append((tag, group, text, r))
 json.dump(CACHE, open(CACHE_PATH, "w"), indent=0)
@@ -392,8 +401,8 @@ def frac_val(kind, f, E, proto):
 
 
 fig, axes = plt.subplots(2, 2, figsize=(7.2, 3.5), sharey=True, sharex=True, gridspec_kw={"hspace": 0.32, "wspace": 0.06})
-panels = [("supcon", "oracle", r"(a) SupCon $-$ SimCLR, probe with all labels (LP-all)"),
-          ("supcon", "budget", r"(b) SupCon $-$ SimCLR, probe with the $f$ labels (LP-$f$)"),
+panels = [("supcon", "oracle", r"(a) SupCon $-$ SimCLR, LP-all"),
+          ("supcon", "budget", r"(b) SupCon $-$ SimCLR, LP-$f$"),
           ("union", "oracle", r"(c) SupCon+U $-$ SimCLR, LP-all"), ("union", "budget", r"(d) SupCon+U $-$ SimCLR, LP-$f$")]
 rows_frac = []
 for ax, (kind, proto, title) in zip(axes.ravel(), panels):
