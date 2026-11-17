@@ -1,0 +1,4 @@
+# parallel: 1
+# retry of the STL-10 SimCLR seed-0 run, which ran out of GPU memory in its final evaluation twice
+--name stl_simclr_all_e100_s0 --dataset stl10 --backbone resnet18_mp --method simclr --pool all --epochs 100 --seed 0 --curve_points 8
+-m dlt.finetune --name ft_stl_simclr_all_e100_s0 --from_run stl_simclr_all_e100_s0 --dataset stl10 --backbone resnet18_mp --label_fraction 1 --seed 0

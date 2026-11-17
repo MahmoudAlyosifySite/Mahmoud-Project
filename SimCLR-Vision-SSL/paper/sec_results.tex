@@ -149,13 +149,26 @@ from its end point at this budget, and the gap opens only with longer training. 
 steps is in progress.}
 
 \paragraph{STL-10}
-\pending{STL-10 has no oracle labels, and its unlabeled images are not restricted to the ten classes. With
-20,500 steps \simclr on the 105,000 images reaches \R{stl_simclr_all_e100:lp5}\% with a linear probe on the
-5,000 labels and \R{stl_simclr_all_e100:ft}\% after fine-tuning; \supcon on the 5,000 labeled images reaches
-\R{stl_supcon_lab_e100:lp5}\% and \R{stl_supcon_lab_e100:ft}\%, and \union \R{stl_union_e100:lp5}\% and
-\R{stl_union_e100:ft}\%. \simclr on the 5,000 labeled images only reaches \R{stl_simclr_sub_e100:lp5}\%, so
-the unlabeled images are worth \R{d:stl:simclr-sub:lp5:e100}\pt even though many of them show other
-classes.}
+STL-10 has no oracle labels, so every protocol uses its 5,000 labels, and its 100,000 unlabeled images are
+not restricted to the ten classes. At 20,500 steps, about 100 passes over the 105,000 images and therefore
+the counterpart of 9,700 steps on CIFAR, the linear probe does not separate the three arms: \simclr reaches
+\R{stl_simclr_all_e100:lp5:pm}\%, \supcon \R{stl_supcon_lab_e100:lp5:pm}\% and \union
+\R{stl_union_e100:lp5:pm}\%. The differences, \R{cmp:stl:simclr-supcon:lp50:e100:sdiff}\pt
+(\R{cmp:stl:simclr-supcon:lp50:e100:ci}) and \R{cmp:stl:simclr-union:lp50:e100:sdiff}\pt
+(\R{cmp:stl:simclr-union:lp50:e100:ci}), are not significant, as on CIFAR-10 at the same number of passes;
+the intervals are still too wide to claim equivalence within one point. Fine-tuning
+separates them clearly: \simclr reaches \R{stl_simclr_all_e100:ft:pm}\%, \R{cmp:stl:simclr-supcon:ft:e100:diff}\pt
+above \supcon (\R{cmp:stl:simclr-supcon:ft:e100:ci}) and \R{cmp:stl:simclr-union:ft:e100:diff}\pt above \union.
+$k$NN on the 5,000 labels favours the label-using encoders (\R{stl_supcon_lab_e100:knn}\% against
+\R{stl_simclr_all_e100:knn}\% for \simclr), because a nearest-neighbour rule works best when the labeled
+images form tight clusters, which is what \supcon makes of them. The seen/unseen gap of
+\cref{sec:geometry} appears here too: the CDNV of \supcon is \R{stl_supcon_lab_e100:cdnv_lab} on its labeled
+images and \R{stl_supcon_lab_e100:cdnv_test} on test images, against \R{stl_simclr_all_e100:cdnv_lab} and
+\R{stl_simclr_all_e100:cdnv_test} for \simclr. The unlabeled images are worth
+\R{cmp:stl:simclr-sub:lp50:e100:diff}\pt of \lpfive to \simclr (\simclrsub reaches
+\R{stl_simclr_sub_e100:lp5}\%), although many of them show other classes. For reference, cross-entropy on the
+5,000 labels reaches \R{stl_ce_e100:clf:pm}\% and FixMatch \R{stl_fixmatch:clf:pm}\%.
+\pending{(\simclr seed 0 is being rerun after a memory failure; the 41,000-step runs are in progress.)}
 
 \paragraph{ResNet-50}
 With a ResNet-50 the crossover under the oracle-label probe comes later than with a ResNet-18, as expected

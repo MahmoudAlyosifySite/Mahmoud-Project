@@ -11,6 +11,7 @@ jobs/rev_p06_e400.txt
 jobs/rev_p07_ft_e400.txt
 jobs/rev_p08a_stl_e100.txt
 jobs/rev_p08b_stl_e100_post.txt
+jobs/rev_p08r_stl_retry.txt
 jobs/rev_p10_e1000.txt
 jobs/rev_p11_ft_e1000.txt
 jobs/rev_p08c_stl_e200.txt
