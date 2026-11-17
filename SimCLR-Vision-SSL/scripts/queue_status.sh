@@ -21,4 +21,6 @@ for ph in open("jobs/phases.txt").read().split():
     rows.append(f"  {os.path.basename(ph)[4:-4]:24s} {d:3d}/{n}")
 print(f"runs finished: {done}/{tot}"); print("\n".join(rows))
 PY
-grep -h "FAILED" "$STORE"/logs/rev_*.log 2> /dev/null | sed 's/^/failed: /'
+# failures whose run has not been completed since (a later retry may have succeeded)
+grep -h "FAILED" "$STORE"/logs/rev_*.log 2> /dev/null | sed -E 's/.*FAILED ([^ ]+).*/\1/' | sort -u | while read -r n; do
+  [ -f "results/runs/$n/result.json" ] || echo "failed (not yet rerun): $n"; done
