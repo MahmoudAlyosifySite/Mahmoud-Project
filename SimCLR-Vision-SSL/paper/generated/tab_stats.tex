@@ -4,14 +4,14 @@
 comparison & seeds & $\Delta$ (points) & 95\% CI & $p$ (Holm) & equivalent within $\pm1$? \\
 \midrule
 \multicolumn{6}{l}{\emph{LP-50k, 9,700 steps}} \\
-\quad \simclr $-$ \supcon & 5/5 & -0.4 & [-1.0, +0.3] & 1.000 & yes \\
+\quad \simclr $-$ \supcon & 5/5 & -0.4 & [-1.0, +0.3] & 0.783 & yes \\
 \quad \simclr $-$ \union & 5/5 & -1.9 & [-2.4, -1.4] & $<$0.001 & no \\
 \quad \union $-$ \supcon & 5/5 & +1.5 & [+1.0, +2.0] & $<$0.001 & no \\
 \quad \simclr $-$ \simclrsub & 5/5 & +6.6 & [+6.1, +7.2] & $<$0.001 & no \\
 \quad \supcon $-$ \simclrsub & 5/5 & +7.0 & [+6.2, +7.7] & $<$0.001 & no \\
 \multicolumn{6}{l}{\emph{LP-5k, 9,700 steps}} \\
-\quad \simclr $-$ \supcon & 5/5 & -0.2 & [-1.0, +0.5] & 1.000 & yes \\
-\quad \simclr $-$ \union & 5/5 & +0.4 & [-0.2, +1.0] & 0.899 & yes \\
+\quad \simclr $-$ \supcon & 5/5 & -0.2 & [-1.0, +0.5] & 0.783 & yes \\
+\quad \simclr $-$ \union & 5/5 & +0.4 & [-0.2, +1.0] & 0.719 & yes \\
 \multicolumn{6}{l}{\emph{FT-5k, 9,700 steps}} \\
 \quad \simclr $-$ \supcon & 5/5 & +3.3 & [+2.7, +4.0] & $<$0.001 & no \\
 \quad \simclr $-$ \union & 5/5 & +3.9 & [+3.4, +4.3] & $<$0.001 & no \\
@@ -61,11 +61,11 @@ comparison & seeds & $\Delta$ (points) & 95\% CI & $p$ (Holm) & equivalent withi
 \quad \simclr{}+FT $-$ CE on 5k & 5/3 & +4.8 & [+4.0, +5.6] & $<$0.001 & no \\
 \quad \supcon{}+FT $-$ CE on 5k & 5/3 & -1.0 & [-1.8, -0.2] & 0.079 & no \\
 \multicolumn{6}{l}{\emph{STL-10, LP-5k, 20,500 steps}} \\
-\quad \simclr $-$ \supcon & 2/3 & +0.3 & [-0.8, +1.5] & 1.000 & no \\
-\quad \simclr $-$ \union & 2/3 & +0.5 & [-0.6, +1.6] & 1.000 & no \\
-\quad \simclr $-$ \simclrsub & 2/3 & +13.3 & [+12.1, +14.6] & $<$0.001 & no \\
+\quad \simclr $-$ \supcon & 3/3 & +0.6 & [-0.5, +1.6] & 0.783 & no \\
+\quad \simclr $-$ \union & 3/3 & +0.7 & [-0.2, +1.6] & 0.569 & no \\
+\quad \simclr $-$ \simclrsub & 3/3 & +13.5 & [+12.2, +14.8] & $<$0.001 & no \\
 \multicolumn{6}{l}{\emph{STL-10, FT-5k, 20,500 steps}} \\
-\quad \simclr $-$ \supcon & 2/3 & +5.4 & [+4.5, +6.3] & $<$0.001 & no \\
-\quad \simclr $-$ \union & 2/3 & +6.0 & [+5.0, +7.0] & $<$0.001 & no \\
+\quad \simclr $-$ \supcon & 3/3 & +5.3 & [+4.5, +6.1] & $<$0.001 & no \\
+\quad \simclr $-$ \union & 3/3 & +5.9 & [+5.3, +6.6] & $<$0.001 & no \\
 \bottomrule
 \end{tabular}

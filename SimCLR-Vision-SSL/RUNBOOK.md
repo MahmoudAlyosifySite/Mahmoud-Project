@@ -63,7 +63,7 @@ separated) and oracle grid (3 seeds: about half of the fine-tuning gap is the re
 two-stage fine-tuning; SimCLR v2-style self-distillation; BYOL fine-tuning;
 38,800-step runs (3 seeds: SupCon flat at ~84, SimCLR 89.9); colour jitter with 3 seeds incl. SupCon+U; CIFAR-100
 at 9,700 steps with 3 seeds;
-STL-10 at 20,500 steps (3 seeds; SimCLR seed 0 requeued as jobs/rev_p08r_stl_retry.txt after two out-of-memory failures); FixMatch from every encoder (3 seeds) and the
+STL-10 at 20,500 steps (3 seeds, incl. FixMatch from scratch); FixMatch from every encoder (3 seeds) and the
 equal-total-compute comparison with FixMatch from scratch; three-way CDNV split with a cross-entropy control; CDNV
 ratio during training; ResNet-50 at 19,400 steps (1 seed); compute table; statistics (hierarchical bootstrap, Holm,
 TOST); new related work, audit of budget reporting, journal statements, elsarticle template.
