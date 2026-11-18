@@ -65,10 +65,11 @@ two-stage fine-tuning; SimCLR v2-style self-distillation; BYOL fine-tuning;
 at 9,700 steps with 3 seeds;
 STL-10 at 20,500 steps (3 seeds, incl. FixMatch from scratch); FixMatch from every encoder (3 seeds) and the
 equal-total-compute comparison with FixMatch from scratch; three-way CDNV split with a cross-entropy control; CDNV
-ratio during training; ResNet-50 at 19,400 steps (1 seed); compute table; statistics (hierarchical bootstrap, Holm,
+ratio during training; ResNet-50 at 19,400 steps (1 seed); 97,000 steps for all four arms with 2 of 3 seeds
+(linear probes only; the sentence keeps a `\pending` note until seed 2 and the fine-tuning runs p11 finish); compute table; statistics (hierarchical bootstrap, Holm,
 TOST); new related work, audit of budget reporting, journal statements, elsarticle template.
 
-Waiting for runs (phase in `jobs/phases.txt`): STL-10 at 41,000 steps (p08c-p08e; 96-px phases run one job at a time); 97,000 steps (p10/p11); coverage intervention (p09); label fraction x budget grid (p12/p13); SupCon
+Waiting for runs (phase in `jobs/phases.txt`): STL-10 at 41,000 steps (p08c-p08e; 96-px phases run one job at a time); 97,000 steps (seed 2 of p10, then p11); coverage intervention (p09); label fraction x budget grid (p12/p13); SupCon
 regularisation and ResNet-50 seeds (p14); CIFAR-100 at 19,400 steps (p15/p16); Tiny-ImageNet (p17-p20).
 
 Before submission (authors' decisions, see `paper/SUBMISSION.md`): CRediT roles, funding, the journal's
