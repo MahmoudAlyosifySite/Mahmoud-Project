@@ -1,0 +1,27 @@
+{
+ "name": "ft_union_f0.1_e1000_s0",
+ "args": {
+  "name": "ft_union_f0.1_e1000_s0",
+  "from_run": "union_f0.1_e1000_s0",
+  "out": "results/runs",
+  "ckpt_dir": "/home/jovyan/simclr_store/ckpt",
+  "data_dir": "/home/jovyan/simclr_store/data",
+  "dataset": "cifar10",
+  "backbone": "resnet18",
+  "label_fraction": 0.1,
+  "seed": 0,
+  "epochs": 60.0,
+  "batch_size": 128,
+  "lr": 0.01,
+  "wd": 0.0005,
+  "holdout": 0,
+  "force": false
+ },
+ "n_labeled": 5000,
+ "steps": 2344,
+ "train_time_s": 65.53402662277222,
+ "metrics": {
+  "finetune_acc": 82.77999758720398,
+  "linear_lab_acc": 81.37999773025513
+ }
+}

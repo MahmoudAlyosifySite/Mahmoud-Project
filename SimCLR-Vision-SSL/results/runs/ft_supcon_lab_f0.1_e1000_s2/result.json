@@ -1,0 +1,27 @@
+{
+ "name": "ft_supcon_lab_f0.1_e1000_s2",
+ "args": {
+  "name": "ft_supcon_lab_f0.1_e1000_s2",
+  "from_run": "supcon_lab_f0.1_e1000_s2",
+  "out": "results/runs",
+  "ckpt_dir": "/home/jovyan/simclr_store/ckpt",
+  "data_dir": "/home/jovyan/simclr_store/data",
+  "dataset": "cifar10",
+  "backbone": "resnet18",
+  "label_fraction": 0.1,
+  "seed": 2,
+  "epochs": 60.0,
+  "batch_size": 128,
+  "lr": 0.01,
+  "wd": 0.0005,
+  "holdout": 0,
+  "force": false
+ },
+ "n_labeled": 5000,
+ "steps": 2344,
+ "train_time_s": 66.04501986503601,
+ "metrics": {
+  "finetune_acc": 82.23999738693237,
+  "linear_lab_acc": 80.57999610900879
+ }
+}
