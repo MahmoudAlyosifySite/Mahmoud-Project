@@ -1,0 +1,27 @@
+{
+ "name": "ft_stl_union_e200_s1",
+ "args": {
+  "name": "ft_stl_union_e200_s1",
+  "from_run": "stl_union_e200_s1",
+  "out": "results/runs",
+  "ckpt_dir": "/home/jovyan/simclr_store/ckpt",
+  "data_dir": "/home/jovyan/simclr_store/data",
+  "dataset": "stl10",
+  "backbone": "resnet18_mp",
+  "label_fraction": 1.0,
+  "seed": 1,
+  "epochs": 60.0,
+  "batch_size": 128,
+  "lr": 0.01,
+  "wd": 0.0005,
+  "holdout": 0,
+  "force": false
+ },
+ "n_labeled": 5000,
+ "steps": 2344,
+ "train_time_s": 80.7288019657135,
+ "metrics": {
+  "finetune_acc": 84.6375048160553,
+  "linear_lab_acc": 84.50000286102295
+ }
+}

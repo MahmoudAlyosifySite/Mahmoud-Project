@@ -171,7 +171,16 @@ images and \R{stl_supcon_lab_e100:cdnv_test} on test images, against \R{stl_simc
 \R{cmp:stl:simclr-sub:lp50:e100:diff}\pt of \lpfive to \simclr (\simclrsub reaches
 \R{stl_simclr_sub_e100:lp5}\%), although many of them show other classes. For reference, cross-entropy on the
 5,000 labels reaches \R{stl_ce_e100:clf:pm}\% and FixMatch \R{stl_fixmatch:clf:pm}\%.
-\pending{(The 41,000-step runs are in progress.)}
+At 41,000 steps the crossover of \cref{sec:main} appears on STL-10 as well. \supcon and \union barely move
+(\R{stl_supcon_lab_e200:lp5:pm}\% and \R{stl_union_e200:lp5:pm}\% with \lpfive), for the same reason as on
+CIFAR-10: their 5,000 labeled images are already separated by class. \simclr climbs to
+\R{stl_simclr_all_e200:lp5:pm}\%, \R{cmp:stl:simclr-supcon:lp50:e200:diff}\pt above \supcon
+(\R{cmp:stl:simclr-supcon:lp50:e200:ci}) and \R{cmp:stl:simclr-union:lp50:e200:diff}\pt above \union
+(\R{cmp:stl:simclr-union:lp50:e200:ci}). After fine-tuning its lead grows to
+\R{cmp:stl:simclr-supcon:ft:e200:diff}\pt and \R{cmp:stl:simclr-union:ft:e200:diff}\pt
+(\R{stl_simclr_all_e200:ft:pm}\%), and the $k$NN advantage of the label-using encoders is gone
+(\R{stl_simclr_all_e200:knn}\% for \simclr against \R{stl_supcon_lab_e200:knn}\% for \supcon).
+\pending{(FixMatch from these encoders is in progress.)}
 
 \paragraph{ResNet-50}
 With a ResNet-50 the crossover under the oracle-label probe comes later than with a ResNet-18, as expected

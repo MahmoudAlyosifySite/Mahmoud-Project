@@ -63,12 +63,13 @@ separated) and oracle grid (3 seeds: about half of the fine-tuning gap is the re
 two-stage fine-tuning; SimCLR v2-style self-distillation; BYOL fine-tuning;
 38,800-step runs (3 seeds: SupCon flat at ~84, SimCLR 89.9); colour jitter with 3 seeds incl. SupCon+U; CIFAR-100
 at 9,700 steps with 3 seeds;
-STL-10 at 20,500 steps (3 seeds, incl. FixMatch from scratch); FixMatch from every encoder (3 seeds) and the
+STL-10 at 20,500 steps (3 seeds, incl. FixMatch from scratch); STL-10 at 41,000 steps (3 seeds, probes and
+fine-tuning; FixMatch from the encoders still running); FixMatch from every encoder (3 seeds) and the
 equal-total-compute comparison with FixMatch from scratch; three-way CDNV split with a cross-entropy control; CDNV
 ratio during training; ResNet-50 at 19,400 steps (1 seed); 97,000 steps for all four arms (3 seeds, probes and fine-tuning); compute table; statistics (hierarchical bootstrap, Holm,
 TOST); new related work, audit of budget reporting, journal statements, elsarticle template.
 
-Waiting for runs (phase in `jobs/phases.txt`): STL-10 at 41,000 steps (p08c-p08e; 96-px phases run one job at a time); coverage intervention (p09); label fraction x budget grid (p12/p13); SupCon
+Waiting for runs (phase in `jobs/phases.txt`): STL-10 FixMatch at 41,000 steps and recipe search (p08d-p08e; 96-px phases run one job at a time); coverage intervention (p09); label fraction x budget grid (p12/p13); SupCon
 regularisation and ResNet-50 seeds (p14); CIFAR-100 at 19,400 steps (p15/p16); Tiny-ImageNet (p17-p20).
 
 Before submission (authors' decisions, see `paper/SUBMISSION.md`): CRediT roles, funding, the journal's
