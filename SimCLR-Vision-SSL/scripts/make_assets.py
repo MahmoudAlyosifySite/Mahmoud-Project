@@ -221,6 +221,8 @@ def correct(cfg, proto, dataset="cifar10"):
         c = st.load_correct(f"ftoracle_{cfg}", "finetune_tuned", _Y[dataset], RUNS)
         return {k: v for k, v in c.items() if k != 0}
     for tmpl, key in PRED[proto]:
+        if proto == "fm" and cfg.startswith("stl_"):
+            tmpl = "stl_fixmatch_from_" + cfg[4:]
         c = st.load_correct(tmpl.format(c=cfg), key, _Y[dataset], RUNS)
         if c:
             return c
@@ -282,6 +284,11 @@ for E, steps in ((100, "20,500"), (200, "41,000")):
                        f"stl_simclr_all_e{E}", proto, f"stl_union_e{E}", proto, "stl10"))
     FAMILY.append((f"stl:simclr-sub:lp50:e{E}", f"STL-10, LP-5k, {steps} steps", r"\simclr $-$ \simclrsub",
                    f"stl_simclr_all_e{E}", "lp50", f"stl_simclr_sub_e{E}", "lp50", "stl10"))
+for proto, pname in (("fm", "FixMatch from encoder"), ("fto", "FT-5k (oracle recipe)")):
+    FAMILY.append((f"stl:simclr-supcon:{proto}:e200", f"STL-10, {pname}, 41,000 steps", r"\simclr $-$ \supcon",
+                   "stl_simclr_all_e200", proto, "stl_supcon_lab_e200", proto, "stl10"))
+    FAMILY.append((f"stl:simclr-union:{proto}:e200", f"STL-10, {pname}, 41,000 steps", r"\simclr $-$ \union",
+                   "stl_simclr_all_e200", proto, "stl_union_e200", proto, "stl10"))
 STATS = []
 for tag, group, text, a, pa, b, pb, *ds in FAMILY:
     r = cmp(a, pa, b, pb, dataset=ds[0] if ds else "cifar10")
@@ -899,7 +906,7 @@ for pre, tag in (("c100_", "c100"), ("r50_", "r50"), ("tin_", "tin")):
             diffmacro(f"{tag}:simclr-supcon:{p}:e{E}", f"{pre}simclr_all_e{E}", p, f"{pre}supcon_lab_f0.1_e{E}", p)
             diffmacro(f"{tag}:simclr-union:{p}:e{E}", f"{pre}simclr_all_e{E}", p, f"{pre}union_f0.1_e{E}", p)
 for E in (100, 200):
-    for p in ("lp5", "ft", "knn", "fm"):
+    for p in ("lp5", "ft", "knn", "fm", "fto"):
         diffmacro(f"stl:simclr-supcon:{p}:e{E}", f"stl_simclr_all_e{E}", p, f"stl_supcon_lab_e{E}", p)
         diffmacro(f"stl:simclr-union:{p}:e{E}", f"stl_simclr_all_e{E}", p, f"stl_union_e{E}", p)
         diffmacro(f"stl:simclr-sub:{p}:e{E}", f"stl_simclr_all_e{E}", p, f"stl_simclr_sub_e{E}", p)

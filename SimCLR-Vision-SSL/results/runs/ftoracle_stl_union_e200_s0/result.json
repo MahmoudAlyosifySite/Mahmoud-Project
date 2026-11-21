@@ -1,0 +1,233 @@
+{
+ "name": "ftoracle_stl_union_e200_s0",
+ "args": {
+  "name": "ftoracle_stl_union_e200_s0",
+  "from_run": "stl_union_e200_s0",
+  "ckpt_dir": "/home/jovyan/simclr_store/ckpt",
+  "out": "results/runs",
+  "config_from": null,
+  "data_dir": "/home/jovyan/simclr_store/data",
+  "dataset": "stl10",
+  "backbone": "resnet18_mp",
+  "label_fraction": 1.0,
+  "seed": 0,
+  "final_only": null,
+  "no_test_per_config": false,
+  "oracle": true,
+  "grid": "small"
+ },
+ "from_run": "stl_union_e200_s0",
+ "n_labeled": 5000,
+ "grid": [
+  {
+   "head": "lp",
+   "lr": 0.01,
+   "epochs": 30,
+   "reg": "none",
+   "test_acc": 84.18750166893005,
+   "val_acc": 84.18750166893005
+  },
+  {
+   "head": "lp",
+   "lr": 0.01,
+   "epochs": 30,
+   "reg": "mixup",
+   "test_acc": 85.20000576972961,
+   "val_acc": 85.20000576972961
+  },
+  {
+   "head": "lp",
+   "lr": 0.01,
+   "epochs": 60,
+   "reg": "none",
+   "test_acc": 84.12500619888306,
+   "val_acc": 84.12500619888306
+  },
+  {
+   "head": "lp",
+   "lr": 0.01,
+   "epochs": 60,
+   "reg": "mixup",
+   "test_acc": 86.56250238418579,
+   "val_acc": 86.56250238418579
+  },
+  {
+   "head": "lp",
+   "lr": 0.03,
+   "epochs": 30,
+   "reg": "none",
+   "test_acc": 85.60000658035278,
+   "val_acc": 85.60000658035278
+  },
+  {
+   "head": "lp",
+   "lr": 0.03,
+   "epochs": 30,
+   "reg": "mixup",
+   "test_acc": 87.05000281333923,
+   "val_acc": 87.05000281333923
+  },
+  {
+   "head": "lp",
+   "lr": 0.03,
+   "epochs": 60,
+   "reg": "none",
+   "test_acc": 84.6250057220459,
+   "val_acc": 84.6250057220459
+  },
+  {
+   "head": "lp",
+   "lr": 0.03,
+   "epochs": 60,
+   "reg": "mixup",
+   "test_acc": 87.88750171661377,
+   "val_acc": 87.88750171661377
+  },
+  {
+   "head": "lp",
+   "lr": 0.1,
+   "epochs": 30,
+   "reg": "none",
+   "test_acc": 82.35000371932983,
+   "val_acc": 82.35000371932983
+  },
+  {
+   "head": "lp",
+   "lr": 0.1,
+   "epochs": 30,
+   "reg": "mixup",
+   "test_acc": 88.7125015258789,
+   "val_acc": 88.7125015258789
+  },
+  {
+   "head": "lp",
+   "lr": 0.1,
+   "epochs": 60,
+   "reg": "none",
+   "test_acc": 87.4250054359436,
+   "val_acc": 87.4250054359436
+  },
+  {
+   "head": "lp",
+   "lr": 0.1,
+   "epochs": 60,
+   "reg": "mixup",
+   "test_acc": 88.88750672340393,
+   "val_acc": 88.88750672340393
+  },
+  {
+   "head": "random",
+   "lr": 0.01,
+   "epochs": 30,
+   "reg": "none",
+   "test_acc": 87.7875030040741,
+   "val_acc": 87.7875030040741
+  },
+  {
+   "head": "random",
+   "lr": 0.01,
+   "epochs": 30,
+   "reg": "mixup",
+   "test_acc": 86.92500591278076,
+   "val_acc": 86.92500591278076
+  },
+  {
+   "head": "random",
+   "lr": 0.01,
+   "epochs": 60,
+   "reg": "none",
+   "test_acc": 87.87500262260437,
+   "val_acc": 87.87500262260437
+  },
+  {
+   "head": "random",
+   "lr": 0.01,
+   "epochs": 60,
+   "reg": "mixup",
+   "test_acc": 87.53750324249268,
+   "val_acc": 87.53750324249268
+  },
+  {
+   "head": "random",
+   "lr": 0.03,
+   "epochs": 30,
+   "reg": "none",
+   "test_acc": 88.16250562667847,
+   "val_acc": 88.16250562667847
+  },
+  {
+   "head": "random",
+   "lr": 0.03,
+   "epochs": 30,
+   "reg": "mixup",
+   "test_acc": 88.05000185966492,
+   "val_acc": 88.05000185966492
+  },
+  {
+   "head": "random",
+   "lr": 0.03,
+   "epochs": 60,
+   "reg": "none",
+   "test_acc": 88.45000267028809,
+   "val_acc": 88.45000267028809
+  },
+  {
+   "head": "random",
+   "lr": 0.03,
+   "epochs": 60,
+   "reg": "mixup",
+   "test_acc": 88.20000290870667,
+   "val_acc": 88.20000290870667
+  },
+  {
+   "head": "random",
+   "lr": 0.1,
+   "epochs": 30,
+   "reg": "none",
+   "test_acc": 87.01250553131104,
+   "val_acc": 87.01250553131104
+  },
+  {
+   "head": "random",
+   "lr": 0.1,
+   "epochs": 30,
+   "reg": "mixup",
+   "test_acc": 88.87500166893005,
+   "val_acc": 88.87500166893005
+  },
+  {
+   "head": "random",
+   "lr": 0.1,
+   "epochs": 60,
+   "reg": "none",
+   "test_acc": 87.90000677108765,
+   "val_acc": 87.90000677108765
+  },
+  {
+   "head": "random",
+   "lr": 0.1,
+   "epochs": 60,
+   "reg": "mixup",
+   "test_acc": 89.06250596046448,
+   "val_acc": 89.06250596046448
+  }
+ ],
+ "best": {
+  "head": "random",
+  "lr": 0.1,
+  "epochs": 60,
+  "reg": "mixup"
+ },
+ "default": {
+  "head": "lp",
+  "lr": 0.01,
+  "epochs": 60,
+  "reg": "none"
+ },
+ "train_time_s": 1419.0158984661102,
+ "oracle": true,
+ "metrics": {
+  "finetune_oracle_acc": 88.73750567436218,
+  "finetune_default_acc": 84.12500619888306
+ }
+}

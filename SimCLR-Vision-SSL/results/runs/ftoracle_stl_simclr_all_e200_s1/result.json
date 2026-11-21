@@ -1,0 +1,40 @@
+{
+ "name": "ftoracle_stl_simclr_all_e200_s1",
+ "args": {
+  "name": "ftoracle_stl_simclr_all_e200_s1",
+  "from_run": "stl_simclr_all_e200_s1",
+  "ckpt_dir": "/home/jovyan/simclr_store/ckpt",
+  "out": "results/runs",
+  "config_from": "ftoracle_stl_simclr_all_e200_s0",
+  "data_dir": "/home/jovyan/simclr_store/data",
+  "dataset": "stl10",
+  "backbone": "resnet18_mp",
+  "label_fraction": 1.0,
+  "seed": 1,
+  "final_only": "{\"head\": \"lp\", \"lr\": 0.01, \"epochs\": 60, \"reg\": \"mixup\"}",
+  "no_test_per_config": false,
+  "oracle": false,
+  "grid": "full"
+ },
+ "from_run": "stl_simclr_all_e200_s1",
+ "n_labeled": 5000,
+ "grid": [],
+ "best": {
+  "head": "lp",
+  "lr": 0.01,
+  "epochs": 60,
+  "reg": "mixup"
+ },
+ "default": {
+  "head": "lp",
+  "lr": 0.01,
+  "epochs": 60,
+  "reg": "none"
+ },
+ "train_time_s": 171.45099663734436,
+ "oracle": false,
+ "metrics": {
+  "finetune_tuned_acc": 91.71250462532043,
+  "finetune_default_acc": 90.61250686645508
+ }
+}
