@@ -180,7 +180,18 @@ CIFAR-10: their 5,000 labeled images are already separated by class. \simclr cli
 \R{cmp:stl:simclr-supcon:ft:e200:diff}\pt and \R{cmp:stl:simclr-union:ft:e200:diff}\pt
 (\R{stl_simclr_all_e200:ft:pm}\%), and the $k$NN advantage of the label-using encoders is gone
 (\R{stl_simclr_all_e200:knn}\% for \simclr against \R{stl_supcon_lab_e200:knn}\% for \supcon).
-\pending{(FixMatch from these encoders is in progress.)}
+With the best fine-tuning recipe for each encoder (chosen on the test set of seed 0 and applied to the
+other seeds, as in \cref{sec:ftrobust}), \simclr reaches \R{stl_simclr_all_e200:fto:pm}\% and \supcon and
+\union \R{stl_supcon_lab_e200:fto:pm}\% and \R{stl_union_e200:fto:pm}\%: as on CIFAR-10, the recipe halves the
+lead, to \R{cmp:stl:simclr-supcon:fto:e200:diff}\pt (\R{cmp:stl:simclr-supcon:fto:e200:ci}) and
+\R{cmp:stl:simclr-union:fto:e200:diff}\pt (\R{cmp:stl:simclr-union:fto:e200:ci}), and does not close it.
+FixMatch started from the three encoders keeps the order, with much smaller gaps: \simclr reaches
+\R{stl_simclr_all_e200:fm:pm}\%, \R{cmp:stl:simclr-supcon:fm:e200:diff}\pt above \supcon
+(\R{cmp:stl:simclr-supcon:fm:e200:ci}) and \R{cmp:stl:simclr-union:fm:e200:diff}\pt above \union
+(\R{cmp:stl:simclr-union:fm:e200:ci}). FixMatch trains the whole network on all 105,000 images with
+pseudo-labels, which likely overwrites most of what distinguished the encoders. All three starts end above
+FixMatch from scratch with the same FixMatch budget (\R{stl_fixmatch:clf:pm}\%), but only when the cost of
+pretraining is not counted.
 
 \paragraph{ResNet-50}
 With a ResNet-50 the crossover under the oracle-label probe comes later than with a ResNet-18, as expected
