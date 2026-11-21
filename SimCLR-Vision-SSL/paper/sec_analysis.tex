@@ -113,19 +113,28 @@ groups.}
 \end{figure}
 
 \paragraph{Result}
-\pending{Within the redundant family the picture is clean: as the share of near-duplicates grows, the
+Within the redundant family the picture is clean: as the share of near-duplicates grows, the
 coverage radius grows and the accuracy of \supcon falls monotonically, from \R{supcon_lab_f0.1_e100:lp50}\%
-for the random pool to \R{supcon_lab_cluster50_f0.1_e100:lp50}\% for the fully redundant one. The
-$k$-center family behaves differently: its coverage radius is the largest of all pools, yet \supcon loses
-little accuracy (\R{supcon_lab_kcenter_f0.1_e100:lp50}\%), while \simclr trained on the same pool collapses
-(\R{simclr_sub_kcenter_f0.1_e100:lp50}\%). Across all pools the rank correlation between coverage radius and
-the accuracy of \supcon is \R{rho:all:radius_simclr:supcon} (Spearman, $n=\R{rho:all:radius_simclr:supcon:n}$
-pools); within the random and redundant pools it is \R{rho:nokc:radius_simclr:supcon}. The supervised
-reference space gives \R{rho:all:radius_supervised:supcon} and \R{rho:nokc:radius_supervised:supcon}. Across
-pool sizes from 1\% to 20\%, the partial rank correlation that controls for the pool size is
-\R{rho:partial}.} The $k$-center pool is the kind of set that \citet{hacohen2022active} show to be a poor
-choice at low budgets for \emph{supervised} learners; here the labels make \supcon robust to it, and the
-label-free learner is the one that fails. $k$-center selection picks the images farthest from all others,
+for the random pool to \R{supcon_lab_cluster50_f0.1_e100:lp50}\% for the fully redundant one
+(\lpfive: \R{supcon_lab_f0.1_e100:lp5}\% to \R{supcon_lab_cluster50_f0.1_e100:lp5}\%). \simclr on the same
+pools does not move (\R{simclr_sub_f0.1_e100:lp50}\% and \R{simclr_sub_cluster50_f0.1_e100:lp50}\%; rank
+correlation with the radius \R{rho:red:radius_simclr:sub}), likely because on 5,000 images it is limited by
+features of single images (\cref{sec:main}) rather than by how much of each class the pool covers. The
+$k$-center family behaves differently. In the \simclr space, where it was selected, its coverage radius is
+the largest of all pools, yet \supcon loses little under the oracle-label probe
+(\R{supcon_lab_kcenter_f0.1_e100:lp50}\%), while \simclr trained on the same pool drops from
+\R{simclr_sub_f0.1_e100:lp50}\% to \R{simclr_sub_kcenter_f0.1_e100:lp50}\%. Under \lpfive \supcon does lose
+on the $k$-center pool (\R{supcon_lab_kcenter_f0.1_e100:lp5}\%), because that probe is trained on the
+pool's own atypical images. In the supervised space, whose classes are tight, the $k$-center pools have a
+slightly \emph{smaller} radius than the random pool: images that are atypical for \simclr features are not
+atypical there, so the two spaces disagree on this family. Across all pools the rank correlation between
+coverage radius and the accuracy of \supcon is \R{rho:all:radius_simclr:supcon} (Spearman,
+$n=\R{rho:all:radius_simclr:supcon:n}$ pools); within the random and redundant pools it is
+\R{rho:nokc:radius_simclr:supcon}. The supervised reference space gives \R{rho:all:radius_supervised:supcon}
+and \R{rho:nokc:radius_supervised:supcon}. Across pool sizes from 1\% to 20\%, the partial rank correlation
+that controls for the pool size is \R{rho:partial}. The $k$-center pool is the kind of set that \citet{hacohen2022active} show to be a poor
+choice at low budgets for \emph{supervised} learners; here the labels make the \supcon encoder largely
+robust to it, and the label-free learner is the one that fails. $k$-center selection picks the images farthest from all others,
 that is, atypical images and outliers. Without labels, each of them has few similar images in the pool, so
 instance discrimination learns features specific to single images; with labels, the atypical images of a
 class are positives of each other, and the class-level positives bridge the gaps between them.
