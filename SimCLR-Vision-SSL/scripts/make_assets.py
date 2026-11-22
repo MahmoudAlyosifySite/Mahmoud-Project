@@ -396,9 +396,22 @@ def frac_cfg(kind, f, E):
     return f"{'supcon_lab' if kind == 'supcon' else 'union'}_f{f}_e{E}"
 
 
+def frac_ft(kind, f, E):
+    """Fine-tuning on the f labels (FT-f), mean over the seeds that have a fine-tuned run."""
+    if f >= 1.0:
+        return float("nan")      # fine-tuning with all labels was not run
+    if f == 0.1:
+        return mean(frac_cfg(kind, f, E), "ft")
+    name = f"ft_simclr_all_e{E}_f{f}_s0" if kind == "simclr" else f"ft_{frac_cfg(kind, f, E)}_s0"
+    r = RUN.get(name)
+    return float(r["metrics"]["finetune_acc"]) if r else float("nan")
+
+
 def frac_val(kind, f, E, proto):
-    """proto: 'oracle' (LP with all labels) or 'budget' (LP with the f labels)."""
+    """proto: 'oracle' (LP with all labels), 'budget' (LP with the f labels) or 'ft' (fine-tuning on the f labels)."""
     cfg = frac_cfg(kind, f, E)
+    if proto == "ft":
+        return frac_ft(kind, f, E)
     if proto == "oracle" or f >= 1.0:
         return mean(cfg, "lp50")
     v = V(cfg, "linear_lab_acc") if kind != "simclr" else V(cfg, f"lpf:{f}")
@@ -407,35 +420,56 @@ def frac_val(kind, f, E, proto):
     return float(v.mean()) if len(v) else float("nan")
 
 
-fig, axes = plt.subplots(2, 2, figsize=(7.2, 3.5), sharey=True, sharex=True, gridspec_kw={"hspace": 0.32, "wspace": 0.06})
+def frac_diff(kind, f, E, proto):
+    if kind == "union" and f >= 1.0:
+        return float("nan")      # with all labels SupCon+U is SupCon
+    return frac_val(kind, f, E, proto) - frac_val("simclr", f, E, proto)
+
+
+def break_even(kind, E, proto):
+    """Where the label-using method starts to stay ahead of SimCLR, as a phrase: 'between a\\% and b\\%' (the
+    two grid fractions around the last sign change), or a bound when there is no change inside the grid."""
+    fr = [f for f in FRS if np.isfinite(frac_diff(kind, f, E, proto))]
+    d = [frac_diff(kind, f, E, proto) for f in fr]
+    if all(x > 0 for x in d):
+        return f"below {100 * fr[0]:g}\\%"
+    j = max(i for i, x in enumerate(d) if x <= 0)
+    if j + 1 == len(fr):
+        return f"above {100 * fr[-1]:g}\\%"
+    return f"between {100 * fr[j]:g}\\% and {100 * fr[j + 1]:g}\\%"
+
+
+fig, axes = plt.subplots(2, 3, figsize=(7.2, 3.3), sharey=True, sharex=True, gridspec_kw={"hspace": 0.34, "wspace": 0.05})
 panels = [("supcon", "oracle", r"(a) SupCon $-$ SimCLR, LP-all"),
           ("supcon", "budget", r"(b) SupCon $-$ SimCLR, LP-$f$"),
-          ("union", "oracle", r"(c) SupCon+U $-$ SimCLR, LP-all"), ("union", "budget", r"(d) SupCon+U $-$ SimCLR, LP-$f$")]
+          ("supcon", "ft", r"(c) SupCon $-$ SimCLR, FT-$f$"),
+          ("union", "oracle", r"(d) SupCon+U $-$ SimCLR, LP-all"),
+          ("union", "budget", r"(e) SupCon+U $-$ SimCLR, LP-$f$"),
+          ("union", "ft", r"(f) SupCon+U $-$ SimCLR, FT-$f$")]
 rows_frac = []
 for ax, (kind, proto, title) in zip(axes.ravel(), panels):
     G = np.full((len(GES), len(FRS)), np.nan)
     for i, E in enumerate(GES):
         for j, f in enumerate(FRS):
-            if kind == "union" and f >= 1.0:
-                continue        # with all labels SupCon+U is SupCon
-            G[i, j] = frac_val(kind, f, E, proto) - frac_val("simclr", f, E, proto)
+            G[i, j] = frac_diff(kind, f, E, proto)
     im = ax.imshow(G, cmap="RdBu_r", vmin=-12, vmax=12, aspect="auto", origin="lower")
     for i in range(len(GES)):
         for j in range(len(FRS)):
             if np.isfinite(G[i, j]):
-                ax.text(j, i, f"{G[i, j]:+.1f}", ha="center", va="center", fontsize=7,
+                ax.text(j, i, f"{G[i, j]:+.1f}", ha="center", va="center", fontsize=5.8,
                         color="white" if abs(G[i, j]) > 7 else "black")
     ax.set_xticks(range(len(FRS)))
     ax.set_xticklabels([f"{100 * f:g}" for f in FRS])
     ax.set_yticks(range(len(GES)))
     ax.set_yticklabels([f"{97 * E:,}" for E in GES])
-    ax.set_title(title, loc="left", fontsize=7.5)
+    ax.set_title(title, loc="left", fontsize=7)
+    ax.tick_params(labelsize=6.5)
     ax.grid(False)
 for ax in axes[1]:
     ax.set_xlabel("labeled fraction $f$ (%)")
 for ax in axes[:, 0]:
     ax.set_ylabel("gradient steps")
-cb = fig.colorbar(im, ax=axes, fraction=0.025, pad=0.02)
+cb = fig.colorbar(im, ax=axes, fraction=0.02, pad=0.015, extend="both")
 cb.set_label("difference (points)")
 fig.savefig(os.path.join(FIG, "fig_wins.pdf"))
 plt.close(fig)
@@ -444,15 +478,40 @@ for E in GES:
     for f in FRS:
         line = [f"{97 * E:,}", f"{100 * f:g}\\%"]
         for kind in ("simclr", "supcon", "union"):
-            for proto in ("oracle", "budget"):
+            for proto in ("oracle", "budget", "ft"):
                 x = float("nan") if (kind == "union" and f >= 1) else frac_val(kind, f, E, proto)
                 line.append(fmt(x))
         rows.append(" & ".join(line) + r" \\")
     rows.append(r"\addlinespace")
-write("tab_fraction.tex", "\\begin{tabular}{rrcccccc}\n\\toprule\n & & \\multicolumn{2}{c}{\\simclr} & \\multicolumn{2}{c}{\\supcon} & "
-      "\\multicolumn{2}{c}{\\union} \\\\\n\\cmidrule(lr){3-4}\\cmidrule(lr){5-6}\\cmidrule(lr){7-8}\n"
-      "steps & $f$ & LP-all & LP-$f$ & LP-all & LP-$f$ & LP-all & LP-$f$ \\\\\n\\midrule\n" + "\n".join(rows[:-1])
-      + "\n\\bottomrule\n\\end{tabular}")
+write("tab_fraction.tex", "\\begin{tabular}{rrccccccccc}\n\\toprule\n & & \\multicolumn{3}{c}{\\simclr} & \\multicolumn{3}{c}{\\supcon} & "
+      "\\multicolumn{3}{c}{\\union} \\\\\n\\cmidrule(lr){3-5}\\cmidrule(lr){6-8}\\cmidrule(lr){9-11}\n"
+      "steps & $f$ & LP-all & LP-$f$ & FT-$f$ & LP-all & LP-$f$ & FT-$f$ & LP-all & LP-$f$ & FT-$f$ \\\\\n\\midrule\n"
+      + "\n".join(rows[:-1]) + "\n\\bottomrule\n\\end{tabular}")
+# macros for the text: differences (label-using minus SimCLR) and break-even fractions
+for kind in ("supcon", "union"):
+    for E in GES:
+        for proto, tag in (("oracle", "lpall"), ("budget", "lpf"), ("ft", "ftf")):
+            M[f"grid:{kind}:{tag}:e{E}:be"] = break_even(kind, E, proto)
+            for f in FRS:
+                x = frac_diff(kind, f, E, proto)
+                if np.isfinite(x):
+                    M[f"grid:{kind}:{tag}:e{E}:f{f:g}"] = f"{x:+.1f}"
+                    M[f"grid:{kind}:{tag}:e{E}:f{f:g}:abs"] = f"{abs(x):.1f}"
+            xs = [frac_diff(kind, f, E, proto) for f in FRS if 0.05 <= f < 1.0]
+            xs = [x for x in xs if np.isfinite(x)]
+            if xs:      # largest lead of the label-using method from 5% to 50% of the labels
+                M[f"grid:{kind}:{tag}:e{E}:max"] = f"{max(xs):.1f}"
+        for f in FRS:
+            for proto, tag in (("oracle", "lpall"), ("budget", "lpf"), ("ft", "ftf")):
+                x = frac_val(kind, f, E, proto)
+                if np.isfinite(x):
+                    M[f"grid:{kind}:{tag}:e{E}:f{f:g}:acc"] = f"{x:.1f}"
+for E in GES:
+    for f in FRS:
+        for proto, tag in (("oracle", "lpall"), ("budget", "lpf"), ("ft", "ftf")):
+            x = frac_val("simclr", f, E, proto)
+            if np.isfinite(x):
+                M[f"grid:simclr:{tag}:e{E}:f{f:g}:acc"] = f"{x:.1f}"
 
 # ----------------------------------------------------------------------------
 # Table: other datasets and architectures

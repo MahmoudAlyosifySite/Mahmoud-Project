@@ -67,11 +67,11 @@ STL-10 at 20,500 steps (3 seeds, incl. FixMatch from scratch); STL-10 at 41,000 
 fine-tuning, oracle recipe, FixMatch from the encoders); coverage intervention (10 pool types, 3-5 seeds; the
 label-limited probes of `reeval.py` for these runs are not yet computed and are not used in the paper); FixMatch from every encoder (3 seeds) and the
 equal-total-compute comparison with FixMatch from scratch; three-way CDNV split with a cross-entropy control; CDNV
-ratio during training; ResNet-50 at 19,400 steps (1 seed); 97,000 steps for all four arms (3 seeds, probes and fine-tuning); compute table; statistics (hierarchical bootstrap, Holm,
+ratio during training; ResNet-50 at 19,400 steps (2 seeds, third in p14); label fraction x budget grid (1-100% of the labels, 2,425-38,800 steps, LP-all, LP-f and FT-f; one seed except f=10%; the FT cell at f=10%, 2,425 steps is `jobs/rev_p14b_ft_grid_fill.txt`); 97,000 steps for all four arms (3 seeds, probes and fine-tuning); compute table; statistics (hierarchical bootstrap, Holm,
 TOST); new related work, audit of budget reporting, journal statements, elsarticle template.
 
-Waiting for runs (phase in `jobs/phases.txt`): label fraction x budget grid (p12/p13); SupCon
-regularisation and ResNet-50 seeds (p14); CIFAR-100 at 19,400 steps (p15/p16); Tiny-ImageNet (p17-p20).
+Waiting for runs (phase in `jobs/phases.txt`): SupCon
+regularisation and the third ResNet-50 seed (p14); CIFAR-100 at 19,400 steps (p15/p16); Tiny-ImageNet (p17-p20).
 
 Before submission (authors' decisions, see `paper/SUBMISSION.md`): CRediT roles, funding, the journal's
 generative-AI declaration, JCR quartile check, Zenodo DOI for the code, the journal's Guide for Authors.

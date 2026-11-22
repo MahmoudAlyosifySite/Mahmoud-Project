@@ -106,24 +106,52 @@ where label-free pretraining on all images arrives.
 \label{sec:fractions}
 \Cref{fig:wins} extends the comparison to label fractions from 1\% to 100\% and to three budgets. Each cell
 is the accuracy of the label-using method minus that of \simclr at the same number of steps, under the
-all-label probe (LP-all) and under a probe that sees only the fraction $f$ of the labels (LP-$f$).
+all-label probe (LP-all), under a probe that sees only the fraction $f$ of the labels (LP-$f$), and after
+fine-tuning the whole network on these labels (FT-$f$).
 
 \begin{figure}[t]
 \centering
 \includegraphics[width=\linewidth]{figures/fig_wins.pdf}
-\caption{Which method wins, by label fraction and budget (CIFAR-10, ResNet-18, one seed except $f=10\%$).
-Cells show the accuracy of \supcon (a, b) or \union (c, d) minus that of \simclr at the same number of steps;
-red means that the label-using method is ahead. LP-all is the oracle-label probe; LP-$f$ uses the same
-fraction of labels as pretraining. The numbers behind the chart are in \cref{tab:fraction}.}
+\caption{Which method wins, by label fraction and budget (CIFAR-10, ResNet-18). Cells show the accuracy of
+\supcon (a--c) or \union (d--f) minus that of \simclr at the same number of steps; red means that the
+label-using method is ahead, and the colours saturate at $\pm12$ points. LP-all is the oracle-label probe;
+LP-$f$ uses the same fraction of labels as pretraining; FT-$f$ fine-tunes on these labels (not run with all
+labels). The label-using arms and fine-tuning use one seed except at $f=10\%$; the \simclr encoders have
+three to five seeds. The numbers behind the chart are in \cref{tab:fraction}.}
 \label{fig:wins}
 \end{figure}
 
-\pending{Three regions are visible. With few labels and many steps (upper left) \simclr wins under both
-probes. With many labels (right) \supcon wins everywhere, in line with the full-label result of
-\citet{khosla2020supcon}; the break-even fraction moves to the right as the budget grows. With few steps
-(bottom row) the label-using methods win at every fraction, the speed effect of \cref{sec:main}. The LP-$f$
-panels are shifted towards \simclr relative to the LP-all panels, most strongly for \union, which is the
-protocol effect studied in \cref{sec:protocol}.}
+Three regions are visible. With 1\% of the labels (50 per class) \simclr is ahead of \supcon under every
+protocol and at every budget, already at 2,425 steps (by \R{grid:supcon:lpall:e25:f0.01:abs} points under
+LP-all). \supcon then trains on 500 images, and its accuracy barely depends on the budget
+(\R{grid:supcon:lpall:e25:f0.01:acc}\% at 2,425 steps and \R{grid:supcon:lpall:e400:f0.01:acc}\% at 38,800
+under LP-all): as with 5,000 labels (\cref{sec:plateau}), the labeled images are separated by class after a
+few thousand steps and give no further signal. With half or all of the labels \supcon wins under both probes
+at every budget, in line with the full-label result of \citet{khosla2020supcon}, but its lead shrinks as the
+budget grows (with all labels from \R{grid:supcon:lpall:e25:f1:abs} to \R{grid:supcon:lpall:e400:f1:abs} points).
+In between, the break-even fraction moves to the right with the budget: under LP-all it lies
+\R{grid:supcon:lpall:e25:be} at 2,425 steps, \R{grid:supcon:lpall:e100:be} at 9,700 steps and
+\R{grid:supcon:lpall:e400:be} at 38,800 steps, and LP-$f$ gives the same intervals for \supcon.
+
+Fine-tuning moves every boundary towards \simclr (panels c and f). At 38,800 steps fine-tuned \simclr is
+ahead of both label-using encoders at every fraction up to 50\% (by \R{grid:supcon:ftf:e400:f0.5:abs} points
+over \supcon at 50\%), and at 9,700 steps the break-even fraction for \supcon lies
+\R{grid:supcon:ftf:e100:be}. Only at 2,425 steps do the label-using encoders stay ahead from 5\% of the
+labels on, and then by at most \R{grid:supcon:ftf:e25:max} points, against up to
+\R{grid:supcon:lpf:e25:max} under LP-$f$. Fine-tuning gives the \simclr encoder the class information that
+\supcon put into its features during pretraining, so what remains is the quality of the features themselves,
+which favours the encoder trained on all images once the budget allows it.
+
+\union follows the same pattern under LP-all, with a much smaller deficit at 1\% of the labels
+(\R{grid:union:lpall:e400:f0.01:abs} points at 38,800 steps, against \R{grid:supcon:lpall:e400:f0.01:abs}
+for \supcon), because its unlabeled images keep training the encoder on all 50,000 images. Under LP-$f$,
+however, it falls to \R{grid:union:lpf:e400:f0.01:acc}\% at $f=1\%$ and 38,800 steps (LP-all:
+\R{grid:union:lpall:e400:f0.01:acc}\%), \R{grid:union:lpf:e400:f0.01:abs} points behind \simclr. The gap
+between the two probes is concentrated at the smallest fraction and grows with the budget; it is the protocol
+effect of \cref{sec:protocol} in its strongest form. \union draws a quarter of every batch from the labeled
+images, so with 500 of them each labeled image is seen about 33 times as often as an unlabeled one, and the
+LP-$f$ probe is fitted on exactly these images, which are likely collapsed far more tightly than test images
+(the seen/unseen gap of \cref{sec:geometry}).
 
 \subsection{Other datasets and a larger encoder}
 \label{sec:datasets}
@@ -199,8 +227,8 @@ from the finding that label-free contrastive learning gains more than supervised
 encoders and longer training \citep{chen2020simclr}. At 9,700
 steps \supcon is still slightly ahead (\R{r50_supcon_lab_f0.1_e100:lp50}\% against
 \R{r50_simclr_all_e100:lp50}\%, one seed); at 19,400 steps \simclr is clearly ahead
-(\R{r50_simclr_all_e200:lp50}\% against \R{r50_supcon_lab_f0.1_e200:lp50}\%; \pending{one seed, two more in
-progress}). Under \ftfive
+(\R{r50_simclr_all_e200:lp50}\% against \R{r50_supcon_lab_f0.1_e200:lp50}\%; \pending{two seeds, a third
+in progress}). Under \ftfive
 \simclr is ahead already at 9,700 steps (\R{r50_simclr_all_e100:ft}\% against
 \R{r50_supcon_lab_f0.1_e100:ft}\%). The larger encoder also makes very short budgets fragile: at 900 steps
 \supcon reaches \R{r50_supcon_lab_f0.1_steps900:lp50}\% with learning rate 0.25 but only

@@ -167,10 +167,14 @@ with a margin of $\pm1$ point.}
 \begin{table}[h]
 \centering
 \small
-\caption{Numbers behind \cref{fig:wins}: accuracy (\%) by label fraction $f$ and budget (one seed, except
-$f=10\%$ at 9,700 and 38,800 steps).}
+\caption{Numbers behind \cref{fig:wins}: accuracy (\%) by label fraction $f$ and budget. \supcon, \union
+and fine-tuning use one seed except at $f=10\%$ (three seeds at 2,425 and 38,800 steps, five at 9,700; one for
+fine-tuning at 2,425 steps); the \simclr probes use three to five seeds. FT-$f$ was not run with all
+labels.}
 \label{tab:fraction}
+\begin{adjustbox}{max width=\linewidth}
 \input{generated/tab_fraction.tex}
+\end{adjustbox}
 \end{table}
 
 \begin{table}[h]
