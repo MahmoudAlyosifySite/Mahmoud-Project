@@ -1,0 +1,27 @@
+{
+ "name": "ft_c100_simclr_all_e200_s1",
+ "args": {
+  "name": "ft_c100_simclr_all_e200_s1",
+  "from_run": "c100_simclr_all_e200_s1",
+  "out": "results/runs",
+  "ckpt_dir": "/home/jovyan/simclr_store/ckpt",
+  "data_dir": "/home/jovyan/simclr_store/data",
+  "dataset": "cifar100",
+  "backbone": "resnet18",
+  "label_fraction": 0.1,
+  "seed": 1,
+  "epochs": 60.0,
+  "batch_size": 128,
+  "lr": 0.01,
+  "wd": 0.0005,
+  "holdout": 0,
+  "force": false
+ },
+ "n_labeled": 5000,
+ "steps": 2344,
+ "train_time_s": 64.99377250671387,
+ "metrics": {
+  "finetune_acc": 54.71999645233154,
+  "linear_lab_acc": 50.849997997283936
+ }
+}

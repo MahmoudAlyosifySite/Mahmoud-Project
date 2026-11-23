@@ -184,8 +184,17 @@ under the oracle-label probe (\R{c100_union_f0.1_e100:lp50}\%), ahead of \simclr
 labels the order is \simclr (\R{c100_simclr_all_e100:ft}\%), \union (\R{c100_union_f0.1_e100:ft}\%), \supcon
 (\R{c100_supcon_lab_f0.1_e100:ft}\%). That \lpfive does not yet reverse the order matches CIFAR-10, where at
 9,700 steps \simclr and \union are also within a point under \lpfive (\cref{tab:main}): \simclr is still far
-from its end point at this budget, and the gap opens only with longer training. \pending{CIFAR-100 at 19,400
-steps is in progress.}
+from its end point at this budget, and the gap opens only with longer training. At 19,400 steps the crossover
+appears on CIFAR-100 as well. \simclr climbs to \R{c100_simclr_all_e200:lp50}\% under the oracle-label probe
+and \R{c100_simclr_all_e200:lp5}\% under \lpfive and is first under every protocol. \supcon does not improve
+(\R{c100_supcon_lab_f0.1_e200:lp50}\% and \R{c100_supcon_lab_f0.1_e200:lp5}\%), and \union gains under the
+oracle-label probe (\R{c100_union_f0.1_e200:lp50}\%) but loses under \lpfive (\R{c100_union_f0.1_e200:lp5}\%, from
+\R{c100_union_f0.1_e100:lp5}\%) and after fine-tuning (\R{c100_union_f0.1_e200:ft}\%, from
+\R{c100_union_f0.1_e100:ft}\%). After fine-tuning \simclr (\R{c100_simclr_all_e200:ft}\%) leads \supcon by
+\R{d:c100:simclr-supcon:ft:e200}\pt and \union by \R{d:c100:simclr-union:ft:e200}\pt. With 50 labeled images per
+class, further steps likely tighten the labeled images of \union without improving the features of the
+others, so the protocols trained on the labeled images lose what the oracle-label probe gains (the
+seen/unseen gap of \cref{sec:geometry}).
 
 \paragraph{STL-10}
 STL-10 has no oracle labels, so every protocol uses its 5,000 labels, and its 100,000 unlabeled images are
@@ -237,7 +246,8 @@ steps \supcon is still slightly ahead (\R{r50_supcon_lab_f0.1_e100:lp50}\% again
 \R{r50_simclr_all_e100:lp50}\%, one seed); at 19,400 steps \simclr is clearly ahead
 (\R{r50_simclr_all_e200:lp50:pm}\% against \R{r50_supcon_lab_f0.1_e200:lp50:pm}\%, three seeds). Under \ftfive
 \simclr is ahead already at 9,700 steps (\R{r50_simclr_all_e100:ft}\% against
-\R{r50_supcon_lab_f0.1_e100:ft}\%). The larger encoder also makes very short budgets fragile: at 900 steps
+\R{r50_supcon_lab_f0.1_e100:ft}\%, one seed), and at 19,400 steps by \R{d:r50:simclr-supcon:ft:e200}\pt
+(\R{r50_simclr_all_e200:ft:pm}\% against \R{r50_supcon_lab_f0.1_e200:ft:pm}\%). The larger encoder also makes very short budgets fragile: at 900 steps
 \supcon reaches \R{r50_supcon_lab_f0.1_steps900:lp50}\% with learning rate 0.25 but only
 \R{r50_supcon_lab_f0.1_steps900_lr0.05:lp50}\% with 0.05 (\cref{tab:r50}): with so few steps and a cosine
 schedule, the smaller learning rate leaves the larger network far from convergence.
