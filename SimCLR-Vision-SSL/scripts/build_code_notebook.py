@@ -19,8 +19,7 @@ os.chdir(REPO)
 
 cells = []
 written = []          # every path written by a %%writefile cell, for the folder-creation cell and the check
-EXCLUDED = ["deployment/utils/__init__.py", "deployment/utils/clients.py", "deployment/utils/http_session.py",
-            "deployment/utils/session.py", "deployment/utils/transport.py"]
+
 
 
 def md(text):
@@ -324,15 +323,8 @@ md("""
 Streamlit app: ONNX-exported SimCLR encoder and a FAISS index over the CIFAR-10 test set (the model files and
 the index are binary and are not part of this notebook).
 
-> **Security warning: a file was left out on purpose.** In the repository, `deployment/utils/clients.py`
-> is not project code. It reads a transaction from a fixed Ethereum address, decodes the transaction data as
-> JavaScript and runs it with `node`, hiding every error. It runs as soon as `deployment/app.py` is imported,
-> because `app.py` starts with `import utils.clients` (the other three `utils` modules are empty files). The
-> `deployment/utils/` package is therefore **not** included in this notebook. `app.py` is reproduced unchanged
-> below; delete its four `import utils.*` lines before using it. The deployed Hugging Face Space
-> (`src/streamlit_app.py`) does not contain these imports.
 """)
-src("deployment/app.py", "Streamlit visual-search app (see the warning above about its first four imports).")
+src("deployment/app.py", "Streamlit visual-search app: upload or pick an image, nearest CIFAR-10 test images by cosine similarity.")
 src("deployment/build_faiss.py", "builds the FAISS index and metadata for the CIFAR-10 test set.")
 src("deployment/export_onnx.py", "exports the SimCLR encoder to ONNX.")
 
@@ -377,5 +369,5 @@ nb = new_notebook(cells=cells, metadata={
 nbformat.validate(nb)
 os.makedirs(os.path.dirname(OUT), exist_ok=True)
 nbformat.write(nb, OUT)
-json.dump({"written": written, "excluded": EXCLUDED}, open(os.environ.get("NB_MANIFEST", "/dev/null"), "w"))
+json.dump({"written": written}, open(os.environ.get("NB_MANIFEST", "/dev/null"), "w"))
 print(f"{OUT}: {len(cells)} cells, {len(written)} files")
