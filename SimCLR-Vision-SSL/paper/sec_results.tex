@@ -87,10 +87,18 @@ method: \simclr with $\tau=0.1$ reaches \R{simclr_all_t0.1_e100:lp50}\% (default
 concentrate on its most similar negatives, which are often images of the same class, and push them apart;
 a high temperature weakens the class-level attraction that \supcon gets from its labels.
 
-\emph{Weight decay and augmentation.} \pending{At 38,800 steps we raised the weight decay of \supcon from
+\emph{Weight decay and augmentation.} At 38,800 steps we raised the weight decay of \supcon from
 $10^{-4}$ to $5\times10^{-4}$ and $10^{-3}$, strengthened the augmentation (crop scale 0.08--1 and
-full-strength colour jitter), and combined both (\cref{tab:reg}). The best variant reaches
-\R{reg:best}\%, against \R{supcon_lab_f0.1_e400:lp50}\% for the default.}
+full-strength colour jitter), and combined both (\cref{tab:reg}, one seed per variant). All variants land at
+\R{reg:range}\%, against \R{supcon_lab_f0.1_e400:lp50}\% for the default and \R{simclr_all_e400:lp50}\% for
+\simclr. The best, \R{reg:best:name}, gains \R{reg:best:d}\pt (\lpfive: \R{reg:best:lp5}\% against
+\R{supcon_lab_f0.1_e400:lp5}\%), and the stronger augmentation does not help
+(\R{supcon_lab_f0.1_strongaug_e400:lp50}\% alone, \R{supcon_lab_f0.1_wd0.0005_strongaug_e400:lp50}\% with the
+higher weight decay). In every run the final $k$NN accuracy is within \R{reg:knndrop}\pt of the best
+checkpoint, so \supcon does not overfit and then decline; it stops improving. A regulariser counters
+overfitting of the weights, whereas the plateau likely comes from a lack of new signal: the 5,000 labeled
+images are already separated by class, and neither a penalty nor more distorted views of the same images
+add images.
 
 \emph{Early stopping.} The best checkpoint along the longest \supcon run, selected with all 50,000 labels and
 therefore an upper bound on any early-stopping rule, reaches \R{bestknn:supcon}\% $k$NN accuracy, against
@@ -227,8 +235,7 @@ from the finding that label-free contrastive learning gains more than supervised
 encoders and longer training \citep{chen2020simclr}. At 9,700
 steps \supcon is still slightly ahead (\R{r50_supcon_lab_f0.1_e100:lp50}\% against
 \R{r50_simclr_all_e100:lp50}\%, one seed); at 19,400 steps \simclr is clearly ahead
-(\R{r50_simclr_all_e200:lp50}\% against \R{r50_supcon_lab_f0.1_e200:lp50}\%; \pending{two seeds, a third
-in progress}). Under \ftfive
+(\R{r50_simclr_all_e200:lp50:pm}\% against \R{r50_supcon_lab_f0.1_e200:lp50:pm}\%, three seeds). Under \ftfive
 \simclr is ahead already at 9,700 steps (\R{r50_simclr_all_e100:ft}\% against
 \R{r50_supcon_lab_f0.1_e100:ft}\%). The larger encoder also makes very short budgets fragile: at 900 steps
 \supcon reaches \R{r50_supcon_lab_f0.1_steps900:lp50}\% with learning rate 0.25 but only

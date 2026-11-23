@@ -983,9 +983,16 @@ for E in (1000, 400, 200):
             if np.isfinite(x) and np.isfinite(y):
                 M["long:d:simclr-supcon" + ("" if p == "lp50" else ":" + p)] = f"{abs(x - y):.1f}"
         break
-regs = [mean(c, "lp50") for _, c in REG[1:] if nseeds(c)]
+regs = [(mean(c, "lp50"), name, c) for name, c in REG[1:] if nseeds(c)]
 if regs:
-    M["reg:best"] = f"{max(regs):.1f}"
+    best = max(regs)
+    M["reg:best"] = f"{best[0]:.1f}"
+    M["reg:best:name"] = best[1]
+    M["reg:best:d"] = f"{best[0] - mean(REG[0][1], 'lp50'):.1f}"
+    M["reg:best:lp5"] = f"{mean(best[2], 'lp5'):.1f}"
+    M["reg:range"] = f"{min(r[0] for r in regs):.1f}--{max(r[0] for r in regs):.1f}"
+    # largest drop from the best checkpoint to the end of the run, over all regularised and default runs
+    M["reg:knndrop"] = f"{max(max(a for _, a in RUN[n]['knn_curve']) - RUN[n]['metrics']['knn_acc'] for _, c in REG for n in (f'{c}_s{s}' for s in seeds(c))):.1f}"
 diffmacro("dist-ft:simclr", "simclr_all_e200", "dist", "simclr_all_e200", "ft")
 diffmacro("fm-b3:simclr", "simclr_all_e200", "fm", "fixmatch_b3_f0.1", "clf")
 diffmacro("fm-b3:supcon", "supcon_lab_f0.1_e200", "fm", "fixmatch_b3_f0.1", "clf")
