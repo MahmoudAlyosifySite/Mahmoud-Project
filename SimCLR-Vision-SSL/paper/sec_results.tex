@@ -191,10 +191,12 @@ and \R{c100_simclr_all_e200:lp5}\% under \lpfive and is first under every protoc
 oracle-label probe (\R{c100_union_f0.1_e200:lp50}\%) but loses under \lpfive (\R{c100_union_f0.1_e200:lp5}\%, from
 \R{c100_union_f0.1_e100:lp5}\%) and after fine-tuning (\R{c100_union_f0.1_e200:ft}\%, from
 \R{c100_union_f0.1_e100:ft}\%). After fine-tuning \simclr (\R{c100_simclr_all_e200:ft}\%) leads \supcon by
-\R{d:c100:simclr-supcon:ft:e200}\pt and \union by \R{d:c100:simclr-union:ft:e200}\pt. With 50 labeled images per
-class, further steps likely tighten the labeled images of \union without improving the features of the
-others, so the protocols trained on the labeled images lose what the oracle-label probe gains (the
-seen/unseen gap of \cref{sec:geometry}).
+\R{d:c100:simclr-supcon:ft:e200}\pt and \union by \R{d:c100:simclr-union:ft:e200}\pt. Between the two budgets the CDNV of
+\union on its labeled images falls from \R{c100_union_f0.1_e100:cdnv_lab} to \R{c100_union_f0.1_e200:cdnv_lab}, while on
+test images it barely changes (\R{c100_union_f0.1_e100:cdnv_test} to \R{c100_union_f0.1_e200:cdnv_test}); for \supcon the
+test value even grows (\R{c100_supcon_lab_f0.1_e100:cdnv_test} to \R{c100_supcon_lab_f0.1_e200:cdnv_test}). Probes and
+fine-tuning trained on the 50 labeled images per class therefore likely fit a class structure that test
+images share less and less (the seen/unseen gap of \cref{sec:geometry}).
 
 \paragraph{STL-10}
 STL-10 has no oracle labels, so every protocol uses its 5,000 labels, and its 100,000 unlabeled images are
