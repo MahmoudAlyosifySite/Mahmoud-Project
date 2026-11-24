@@ -8,9 +8,11 @@ carries a \emph{group} $g_n$, and two different views are positives when their i
 group:
 \begin{equation}
 \label{eq:loss}
-\mathcal{L} \;=\; \frac{1}{2B}\sum_{i=1}^{2B} \frac{-1}{|P(i)|}\sum_{p\in P(i)}
-\log\frac{\exp(z_i^\top z_p/\tau_i)}{\sum_{a\neq i}\exp(z_i^\top z_a/\tau_i)},
-\qquad P(i)=\{\,p\neq i : g_{n(p)} = g_{n(i)}\,\}.
+\begin{aligned}
+\mathcal{L} &\;=\; \frac{1}{2B}\sum_{i=1}^{2B} \frac{-1}{|P(i)|}\sum_{p\in P(i)}
+\log\frac{\exp(z_i^\top z_p/\tau_i)}{\sum_{a\neq i}\exp(z_i^\top z_a/\tau_i)},\\
+P(i) &\;=\; \{\,p\neq i : g_{n(p)} = g_{n(i)}\,\}.
+\end{aligned}
 \end{equation}
 The temperature $\tau_i\in\{\tau_\ell,\tau_u\}$ depends on the anchor: $\tau_\ell$ if image $n(i)$ is used
 with its label and $\tau_u$ otherwise. Three choices of groups give the three methods.

@@ -37,7 +37,7 @@ gap of \R{d:simclr-supcon:lp50:e10}\pt in favour of the method that uses labels.
 \R{d:simclr-supcon:lp50:e25}\pt at 2,425 steps and \R{d:simclr-supcon:lp50:e50}\pt at 4,850. At 9,700 steps the
 two are level: the difference is \R{cmp:simclr-supcon:lp50:e100:sdiff}\pt (95\% interval
 \R{cmp:simclr-supcon:lp50:e100:ci}), and the equivalence test accepts a margin of $\pm1$ point
-($p=\R{cmp:simclr-supcon:lp50:e100:tost}$). This agrees with SuNCEt \citep{assran2020suncet}: labels in the
+(\R{cmp:simclr-supcon:lp50:e100:tost:expr}). This agrees with SuNCEt \citep{assran2020suncet}: labels in the
 loss reach a given accuracy with much less compute.
 
 \paragraph{The lead does not last}
@@ -46,7 +46,7 @@ left to learn from them (\cref{sec:geometry}). It is at \R{supcon_lab_f0.1_e25:l
 \R{supcon_lab_f0.1_e400:lp50}\% after 38,800. \simclr keeps climbing: \R{simclr_all_e100:lp50}\% at 9,700 steps,
 \R{simclr_all_e200:lp50}\% at 19,400 and \R{simclr_all_e400:lp50}\% at 38,800. It is ahead by
 \R{cmp:simclr-supcon:lp50:e200:diff}\pt at 19,400 steps (\R{cmp:simclr-supcon:lp50:e200:ci},
-$p\,\R{cmp:simclr-supcon:lp50:e200:p}$ after correction) and by \R{cmp:simclr-supcon:lp50:e400:diff}\pt at
+\R{cmp:simclr-supcon:lp50:e200:p:expr} after correction) and by \R{cmp:simclr-supcon:lp50:e400:diff}\pt at
 38,800 (\R{cmp:simclr-supcon:lp50:e400:ci}). The crossover is therefore not an artefact of a short budget: it
 widens as training gets longer. At 97,000 steps \supcon is still at \R{supcon_lab_f0.1_e1000:lp50}\% and
 \simclr reaches \R{simclr_all_e1000:lp50}\%, a lead of \R{cmp:simclr-supcon:lp50:e1000:diff}\pt
@@ -171,7 +171,7 @@ LP-$f$ probe is fitted on exactly these images, which are likely collapsed far m
 standard deviation over seeds). LP-all uses all training labels and is not available on STL-10, whose
 5,000 labels are the whole labeled set; LP-budget and FT-budget use the labels of the budget only.}
 \label{tab:datasets}
-\begin{adjustbox}{max width=\linewidth}
+\begin{adjustbox}{max width=\linewidth, max totalheight=0.8\textheight}
 \input{generated/tab_datasets.tex}
 \end{adjustbox}
 \end{table}

@@ -1,0 +1,42 @@
+% Cover letter for the journal submission.   Build: pdflatex cover_letter.tex
+\documentclass[11pt]{letter}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{url}
+\signature{Mahmoud Alyosify\\(corresponding author, on behalf of all authors)\\School of Computing, Queen's University, Kingston, ON, Canada\\\url{mahmoud.alyosify@queensu.ca}}
+\address{}
+\date{\today}
+\setlength{\longindentation}{0pt}
+\begin{document}
+\begin{letter}{The Editor-in-Chief\\\emph{Neural Networks}}
+\opening{Dear Editor,}
+
+We submit the manuscript \emph{``Where Do Scarce Labels Belong? A Compute-Matched Study of Contrastive
+Pretraining''} by Mahmoud Alyosify, Mirna Imbabi, Natalie Nashed and Hazem M.\ Abbas for consideration as a
+research article in \emph{Neural Networks}.
+
+When labels are scarce and unlabeled images are plentiful, should the few labels go inside a supervised
+contrastive loss, or be kept until after label-free pretraining? A fair answer needs equal compute for every
+method and an evaluation that uses only the labels that exist; the standard all-label linear probe does not. We
+satisfy both with a compute-matched $2\times2$ design that varies the use of labels and the pretraining pool independently, on
+CIFAR-10, CIFAR-100, STL-10 and Tiny-ImageNet with ResNet-18 and ResNet-50 encoders. Labels inside the loss buy
+speed, not a better end point: with 10\% of the CIFAR-10 labels, SupCon leads SimCLR by 13.3 points after 970
+steps and trails it by 6.6 points after 97,000. The evaluation protocol decides the ranking: the all-label
+linear probe and fine-tuning on the available labels order the same encoders in opposite ways. A seen/unseen
+measurement of class tightness explains the reversal. All claims rest on three to five seeds with a
+hierarchical bootstrap, Holm correction and equivalence tests, and the code, job files and per-run results
+are public.
+
+We believe the paper fits the scope of \emph{Neural Networks} on learning systems and deep learning: it
+concerns how representation learning objectives use supervision, and how their evaluation can reverse
+conclusions about them.
+
+The manuscript is original, has not been published, and is not under consideration by another journal. A
+preprint will be posted on arXiv (cs.LG). All authors have approved the submission and declare no competing
+interests. The use of generative AI tools in preparing the manuscript is declared in the manuscript, as the
+journal requires.
+
+\closing{Sincerely,}
+\end{letter}
+\end{document}

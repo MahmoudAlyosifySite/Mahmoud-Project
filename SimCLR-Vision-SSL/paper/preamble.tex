@@ -4,6 +4,17 @@
 \usepackage{lmodern}
 \usepackage{amsmath,amssymb,mathtools}
 \usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{etoolbox}
+% the review layout is double-spaced; tables stay single-spaced so that they fit on a page
+\makeatletter
+\@ifclasswith{elsarticle}{review}{%
+  \AtBeginEnvironment{table}{\linespread{1}\selectfont}%
+  \newcommand{\longtabfont}{\linespread{1}\scriptsize}}%
+ {\newcommand{\longtabfont}{\footnotesize}}
+\makeatother
+% \input that expands immediately, so that a generated file can start with \multicolumn inside a table
+\makeatletter\newcommand{\rawinput}{\@@input}\makeatother
 \usepackage{graphicx}
 \usepackage{xcolor}
 \usepackage{multirow}

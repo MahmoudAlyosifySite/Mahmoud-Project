@@ -9,8 +9,10 @@ our results support three rules.
 for semi-supervised training.} A brief \supcon stage after label-free pretraining is a good use of them. If
 semi-supervised training follows pretraining, the choice of pretraining matters little, and with a fixed
 compute budget semi-supervised training alone was the best option we found.
-\item \emph{If pretraining compute is very limited, labels in the loss are the faster route.} Below roughly
-5,000 steps in our setting, \supcon on the labeled subset is ahead under every protocol we ran.
+\item \emph{If pretraining compute is very limited, labels in the loss are the faster route, unless they are very
+few.} Below roughly 5,000 steps, \supcon on the labeled subset is ahead under every protocol we ran with 5--50\%
+of the CIFAR-10 labels; with 1\% (50 images per class) it is already behind at 2,425 steps
+(\cref{sec:fractions}).
 \item \emph{Evaluate with the labels you have.} Report a label-budget protocol next to the all-label probe,
 and state budgets in steps or processed images.
 \end{enumerate}
@@ -30,7 +32,8 @@ differ there; for the ResNet-50 it already comes later than for the ResNet-18.
 reported to be more robust to class imbalance than supervised pretraining
 \citep{liu2022self,yang2020rethinking}, which would favour our conclusion, but we did not test it.
 
-\emph{Unlabeled data.} On CIFAR the unlabeled images come from the same distribution as the labeled ones.
+\emph{Unlabeled data.} On CIFAR and Tiny-ImageNet the unlabeled images come from the same distribution as the
+labeled ones.
 STL-10 relaxes this, but its unlabeled set is still close to the labeled classes. With unlabeled data from
 a different domain, the value of the ``all images'' column can be lower \citep{cole2022when}.
 

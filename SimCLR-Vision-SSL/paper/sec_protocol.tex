@@ -46,7 +46,7 @@ labeled images these encoders already separate the classes perfectly: the \lpfiv
 that fits those images and transfers less well to new ones (\cref{sec:geometry}). The oracle-label probe
 hides this, because 45,000 of its 50,000 training images were not labeled during pretraining.
 
-\paragraph{Is this an artefact of the fine-tuning recipe?}
+\paragraph{The fine-tuning recipe}
 \label{sec:ftrobust}
 There is a simple alternative explanation for the weak fine-tuning of the label-using encoders. Our default
 recipe starts from the linear probe, which already fits the 5,000 labels perfectly; the cross-entropy
@@ -95,7 +95,7 @@ from scratch. The encoders end close together: \R{simclr_all_e200:fm:pm}\% from 
 same as under \ftfive, and the opposite of \lpall, but the differences shrink to
 \R{cmp:simclr-supcon:fm:e200:diff}\pt (\R{cmp:simclr-supcon:fm:e200:ci}) and
 \R{cmp:simclr-union:fm:e200:diff}\pt (\R{cmp:simclr-union:fm:e200:ci}); both lie inside the $\pm1$-point
-equivalence margin (TOST $p=\R{cmp:simclr-supcon:fm:e200:tost}$ and $p=\R{cmp:simclr-union:fm:e200:tost}$).
+equivalence margin (TOST \R{cmp:simclr-supcon:fm:e200:tost:expr} and \R{cmp:simclr-union:fm:e200:tost:expr}).
 Pseudo-labeling the 45,000 unlabeled images recovers most of what the label-using encoders did not learn
 about them. The cost of putting the labels inside the loss is therefore large when the same 5,000 labels are
 reused in a supervised way, and small when the unlabeled images are revisited after pretraining.

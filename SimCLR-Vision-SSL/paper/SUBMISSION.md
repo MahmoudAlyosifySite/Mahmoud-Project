@@ -10,6 +10,8 @@ All versions are built from the same source (`frontmatter.tex`, `abstract.tex`, 
 | `arxiv.tex` -> `arxiv.pdf` | preprint: compact single-column layout, authors with ORCID links |
 | `submission.tex` -> `submission.pdf` | journal submission: Elsevier review layout (double spacing, line numbers) |
 | `highlights.tex` -> `highlights.pdf` | the separate "Highlights" file that Elsevier journals ask for |
+| `cover_letter.tex` -> `cover_letter.pdf` | cover letter to the editor of Neural Networks (build: `pdflatex cover_letter.tex`) |
+| `ARXIV_METADATA.md` | title, abstract (plain text), comments and categories for the arXiv form |
 | `old_tmlr/` | the first version of the paper (TMLR template), kept for reference |
 
 Build with `bash build.sh`. All numbers, tables and figures come from `scripts/make_assets.py` (`\R{...}` macros in
@@ -49,11 +51,13 @@ itself needs an institutional login: Queen's Library -> Databases -> Journal Cit
 
 
 The supervisor asked for a journal template and advised against TPAMI, IJCV and JMLR. The manuscript is prepared for
-an Elsevier journal (`\journal{Neurocomputing}` in `submission.tex`, the main target since 2026-11-15; the same class serves Neural Networks,
-Neurocomputing, Computer Vision and Image Understanding and Image and Vision Computing). Requirements that we could
+an Elsevier journal (`\journal{Neural Networks}` in `submission.tex`; the same class serves Neurocomputing,
+Computer Vision and Image Understanding and Image and Vision Computing). Requirements that we could
 verify on official pages, and those that still need a check in a browser, are listed in `JOURNAL_NOTES.md` in this
-folder. Points to confirm on the journal's "Guide for authors" before submitting: review model (single- or
-double-anonymised), abstract limit (ours is under 250 words), length limit, reference style, preprint policy.
+folder. Checked against the Neural Networks Guide for authors (2026-11-24, via search results): abstract at most
+250 words (ours: 238), 1-6 keywords (ours: 6), highlights optional, 3-5 bullets of at most 85 characters (ours: 5,
+at most 80). Still to confirm in the submission system: review model (single- or double-anonymised), length
+limit, reference style.
 *Machine Learning* (Springer) is a good alternative for an empirical-methodology paper; it uses the Springer Nature
 `sn-jnl` class, 150-250-word abstracts and a "Statements and Declarations" section. Switching class only requires a new
 wrapper file next to `submission.tex`.
