@@ -35,6 +35,17 @@ def pct(x, nd=0):
     return "--" if x is None else f"{100 * x:.{nd}f}\\%"
 
 
+def share(x):
+    """Share for the selection table: never rounds a non-zero/non-one value to 0% or 100%."""
+    if x is None:
+        return "--"
+    if 0.995 <= x < 1:
+        return "$>$99\\%"
+    if 0 < x < 0.005:
+        return "$<$1\\%"
+    return pct(x)
+
+
 def minus(s):
     return re.sub(r"(?<![\w-])-(?=\d)", r"\\ensuremath{-}", s)
 
@@ -94,7 +105,7 @@ put("rank:cerc2:rho", f2(rk["spearman_cer_vs_share_c2"]["rho"]))
 put("rank:cerc2:p", f2(rk["spearman_cer_vs_share_c2"]["p"]))
 
 rows = []
-for k, name in [("lahgtna_eg", "lahgtna (colloquial Egyptian)"), ("niletts", "NileTTS (colloquial Egyptian)"),
+for k, name in [("lahgtna_eg", "lahgtna-v2 test (colloquial Egyptian)"), ("niletts", "NileTTS (synthetic colloquial, NotebookLM)"),
                 ("fleurs_ar_eg", "FLEURS ar\\_eg (read, MSA register)"), ("fleurs_en_us", "FLEURS en\\_us"),
                 ("fleurs_fr_fr", "FLEURS fr\\_fr")]:
     c = cal[k]
@@ -102,7 +113,7 @@ for k, name in [("lahgtna_eg", "lahgtna (colloquial Egyptian)"), ("niletts", "Ni
     d = c2cal.get(k)
     rows.append(f"{name} & {c['n']} & {err} & {pct(d['share_c1']) if d else '--'} & {pct(d['share_c2']) if d else '--'} & {f2(c['mos_p808'])} \\\\")
 write("tab_calibration.tex", "\\begin{tabular}{@{}lrrrrr@{}}\n\\toprule\n"
-      "Real speech & $n$ & CER & Egyptian, clf.~1 & Egyptian, clf.~2 & DNSMOS \\\\\n\\midrule\n" + "\n".join(rows) +
+      "Calibration speech & $n$ & CER & Egyptian, clf.~1 & Egyptian, clf.~2 & DNSMOS \\\\\n\\midrule\n" + "\n".join(rows) +
       "\n\\midrule\n\\multicolumn{6}{@{}l}{Speaker similarity (ECAPA), Egyptian: same speaker " + f3(spk["ceiling_ecapa"]) +
       ", different speakers " + f3(spk["floor_ecapa"]) + "}\\\\\n\\bottomrule\n\\end{tabular}\n")
 
@@ -150,38 +161,62 @@ write("tab_bakeoff.tex", "\\begin{tabular}{@{}lrcrrrrc@{}}\n\\toprule\n"
       "\n\\bottomrule\n\\end{tabular}\n")
 
 # ---------------------------------------------------------------- figure 1: CER vs Egyptian share
+# Colour = base-model family (validated categorical slots 1-3, light surface; every point is direct-labelled because
+# slot 3 is below 3:1 contrast). Filled = licence-eligible base; hollow = fine-tune, non-commercial model or mode.
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-plt.rcParams.update({"font.size": 8, "font.family": "serif", "axes.spines.top": False, "axes.spines.right": False})
-fig, axes = plt.subplots(1, 2, figsize=(6.6, 2.6), sharey=False)
-col = {"cb-v3": "#b2182b", "cb-v2": "#b2182b", "lahgtna": "#ef8a62", "namaa": "#ef8a62", "voxcpm2": "#2166ac",
-       "voxcpm2-prompt": "#2166ac", "omnivoice": "#878787", "voicetut": "#878787"}
-short = {"cb-v3": "Chatterbox V3", "cb-v2": "Chatterbox V2", "lahgtna": "lahgtna", "namaa": "NAMAA",
-         "voxcpm2": "VoxCPM2", "voxcpm2-prompt": "VoxCPM2+tr.", "omnivoice": "OmniVoice", "voicetut": "VoiceTut"}
-for ax, key, title in [(axes[0], "c1", "Classifier 1 (MGB-3 ADI-5)"), (axes[1], "c2", "Classifier 2 (ADI-17)")]:
-    for s in short:
-        v = bk["systems"][s]["conditions"]["egy_main"]
-        y = v["dialect_egyptian_share"] if key == "c1" else d2["systems"][s]["egy_main"]["share_c2"]["mean"]
-        c = cnt.get(s)
-        size = 25 + 25 * (2 * c["egy"] + c["mid"]) if c else 25
-        ax.scatter(v["cer_mean"], 100 * y, s=size, color=col[s], alpha=0.85, edgecolor="white", linewidth=0.5,
-                   marker="o" if c else "s")
-        ax.annotate(short[s], (v["cer_mean"], 100 * y), textcoords="offset points", xytext=(5, -3), fontsize=6.5)
+from matplotlib.lines import Line2D
+plt.rcParams.update({"font.size": 8, "font.family": "serif", "axes.spines.top": False, "axes.spines.right": False,
+                     "axes.edgecolor": "#52514e", "xtick.color": "#52514e", "ytick.color": "#52514e"})
+FAM = {"voxcpm2": "#2a78d6", "chatterbox": "#eb6834", "omnivoice": "#1baf7a"}
+SYS = {  # system: (family, filled, label)
+    "cb-v3": ("chatterbox", True, "Chatterbox V3"), "cb-v2": ("chatterbox", True, "Chatterbox V2"),
+    "voxcpm2": ("voxcpm2", True, "VoxCPM2"), "voxcpm2-prompt": ("voxcpm2", False, "VoxCPM2 + transcript"),
+    "namaa": ("chatterbox", False, "NAMAA (ft.)"), "omnivoice": ("omnivoice", False, "OmniVoice"),
+    "voicetut": ("omnivoice", False, "VoiceTut (ft.)")}
+# label placement in data units: (x_text, y_text, ha) per panel; None = small offset beside the point
+PLACE = {"c1": {"cb-v3": (0.0375, 25, "left"), "cb-v2": (0.0585, 21, "left"), "voxcpm2": (0.062, 82, "right"),
+                "namaa": (0.0875, 101, "left"), "voicetut": (0.0875, 94, "left"), "voxcpm2-prompt": (0.0875, 87, "left"),
+                "omnivoice": (0.0875, 80, "left")},
+         "c2": {"cb-v3": (0.0375, 55, "left"), "cb-v2": (0.0585, 44, "left"), "voxcpm2": (0.062, 74, "right"),
+                "namaa": (0.0875, 101, "left"), "voicetut": (0.0875, 94, "left"), "omnivoice": (0.0875, 87, "left"),
+                "voxcpm2-prompt": (0.0875, 70, "left")}}
+fig, axes = plt.subplots(1, 2, figsize=(6.8, 2.9))
+for ax, key, title in [(axes[0], "c1", "Classifier 1 (MMS, MGB-3 ADI-5)"), (axes[1], "c2", "Classifier 2 (HuBERT, ADI-17)")]:
     real = c2cal["lahgtna_eg"]["share_c1" if key == "c1" else "share_c2"]
-    ax.axhline(100 * real, color="#4d4d4d", lw=0.7, ls="--")
-    ax.text(0.091, 100 * real - 6, "real colloquial Egyptian", fontsize=6, color="#4d4d4d", ha="right")
-    if key == "c1":
-        ax.axhline(100 * 0.6 * cal["lahgtna_eg"]["dialect_egyptian_share"], color="#b2182b", lw=0.6, ls=":")
-        ax.text(0.091, 100 * 0.54 + 2, "G3 dialect bar", fontsize=6, color="#b2182b", ha="right")
-    ax.set_xlim(0.025, 0.092)
-    ax.set_ylim(0, 105)
+    bar = 0.6 * real
+    ax.axhspan(0, 100 * bar, color="#f0efec", zorder=0, lw=0)
+    ax.axhline(100 * bar, color="#52514e", lw=0.7, ls=":", zorder=1)
+    ax.text(0.1105, 100 * bar - 5.5, f"below dialect bar ({100 * bar:.0f}%)", fontsize=6.3, color="#52514e", ha="right")
+    ax.axhline(100 * real, color="#52514e", lw=0.7, ls="--", zorder=1)
+    ax.text(0.0265, 100 * real + 2, f"real colloquial speech ({100 * real:.0f}%)", fontsize=6.3, color="#52514e", ha="left")
+    for s, (fam, filled, lab) in SYS.items():
+        v = bk["systems"][s]["conditions"]["egy_main"]
+        x = v["cer_mean"]
+        y = 100 * (v["dialect_egyptian_share"] if key == "c1" else d2["systems"][s]["egy_main"]["share_c2"]["mean"])
+        ax.scatter(x, y, s=34, facecolor=FAM[fam] if filled else "#fcfcfb", edgecolor=FAM[fam], linewidth=1.4, zorder=3)
+        tx, ty, ha = PLACE[key][s]
+        far = abs(tx - x) > 0.004 or abs(ty - y) > 5
+        ax.annotate(lab, (x, y), xytext=(tx, ty), textcoords="data", fontsize=6.5, color="#0b0b0b", ha=ha, va="center",
+                    arrowprops=dict(arrowstyle="-", color="#52514e", lw=0.5, shrinkA=1, shrinkB=3) if far else None, zorder=4)
+    ax.set_xlim(0.025, 0.112)
+    ax.set_xticks([0.03, 0.05, 0.07, 0.09])
+    ax.set_ylim(0, 106)
     ax.set_xlabel("Egyptian CER (lower is better)")
     ax.set_ylabel("labelled Egyptian (%)")
     ax.set_title(title, fontsize=8)
-fig.tight_layout()
+handles = [Line2D([], [], marker="o", ls="", markersize=6, markerfacecolor=FAM["voxcpm2"], markeredgecolor=FAM["voxcpm2"], label="VoxCPM2 family"),
+           Line2D([], [], marker="o", ls="", markersize=6, markerfacecolor=FAM["chatterbox"], markeredgecolor=FAM["chatterbox"], label="Chatterbox family"),
+           Line2D([], [], marker="o", ls="", markersize=6, markerfacecolor=FAM["omnivoice"], markeredgecolor=FAM["omnivoice"], label="OmniVoice family"),
+           Line2D([], [], marker="o", ls="", markersize=6, markerfacecolor="#52514e", markeredgecolor="#52514e", label="filled: licence-eligible base"),
+           Line2D([], [], marker="o", ls="", markersize=6, markerfacecolor="#fcfcfb", markeredgecolor="#52514e", markeredgewidth=1.2, label="hollow: fine-tune, mode or non-commercial")]
+fig.legend(handles=handles, loc="lower center", ncol=5, fontsize=6.3, frameon=False, handletextpad=0.2, columnspacing=1.0)
+fig.tight_layout(rect=(0, 0.07, 1, 1))
 fig.savefig(os.path.join(FIG, "dissociation.pdf"))
 plt.close(fig)
+put("fig:offscale", f"lahgtna (ft., CER {f3(bk['systems']['lahgtna']['conditions']['egy_main']['cer_mean'])}) and the diagnostic PyPI loader of "
+                    f"Chatterbox V3 (CER {f3(bk['systems']['cb-v3-pypi']['conditions']['egy_main']['cer_mean'])})")
 
 # ---------------------------------------------------------------- BA vs raw VoxCPM2, held-out (seed 0)
 en = load("engine.json")
@@ -325,10 +360,173 @@ if ab:
     put("ab:share:notrans:ecapa", pct(sh["no_transcript"]["egy_main"]["sim_ecapa"]))
     put("ab:chunk:retries", str(ab["chunk_check_full"].get("retries", 0)) if isinstance(ab["chunk_check_full"], dict) else "0")
 
+# ---------------------------------------------------------------- long form (long_form.json)
+lf = load("long_form.json")
+lw0 = load("long_form_windows.json")
+if lf and len(lf["systems"]) == 2:
+    rows = []
+    for lang, lname in [("arz", "Egyptian"), ("en", "English"), ("fr", "French")]:
+        for s, nm in [("ba", "\\BA"), ("voxcpm2", "\\vox (plain)")]:
+            r = lf["systems"][s][lang]
+            g = lambda k, fm: (fm(r[k]["mean"]) if k in r else "--")
+            gc = lambda k, fm: (f"{fm(r[k]['mean'])} {{\\scriptsize[{fm(r[k]['lo'])}, {fm(r[k]['hi'])}]}}" if k in r else "--")
+            for k, fm in [("err", f3), ("sim_ecapa", f3), ("c1", pct), ("failed", pct), ("audio_sec", lambda x: f"{x:.0f}")]:
+                if k in r:
+                    put(f"lf:{s}:{lang}:{k}", fm(r[k]["mean"]))
+            w = (lw0 or {}).get("systems", {}).get(s, {}).get(lang, {}).get("err_win")
+            wcell = f"{f3(w['mean'])} {{\\scriptsize[{f3(w['lo'])}, {f3(w['hi'])}]}}" if w else "--"
+            rows.append(f"{lname if s == 'ba' else ''} & {nm} & {r['n']} & {g('failed', pct)} & {gc('err', f3)} & {wcell} & {gc('sim_ecapa', f3)} & "
+                        f"{g('c1', pct)} & {g('audio_sec', lambda x: f'{x:.0f}')} \\\\")
+        if lang != "fr":
+            rows.append("\\midrule")
+    write("tab_long.tex", "\\begin{tabular}{@{}llrccccrr@{}}\n\\toprule\n"
+          " & & & & \\multicolumn{2}{c}{CER / WER} & & & \\\\\n\\cmidrule(lr){5-6}\n"
+          "Language & System & $n$ & Failed & sequential ASR & windowed ASR & ECAPA & Egyptian & Length (s) \\\\\n\\midrule\n" + "\n".join(rows) +
+          "\n\\bottomrule\n\\end{tabular}\n")
+    for lang, d in lf["paired_ba_minus_voxcpm2"].items():
+        for k, t in d.items():
+            if t:
+                fm = pct if k in ("c1", "c2", "failed") else f3
+                sg = lambda z: (f"{100 * z:+.0f} points" if fm is pct else f"{z:+.3f}")
+                put(f"lfp:{lang}:{k}:diff", sg(t["diff"]))
+                put(f"lfp:{lang}:{k}:ci", f"[{sg(t['ci_lo']).replace(' points', '')}, {sg(t['ci_hi']).replace(' points', '')}]")
+    put("lf:ba:retries", str(sum(lf["systems"]["ba"][l].get("retries_total", 0) for l in lf["systems"]["ba"])))
+    put("lf:ba:arz:chunks", f"{lf['systems']['ba']['arz'].get('chunks_mean', 1):.1f}")
+
+
+# ---------------------------------------------------------------- what each metric selects (selection.json)
+se = load("selection.json")
+if se:
+    put("sel:bar:c1", pct(se["bar"]["c1"]))
+    put("sel:bar:c2", pct(se["bar"]["c2"]))
+    b1 = se["bakeoff_one_seed"]["rules"]
+    RULENAME = {"cer": "Lowest CER", "ecapa": "Highest ECAPA", "dnsmos": "Highest DNSMOS"}
+    SHORT = dict(NAMES, **{"cb-v3": "Chatterbox V3", "cb-v2": "Chatterbox V2", "voxcpm2": "VoxCPM2",
+                          "voxcpm2-prompt": "VoxCPM2 + transcript", "omnivoice": "OmniVoice$^\\dagger$"})
+    rows = []
+    for rule in ["cer", "ecapa", "dnsmos"]:
+        cells = [RULENAME[rule]]
+        for setn in ["eligible", "all"]:
+            r = b1[setn][rule]
+            pick = r["point_pick"]
+            share_ = r["picked_share"].get(pick, 0)
+            put(f"sel:{setn}:{rule}:pick", SHORT[pick])
+            put(f"sel:{setn}:{rule}:pickshare", share(share_))
+            put(f"sel:{setn}:{rule}:fail1", share(r["fails_bar_c1"]))
+            put(f"sel:{setn}:{rule}:fail2", share(r["fails_bar_c2"]))
+            put(f"sel:{setn}:{rule}:failboth", share(r["fails_bar_both"]))
+            cells += [SHORT[pick], share(share_), share(r["fails_bar_c1"]), share(r["fails_bar_c2"])]
+        rows.append(" & ".join(cells) + " \\\\")
+    cells = ["Lowest CER above the dialect bar"]
+    for setn in ["eligible", "all"]:
+        ps = b1[setn]["amended"]["picked_share"]
+        top = max((k for k in ps if k != "none"), key=ps.get)
+        put(f"sel:{setn}:amended:pick", SHORT[top])
+        put(f"sel:{setn}:amended:pickshare", share(ps[top]))
+        cells += [SHORT[top], share(ps[top]), "--", "--"]
+    rows.append("\\midrule\n" + " & ".join(cells) + " \\\\")
+    write("tab_selection.tex", "\\begin{tabular}{@{}lllrrlrrr@{}}\n\\toprule\n"
+          " & \\multicolumn{4}{c}{Licence-eligible bases (3)} & \\multicolumn{4}{c}{All configurations (9)} \\\\\n"
+          "\\cmidrule(lr){2-5}\\cmidrule(lr){6-9}\n"
+          "Selection rule & Pick & Picked & \\multicolumn{2}{c}{Fails bar} & Pick & Picked & \\multicolumn{2}{c}{Fails bar} \\\\\n"
+          " & & & clf.~1 & clf.~2 & & & clf.~1 & clf.~2 \\\\\n\\midrule\n" + "\n".join(rows) +
+          "\n\\bottomrule\n\\end{tabular}\n")
+    for k in ("spearman_cer_c1", "spearman_cer_c2"):
+        t = b1["all"][k]
+        tag = "rhoc1" if k.endswith("c1") else "rhoc2"
+        put(f"sel:{tag}", f2(t["point"]))
+        put(f"sel:{tag}:ci", f"[{f2(t['lo'])}, {f2(t['hi'])}]")
+    h = se["heldout_three_seeds"]["rules"]["voxcpm2_vs_cbv3"]
+    put("sel3:cer:cbv3", share(h["cer"]["picked_share"].get("cb-v3", 0)))
+    put("sel3:dnsmos:cbv3", share(h["dnsmos"]["picked_share"].get("cb-v3", 0)))
+    put("sel3:ecapa:vox", share(h["ecapa"]["picked_share"].get("voxcpm2", 0)))
+    put("sel3:amended:vox", share(h["amended"]["picked_share"].get("voxcpm2", 0)))
+    put("sel:B", f"{se['bakeoff_one_seed']['B']:,}".replace(",", "{,}"))
+    for sysn, d in se["by_reference_dialect"].items():
+        for grp, tag in [("ref_egyptian_both", "egy"), ("ref_msa_both", "msa")]:
+            g = d[grp]
+            for m in ("c1", "c2"):
+                put(f"ref:{sysn}:{tag}:{m}", pct(g[m]["mean"]))
+                put(f"ref:{sysn}:{tag}:{m}:ci", f"[{pct(g[m]['lo']).replace(chr(92) + '%', '')}, {pct(g[m]['hi'])}]")
+            put(f"ref:{tag}:nvoices", str(len(g["voices"])))
+    refl = se["reference_labels"]
+    put("ref:n:egyboth", str(sum(1 for v in refl.values() if v[0] and v[1])))
+    put("ref:n:msaboth", str(sum(1 for v in refl.values() if not v[0] and not v[1])))
+
+# ---------------------------------------------------------------- full one-seed bake-off with CIs (appendix)
+if un and "bakeoff_one_seed" in un:
+    rows = []
+    for s in ORDER:
+        d = un["bakeoff_one_seed"].get(s)
+        if not d:
+            continue
+        m = d["egy_main"]
+        cell = lambda t, fm: f"{fm(t['mean'])} {{\\scriptsize[{fm(t['lo'])}, {fm(t['hi'])}]}}".replace("\\%", "") if fm is pct else f"{fm(t['mean'])} {{\\scriptsize[{fm(t['lo'])}, {fm(t['hi'])}]}}"
+        rows.append(f"{NAMES[s]} & {cell(m['cer_best'], f3)} & {cell(m['sim_ecapa'], f3)} & {cell(m['c1'], pct)} & {cell(m['c2'], pct)} & "
+                    f"{cell(m['mos_p808'], f2)} & {cell(d['egy_digits']['cer_best'], f3)} \\\\")
+    write("tab_bakeoff_full.tex", "\\begin{tabular}{@{}lcccccc@{}}\n\\toprule\n"
+          "System & CER & ECAPA & Egyptian clf.~1 (\\%) & Egyptian clf.~2 (\\%) & DNSMOS & Digits CER \\\\\n\\midrule\n" +
+          "\n".join(rows) + "\n\\bottomrule\n\\end{tabular}\n")
+
+# ---------------------------------------------------------------- watermark under attacks (watermark_attacks.json)
+wa = load("watermark_attacks.json")
+if wa:
+    ATT = [("none", "None (WAV)"), ("mp3_64k", "MP3 64\\,kbit/s"), ("mp3_32k", "MP3 32\\,kbit/s"), ("mp3_64k_x2", "MP3 64\\,kbit/s twice"),
+           ("aac_64k", "AAC 64\\,kbit/s"), ("mp3_64k_then_aac_64k", "MP3 then AAC 64\\,kbit/s"), ("opus_32k", "Opus 32\\,kbit/s"),
+           ("opus_16k", "Opus 16\\,kbit/s"), ("phone_8k", "Telephone band (8\\,kHz)"), ("gain_-10dB", "Gain $-10$\\,dB"),
+           ("gain_-20dB", "Gain $-20$\\,dB"), ("gain_+6dB_clipped", "Gain $+6$\\,dB, clipped"), ("loudnorm_-14LUFS", "Loudness $-14$\\,LUFS"),
+           ("excerpt_3s", "3\\,s excerpt"), ("babble_20dB", "Babble, SNR 20\\,dB"), ("babble_10dB", "Babble, SNR 10\\,dB"),
+           ("babble_5dB", "Babble, SNR 5\\,dB"), ("white_20dB", "White noise, SNR 20\\,dB"), ("white_10dB", "White noise, SNR 10\\,dB"),
+           ("white_5dB", "White noise, SNR 5\\,dB"), ("phone_mp3_32k_noise20", "Telephone + MP3 32k + noise 20\\,dB"),
+           ("speed_+5pct", "Speed $+5$\\%"), ("speed_-5pct", "Speed $-5$\\%"), ("tempo_+5pct", "Tempo $+5$\\% (pitch kept)"),
+           ("tempo_-5pct", "Tempo $-5$\\% (pitch kept)")]
+    assert {a for a, _ in ATT} == set(wa["attacks"]), set(wa["attacks"]) ^ {a for a, _ in ATT}
+    rows = []
+    for a, nm in ATT:
+        w = wa["attacks"][a]["ba_watermarked"]
+        u = wa["attacks"][a]["all_unwatermarked"]
+        rows.append(f"{nm} & {w['detected']}/{w['n']} & {w['mean_score']:.2f} & {w['all_bits_match']}/{w['n']} & {u['detected']}/{u['n']} \\\\")
+        put(f"wm:att:{a}:det", f"{w['detected']} of {w['n']}")
+        put(f"wm:att:{a}:bits", f"{w['all_bits_match']} of {w['n']}")
+    write("tab_watermark.tex", "\\begin{tabular}{@{}lrrrr@{}}\n\\toprule\n"
+          "Processing & Detected & Mean score & All 16 bits & False positives \\\\\n\\midrule\n" + "\n".join(rows) +
+          "\n\\bottomrule\n\\end{tabular}\n")
+    fp = wa["false_positives_all_attacks"]
+    put("wm:fp:det", str(fp["detected"]))
+    put("wm:fp:bits", str(sum(v["all_unwatermarked"]["all_bits_match"] for v in wa["attacks"].values())))
+    put("wm:fp:n", f"{fp['n']:,}".replace(",", "{,}"))
+    put("wm:fp:hi", pct(fp["ci95_wilson"][1], 2))
+    put("wm:att:n", str(len(ATT) - 1))
+    put("wm:att:nwm", str(wa["n_watermarked"]))
+    put("wm:att:nclean", str(wa["n_unwatermarked"]))
+    put("wm:att:nvox", str(wa["unwatermarked_sets"]["raw_voxcpm2"]))
+    put("wm:att:nreal", str(wa["unwatermarked_sets"]["real_speech"]))
+    full = [a for a, _ in ATT if wa["attacks"][a]["ba_watermarked"]["detected"] == wa["attacks"][a]["ba_watermarked"]["n"]]
+    put("wm:att:nfull", str(len([a for a in full if a != "none"])))
+
+# ---------------------------------------------------------------- long form, windowed ASR (long_form_windows.json)
+lw = load("long_form_windows.json")
+if lw:
+    for s, d in lw["systems"].items():
+        for lang, r in d.items():
+            for k in ("err_seq", "err_win"):
+                put(f"lfw:{s}:{lang}:{k}", f3(r[k]["mean"]))
+                put(f"lfw:{s}:{lang}:{k}:ci", f"[{f3(r[k]['lo'])}, {f3(r[k]['hi'])}]")
+    for lang, d in lw["paired_ba_minus_voxcpm2"].items():
+        for k, t in d.items():
+            if t:
+                put(f"lfwp:{lang}:{k}:diff", f"{t['diff']:+.3f}")
+                put(f"lfwp:{lang}:{k}:ci", f"[{t['ci_lo']:+.3f}, {t['ci_hi']:+.3f}]")
+                put(f"lfwp:{lang}:{k}:p", "p<0.001" if t["p_bootstrap"] < 0.001 else f"p={min(t['p_bootstrap'], 1):.2f}")
+    for d in lw["largest_changes"]:
+        clip = d["utt_id"].split("__")[1].replace("lv2_", "")
+        put(f"lfw:clip:{d['system']}:{clip}:seq", f3(d["err_seq"]))
+        put(f"lfw:clip:{d['system']}:{clip}:win", f3(d["err_win"]))
+
 # ---------------------------------------------------------------- output
 with open(os.path.join(GEN, "numbers.tex"), "w") as f:
     f.write("% generated by scripts/make_assets.py -- do not edit\n")
-    f.write("\\newcommand{\\R}[1]{\\ifcsname R@#1\\endcsname\\csname R@#1\\endcsname\\else\\textbf{??}\\fi}\n")
+    f.write("\\newcommand{\\R}[1]{\\ifcsname R@#1\\endcsname\\csname R@#1\\endcsname\\else\\textbf{??}\\typeout{MISSING-NUMBER: #1}\\fi}\n")
     for k in sorted(R):
         f.write(f"\\expandafter\\def\\csname R@{k}\\endcsname{{{R[k]}}}\n")
 print(f"{len(R)} numbers; tables and figures in {GEN} and {FIG}")

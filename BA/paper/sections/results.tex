@@ -29,11 +29,11 @@ resolved, and we do not claim it. \BA matches \cbthree on CER
 (\R{pt:ba_minus_cb-v3:egy_main:cer_best:diff}, CI \R{pt:ba_minus_cb-v3:egy_main:cer_best:ci}) while being labelled
 Egyptian far more often (\R{pt:ba_minus_cb-v3:egy_main:c1:diff}, CI \R{pt:ba_minus_cb-v3:egy_main:c1:ci}). In short,
 \BA has the intelligibility of the lowest-CER system and the dialect of the Egyptian ones, with the highest speaker
-similarity of the four. Predicted quality (DNSMOS) favours \cbthree slightly; as an English-trained predictor, it is
-a weak signal for Arabic \citep{kunesova2024zeroshotmos}.
-
-\pending{Three-seed numbers are filled in automatically when seeds 1--2 of all four systems are scored; the
-interpretation above is checked against them before release.}
+similarity of the four. Predicted quality (DNSMOS) favours \cbthree
+(\R{pt:ba_minus_cb-v3:egy_main:mos_p808:diff}, CI \R{pt:ba_minus_cb-v3:egy_main:mos_p808:ci}), as it does over \vox;
+as an English-trained predictor it is a weak signal for Arabic \citep{kunesova2024zeroshotmos}, and its preference for
+the least Egyptian system is one more instance of the blind spot in \cref{sec:dissociation}. \BA raises DNSMOS over
+its own base (\R{pt:ba_minus_voxcpm2:egy_main:mos_p808:diff}, CI \R{pt:ba_minus_voxcpm2:egy_main:mos_p808:ci}).
 
 \paragraph{Numbers}
 On held-out sentences with digits, scored against the best of the spelled-out Egyptian form and the digit text,
@@ -57,10 +57,10 @@ one form. Egy.: share labelled Egyptian by classifier~1. Intervals for every cel
 
 \Cref{tab:ablation} removes one component at a time. One component carries almost all of the measurable gain: the
 automatic reference transcript. Without it, Egyptian CER rises from \R{ab:full:egy_main:err} to
-\R{ab:no_transcript:egy_main:err} (an interval that includes zero), speaker similarity falls by
+\R{ab:no_transcript:egy_main:err} (the paired interval includes zero), speaker similarity changes by
 \R{ab:no_transcript:egy_main:sim_ecapa:diff} (CI \R{ab:no_transcript:egy_main:sim_ecapa:ci}), and on code-switched
 sentences the Egyptian share falls from \R{ab:full:cs:c1} to \R{ab:no_transcript:cs:c1} while CER rises; in English,
-similarity falls by \R{ab:no_transcript:en:sim_ecapa:diff}. Removing it accounts for about \R{ab:share:notrans:ecapa}
+similarity changes by \R{ab:no_transcript:en:sim_ecapa:diff}. Removing it accounts for about \R{ab:share:notrans:ecapa}
 of \BA's similarity gain over \vox (plain) and \R{ab:share:notrans:cer} of its CER gain on Egyptian sentences.
 
 The other components leave the automatic metrics unchanged. Reference preparation makes no measurable difference on
@@ -83,8 +83,35 @@ Egyptian voice speaks English or French, similarity is \R{xl:cross_en:ba} and \R
 same-speaker ceiling, and the model card lists cross-language use as a limitation.
 
 \subsection{Long text}
-\pending{Long-form results from the 24 new passages (8 per language, 2 voices each) for \BA and \vox (plain):
-completion, CER/WER, similarity, Egyptian share, retries, with intervals.}
+\Cref{tab:long} gives the 24 long passages written after the engine was frozen (8 per language, each in two voices,
+\R{lf:ba:arz:audio_sec}\,s of Egyptian audio on average). Neither system failed on any passage, so this test does not
+show the benefit of \BA's chunk checks that motivated them: \BA split Egyptian passages into
+\R{lf:ba:arz:chunks} chunks on average (at most \R{chunk:maxchars} characters each) and no chunk needed a retry
+(\R{lf:ba:retries} retries in all). Speaker similarity is higher with \BA in
+all three languages (Egyptian \R{lfp:arz:sim_ecapa:diff}, CI \R{lfp:arz:sim_ecapa:ci}; English
+\R{lfp:en:sim_ecapa:diff}, CI \R{lfp:en:sim_ecapa:ci}; French \R{lfp:fr:sim_ecapa:diff}, CI \R{lfp:fr:sim_ecapa:ci}),
+as on short sentences. Error rates do not separate the systems, and they expose a measurement problem for long
+synthetic Egyptian speech. Whisper's sequential long-form decoding fell into a repetition loop over the first 25\,s of
+one \BA passage and returned one word about a hundred times (CER \R{lfw:clip:ba:arz02:seq}); transcribing the same
+audio in pieces returns the passage. Re-scoring every long clip of both systems in $\sim$20\,s windows cut at pauses
+repairs that clip (\R{lfw:clip:ba:arz02:win}) but breaks another passage for both systems, where Whisper rewrites the
+colloquial opening into MSA and then loops (CER \R{lfw:clip:ba:arz05:win} for \BA and
+\R{lfw:clip:voxcpm2:arz05:win} for \vox). The Egyptian CER difference between \BA and \vox is
+\R{lfp:arz:err:diff} (CI \R{lfp:arz:err:ci}) under sequential decoding and \R{lfwp:arz:err_win:diff}
+(CI \R{lfwp:arz:err_win:ci}) under windowed decoding; we draw no conclusion about long-form Egyptian CER from either.
+Scoring long synthetic speech with Whisper needs loop detection or a second recogniser, and the rewriting of Egyptian
+into MSA is the blind spot of \cref{sec:dissociation} inside the recogniser itself.
+
+\begin{table}[t]
+\centering\small
+\caption{Long passages written after the engine was frozen (8 per language $\times$ 2 voices; one seed). Means with
+two-way bootstrap 95\% intervals. Sequential ASR is the protocol's metric; windowed ASR transcribes $\sim$20\,s pieces
+cut at pauses and is a secondary analysis. Egyptian: share labelled Egyptian by classifier~1.}
+\label{tab:long}
+\begin{adjustbox}{max width=\linewidth}
+\rawinput{generated/tab_long.tex}
+\end{adjustbox}
+\end{table}
 
 \subsection{Speed and memory}
 On one NVIDIA A40, \BA loads in \R{bench:load}\,s, prepares a voice from a 10\,s recording in \R{bench:voice}\,s, and

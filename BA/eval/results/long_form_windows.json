@@ -1,0 +1,290 @@
+{
+ "design": "Experiment 4b: long-form error rates with windowed ASR (venv /tmp/ba/venvs/eval, GPU for ASR, then CPU).\n-> BA/eval/results/long_form_windows.json, .md\n\nWhy: Whisper large-v3 transcribes audio longer than 30 s sequentially, and on one BA passage\n(longv2__lv2_arz02__ar_eg_m1) it fell into a repetition loop (\"ايوه\" ~100 times) over the first 25 s, giving\nCER 0.49; transcribing the same audio in shorter pieces returns the passage text, so the audio is correct. This\nsecondary analysis re-scores EVERY long-form clip of BOTH systems the same way, so the comparison stays fair.\nThe primary metric (long_form.py, sequential long-form ASR as fixed in the protocol) is reported unchanged.\n\nWindowing: cut points about every 20 s, each at the quietest 50 ms frame between 16 and 24 s after the previous\ncut (so cuts fall in pauses); every window (< 30 s) is transcribed with the language forced and no timestamps,\nthe window texts are joined with spaces, and CER (Egyptian) or WER (English, French) is computed after the\nprotocol's normalisation (score.py err_rates) against the passage text. Paired BA - VoxCPM2 differences on the\nsame passage-voice cells, two-way bootstrap (paper_common.py).\n\nRun: /tmp/ba/venvs/eval/bin/python BA/eval/scripts/long_form_windows.py       (ASR cache: ba-work/paper/long_windows.jsonl)\n",
+ "systems": {
+  "ba": {
+   "arz": {
+    "err_seq": {
+     "mean": 0.0675,
+     "lo": 0.0257,
+     "hi": 0.1788,
+     "n": 16,
+     "n_texts": 8,
+     "n_voices": 2,
+     "B": 10000
+    },
+    "err_win": {
+     "mean": 0.0739,
+     "lo": 0.0243,
+     "hi": 0.2099,
+     "n": 16,
+     "n_texts": 8,
+     "n_voices": 2,
+     "B": 10000
+    }
+   },
+   "en": {
+    "err_seq": {
+     "mean": 0.0024,
+     "lo": 0.0,
+     "hi": 0.0054,
+     "n": 16,
+     "n_texts": 8,
+     "n_voices": 2,
+     "B": 10000
+    },
+    "err_win": {
+     "mean": 0.0027,
+     "lo": 0.0,
+     "hi": 0.0073,
+     "n": 16,
+     "n_texts": 8,
+     "n_voices": 2,
+     "B": 10000
+    }
+   },
+   "fr": {
+    "err_seq": {
+     "mean": 0.0146,
+     "lo": 0.008,
+     "hi": 0.0222,
+     "n": 16,
+     "n_texts": 8,
+     "n_voices": 2,
+     "B": 10000
+    },
+    "err_win": {
+     "mean": 0.014,
+     "lo": 0.007,
+     "hi": 0.0221,
+     "n": 16,
+     "n_texts": 8,
+     "n_voices": 2,
+     "B": 10000
+    }
+   }
+  },
+  "voxcpm2": {
+   "arz": {
+    "err_seq": {
+     "mean": 0.0518,
+     "lo": 0.0315,
+     "hi": 0.0853,
+     "n": 16,
+     "n_texts": 8,
+     "n_voices": 2,
+     "B": 10000
+    },
+    "err_win": {
+     "mean": 0.0905,
+     "lo": 0.0286,
+     "hi": 0.2443,
+     "n": 16,
+     "n_texts": 8,
+     "n_voices": 2,
+     "B": 10000
+    }
+   },
+   "en": {
+    "err_seq": {
+     "mean": 0.0021,
+     "lo": 0.0,
+     "hi": 0.0047,
+     "n": 16,
+     "n_texts": 8,
+     "n_voices": 2,
+     "B": 10000
+    },
+    "err_win": {
+     "mean": 0.003,
+     "lo": 0.0,
+     "hi": 0.0075,
+     "n": 16,
+     "n_texts": 8,
+     "n_voices": 2,
+     "B": 10000
+    }
+   },
+   "fr": {
+    "err_seq": {
+     "mean": 0.0128,
+     "lo": 0.0073,
+     "hi": 0.0187,
+     "n": 16,
+     "n_texts": 8,
+     "n_voices": 2,
+     "B": 10000
+    },
+    "err_win": {
+     "mean": 0.0118,
+     "lo": 0.0061,
+     "hi": 0.0183,
+     "n": 16,
+     "n_texts": 8,
+     "n_voices": 2,
+     "B": 10000
+    }
+   }
+  }
+ },
+ "paired_ba_minus_voxcpm2": {
+  "arz": {
+   "err_seq": {
+    "metric": "err_seq",
+    "n_cells": 16,
+    "n_texts": 8,
+    "n_voices": 2,
+    "mean_a": 0.0675,
+    "mean_b": 0.0518,
+    "diff": 0.0157,
+    "ci_lo": -0.0363,
+    "ci_hi": 0.1157,
+    "p_bootstrap": 0.9598,
+    "p_wilcoxon": 0.159058,
+    "d_z": 0.129,
+    "rank_biserial": -0.412,
+    "B": 10000,
+    "a_higher_cells": 6,
+    "b_higher_cells": 10,
+    "tied_cells": 0
+   },
+   "err_win": {
+    "metric": "err_win",
+    "n_cells": 16,
+    "n_texts": 8,
+    "n_voices": 2,
+    "mean_a": 0.0739,
+    "mean_b": 0.0905,
+    "diff": -0.0166,
+    "ci_lo": -0.0495,
+    "ci_hi": -0.0012,
+    "p_bootstrap": 0.02,
+    "p_wilcoxon": 0.025843,
+    "d_z": -0.477,
+    "rank_biserial": -0.676,
+    "B": 10000,
+    "a_higher_cells": 4,
+    "b_higher_cells": 10,
+    "tied_cells": 2
+   }
+  },
+  "en": {
+   "err_seq": {
+    "metric": "err_seq",
+    "n_cells": 16,
+    "n_texts": 8,
+    "n_voices": 2,
+    "mean_a": 0.0024,
+    "mean_b": 0.0021,
+    "diff": 0.0003,
+    "ci_lo": -0.0013,
+    "ci_hi": 0.0017,
+    "p_bootstrap": 0.8646,
+    "p_wilcoxon": 1.0,
+    "d_z": 0.124,
+    "rank_biserial": 0.0,
+    "B": 10000,
+    "a_higher_cells": 2,
+    "b_higher_cells": 1,
+    "tied_cells": 13
+   },
+   "err_win": {
+    "metric": "err_win",
+    "n_cells": 16,
+    "n_texts": 8,
+    "n_voices": 2,
+    "mean_a": 0.0027,
+    "mean_b": 0.003,
+    "diff": -0.0003,
+    "ci_lo": -0.0012,
+    "ci_hi": 0.0,
+    "p_bootstrap": 1.0,
+    "p_wilcoxon": 0.317311,
+    "d_z": -0.25,
+    "rank_biserial": -1.0,
+    "B": 10000,
+    "a_higher_cells": 0,
+    "b_higher_cells": 1,
+    "tied_cells": 15
+   }
+  },
+  "fr": {
+   "err_seq": {
+    "metric": "err_seq",
+    "n_cells": 16,
+    "n_texts": 8,
+    "n_voices": 2,
+    "mean_a": 0.0146,
+    "mean_b": 0.0128,
+    "diff": 0.0018,
+    "ci_lo": -0.0027,
+    "ci_hi": 0.0079,
+    "p_bootstrap": 0.475,
+    "p_wilcoxon": 0.362138,
+    "d_z": 0.279,
+    "rank_biserial": 0.361,
+    "B": 10000,
+    "a_higher_cells": 5,
+    "b_higher_cells": 3,
+    "tied_cells": 8
+   },
+   "err_win": {
+    "metric": "err_win",
+    "n_cells": 16,
+    "n_texts": 8,
+    "n_voices": 2,
+    "mean_a": 0.014,
+    "mean_b": 0.0118,
+    "diff": 0.0022,
+    "ci_lo": -0.0035,
+    "ci_hi": 0.0122,
+    "p_bootstrap": 0.7034,
+    "p_wilcoxon": 0.721277,
+    "d_z": 0.205,
+    "rank_biserial": 0.127,
+    "B": 10000,
+    "a_higher_cells": 6,
+    "b_higher_cells": 4,
+    "tied_cells": 6
+   }
+  }
+ },
+ "largest_changes": [
+  {
+   "system": "voxcpm2",
+   "utt_id": "longv2__lv2_arz05__ar_eg_m1",
+   "err_seq": 0.04034896401308615,
+   "err_win": 0.7131952017448201
+  },
+  {
+   "system": "ba",
+   "utt_id": "longv2__lv2_arz05__ar_eg_m1",
+   "err_seq": 0.16357688113413305,
+   "err_win": 0.7251908396946565
+  },
+  {
+   "system": "ba",
+   "utt_id": "longv2__lv2_arz02__ar_eg_m1",
+   "err_seq": 0.49144254278728605,
+   "err_win": 0.04767726161369193
+  },
+  {
+   "system": "voxcpm2",
+   "utt_id": "longv2__lv2_arz04__ar_eg_m1",
+   "err_seq": 0.038461538461538464,
+   "err_win": 0.0697522816166884
+  },
+  {
+   "system": "voxcpm2",
+   "utt_id": "longv2__lv2_arz03__ar_eg_m1",
+   "err_seq": 0.05484247374562427,
+   "err_win": 0.03150525087514586
+  },
+  {
+   "system": "ba",
+   "utt_id": "longv2__lv2_arz08__ar_eg_f4",
+   "err_seq": 0.04367816091954023,
+   "err_win": 0.020689655172413793
+  }
+ ],
+ "command": "/tmp/ba/venvs/eval/bin/python BA/eval/scripts/long_form_windows.py"
+}

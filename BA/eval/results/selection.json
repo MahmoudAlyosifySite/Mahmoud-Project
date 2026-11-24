@@ -1,0 +1,881 @@
+{
+ "design": "Experiment 5: what each selection metric picks (venv /tmp/ba/venvs/eval, CPU). -> BA/eval/results/selection.json, .md\n\nQuestion: if a practitioner chose the base model by one of the standard automatic metrics (lowest CER, highest\nECAPA speaker similarity, highest DNSMOS), how often would the chosen system fail the dialect bar?\n\nData: the Phase 1 bake-off, Egyptian main set (32 non-digit texts x 3 Egyptian voices, one seed per utterance),\nfor the nine configurations; classifier 1 labels as stored, classifier 2 from dialect_classifier2.py's cache.\nA second block repeats the analysis on the held-out three-seed runs (24 texts x 3 voices, uncertainty.py's data)\nfor the systems that have three seeds.\n\nCandidate sets:\n  eligible  the licence-eligible bases of G1 (VoxCPM2, Chatterbox V2, Chatterbox V3), each at its published\n            defaults; this is the decision G1 actually made.\n  all       all nine configurations (bases, fine-tunes, non-commercial references, VoxCPM2 prompt mode and the\n            diagnostic PyPI loader of Chatterbox V3).\nDialect bar: 60% of the share on the lahgtna colloquial calibration clips, per classifier (G3's rule).\n\nMethod: one shared two-way bootstrap (texts and voices resampled independently with replacement, the same draw\nfor every system, B = 10,000, paper_common's seed). In each resample every system gets a weighted mean of each\nmetric; each selection rule picks its winner; we record the winner and whether its share under classifier 1 and\nunder classifier 2 in that resample is below the bar. Reported: the share of resamples in which each system is\npicked, the share in which the pick fails the bar, and the bootstrap distribution of Spearman's rho between CER\nand the Egyptian share across systems.\n\nRun: /tmp/ba/venvs/eval/bin/python BA/eval/scripts/selection.py\n",
+ "bar": {
+  "c1": 0.54,
+  "c2": 0.588,
+  "real_c1": 0.9,
+  "real_c2": 0.98
+ },
+ "bakeoff_one_seed": {
+  "n_cells": 96,
+  "n_texts": 32,
+  "n_voices": 6,
+  "B": 10000,
+  "point": {
+   "cer_best": {
+    "cb-v3": 0.0352,
+    "cb-v3-pypi": 0.2296,
+    "cb-v2": 0.0557,
+    "voxcpm2": 0.0645,
+    "namaa": 0.0821,
+    "lahgtna": 0.4424,
+    "omnivoice": 0.0828,
+    "voicetut": 0.0794,
+    "voxcpm2-prompt": 0.0803
+   },
+   "sim_ecapa": {
+    "cb-v3": 0.706,
+    "cb-v3-pypi": 0.6821,
+    "cb-v2": 0.7394,
+    "voxcpm2": 0.7141,
+    "namaa": 0.7208,
+    "lahgtna": 0.7421,
+    "omnivoice": 0.7729,
+    "voicetut": 0.7134,
+    "voxcpm2-prompt": 0.7689
+   },
+   "mos_p808": {
+    "cb-v3": 3.6551,
+    "cb-v3-pypi": 3.4405,
+    "cb-v2": 3.5956,
+    "voxcpm2": 3.3511,
+    "namaa": 3.4708,
+    "lahgtna": 3.5055,
+    "omnivoice": 3.6535,
+    "voicetut": 3.6483,
+    "voxcpm2-prompt": 3.4572
+   },
+   "c1": {
+    "cb-v3": 0.2083,
+    "cb-v3-pypi": 0.25,
+    "cb-v2": 0.1667,
+    "voxcpm2": 0.8229,
+    "namaa": 0.9271,
+    "lahgtna": 0.1979,
+    "omnivoice": 0.8229,
+    "voicetut": 0.8958,
+    "voxcpm2-prompt": 0.9062
+   },
+   "c2": {
+    "cb-v3": 0.5104,
+    "cb-v3-pypi": 0.4479,
+    "cb-v2": 0.3958,
+    "voxcpm2": 0.7396,
+    "namaa": 0.9688,
+    "lahgtna": 0.4479,
+    "omnivoice": 0.8958,
+    "voicetut": 0.9688,
+    "voxcpm2-prompt": 0.7083
+   }
+  },
+  "rules": {
+   "eligible": {
+    "members": [
+     "voxcpm2",
+     "cb-v2",
+     "cb-v3"
+    ],
+    "cer": {
+     "point_pick": "cb-v3",
+     "point_pick_c1": 0.2083,
+     "point_pick_c2": 0.5104,
+     "picked_share": {
+      "cb-v3": 0.8864,
+      "voxcpm2": 0.0691,
+      "cb-v2": 0.0445
+     },
+     "fails_bar_c1": 0.9302,
+     "fails_bar_c2": 0.721,
+     "fails_bar_both": 0.7164
+    },
+    "ecapa": {
+     "point_pick": "cb-v2",
+     "point_pick_c1": 0.1667,
+     "point_pick_c2": 0.3958,
+     "picked_share": {
+      "cb-v2": 0.9437,
+      "voxcpm2": 0.0515,
+      "cb-v3": 0.0048
+     },
+     "fails_bar_c1": 0.9485,
+     "fails_bar_c2": 0.905,
+     "fails_bar_both": 0.8892
+    },
+    "dnsmos": {
+     "point_pick": "cb-v3",
+     "point_pick_c1": 0.2083,
+     "point_pick_c2": 0.5104,
+     "picked_share": {
+      "cb-v3": 0.9136,
+      "cb-v2": 0.0864
+     },
+     "fails_bar_c1": 0.9984,
+     "fails_bar_c2": 0.7688,
+     "fails_bar_both": 0.7687
+    },
+    "amended": {
+     "picked_share": {
+      "voxcpm2": 0.9973,
+      "none": 0.0019,
+      "cb-v3": 0.0008
+     }
+    }
+   },
+   "all": {
+    "members": [
+     "cb-v3",
+     "cb-v3-pypi",
+     "cb-v2",
+     "voxcpm2",
+     "namaa",
+     "lahgtna",
+     "omnivoice",
+     "voicetut",
+     "voxcpm2-prompt"
+    ],
+    "cer": {
+     "point_pick": "cb-v3",
+     "point_pick_c1": 0.2083,
+     "point_pick_c2": 0.5104,
+     "picked_share": {
+      "cb-v3": 0.7028,
+      "voxcpm2-prompt": 0.1517,
+      "omnivoice": 0.0524,
+      "voxcpm2": 0.0423,
+      "cb-v2": 0.0262,
+      "voicetut": 0.0245,
+      "namaa": 0.0001
+     },
+     "fails_bar_c1": 0.7291,
+     "fails_bar_c2": 0.6072,
+     "fails_bar_both": 0.5998
+    },
+    "ecapa": {
+     "point_pick": "omnivoice",
+     "point_pick_c1": 0.8229,
+     "point_pick_c2": 0.8958,
+     "picked_share": {
+      "omnivoice": 0.6437,
+      "voxcpm2-prompt": 0.3354,
+      "cb-v2": 0.0111,
+      "lahgtna": 0.0094,
+      "cb-v3-pypi": 0.0003,
+      "namaa": 0.0001
+     },
+     "fails_bar_c1": 0.0215,
+     "fails_bar_c2": 0.0858,
+     "fails_bar_both": 0.0188
+    },
+    "dnsmos": {
+     "point_pick": "cb-v3",
+     "point_pick_c1": 0.2083,
+     "point_pick_c2": 0.5104,
+     "picked_share": {
+      "cb-v3": 0.3769,
+      "omnivoice": 0.3462,
+      "voicetut": 0.2295,
+      "cb-v2": 0.0474
+     },
+     "fails_bar_c1": 0.4243,
+     "fails_bar_c2": 0.358,
+     "fails_bar_both": 0.358
+    },
+    "amended": {
+     "picked_share": {
+      "voxcpm2": 0.4653,
+      "voxcpm2-prompt": 0.2278,
+      "namaa": 0.1264,
+      "omnivoice": 0.1102,
+      "voicetut": 0.0702,
+      "cb-v3": 0.0001
+     }
+    },
+    "spearman_cer_c1": {
+     "point": 0.15,
+     "lo": -0.617,
+     "hi": 0.333
+    },
+    "spearman_cer_c2": {
+     "point": 0.0,
+     "lo": -0.567,
+     "hi": 0.167
+    }
+   }
+  }
+ },
+ "heldout_three_seeds": {
+  "n_cells": 72,
+  "n_texts": 24,
+  "n_voices": 6,
+  "B": 10000,
+  "point": {
+   "cer_best": {
+    "voxcpm2": 0.0596,
+    "cb-v3": 0.0455
+   },
+   "sim_ecapa": {
+    "voxcpm2": 0.7104,
+    "cb-v3": 0.6985
+   },
+   "mos_p808": {
+    "voxcpm2": 3.3444,
+    "cb-v3": 3.6673
+   },
+   "c1": {
+    "voxcpm2": 0.8472,
+    "cb-v3": 0.2639
+   },
+   "c2": {
+    "voxcpm2": 0.787,
+    "cb-v3": 0.4537
+   }
+  },
+  "rules": {
+   "voxcpm2_vs_cbv3": {
+    "members": [
+     "voxcpm2",
+     "cb-v3"
+    ],
+    "cer": {
+     "point_pick": "cb-v3",
+     "point_pick_c1": 0.2639,
+     "point_pick_c2": 0.4537,
+     "picked_share": {
+      "cb-v3": 0.8403,
+      "voxcpm2": 0.1597
+     },
+     "fails_bar_c1": 0.8368,
+     "fails_bar_c2": 0.7412,
+     "fails_bar_both": 0.7401
+    },
+    "ecapa": {
+     "point_pick": "voxcpm2",
+     "point_pick_c1": 0.8472,
+     "point_pick_c2": 0.787,
+     "picked_share": {
+      "voxcpm2": 0.7317,
+      "cb-v3": 0.2683
+     },
+     "fails_bar_c1": 0.268,
+     "fails_bar_c2": 0.2219,
+     "fails_bar_both": 0.2146
+    },
+    "dnsmos": {
+     "point_pick": "cb-v3",
+     "point_pick_c1": 0.2639,
+     "point_pick_c2": 0.4537,
+     "picked_share": {
+      "cb-v3": 1.0
+     },
+     "fails_bar_c1": 0.9943,
+     "fails_bar_c2": 0.8788,
+     "fails_bar_both": 0.8783
+    },
+    "amended": {
+     "picked_share": {
+      "voxcpm2": 0.9959,
+      "cb-v3": 0.0035,
+      "none": 0.0006
+     }
+    }
+   }
+  }
+ },
+ "by_reference_dialect": {
+  "cb-v3": {
+   "ref_egyptian_both": {
+    "n": 32,
+    "voices": [
+     "ar_eg_f6",
+     "ar_eg_m1"
+    ],
+    "c1": {
+     "mean": 0.125,
+     "lo": 0.0,
+     "hi": 0.3125,
+     "n": 32,
+     "n_texts": 32,
+     "n_voices": 2,
+     "B": 10000
+    },
+    "c2": {
+     "mean": 0.625,
+     "lo": 0.4062,
+     "hi": 0.8333,
+     "n": 32,
+     "n_texts": 32,
+     "n_voices": 2,
+     "B": 10000
+    },
+    "cer_best": {
+     "mean": 0.0401,
+     "lo": 0.0057,
+     "hi": 0.1089,
+     "n": 32,
+     "n_texts": 32,
+     "n_voices": 2,
+     "B": 10000
+    }
+   },
+   "ref_msa_both": {
+    "n": 48,
+    "voices": [
+     "ar_eg_f4",
+     "ar_eg_f5",
+     "ar_eg_m3"
+    ],
+    "c1": {
+     "mean": 0.1667,
+     "lo": 0.0,
+     "hi": 0.4545,
+     "n": 48,
+     "n_texts": 32,
+     "n_voices": 3,
+     "B": 10000
+    },
+    "c2": {
+     "mean": 0.3333,
+     "lo": 0.1042,
+     "hi": 0.6,
+     "n": 48,
+     "n_texts": 32,
+     "n_voices": 3,
+     "B": 10000
+    },
+    "cer_best": {
+     "mean": 0.0306,
+     "lo": 0.0167,
+     "hi": 0.0489,
+     "n": 48,
+     "n_texts": 32,
+     "n_voices": 3,
+     "B": 10000
+    }
+   }
+  },
+  "cb-v2": {
+   "ref_egyptian_both": {
+    "n": 32,
+    "voices": [
+     "ar_eg_f6",
+     "ar_eg_m1"
+    ],
+    "c1": {
+     "mean": 0.125,
+     "lo": 0.0,
+     "hi": 0.2857,
+     "n": 32,
+     "n_texts": 32,
+     "n_voices": 2,
+     "B": 10000
+    },
+    "c2": {
+     "mean": 0.5,
+     "lo": 0.2667,
+     "hi": 0.7368,
+     "n": 32,
+     "n_texts": 32,
+     "n_voices": 2,
+     "B": 10000
+    },
+    "cer_best": {
+     "mean": 0.0633,
+     "lo": 0.018,
+     "hi": 0.1467,
+     "n": 32,
+     "n_texts": 32,
+     "n_voices": 2,
+     "B": 10000
+    }
+   },
+   "ref_msa_both": {
+    "n": 48,
+    "voices": [
+     "ar_eg_f4",
+     "ar_eg_f5",
+     "ar_eg_m3"
+    ],
+    "c1": {
+     "mean": 0.1458,
+     "lo": 0.0,
+     "hi": 0.3684,
+     "n": 48,
+     "n_texts": 32,
+     "n_voices": 3,
+     "B": 10000
+    },
+    "c2": {
+     "mean": 0.1875,
+     "lo": 0.0408,
+     "hi": 0.38,
+     "n": 48,
+     "n_texts": 32,
+     "n_voices": 3,
+     "B": 10000
+    },
+    "cer_best": {
+     "mean": 0.0476,
+     "lo": 0.028,
+     "hi": 0.0753,
+     "n": 48,
+     "n_texts": 32,
+     "n_voices": 3,
+     "B": 10000
+    }
+   }
+  },
+  "voxcpm2": {
+   "ref_egyptian_both": {
+    "n": 32,
+    "voices": [
+     "ar_eg_f6",
+     "ar_eg_m1"
+    ],
+    "c1": {
+     "mean": 0.8125,
+     "lo": 0.5333,
+     "hi": 1.0,
+     "n": 32,
+     "n_texts": 32,
+     "n_voices": 2,
+     "B": 10000
+    },
+    "c2": {
+     "mean": 0.8438,
+     "lo": 0.6667,
+     "hi": 1.0,
+     "n": 32,
+     "n_texts": 32,
+     "n_voices": 2,
+     "B": 10000
+    },
+    "cer_best": {
+     "mean": 0.1208,
+     "lo": 0.049,
+     "hi": 0.1968,
+     "n": 32,
+     "n_texts": 32,
+     "n_voices": 2,
+     "B": 10000
+    }
+   },
+   "ref_msa_both": {
+    "n": 48,
+    "voices": [
+     "ar_eg_f4",
+     "ar_eg_f5",
+     "ar_eg_m3"
+    ],
+    "c1": {
+     "mean": 0.8542,
+     "lo": 0.6522,
+     "hi": 1.0,
+     "n": 48,
+     "n_texts": 32,
+     "n_voices": 3,
+     "B": 10000
+    },
+    "c2": {
+     "mean": 0.6042,
+     "lo": 0.2857,
+     "hi": 0.8947,
+     "n": 48,
+     "n_texts": 32,
+     "n_voices": 3,
+     "B": 10000
+    },
+    "cer_best": {
+     "mean": 0.0408,
+     "lo": 0.02,
+     "hi": 0.0703,
+     "n": 48,
+     "n_texts": 32,
+     "n_voices": 3,
+     "B": 10000
+    }
+   }
+  },
+  "voxcpm2-prompt": {
+   "ref_egyptian_both": {
+    "n": 32,
+    "voices": [
+     "ar_eg_f6",
+     "ar_eg_m1"
+    ],
+    "c1": {
+     "mean": 0.9375,
+     "lo": 0.7619,
+     "hi": 1.0,
+     "n": 32,
+     "n_texts": 32,
+     "n_voices": 2,
+     "B": 10000
+    },
+    "c2": {
+     "mean": 0.875,
+     "lo": 0.6111,
+     "hi": 1.0,
+     "n": 32,
+     "n_texts": 32,
+     "n_voices": 2,
+     "B": 10000
+    },
+    "cer_best": {
+     "mean": 0.065,
+     "lo": 0.0129,
+     "hi": 0.1681,
+     "n": 32,
+     "n_texts": 32,
+     "n_voices": 2,
+     "B": 10000
+    }
+   },
+   "ref_msa_both": {
+    "n": 48,
+    "voices": [
+     "ar_eg_f4",
+     "ar_eg_f5",
+     "ar_eg_m3"
+    ],
+    "c1": {
+     "mean": 0.8958,
+     "lo": 0.7255,
+     "hi": 1.0,
+     "n": 48,
+     "n_texts": 32,
+     "n_voices": 3,
+     "B": 10000
+    },
+    "c2": {
+     "mean": 0.5,
+     "lo": 0.1794,
+     "hi": 0.8302,
+     "n": 48,
+     "n_texts": 32,
+     "n_voices": 3,
+     "B": 10000
+    },
+    "cer_best": {
+     "mean": 0.1113,
+     "lo": 0.0091,
+     "hi": 0.2946,
+     "n": 48,
+     "n_texts": 32,
+     "n_voices": 3,
+     "B": 10000
+    }
+   }
+  },
+  "namaa": {
+   "ref_egyptian_both": {
+    "n": 32,
+    "voices": [
+     "ar_eg_f6",
+     "ar_eg_m1"
+    ],
+    "c1": {
+     "mean": 0.8438,
+     "lo": 0.6,
+     "hi": 1.0,
+     "n": 32,
+     "n_texts": 32,
+     "n_voices": 2,
+     "B": 10000
+    },
+    "c2": {
+     "mean": 1.0,
+     "lo": 1.0,
+     "hi": 1.0,
+     "n": 32,
+     "n_texts": 32,
+     "n_voices": 2,
+     "B": 10000
+    },
+    "cer_best": {
+     "mean": 0.0976,
+     "lo": 0.0338,
+     "hi": 0.2135,
+     "n": 32,
+     "n_texts": 32,
+     "n_voices": 2,
+     "B": 10000
+    }
+   },
+   "ref_msa_both": {
+    "n": 48,
+    "voices": [
+     "ar_eg_f4",
+     "ar_eg_f5",
+     "ar_eg_m3"
+    ],
+    "c1": {
+     "mean": 0.9792,
+     "lo": 0.8889,
+     "hi": 1.0,
+     "n": 48,
+     "n_texts": 32,
+     "n_voices": 3,
+     "B": 10000
+    },
+    "c2": {
+     "mean": 0.9375,
+     "lo": 0.8333,
+     "hi": 1.0,
+     "n": 48,
+     "n_texts": 32,
+     "n_voices": 3,
+     "B": 10000
+    },
+    "cer_best": {
+     "mean": 0.0731,
+     "lo": 0.0424,
+     "hi": 0.1227,
+     "n": 48,
+     "n_texts": 32,
+     "n_voices": 3,
+     "B": 10000
+    }
+   }
+  },
+  "omnivoice": {
+   "ref_egyptian_both": {
+    "n": 32,
+    "voices": [
+     "ar_eg_f6",
+     "ar_eg_m1"
+    ],
+    "c1": {
+     "mean": 0.875,
+     "lo": 0.6111,
+     "hi": 1.0,
+     "n": 32,
+     "n_texts": 32,
+     "n_voices": 2,
+     "B": 10000
+    },
+    "c2": {
+     "mean": 1.0,
+     "lo": 1.0,
+     "hi": 1.0,
+     "n": 32,
+     "n_texts": 32,
+     "n_voices": 2,
+     "B": 10000
+    },
+    "cer_best": {
+     "mean": 0.056,
+     "lo": 0.0211,
+     "hi": 0.1225,
+     "n": 32,
+     "n_texts": 32,
+     "n_voices": 2,
+     "B": 10000
+    }
+   },
+   "ref_msa_both": {
+    "n": 48,
+    "voices": [
+     "ar_eg_f4",
+     "ar_eg_f5",
+     "ar_eg_m3"
+    ],
+    "c1": {
+     "mean": 0.8958,
+     "lo": 0.7222,
+     "hi": 1.0,
+     "n": 48,
+     "n_texts": 32,
+     "n_voices": 3,
+     "B": 10000
+    },
+    "c2": {
+     "mean": 0.8125,
+     "lo": 0.6458,
+     "hi": 0.95,
+     "n": 48,
+     "n_texts": 32,
+     "n_voices": 3,
+     "B": 10000
+    },
+    "cer_best": {
+     "mean": 0.1171,
+     "lo": 0.0162,
+     "hi": 0.2945,
+     "n": 48,
+     "n_texts": 32,
+     "n_voices": 3,
+     "B": 10000
+    }
+   }
+  },
+  "voicetut": {
+   "ref_egyptian_both": {
+    "n": 32,
+    "voices": [
+     "ar_eg_f6",
+     "ar_eg_m1"
+    ],
+    "c1": {
+     "mean": 0.9688,
+     "lo": 0.8499,
+     "hi": 1.0,
+     "n": 32,
+     "n_texts": 32,
+     "n_voices": 2,
+     "B": 10000
+    },
+    "c2": {
+     "mean": 1.0,
+     "lo": 1.0,
+     "hi": 1.0,
+     "n": 32,
+     "n_texts": 32,
+     "n_voices": 2,
+     "B": 10000
+    },
+    "cer_best": {
+     "mean": 0.0619,
+     "lo": 0.0165,
+     "hi": 0.147,
+     "n": 32,
+     "n_texts": 32,
+     "n_voices": 2,
+     "B": 10000
+    }
+   },
+   "ref_msa_both": {
+    "n": 48,
+    "voices": [
+     "ar_eg_f4",
+     "ar_eg_f5",
+     "ar_eg_m3"
+    ],
+    "c1": {
+     "mean": 0.8958,
+     "lo": 0.7708,
+     "hi": 1.0,
+     "n": 48,
+     "n_texts": 32,
+     "n_voices": 3,
+     "B": 10000
+    },
+    "c2": {
+     "mean": 0.9583,
+     "lo": 0.8571,
+     "hi": 1.0,
+     "n": 48,
+     "n_texts": 32,
+     "n_voices": 3,
+     "B": 10000
+    },
+    "cer_best": {
+     "mean": 0.1033,
+     "lo": 0.0125,
+     "hi": 0.2583,
+     "n": 48,
+     "n_texts": 32,
+     "n_voices": 3,
+     "B": 10000
+    }
+   }
+  },
+  "lahgtna": {
+   "ref_egyptian_both": {
+    "n": 32,
+    "voices": [
+     "ar_eg_f6",
+     "ar_eg_m1"
+    ],
+    "c1": {
+     "mean": 0.2812,
+     "lo": 0.0625,
+     "hi": 0.5333,
+     "n": 32,
+     "n_texts": 32,
+     "n_voices": 2,
+     "B": 10000
+    },
+    "c2": {
+     "mean": 0.6562,
+     "lo": 0.3333,
+     "hi": 0.9333,
+     "n": 32,
+     "n_texts": 32,
+     "n_voices": 2,
+     "B": 10000
+    },
+    "cer_best": {
+     "mean": 0.736,
+     "lo": 0.2374,
+     "hi": 1.9009,
+     "n": 32,
+     "n_texts": 32,
+     "n_voices": 2,
+     "B": 10000
+    }
+   },
+   "ref_msa_both": {
+    "n": 48,
+    "voices": [
+     "ar_eg_f4",
+     "ar_eg_f5",
+     "ar_eg_m3"
+    ],
+    "c1": {
+     "mean": 0.1042,
+     "lo": 0.0,
+     "hi": 0.2353,
+     "n": 48,
+     "n_texts": 32,
+     "n_voices": 3,
+     "B": 10000
+    },
+    "c2": {
+     "mean": 0.1875,
+     "lo": 0.0238,
+     "hi": 0.38,
+     "n": 48,
+     "n_texts": 32,
+     "n_voices": 3,
+     "B": 10000
+    },
+    "cer_best": {
+     "mean": 0.2884,
+     "lo": 0.1678,
+     "hi": 0.4295,
+     "n": 48,
+     "n_texts": 32,
+     "n_voices": 3,
+     "B": 10000
+    }
+   }
+  }
+ },
+ "reference_labels": {
+  "ar_eg_f4": [
+   false,
+   false
+  ],
+  "ar_eg_f5": [
+   false,
+   false
+  ],
+  "ar_eg_f6": [
+   true,
+   true
+  ],
+  "ar_eg_m1": [
+   true,
+   true
+  ],
+  "ar_eg_m2": [
+   true,
+   false
+  ],
+  "ar_eg_m3": [
+   false,
+   false
+  ]
+ },
+ "command": "/tmp/ba/venvs/eval/bin/python BA/eval/scripts/selection.py"
+}

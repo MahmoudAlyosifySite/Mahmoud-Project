@@ -1,0 +1,619 @@
+{
+ "design": "Experiment 4: long-form text (venv /tmp/ba/venvs/eval, CPU). -> BA/eval/results/long_form.json, .md\n\nTexts: texts/long_v2.jsonl (24 new passages, 8 per language, written after the engine was frozen and never used for\ntuning), each spoken by 2 voices per language (synth_paper.py long_ba / long_voxcpm2). Systems: BA (engine with\nchunking, per-chunk checks and retries) and plain VoxCPM2 (the whole passage in one call, as in the bake-off).\n\nPer language and system: failure share (bake-off rule F1-F4), error (CER for Egyptian, WER for English and French),\nECAPA similarity, Egyptian share under both classifiers (Egyptian only), DNSMOS, audio length, chunks and retries.\nTwo-way bootstrap CIs (texts x voices; with 2 voices the voice dimension adds little) and paired BA - VoxCPM2\ndifferences on the same passage-voice cells (paper_common.py).\n\nRun: /tmp/ba/venvs/eval/bin/python BA/eval/scripts/long_form.py\n",
+ "systems": {
+  "ba": {
+   "arz": {
+    "n": 16,
+    "failed": {
+     "mean": 0.0,
+     "lo": 0.0,
+     "hi": 0.0,
+     "n": 16,
+     "n_texts": 8,
+     "n_voices": 2,
+     "B": 10000
+    },
+    "err": {
+     "mean": 0.0675,
+     "lo": 0.0257,
+     "hi": 0.1788,
+     "n": 16,
+     "n_texts": 8,
+     "n_voices": 2,
+     "B": 10000
+    },
+    "sim_ecapa": {
+     "mean": 0.8089,
+     "lo": 0.7972,
+     "hi": 0.8214,
+     "n": 16,
+     "n_texts": 8,
+     "n_voices": 2,
+     "B": 10000
+    },
+    "c1": {
+     "mean": 1.0,
+     "lo": 1.0,
+     "hi": 1.0,
+     "n": 16,
+     "n_texts": 8,
+     "n_voices": 2,
+     "B": 10000
+    },
+    "c2": {
+     "mean": 1.0,
+     "lo": 1.0,
+     "hi": 1.0,
+     "n": 16,
+     "n_texts": 8,
+     "n_voices": 2,
+     "B": 10000
+    },
+    "mos_p808": {
+     "mean": 3.4342,
+     "lo": 3.2145,
+     "hi": 3.6515,
+     "n": 16,
+     "n_texts": 8,
+     "n_voices": 2,
+     "B": 10000
+    },
+    "audio_sec": {
+     "mean": 71.2986,
+     "lo": 56.8571,
+     "hi": 90.4404,
+     "n": 16,
+     "n_texts": 8,
+     "n_voices": 2,
+     "B": 10000
+    },
+    "chunks_mean": 1.25,
+    "retries_total": 0
+   },
+   "en": {
+    "n": 16,
+    "failed": {
+     "mean": 0.0,
+     "lo": 0.0,
+     "hi": 0.0,
+     "n": 16,
+     "n_texts": 8,
+     "n_voices": 2,
+     "B": 10000
+    },
+    "err": {
+     "mean": 0.0024,
+     "lo": 0.0,
+     "hi": 0.0054,
+     "n": 16,
+     "n_texts": 8,
+     "n_voices": 2,
+     "B": 10000
+    },
+    "sim_ecapa": {
+     "mean": 0.8423,
+     "lo": 0.8333,
+     "hi": 0.8523,
+     "n": 16,
+     "n_texts": 8,
+     "n_voices": 2,
+     "B": 10000
+    },
+    "mos_p808": {
+     "mean": 3.8607,
+     "lo": 3.8216,
+     "hi": 3.9144,
+     "n": 16,
+     "n_texts": 8,
+     "n_voices": 2,
+     "B": 10000
+    },
+    "audio_sec": {
+     "mean": 71.2608,
+     "lo": 57.9386,
+     "hi": 87.8826,
+     "n": 16,
+     "n_texts": 8,
+     "n_voices": 2,
+     "B": 10000
+    },
+    "chunks_mean": 1.875,
+    "retries_total": 0
+   },
+   "fr": {
+    "n": 16,
+    "failed": {
+     "mean": 0.0,
+     "lo": 0.0,
+     "hi": 0.0,
+     "n": 16,
+     "n_texts": 8,
+     "n_voices": 2,
+     "B": 10000
+    },
+    "err": {
+     "mean": 0.0146,
+     "lo": 0.008,
+     "hi": 0.0222,
+     "n": 16,
+     "n_texts": 8,
+     "n_voices": 2,
+     "B": 10000
+    },
+    "sim_ecapa": {
+     "mean": 0.8356,
+     "lo": 0.8134,
+     "hi": 0.8521,
+     "n": 16,
+     "n_texts": 8,
+     "n_voices": 2,
+     "B": 10000
+    },
+    "mos_p808": {
+     "mean": 3.8999,
+     "lo": 3.7823,
+     "hi": 3.9982,
+     "n": 16,
+     "n_texts": 8,
+     "n_voices": 2,
+     "B": 10000
+    },
+    "audio_sec": {
+     "mean": 49.1824,
+     "lo": 40.0029,
+     "hi": 60.3393,
+     "n": 16,
+     "n_texts": 8,
+     "n_voices": 2,
+     "B": 10000
+    },
+    "chunks_mean": 1.875,
+    "retries_total": 0
+   }
+  },
+  "voxcpm2": {
+   "arz": {
+    "n": 16,
+    "failed": {
+     "mean": 0.0,
+     "lo": 0.0,
+     "hi": 0.0,
+     "n": 16,
+     "n_texts": 8,
+     "n_voices": 2,
+     "B": 10000
+    },
+    "err": {
+     "mean": 0.0518,
+     "lo": 0.0315,
+     "hi": 0.0853,
+     "n": 16,
+     "n_texts": 8,
+     "n_voices": 2,
+     "B": 10000
+    },
+    "sim_ecapa": {
+     "mean": 0.7613,
+     "lo": 0.7236,
+     "hi": 0.7938,
+     "n": 16,
+     "n_texts": 8,
+     "n_voices": 2,
+     "B": 10000
+    },
+    "c1": {
+     "mean": 1.0,
+     "lo": 1.0,
+     "hi": 1.0,
+     "n": 16,
+     "n_texts": 8,
+     "n_voices": 2,
+     "B": 10000
+    },
+    "c2": {
+     "mean": 1.0,
+     "lo": 1.0,
+     "hi": 1.0,
+     "n": 16,
+     "n_texts": 8,
+     "n_voices": 2,
+     "B": 10000
+    },
+    "mos_p808": {
+     "mean": 3.391,
+     "lo": 3.1754,
+     "hi": 3.6108,
+     "n": 16,
+     "n_texts": 8,
+     "n_voices": 2,
+     "B": 10000
+    },
+    "audio_sec": {
+     "mean": 64.08,
+     "lo": 53.03,
+     "hi": 78.6,
+     "n": 16,
+     "n_texts": 8,
+     "n_voices": 2,
+     "B": 10000
+    }
+   },
+   "en": {
+    "n": 16,
+    "failed": {
+     "mean": 0.0,
+     "lo": 0.0,
+     "hi": 0.0,
+     "n": 16,
+     "n_texts": 8,
+     "n_voices": 2,
+     "B": 10000
+    },
+    "err": {
+     "mean": 0.0021,
+     "lo": 0.0,
+     "hi": 0.0047,
+     "n": 16,
+     "n_texts": 8,
+     "n_voices": 2,
+     "B": 10000
+    },
+    "sim_ecapa": {
+     "mean": 0.7115,
+     "lo": 0.6391,
+     "hi": 0.7532,
+     "n": 16,
+     "n_texts": 8,
+     "n_voices": 2,
+     "B": 10000
+    },
+    "mos_p808": {
+     "mean": 3.823,
+     "lo": 3.7089,
+     "hi": 3.9598,
+     "n": 16,
+     "n_texts": 8,
+     "n_voices": 2,
+     "B": 10000
+    },
+    "audio_sec": {
+     "mean": 67.17,
+     "lo": 54.92,
+     "hi": 82.3,
+     "n": 16,
+     "n_texts": 8,
+     "n_voices": 2,
+     "B": 10000
+    }
+   },
+   "fr": {
+    "n": 16,
+    "failed": {
+     "mean": 0.0,
+     "lo": 0.0,
+     "hi": 0.0,
+     "n": 16,
+     "n_texts": 8,
+     "n_voices": 2,
+     "B": 10000
+    },
+    "err": {
+     "mean": 0.0128,
+     "lo": 0.0073,
+     "hi": 0.0187,
+     "n": 16,
+     "n_texts": 8,
+     "n_voices": 2,
+     "B": 10000
+    },
+    "sim_ecapa": {
+     "mean": 0.7589,
+     "lo": 0.7308,
+     "hi": 0.7923,
+     "n": 16,
+     "n_texts": 8,
+     "n_voices": 2,
+     "B": 10000
+    },
+    "mos_p808": {
+     "mean": 3.8359,
+     "lo": 3.7172,
+     "hi": 3.9497,
+     "n": 16,
+     "n_texts": 8,
+     "n_voices": 2,
+     "B": 10000
+    },
+    "audio_sec": {
+     "mean": 47.51,
+     "lo": 39.99,
+     "hi": 56.82,
+     "n": 16,
+     "n_texts": 8,
+     "n_voices": 2,
+     "B": 10000
+    }
+   }
+  }
+ },
+ "paired_ba_minus_voxcpm2": {
+  "arz": {
+   "failed": {
+    "metric": "failed",
+    "n_cells": 16,
+    "n_texts": 8,
+    "n_voices": 2,
+    "mean_a": 0.0,
+    "mean_b": 0.0,
+    "diff": 0.0,
+    "ci_lo": 0.0,
+    "ci_hi": 0.0,
+    "p_bootstrap": 1.0,
+    "p_wilcoxon": 1.0,
+    "d_z": null,
+    "rank_biserial": 0.0,
+    "B": 10000,
+    "cohens_h": 0.0,
+    "a_higher_cells": 0,
+    "b_higher_cells": 0,
+    "tied_cells": 16
+   },
+   "err": {
+    "metric": "err",
+    "n_cells": 16,
+    "n_texts": 8,
+    "n_voices": 2,
+    "mean_a": 0.0675,
+    "mean_b": 0.0518,
+    "diff": 0.0157,
+    "ci_lo": -0.0363,
+    "ci_hi": 0.1157,
+    "p_bootstrap": 0.9598,
+    "p_wilcoxon": 0.159058,
+    "d_z": 0.129,
+    "rank_biserial": -0.412,
+    "B": 10000,
+    "a_higher_cells": 6,
+    "b_higher_cells": 10,
+    "tied_cells": 0
+   },
+   "sim_ecapa": {
+    "metric": "sim_ecapa",
+    "n_cells": 16,
+    "n_texts": 8,
+    "n_voices": 2,
+    "mean_a": 0.8089,
+    "mean_b": 0.7613,
+    "diff": 0.0476,
+    "ci_lo": 0.0206,
+    "ci_hi": 0.0889,
+    "p_bootstrap": 0.0001,
+    "p_wilcoxon": 0.00053,
+    "d_z": 1.002,
+    "rank_biserial": 0.985,
+    "B": 10000,
+    "a_higher_cells": 15,
+    "b_higher_cells": 1,
+    "tied_cells": 0
+   },
+   "c1": {
+    "metric": "c1",
+    "n_cells": 16,
+    "n_texts": 8,
+    "n_voices": 2,
+    "mean_a": 1.0,
+    "mean_b": 1.0,
+    "diff": 0.0,
+    "ci_lo": 0.0,
+    "ci_hi": 0.0,
+    "p_bootstrap": 1.0,
+    "p_wilcoxon": 1.0,
+    "d_z": null,
+    "rank_biserial": 0.0,
+    "B": 10000,
+    "cohens_h": 0.0,
+    "a_higher_cells": 0,
+    "b_higher_cells": 0,
+    "tied_cells": 16
+   },
+   "c2": {
+    "metric": "c2",
+    "n_cells": 16,
+    "n_texts": 8,
+    "n_voices": 2,
+    "mean_a": 1.0,
+    "mean_b": 1.0,
+    "diff": 0.0,
+    "ci_lo": 0.0,
+    "ci_hi": 0.0,
+    "p_bootstrap": 1.0,
+    "p_wilcoxon": 1.0,
+    "d_z": null,
+    "rank_biserial": 0.0,
+    "B": 10000,
+    "cohens_h": 0.0,
+    "a_higher_cells": 0,
+    "b_higher_cells": 0,
+    "tied_cells": 16
+   },
+   "mos_p808": {
+    "metric": "mos_p808",
+    "n_cells": 16,
+    "n_texts": 8,
+    "n_voices": 2,
+    "mean_a": 3.4342,
+    "mean_b": 3.391,
+    "diff": 0.0432,
+    "ci_lo": -0.069,
+    "ci_hi": 0.1659,
+    "p_bootstrap": 0.4912,
+    "p_wilcoxon": 0.463745,
+    "d_z": 0.241,
+    "rank_biserial": 0.221,
+    "B": 10000,
+    "a_higher_cells": 9,
+    "b_higher_cells": 7,
+    "tied_cells": 0
+   }
+  },
+  "en": {
+   "failed": {
+    "metric": "failed",
+    "n_cells": 16,
+    "n_texts": 8,
+    "n_voices": 2,
+    "mean_a": 0.0,
+    "mean_b": 0.0,
+    "diff": 0.0,
+    "ci_lo": 0.0,
+    "ci_hi": 0.0,
+    "p_bootstrap": 1.0,
+    "p_wilcoxon": 1.0,
+    "d_z": null,
+    "rank_biserial": 0.0,
+    "B": 10000,
+    "cohens_h": 0.0,
+    "a_higher_cells": 0,
+    "b_higher_cells": 0,
+    "tied_cells": 16
+   },
+   "err": {
+    "metric": "err",
+    "n_cells": 16,
+    "n_texts": 8,
+    "n_voices": 2,
+    "mean_a": 0.0024,
+    "mean_b": 0.0021,
+    "diff": 0.0003,
+    "ci_lo": -0.0013,
+    "ci_hi": 0.0017,
+    "p_bootstrap": 0.8646,
+    "p_wilcoxon": 1.0,
+    "d_z": 0.124,
+    "rank_biserial": 0.0,
+    "B": 10000,
+    "a_higher_cells": 2,
+    "b_higher_cells": 1,
+    "tied_cells": 13
+   },
+   "sim_ecapa": {
+    "metric": "sim_ecapa",
+    "n_cells": 16,
+    "n_texts": 8,
+    "n_voices": 2,
+    "mean_a": 0.8423,
+    "mean_b": 0.7115,
+    "diff": 0.1309,
+    "ci_lo": 0.0853,
+    "ci_hi": 0.2096,
+    "p_bootstrap": 0.0001,
+    "p_wilcoxon": 0.000437,
+    "d_z": 1.661,
+    "rank_biserial": 1.0,
+    "B": 10000,
+    "a_higher_cells": 16,
+    "b_higher_cells": 0,
+    "tied_cells": 0
+   },
+   "mos_p808": {
+    "metric": "mos_p808",
+    "n_cells": 16,
+    "n_texts": 8,
+    "n_voices": 2,
+    "mean_a": 3.8607,
+    "mean_b": 3.823,
+    "diff": 0.0377,
+    "ci_lo": -0.076,
+    "ci_hi": 0.1272,
+    "p_bootstrap": 0.4148,
+    "p_wilcoxon": 0.255211,
+    "d_z": 0.286,
+    "rank_biserial": 0.324,
+    "B": 10000,
+    "a_higher_cells": 10,
+    "b_higher_cells": 6,
+    "tied_cells": 0
+   }
+  },
+  "fr": {
+   "failed": {
+    "metric": "failed",
+    "n_cells": 16,
+    "n_texts": 8,
+    "n_voices": 2,
+    "mean_a": 0.0,
+    "mean_b": 0.0,
+    "diff": 0.0,
+    "ci_lo": 0.0,
+    "ci_hi": 0.0,
+    "p_bootstrap": 1.0,
+    "p_wilcoxon": 1.0,
+    "d_z": null,
+    "rank_biserial": 0.0,
+    "B": 10000,
+    "cohens_h": 0.0,
+    "a_higher_cells": 0,
+    "b_higher_cells": 0,
+    "tied_cells": 16
+   },
+   "err": {
+    "metric": "err",
+    "n_cells": 16,
+    "n_texts": 8,
+    "n_voices": 2,
+    "mean_a": 0.0146,
+    "mean_b": 0.0128,
+    "diff": 0.0018,
+    "ci_lo": -0.0027,
+    "ci_hi": 0.0079,
+    "p_bootstrap": 0.475,
+    "p_wilcoxon": 0.362138,
+    "d_z": 0.279,
+    "rank_biserial": 0.361,
+    "B": 10000,
+    "a_higher_cells": 5,
+    "b_higher_cells": 3,
+    "tied_cells": 8
+   },
+   "sim_ecapa": {
+    "metric": "sim_ecapa",
+    "n_cells": 16,
+    "n_texts": 8,
+    "n_voices": 2,
+    "mean_a": 0.8356,
+    "mean_b": 0.7589,
+    "diff": 0.0768,
+    "ci_lo": 0.0546,
+    "ci_hi": 0.1021,
+    "p_bootstrap": 0.0001,
+    "p_wilcoxon": 3.1e-05,
+    "d_z": 1.988,
+    "rank_biserial": 1.0,
+    "B": 10000,
+    "a_higher_cells": 16,
+    "b_higher_cells": 0,
+    "tied_cells": 0
+   },
+   "mos_p808": {
+    "metric": "mos_p808",
+    "n_cells": 16,
+    "n_texts": 8,
+    "n_voices": 2,
+    "mean_a": 3.8999,
+    "mean_b": 3.8359,
+    "diff": 0.0639,
+    "ci_lo": -0.0107,
+    "ci_hi": 0.1408,
+    "p_bootstrap": 0.0914,
+    "p_wilcoxon": 0.073914,
+    "d_z": 0.533,
+    "rank_biserial": 0.515,
+    "B": 10000,
+    "a_higher_cells": 10,
+    "b_higher_cells": 6,
+    "tied_cells": 0
+   }
+  }
+ },
+ "command": "/tmp/ba/venvs/eval/bin/python BA/eval/scripts/long_form.py"
+}

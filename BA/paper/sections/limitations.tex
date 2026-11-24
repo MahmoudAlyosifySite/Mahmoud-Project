@@ -1,28 +1,44 @@
 \section{Limitations}\label{sec:limitations}
 
 \paragraph{Human judgement}
-The listening evidence is one native listener, the author, rating six sentences per system blind. It agrees with two
-classifiers on the decision that matters, but it is not a listening test. A blind test with multiple native Egyptian
-listeners rating naturalness, Egyptian authenticity, similarity and correctness, with real speech as a hidden
-anchor, is the next step \pending{and will be reported in a revision}.
+The listening evidence is one native listener, the author, who knew the hypothesis, rating six sentences per system
+with names hidden. It agrees with both classifiers on the decision that matters, but it is not a listening test, and
+the paper's claims rest on the automatic measures. A blind test with 12--20 native Egyptian listeners rating
+naturalness, Egyptian authenticity, similarity and correctness, with real speech as a hidden anchor, is specified in
+advance in the repository and will be reported in a revision. It is also the only way to test whether the number
+normaliser and the loanword policy make speech sound more Egyptian, which CER cannot show.
 
 \paragraph{Reference voices}
 FLEURS speakers read prepared text, mostly in an MSA register; only some of their clips are labelled Egyptian by the
-classifiers. Cloning colloquial Egyptian from such references is harder than from everyday speech, and our numbers
-may understate what all systems do with a colloquial reference. Six Egyptian voices, three per sentence, also make
-the intervals wide.
+classifiers. The dialect gap between the Chatterbox bases and \vox holds with references of either kind, but under
+classifier~2 it is smaller with Egyptian-sounding references, and only two such voices exist in our set. Six Egyptian
+voices, three per sentence, also make every interval wide. Colloquial references from consenting volunteers, recorded
+with the consent form in the repository, are needed both to narrow the intervals and to measure how much a colloquial
+reference helps each model.
+
+\paragraph{Calibration speech}
+Our real colloquial reference, the lahgtna-v2 test split, is a public corpus whose card does not document where its
+recordings come from. Its transcripts mark laughter and breathing, as natural speech does, but we could not verify its
+origin. NileTTS, the other colloquial set, is synthetic (NotebookLM) and is used only for comparison.
 
 \paragraph{Classifiers as dialect measures}
-Both classifiers label real colloquial Egyptian speech as Egyptian most of the time, but they are trained on
-broadcast and online speech, not on synthetic speech, and they disagree on many single utterances. We therefore use
-system-level shares, calibrate the bar on real speech, and report both classifiers.
+Both classifiers label real colloquial Egyptian speech as Egyptian most of the time and read MSA much less often, but
+they are trained on broadcast and online speech, not on synthetic speech, and they disagree on many single utterances.
+They label synthetic NileTTS speech Egyptian, so they do not reject synthetic speech as such. We use system-level
+shares, set the bar relative to real speech, and report both classifiers.
+
+\paragraph{Automatic speech recognition on long synthetic speech}
+Whisper looped on one of 96 long clips with sequential decoding, and on one passage of both systems with windowed
+decoding. We report both and draw no conclusion about long-form Egyptian CER; anyone scoring long synthetic speech
+with Whisper should check for such loops.
 
 \paragraph{Scope}
 \BA adds no training; dialect features that \vox cannot produce, \BA cannot add. Results are for Egyptian Arabic,
-English and French with the systems available in November 2026. The text normaliser covers Cairene usage; other
-Egyptian varieties (for example Upper Egyptian) are not covered.
+English and French with the open systems available in November 2026; no commercial system was compared. The text
+normaliser covers Cairene usage; other Egyptian varieties (for example Upper Egyptian) are not covered.
 
 \paragraph{Misuse}
-Despite the consent step and the watermark, a determined user can clone a voice without permission. We release
-because the same technology is already public in less careful forms, and because an open, measured Egyptian system
-helps people build, audit and detect such systems; this is a judgement, not a guarantee.
+Despite the consent step and the watermark, a determined user can clone a voice without permission, and a 5\% speed
+change removes the watermark. We release because the same technology is already public in less careful forms, and
+because an open, measured Egyptian system helps people build, audit and detect such systems; this is a judgement, not
+a guarantee.

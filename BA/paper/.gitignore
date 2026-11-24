@@ -5,3 +5,4 @@
 *.out
 *.spl
 __pycache__/
+arxiv/

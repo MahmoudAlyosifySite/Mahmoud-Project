@@ -22,10 +22,16 @@ the request ends; the prepared voice lives only in the browser session's memory;
 analytics are off.
 
 \paragraph{Watermark}
-Every output carries an AudioSeal watermark with a fixed 16-bit message. In a first check, it was detected in all
-\R{wm:ba:n} held-out \BA outputs as WAV, as MP3 at 128 and 64\,kbit/s and after resampling to 16\,kHz, and in none
-of the \R{wm:clean:n} unwatermarked clips (plain \vox outputs and real speech).
-\pending{Robustness under 25 attacks (noise and babble at 20/10/5\,dB, speed and tempo changes, telephone band,
-MP3/AAC/Opus at low bit rates and chains of them, 3-second excerpts, gain and loudness changes), with detection and
-false-positive rates, from watermark\_attacks.py.} A watermark helps platforms and investigators identify \BA output;
-it does not stop someone who strips it or uses another system, and we do not present it as a safeguard on its own.
+Every output carries an AudioSeal watermark with a fixed 16-bit message. We tested it on the \R{wm:att:nwm} held-out
+\BA outputs and on \R{wm:att:nclean} unwatermarked clips (\R{wm:att:nvox} plain \vox outputs of the same sentences and
+\R{wm:att:nreal} calibration clips), each passed through \R{wm:att:n} kinds of processing (\cref{tab:watermark}). The
+mark survived, detected in every clip, after MP3, AAC and Opus coding down to 16--32\,kbit/s, chains of codecs, the
+telephone band, gain and loudness changes and clipping (\R{wm:att:nfull} of the \R{wm:att:n} conditions). It was
+weakened by noise (babble at 10\,dB SNR: \R{wm:att:babble_10dB:det} detected; white noise at 10\,dB:
+\R{wm:att:white_10dB:det}) and removed by any 5\% change of speed or tempo (\R{wm:att:speed_+5pct:det} detected),
+although after a tempo change the 16-bit message was still decoded correctly in \R{wm:att:tempo_+5pct:bits} clips,
+and across all conditions \R{wm:fp:bits} unwatermarked clips matched all 16 bits, so a detector that also checks
+the message would recover these cases. No unwatermarked clip was flagged in
+any condition (\R{wm:fp:det} of \R{wm:fp:n} tests; 95\% upper bound \R{wm:fp:hi}). A watermark helps platforms and
+investigators identify \BA output; it does not stop someone who strips it, for example by changing the speed, or who
+uses another system, and we do not present it as a safeguard on its own.

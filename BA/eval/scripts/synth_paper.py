@@ -77,7 +77,7 @@ def jobs_for(exp):
 
 def write_manifest(out, jobs, system):
     meta = {r["utt_id"]: r for r in jl(f"{out}/meta.jsonl")}
-    with open(f"{out}/manifest.jsonl.tmp", "w") as f:
+    with open(f"{out}/manifest.jsonl.tmp", "w", encoding="utf-8") as f:
         for j in jobs:
             m = meta.get(j["utt_id"])
             if m is None:
@@ -149,7 +149,7 @@ def run_ba(exp, jobs, limit):
                 if not os.path.exists(dst):
                     os.link(f"{ENGINE_ROOT}/full/{j['utt_id']}.wav", dst)
                 rec = dict(fm, exp=f"p_{exp}", reused_from_full=True, input_text=clean(t))
-                with open(f"{out}/meta.jsonl", "a") as f:
+                with open(f"{out}/meta.jsonl", "a", encoding="utf-8") as f:
                     f.write(json.dumps(rec, ensure_ascii=False) + "\n")
             else:
                 rest.append(j)
@@ -184,7 +184,7 @@ def run_ba(exp, jobs, limit):
                 v = ba.create_voice((sr, y), language=vlang)
             voices[vid] = v
             if vid not in logged:
-                with open(vlog, "a") as f:
+                with open(vlog, "a", encoding="utf-8") as f:
                     f.write(json.dumps(dict(voice_id=vid, transcript=v.transcript, mode=v.mode, seconds=round(v.seconds, 2),
                                             report=v.report, create_voice_s=round(time.time() - tv, 3)), ensure_ascii=False) + "\n")
         v = voices[vid]
@@ -218,7 +218,7 @@ def run_ba(exp, jobs, limit):
                    voice_mode=None if info is None else info["mode"], model_load_s=round(load_s, 1), reused_from_full=False)
         if info is not None and exp.startswith("long_"):
             rec["chunks"] = [dict(chars=len(c["text"]), ok=c["ok"], attempts=len(c["attempts"])) for c in info["chunks"]]
-        with open(f"{out}/meta.jsonl", "a") as f:
+        with open(f"{out}/meta.jsonl", "a", encoding="utf-8") as f:
             f.write(json.dumps(rec, ensure_ascii=False) + "\n")
         print(f"[{exp}] {j['utt_id']} audio={rec['audio_sec']} rtf={rec['rtf']} retries={rec['n_retries']} err={err}", flush=True)
     write_manifest(out, jobs, "ba")

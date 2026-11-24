@@ -11,39 +11,47 @@ Cairo, and the MSA reading is heard as foreign.
 Open models are usually compared on intelligibility, the word or character error rate (WER, CER) of an automatic
 speech recogniser run on the output, plus speaker similarity and a predicted quality score. This paper starts from
 an observation made while choosing a base model for an Egyptian voice-cloning system: \textbf{for Egyptian Arabic,
-the intelligibility metric picks the wrong model.} Across the open systems we measured, the one with the lowest
-Egyptian CER, \cbthree (CER~\R{bk:cb-v3:cer}), was heard as not Egyptian. A dialect classifier labelled
-\R{bk:cb-v3:c1pct} of its Egyptian sentences Egyptian, and a native listener rated it ``not Egyptian'' on
-\R{lt:cb-v3:not} sentences. \vox, with almost twice the CER (\R{bk:voxcpm2:cer}), was labelled Egyptian
-\R{bk:voxcpm2:c1pct} of the time and never rated ``not Egyptian''. Our own selection rule, fixed before any model
-ran, ranked systems by CER and chose \cbthree; we amended it, in public and with the reason, before building on the
-result (\cref{sec:protocol}).
+none of these measures sees the dialect, and each of them, used to choose a base model, picks the wrong one.} Among
+the open models whose weights allow a commercial product, \cbthree has the lowest Egyptian CER (\R{bk:cb-v3:cer}),
+yet a dialect classifier labels only \R{bk:cb-v3:c1pct} of its Egyptian sentences Egyptian, against
+\R{cal:lahgtna:c1pct} for real colloquial speech. \vox is labelled Egyptian \R{bk:voxcpm2:c1pct} of the time, but over
+three seeds its CER and speaker similarity cannot be distinguished from \cbthree's, and its predicted quality is lower:
+nothing in the standard metrics favours it. When texts and voices are resampled, selecting the base by lowest CER, by
+highest similarity or by highest predicted quality lands on a model below the dialect bar in
+\R{sel:eligible:cer:fail1}, \R{sel:eligible:ecapa:fail1} and \R{sel:eligible:dnsmos:fail1} of resamples. Our own
+selection rule, committed before any model ran, ranked by CER and chose \cbthree; we amended it, in public and with the
+reason, before building on the result (\cref{sec:protocol}).
 
-We then build \BA on the model that a dialect-aware protocol selects, without training: an Egyptian number and
+We then build \BA on the model that a dialect-aware rule selects, without training: an Egyptian number and
 symbol normaliser, a loanword policy for code-switched text, automatic reference transcription, reference
-screening, and long-text chunking with checks. On held-out sentences, \BA lowers Egyptian CER from
-\R{ho:voxcpm2:cer} to \R{ho:ba:cer} and raises speaker similarity from \R{ho:voxcpm2:ecapa} to \R{ho:ba:ecapa}
-relative to the same model used directly. Ablations trace almost all of this measurable gain to the automatic
-reference transcript; the Egyptian number normaliser leaves CER unchanged, because a recogniser writes an Egyptian
-and an MSA reading of a number as the same digits: a second, small instance of the same blind spot. Every output carries an
-inaudible watermark, and the demo will not run without a consent statement.
+screening, and long-text chunking with checks. On held-out sentences over three seeds, \BA lowers Egyptian CER from
+\R{s3:voxcpm2:egy_main:cer_best} to \R{s3:ba:egy_main:cer_best} and raises speaker similarity from
+\R{s3:voxcpm2:egy_main:sim_ecapa} to \R{s3:ba:egy_main:sim_ecapa} relative to the same model used directly. Ablations
+trace almost all of this measurable gain to the automatic reference transcript; the Egyptian number normaliser leaves
+CER unchanged, because a recogniser writes an Egyptian and an MSA reading of a number as the same digits, a second,
+small instance of the same blind spot. Every output carries an inaudible watermark, and the demo will not run without
+a consent statement.
 
 \paragraph{Contributions}
 \begin{enumerate}[leftmargin=*]
-  \item \textbf{The dissociation.} On seven open voice-cloning models, Egyptian CER and Egyptian dialect
-  authenticity disagree, and selection by CER fails. Two independent dialect classifiers, calibrated on real
-  colloquial and read speech, and a native listening check agree on this (\cref{sec:dissociation}).
-  \item \textbf{A dialect-aware evaluation protocol} for dialectal voice cloning, with gates fixed in advance,
-  every metric calibrated on real speech, and a public record of the one gate amendment (\cref{sec:protocol}).
+  \item \textbf{The dissociation, stated as a selection failure.} On seven open voice-cloning models, Egyptian CER,
+  speaker similarity and predicted quality are blind to the dialect, and selecting by any of them picks a base that
+  fails a dialect bar calibrated on real colloquial speech. We quantify this with a bootstrap over texts and voices,
+  two dialect classifiers trained on different data, three seeds, and a control for the dialect of the reference
+  voice (\cref{sec:dissociation}).
+  \item \textbf{A dialect-aware evaluation protocol} for dialectal voice cloning, with gates committed to a public
+  repository before any model ran, every metric calibrated on real speech, and a dated record of the one gate
+  amendment (\cref{sec:protocol}).
   \item \textbf{A licence-provenance audit} of the open Egyptian-capable systems, which shows that most cannot be
   built on commercially, including one whose permissive label hides a non-commercial parent (\cref{sec:systems}).
   \item \textbf{\BA, an inference-time engine for Egyptian Arabic} on unmodified \vox weights, with held-out
-  results over three seeds, ablations of each component and long-form tests (\cref{sec:engine,sec:results}).
+  results over three seeds, ablations of each component and a long-form test (\cref{sec:engine,sec:results}).
   \item \textbf{A consent-first release}: model, code and demo are public, uploads are not stored, and the
-  watermark's robustness to common audio processing is measured (\cref{sec:release}).
+  watermark's robustness to \R{wm:att:n} kinds of audio processing is measured (\cref{sec:release}).
 \end{enumerate}
 \BA is not a new acoustic model, and we do not claim one: the paper's evidence concerns how such systems should be
-chosen and evaluated for a dialect, and how far an engine around an unchanged model can go.
+chosen and evaluated for a dialect, and how far an engine around an unchanged model can go. The human evidence in this
+version is an informal check by the author; a multi-listener test is the main missing piece (\cref{sec:limitations}).
 
 \paragraph{The name}
 In ancient Egyptian belief, the \emph{ba} is the part of a person's soul that carries their personality and

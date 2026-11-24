@@ -1,0 +1,1572 @@
+{
+ "method": "AudioSeal via ba_tts.watermark.detect (16 kHz, P(watermark) >= 0.5); attacks as in the script docstring",
+ "n_watermarked": 60,
+ "n_unwatermarked": 270,
+ "unwatermarked_sets": {
+  "raw_voxcpm2": 60,
+  "real_speech": 210
+ },
+ "attacks": {
+  "none": {
+   "ba_watermarked": {
+    "n": 60,
+    "errors": 0,
+    "detected": 60,
+    "rate": 1.0,
+    "mean_score": 1.0,
+    "min_score": 1.0,
+    "max_score": 1.0,
+    "mean_bits_match": 1.0,
+    "all_bits_match": 60,
+    "rate_ci95_wilson": [
+     0.9398,
+     1.0
+    ]
+   },
+   "raw_voxcpm2": {
+    "n": 60,
+    "errors": 0,
+    "detected": 0,
+    "rate": 0.0,
+    "mean_score": 0.0003,
+    "min_score": 0.0,
+    "max_score": 0.0079,
+    "mean_bits_match": 0.4229,
+    "all_bits_match": 0,
+    "rate_ci95_wilson": [
+     0,
+     0.0602
+    ]
+   },
+   "real_speech": {
+    "n": 210,
+    "errors": 0,
+    "detected": 0,
+    "rate": 0.0,
+    "mean_score": 0.0112,
+    "min_score": 0.0,
+    "max_score": 0.2835,
+    "mean_bits_match": 0.4821,
+    "all_bits_match": 0,
+    "rate_ci95_wilson": [
+     0,
+     0.018
+    ]
+   },
+   "all_unwatermarked": {
+    "n": 270,
+    "errors": 0,
+    "detected": 0,
+    "rate": 0.0,
+    "mean_score": 0.0088,
+    "min_score": 0.0,
+    "max_score": 0.2835,
+    "mean_bits_match": 0.469,
+    "all_bits_match": 0,
+    "rate_ci95_wilson": [
+     0.0,
+     0.014
+    ]
+   }
+  },
+  "white_20dB": {
+   "ba_watermarked": {
+    "n": 60,
+    "errors": 0,
+    "detected": 53,
+    "rate": 0.8833,
+    "mean_score": 0.6944,
+    "min_score": 0.2197,
+    "max_score": 0.9636,
+    "mean_bits_match": 0.9635,
+    "all_bits_match": 34,
+    "rate_ci95_wilson": [
+     0.7782,
+     0.9423
+    ]
+   },
+   "raw_voxcpm2": {
+    "n": 60,
+    "errors": 0,
+    "detected": 0,
+    "rate": 0.0,
+    "mean_score": 0.0001,
+    "min_score": 0.0,
+    "max_score": 0.0036,
+    "mean_bits_match": 0.3917,
+    "all_bits_match": 0,
+    "rate_ci95_wilson": [
+     0,
+     0.0602
+    ]
+   },
+   "real_speech": {
+    "n": 210,
+    "errors": 0,
+    "detected": 0,
+    "rate": 0.0,
+    "mean_score": 0.0019,
+    "min_score": 0.0,
+    "max_score": 0.0805,
+    "mean_bits_match": 0.503,
+    "all_bits_match": 0,
+    "rate_ci95_wilson": [
+     0,
+     0.018
+    ]
+   },
+   "all_unwatermarked": {
+    "n": 270,
+    "errors": 0,
+    "detected": 0,
+    "rate": 0.0,
+    "mean_score": 0.0015,
+    "min_score": 0.0,
+    "max_score": 0.0805,
+    "mean_bits_match": 0.4782,
+    "all_bits_match": 0,
+    "rate_ci95_wilson": [
+     0.0,
+     0.014
+    ]
+   }
+  },
+  "white_10dB": {
+   "ba_watermarked": {
+    "n": 60,
+    "errors": 0,
+    "detected": 7,
+    "rate": 0.1167,
+    "mean_score": 0.3375,
+    "min_score": 0.0,
+    "max_score": 0.6469,
+    "mean_bits_match": 0.8094,
+    "all_bits_match": 3,
+    "rate_ci95_wilson": [
+     0.0577,
+     0.2218
+    ]
+   },
+   "raw_voxcpm2": {
+    "n": 60,
+    "errors": 0,
+    "detected": 0,
+    "rate": 0.0,
+    "mean_score": 0.0009,
+    "min_score": 0.0,
+    "max_score": 0.0215,
+    "mean_bits_match": 0.426,
+    "all_bits_match": 0,
+    "rate_ci95_wilson": [
+     0,
+     0.0602
+    ]
+   },
+   "real_speech": {
+    "n": 210,
+    "errors": 0,
+    "detected": 0,
+    "rate": 0.0,
+    "mean_score": 0.0011,
+    "min_score": 0.0,
+    "max_score": 0.0296,
+    "mean_bits_match": 0.4932,
+    "all_bits_match": 0,
+    "rate_ci95_wilson": [
+     0,
+     0.018
+    ]
+   },
+   "all_unwatermarked": {
+    "n": 270,
+    "errors": 0,
+    "detected": 0,
+    "rate": 0.0,
+    "mean_score": 0.001,
+    "min_score": 0.0,
+    "max_score": 0.0296,
+    "mean_bits_match": 0.4782,
+    "all_bits_match": 0,
+    "rate_ci95_wilson": [
+     0.0,
+     0.014
+    ]
+   }
+  },
+  "white_5dB": {
+   "ba_watermarked": {
+    "n": 60,
+    "errors": 0,
+    "detected": 0,
+    "rate": 0.0,
+    "mean_score": 0.1877,
+    "min_score": 0.0,
+    "max_score": 0.4023,
+    "mean_bits_match": 0.7125,
+    "all_bits_match": 0,
+    "rate_ci95_wilson": [
+     0,
+     0.0602
+    ]
+   },
+   "raw_voxcpm2": {
+    "n": 60,
+    "errors": 0,
+    "detected": 0,
+    "rate": 0.0,
+    "mean_score": 0.0009,
+    "min_score": 0.0,
+    "max_score": 0.019,
+    "mean_bits_match": 0.449,
+    "all_bits_match": 0,
+    "rate_ci95_wilson": [
+     0,
+     0.0602
+    ]
+   },
+   "real_speech": {
+    "n": 210,
+    "errors": 0,
+    "detected": 0,
+    "rate": 0.0,
+    "mean_score": 0.0012,
+    "min_score": 0.0,
+    "max_score": 0.0192,
+    "mean_bits_match": 0.5101,
+    "all_bits_match": 0,
+    "rate_ci95_wilson": [
+     0,
+     0.018
+    ]
+   },
+   "all_unwatermarked": {
+    "n": 270,
+    "errors": 0,
+    "detected": 0,
+    "rate": 0.0,
+    "mean_score": 0.0011,
+    "min_score": 0.0,
+    "max_score": 0.0192,
+    "mean_bits_match": 0.4965,
+    "all_bits_match": 0,
+    "rate_ci95_wilson": [
+     0.0,
+     0.014
+    ]
+   }
+  },
+  "babble_20dB": {
+   "ba_watermarked": {
+    "n": 60,
+    "errors": 0,
+    "detected": 58,
+    "rate": 0.9667,
+    "mean_score": 0.8186,
+    "min_score": 0.3482,
+    "max_score": 1.0,
+    "mean_bits_match": 0.9719,
+    "all_bits_match": 39,
+    "rate_ci95_wilson": [
+     0.8864,
+     0.9908
+    ]
+   },
+   "raw_voxcpm2": {
+    "n": 60,
+    "errors": 0,
+    "detected": 0,
+    "rate": 0.0,
+    "mean_score": 0.0002,
+    "min_score": 0.0,
+    "max_score": 0.0068,
+    "mean_bits_match": 0.4062,
+    "all_bits_match": 0,
+    "rate_ci95_wilson": [
+     0,
+     0.0602
+    ]
+   },
+   "real_speech": {
+    "n": 210,
+    "errors": 0,
+    "detected": 0,
+    "rate": 0.0,
+    "mean_score": 0.0033,
+    "min_score": 0.0,
+    "max_score": 0.1546,
+    "mean_bits_match": 0.5006,
+    "all_bits_match": 0,
+    "rate_ci95_wilson": [
+     0,
+     0.018
+    ]
+   },
+   "all_unwatermarked": {
+    "n": 270,
+    "errors": 0,
+    "detected": 0,
+    "rate": 0.0,
+    "mean_score": 0.0026,
+    "min_score": 0.0,
+    "max_score": 0.1546,
+    "mean_bits_match": 0.4796,
+    "all_bits_match": 0,
+    "rate_ci95_wilson": [
+     0.0,
+     0.014
+    ]
+   }
+  },
+  "babble_10dB": {
+   "ba_watermarked": {
+    "n": 60,
+    "errors": 0,
+    "detected": 42,
+    "rate": 0.7,
+    "mean_score": 0.5832,
+    "min_score": 0.2472,
+    "max_score": 0.9419,
+    "mean_bits_match": 0.8854,
+    "all_bits_match": 11,
+    "rate_ci95_wilson": [
+     0.5749,
+     0.801
+    ]
+   },
+   "raw_voxcpm2": {
+    "n": 60,
+    "errors": 0,
+    "detected": 0,
+    "rate": 0.0,
+    "mean_score": 0.0007,
+    "min_score": 0.0,
+    "max_score": 0.0317,
+    "mean_bits_match": 0.4125,
+    "all_bits_match": 0,
+    "rate_ci95_wilson": [
+     0,
+     0.0602
+    ]
+   },
+   "real_speech": {
+    "n": 210,
+    "errors": 0,
+    "detected": 0,
+    "rate": 0.0,
+    "mean_score": 0.0019,
+    "min_score": 0.0,
+    "max_score": 0.0258,
+    "mean_bits_match": 0.5312,
+    "all_bits_match": 0,
+    "rate_ci95_wilson": [
+     0,
+     0.018
+    ]
+   },
+   "all_unwatermarked": {
+    "n": 270,
+    "errors": 0,
+    "detected": 0,
+    "rate": 0.0,
+    "mean_score": 0.0016,
+    "min_score": 0.0,
+    "max_score": 0.0317,
+    "mean_bits_match": 0.5049,
+    "all_bits_match": 0,
+    "rate_ci95_wilson": [
+     0.0,
+     0.014
+    ]
+   }
+  },
+  "babble_5dB": {
+   "ba_watermarked": {
+    "n": 60,
+    "errors": 0,
+    "detected": 13,
+    "rate": 0.2167,
+    "mean_score": 0.4213,
+    "min_score": 0.0175,
+    "max_score": 0.847,
+    "mean_bits_match": 0.8187,
+    "all_bits_match": 3,
+    "rate_ci95_wilson": [
+     0.1312,
+     0.3362
+    ]
+   },
+   "raw_voxcpm2": {
+    "n": 60,
+    "errors": 0,
+    "detected": 0,
+    "rate": 0.0,
+    "mean_score": 0.0009,
+    "min_score": 0.0,
+    "max_score": 0.0224,
+    "mean_bits_match": 0.4469,
+    "all_bits_match": 0,
+    "rate_ci95_wilson": [
+     0,
+     0.0602
+    ]
+   },
+   "real_speech": {
+    "n": 210,
+    "errors": 0,
+    "detected": 0,
+    "rate": 0.0,
+    "mean_score": 0.0042,
+    "min_score": 0.0,
+    "max_score": 0.1192,
+    "mean_bits_match": 0.5571,
+    "all_bits_match": 0,
+    "rate_ci95_wilson": [
+     0,
+     0.018
+    ]
+   },
+   "all_unwatermarked": {
+    "n": 270,
+    "errors": 0,
+    "detected": 0,
+    "rate": 0.0,
+    "mean_score": 0.0035,
+    "min_score": 0.0,
+    "max_score": 0.1192,
+    "mean_bits_match": 0.5326,
+    "all_bits_match": 0,
+    "rate_ci95_wilson": [
+     0.0,
+     0.014
+    ]
+   }
+  },
+  "speed_+5pct": {
+   "ba_watermarked": {
+    "n": 60,
+    "errors": 0,
+    "detected": 0,
+    "rate": 0.0,
+    "mean_score": 0.0273,
+    "min_score": 0.0009,
+    "max_score": 0.2204,
+    "mean_bits_match": 0.4917,
+    "all_bits_match": 0,
+    "rate_ci95_wilson": [
+     0,
+     0.0602
+    ]
+   },
+   "raw_voxcpm2": {
+    "n": 60,
+    "errors": 0,
+    "detected": 0,
+    "rate": 0.0,
+    "mean_score": 0.0007,
+    "min_score": 0.0,
+    "max_score": 0.0134,
+    "mean_bits_match": 0.3906,
+    "all_bits_match": 0,
+    "rate_ci95_wilson": [
+     0,
+     0.0602
+    ]
+   },
+   "real_speech": {
+    "n": 210,
+    "errors": 0,
+    "detected": 0,
+    "rate": 0.0,
+    "mean_score": 0.0112,
+    "min_score": 0.0,
+    "max_score": 0.1835,
+    "mean_bits_match": 0.4848,
+    "all_bits_match": 0,
+    "rate_ci95_wilson": [
+     0,
+     0.018
+    ]
+   },
+   "all_unwatermarked": {
+    "n": 270,
+    "errors": 0,
+    "detected": 0,
+    "rate": 0.0,
+    "mean_score": 0.0088,
+    "min_score": 0.0,
+    "max_score": 0.1835,
+    "mean_bits_match": 0.4639,
+    "all_bits_match": 0,
+    "rate_ci95_wilson": [
+     0.0,
+     0.014
+    ]
+   }
+  },
+  "speed_-5pct": {
+   "ba_watermarked": {
+    "n": 60,
+    "errors": 0,
+    "detected": 0,
+    "rate": 0.0,
+    "mean_score": 0.0209,
+    "min_score": 0.0,
+    "max_score": 0.125,
+    "mean_bits_match": 0.4656,
+    "all_bits_match": 0,
+    "rate_ci95_wilson": [
+     0,
+     0.0602
+    ]
+   },
+   "raw_voxcpm2": {
+    "n": 60,
+    "errors": 0,
+    "detected": 0,
+    "rate": 0.0,
+    "mean_score": 0.0009,
+    "min_score": 0.0,
+    "max_score": 0.0164,
+    "mean_bits_match": 0.426,
+    "all_bits_match": 0,
+    "rate_ci95_wilson": [
+     0,
+     0.0602
+    ]
+   },
+   "real_speech": {
+    "n": 210,
+    "errors": 0,
+    "detected": 0,
+    "rate": 0.0,
+    "mean_score": 0.0101,
+    "min_score": 0.0,
+    "max_score": 0.2596,
+    "mean_bits_match": 0.4949,
+    "all_bits_match": 0,
+    "rate_ci95_wilson": [
+     0,
+     0.018
+    ]
+   },
+   "all_unwatermarked": {
+    "n": 270,
+    "errors": 0,
+    "detected": 0,
+    "rate": 0.0,
+    "mean_score": 0.0081,
+    "min_score": 0.0,
+    "max_score": 0.2596,
+    "mean_bits_match": 0.4796,
+    "all_bits_match": 0,
+    "rate_ci95_wilson": [
+     0.0,
+     0.014
+    ]
+   }
+  },
+  "tempo_+5pct": {
+   "ba_watermarked": {
+    "n": 60,
+    "errors": 0,
+    "detected": 0,
+    "rate": 0.0,
+    "mean_score": 0.1339,
+    "min_score": 0.0154,
+    "max_score": 0.3087,
+    "mean_bits_match": 1.0,
+    "all_bits_match": 60,
+    "rate_ci95_wilson": [
+     0,
+     0.0602
+    ]
+   },
+   "raw_voxcpm2": {
+    "n": 60,
+    "errors": 0,
+    "detected": 0,
+    "rate": 0.0,
+    "mean_score": 0.0004,
+    "min_score": 0.0,
+    "max_score": 0.0184,
+    "mean_bits_match": 0.4198,
+    "all_bits_match": 0,
+    "rate_ci95_wilson": [
+     0,
+     0.0602
+    ]
+   },
+   "real_speech": {
+    "n": 210,
+    "errors": 0,
+    "detected": 0,
+    "rate": 0.0,
+    "mean_score": 0.0107,
+    "min_score": 0.0,
+    "max_score": 0.2225,
+    "mean_bits_match": 0.4836,
+    "all_bits_match": 0,
+    "rate_ci95_wilson": [
+     0,
+     0.018
+    ]
+   },
+   "all_unwatermarked": {
+    "n": 270,
+    "errors": 0,
+    "detected": 0,
+    "rate": 0.0,
+    "mean_score": 0.0084,
+    "min_score": 0.0,
+    "max_score": 0.2225,
+    "mean_bits_match": 0.4694,
+    "all_bits_match": 0,
+    "rate_ci95_wilson": [
+     0.0,
+     0.014
+    ]
+   }
+  },
+  "tempo_-5pct": {
+   "ba_watermarked": {
+    "n": 60,
+    "errors": 0,
+    "detected": 0,
+    "rate": 0.0,
+    "mean_score": 0.1262,
+    "min_score": 0.0161,
+    "max_score": 0.3077,
+    "mean_bits_match": 0.999,
+    "all_bits_match": 59,
+    "rate_ci95_wilson": [
+     0,
+     0.0602
+    ]
+   },
+   "raw_voxcpm2": {
+    "n": 60,
+    "errors": 0,
+    "detected": 0,
+    "rate": 0.0,
+    "mean_score": 0.0003,
+    "min_score": 0.0,
+    "max_score": 0.0158,
+    "mean_bits_match": 0.4094,
+    "all_bits_match": 0,
+    "rate_ci95_wilson": [
+     0,
+     0.0602
+    ]
+   },
+   "real_speech": {
+    "n": 210,
+    "errors": 0,
+    "detected": 0,
+    "rate": 0.0,
+    "mean_score": 0.0117,
+    "min_score": 0.0,
+    "max_score": 0.3347,
+    "mean_bits_match": 0.4824,
+    "all_bits_match": 0,
+    "rate_ci95_wilson": [
+     0,
+     0.018
+    ]
+   },
+   "all_unwatermarked": {
+    "n": 270,
+    "errors": 0,
+    "detected": 0,
+    "rate": 0.0,
+    "mean_score": 0.0091,
+    "min_score": 0.0,
+    "max_score": 0.3347,
+    "mean_bits_match": 0.4662,
+    "all_bits_match": 0,
+    "rate_ci95_wilson": [
+     0.0,
+     0.014
+    ]
+   }
+  },
+  "phone_8k": {
+   "ba_watermarked": {
+    "n": 60,
+    "errors": 0,
+    "detected": 60,
+    "rate": 1.0,
+    "mean_score": 1.0,
+    "min_score": 1.0,
+    "max_score": 1.0,
+    "mean_bits_match": 1.0,
+    "all_bits_match": 60,
+    "rate_ci95_wilson": [
+     0.9398,
+     1.0
+    ]
+   },
+   "raw_voxcpm2": {
+    "n": 60,
+    "errors": 0,
+    "detected": 0,
+    "rate": 0.0,
+    "mean_score": 0.0002,
+    "min_score": 0.0,
+    "max_score": 0.0065,
+    "mean_bits_match": 0.4437,
+    "all_bits_match": 0,
+    "rate_ci95_wilson": [
+     0,
+     0.0602
+    ]
+   },
+   "real_speech": {
+    "n": 210,
+    "errors": 0,
+    "detected": 0,
+    "rate": 0.0,
+    "mean_score": 0.0102,
+    "min_score": 0.0,
+    "max_score": 0.4109,
+    "mean_bits_match": 0.492,
+    "all_bits_match": 0,
+    "rate_ci95_wilson": [
+     0,
+     0.018
+    ]
+   },
+   "all_unwatermarked": {
+    "n": 270,
+    "errors": 0,
+    "detected": 0,
+    "rate": 0.0,
+    "mean_score": 0.008,
+    "min_score": 0.0,
+    "max_score": 0.4109,
+    "mean_bits_match": 0.4813,
+    "all_bits_match": 0,
+    "rate_ci95_wilson": [
+     0.0,
+     0.014
+    ]
+   }
+  },
+  "mp3_64k": {
+   "ba_watermarked": {
+    "n": 60,
+    "errors": 0,
+    "detected": 60,
+    "rate": 1.0,
+    "mean_score": 0.9998,
+    "min_score": 0.989,
+    "max_score": 1.0,
+    "mean_bits_match": 1.0,
+    "all_bits_match": 60,
+    "rate_ci95_wilson": [
+     0.9398,
+     1.0
+    ]
+   },
+   "raw_voxcpm2": {
+    "n": 60,
+    "errors": 0,
+    "detected": 0,
+    "rate": 0.0,
+    "mean_score": 0.0002,
+    "min_score": 0.0,
+    "max_score": 0.0066,
+    "mean_bits_match": 0.4062,
+    "all_bits_match": 0,
+    "rate_ci95_wilson": [
+     0,
+     0.0602
+    ]
+   },
+   "real_speech": {
+    "n": 210,
+    "errors": 0,
+    "detected": 0,
+    "rate": 0.0,
+    "mean_score": 0.0112,
+    "min_score": 0.0,
+    "max_score": 0.2963,
+    "mean_bits_match": 0.4911,
+    "all_bits_match": 0,
+    "rate_ci95_wilson": [
+     0,
+     0.018
+    ]
+   },
+   "all_unwatermarked": {
+    "n": 270,
+    "errors": 0,
+    "detected": 0,
+    "rate": 0.0,
+    "mean_score": 0.0088,
+    "min_score": 0.0,
+    "max_score": 0.2963,
+    "mean_bits_match": 0.4722,
+    "all_bits_match": 0,
+    "rate_ci95_wilson": [
+     0.0,
+     0.014
+    ]
+   }
+  },
+  "mp3_64k_x2": {
+   "ba_watermarked": {
+    "n": 60,
+    "errors": 0,
+    "detected": 60,
+    "rate": 1.0,
+    "mean_score": 0.9992,
+    "min_score": 0.9497,
+    "max_score": 1.0,
+    "mean_bits_match": 1.0,
+    "all_bits_match": 60,
+    "rate_ci95_wilson": [
+     0.9398,
+     1.0
+    ]
+   },
+   "raw_voxcpm2": {
+    "n": 60,
+    "errors": 0,
+    "detected": 0,
+    "rate": 0.0,
+    "mean_score": 0.0002,
+    "min_score": 0.0,
+    "max_score": 0.0088,
+    "mean_bits_match": 0.4062,
+    "all_bits_match": 0,
+    "rate_ci95_wilson": [
+     0,
+     0.0602
+    ]
+   },
+   "real_speech": {
+    "n": 210,
+    "errors": 0,
+    "detected": 0,
+    "rate": 0.0,
+    "mean_score": 0.0122,
+    "min_score": 0.0,
+    "max_score": 0.3348,
+    "mean_bits_match": 0.4917,
+    "all_bits_match": 0,
+    "rate_ci95_wilson": [
+     0,
+     0.018
+    ]
+   },
+   "all_unwatermarked": {
+    "n": 270,
+    "errors": 0,
+    "detected": 0,
+    "rate": 0.0,
+    "mean_score": 0.0095,
+    "min_score": 0.0,
+    "max_score": 0.3348,
+    "mean_bits_match": 0.4727,
+    "all_bits_match": 0,
+    "rate_ci95_wilson": [
+     0.0,
+     0.014
+    ]
+   }
+  },
+  "mp3_32k": {
+   "ba_watermarked": {
+    "n": 60,
+    "errors": 0,
+    "detected": 60,
+    "rate": 1.0,
+    "mean_score": 0.9999,
+    "min_score": 0.9954,
+    "max_score": 1.0,
+    "mean_bits_match": 1.0,
+    "all_bits_match": 60,
+    "rate_ci95_wilson": [
+     0.9398,
+     1.0
+    ]
+   },
+   "raw_voxcpm2": {
+    "n": 60,
+    "errors": 0,
+    "detected": 0,
+    "rate": 0.0,
+    "mean_score": 0.0001,
+    "min_score": 0.0,
+    "max_score": 0.0032,
+    "mean_bits_match": 0.4177,
+    "all_bits_match": 0,
+    "rate_ci95_wilson": [
+     0,
+     0.0602
+    ]
+   },
+   "real_speech": {
+    "n": 210,
+    "errors": 0,
+    "detected": 0,
+    "rate": 0.0,
+    "mean_score": 0.0087,
+    "min_score": 0.0,
+    "max_score": 0.1929,
+    "mean_bits_match": 0.494,
+    "all_bits_match": 0,
+    "rate_ci95_wilson": [
+     0,
+     0.018
+    ]
+   },
+   "all_unwatermarked": {
+    "n": 270,
+    "errors": 0,
+    "detected": 0,
+    "rate": 0.0,
+    "mean_score": 0.0068,
+    "min_score": 0.0,
+    "max_score": 0.1929,
+    "mean_bits_match": 0.4771,
+    "all_bits_match": 0,
+    "rate_ci95_wilson": [
+     0.0,
+     0.014
+    ]
+   }
+  },
+  "mp3_64k_then_aac_64k": {
+   "ba_watermarked": {
+    "n": 60,
+    "errors": 0,
+    "detected": 60,
+    "rate": 1.0,
+    "mean_score": 0.9937,
+    "min_score": 0.9237,
+    "max_score": 1.0,
+    "mean_bits_match": 1.0,
+    "all_bits_match": 60,
+    "rate_ci95_wilson": [
+     0.9398,
+     1.0
+    ]
+   },
+   "raw_voxcpm2": {
+    "n": 60,
+    "errors": 0,
+    "detected": 0,
+    "rate": 0.0,
+    "mean_score": 0.0001,
+    "min_score": 0.0,
+    "max_score": 0.007,
+    "mean_bits_match": 0.399,
+    "all_bits_match": 0,
+    "rate_ci95_wilson": [
+     0,
+     0.0602
+    ]
+   },
+   "real_speech": {
+    "n": 210,
+    "errors": 0,
+    "detected": 0,
+    "rate": 0.0,
+    "mean_score": 0.0099,
+    "min_score": 0.0,
+    "max_score": 0.2899,
+    "mean_bits_match": 0.4982,
+    "all_bits_match": 0,
+    "rate_ci95_wilson": [
+     0,
+     0.018
+    ]
+   },
+   "all_unwatermarked": {
+    "n": 270,
+    "errors": 0,
+    "detected": 0,
+    "rate": 0.0,
+    "mean_score": 0.0078,
+    "min_score": 0.0,
+    "max_score": 0.2899,
+    "mean_bits_match": 0.4762,
+    "all_bits_match": 0,
+    "rate_ci95_wilson": [
+     0.0,
+     0.014
+    ]
+   }
+  },
+  "aac_64k": {
+   "ba_watermarked": {
+    "n": 60,
+    "errors": 0,
+    "detected": 60,
+    "rate": 1.0,
+    "mean_score": 0.9979,
+    "min_score": 0.9511,
+    "max_score": 1.0,
+    "mean_bits_match": 1.0,
+    "all_bits_match": 60,
+    "rate_ci95_wilson": [
+     0.9398,
+     1.0
+    ]
+   },
+   "raw_voxcpm2": {
+    "n": 60,
+    "errors": 0,
+    "detected": 0,
+    "rate": 0.0,
+    "mean_score": 0.0001,
+    "min_score": 0.0,
+    "max_score": 0.0017,
+    "mean_bits_match": 0.4208,
+    "all_bits_match": 0,
+    "rate_ci95_wilson": [
+     0,
+     0.0602
+    ]
+   },
+   "real_speech": {
+    "n": 210,
+    "errors": 0,
+    "detected": 0,
+    "rate": 0.0,
+    "mean_score": 0.0111,
+    "min_score": 0.0,
+    "max_score": 0.2299,
+    "mean_bits_match": 0.4914,
+    "all_bits_match": 0,
+    "rate_ci95_wilson": [
+     0,
+     0.018
+    ]
+   },
+   "all_unwatermarked": {
+    "n": 270,
+    "errors": 0,
+    "detected": 0,
+    "rate": 0.0,
+    "mean_score": 0.0086,
+    "min_score": 0.0,
+    "max_score": 0.2299,
+    "mean_bits_match": 0.4757,
+    "all_bits_match": 0,
+    "rate_ci95_wilson": [
+     0.0,
+     0.014
+    ]
+   }
+  },
+  "opus_32k": {
+   "ba_watermarked": {
+    "n": 60,
+    "errors": 0,
+    "detected": 60,
+    "rate": 1.0,
+    "mean_score": 0.9973,
+    "min_score": 0.9653,
+    "max_score": 1.0,
+    "mean_bits_match": 1.0,
+    "all_bits_match": 60,
+    "rate_ci95_wilson": [
+     0.9398,
+     1.0
+    ]
+   },
+   "raw_voxcpm2": {
+    "n": 60,
+    "errors": 0,
+    "detected": 0,
+    "rate": 0.0,
+    "mean_score": 0.0,
+    "min_score": 0.0,
+    "max_score": 0.0012,
+    "mean_bits_match": 0.4167,
+    "all_bits_match": 0,
+    "rate_ci95_wilson": [
+     0,
+     0.0602
+    ]
+   },
+   "real_speech": {
+    "n": 210,
+    "errors": 0,
+    "detected": 0,
+    "rate": 0.0,
+    "mean_score": 0.0098,
+    "min_score": 0.0,
+    "max_score": 0.3027,
+    "mean_bits_match": 0.492,
+    "all_bits_match": 0,
+    "rate_ci95_wilson": [
+     0,
+     0.018
+    ]
+   },
+   "all_unwatermarked": {
+    "n": 270,
+    "errors": 0,
+    "detected": 0,
+    "rate": 0.0,
+    "mean_score": 0.0077,
+    "min_score": 0.0,
+    "max_score": 0.3027,
+    "mean_bits_match": 0.4752,
+    "all_bits_match": 0,
+    "rate_ci95_wilson": [
+     0.0,
+     0.014
+    ]
+   }
+  },
+  "opus_16k": {
+   "ba_watermarked": {
+    "n": 60,
+    "errors": 0,
+    "detected": 60,
+    "rate": 1.0,
+    "mean_score": 0.9169,
+    "min_score": 0.6172,
+    "max_score": 1.0,
+    "mean_bits_match": 0.999,
+    "all_bits_match": 59,
+    "rate_ci95_wilson": [
+     0.9398,
+     1.0
+    ]
+   },
+   "raw_voxcpm2": {
+    "n": 60,
+    "errors": 0,
+    "detected": 0,
+    "rate": 0.0,
+    "mean_score": 0.0003,
+    "min_score": 0.0,
+    "max_score": 0.0143,
+    "mean_bits_match": 0.399,
+    "all_bits_match": 0,
+    "rate_ci95_wilson": [
+     0,
+     0.0602
+    ]
+   },
+   "real_speech": {
+    "n": 210,
+    "errors": 0,
+    "detected": 0,
+    "rate": 0.0,
+    "mean_score": 0.0108,
+    "min_score": 0.0,
+    "max_score": 0.2643,
+    "mean_bits_match": 0.4923,
+    "all_bits_match": 0,
+    "rate_ci95_wilson": [
+     0,
+     0.018
+    ]
+   },
+   "all_unwatermarked": {
+    "n": 270,
+    "errors": 0,
+    "detected": 0,
+    "rate": 0.0,
+    "mean_score": 0.0085,
+    "min_score": 0.0,
+    "max_score": 0.2643,
+    "mean_bits_match": 0.4715,
+    "all_bits_match": 0,
+    "rate_ci95_wilson": [
+     0.0,
+     0.014
+    ]
+   }
+  },
+  "phone_mp3_32k_noise20": {
+   "ba_watermarked": {
+    "n": 60,
+    "errors": 0,
+    "detected": 13,
+    "rate": 0.2167,
+    "mean_score": 0.3909,
+    "min_score": 0.0,
+    "max_score": 0.7122,
+    "mean_bits_match": 0.8781,
+    "all_bits_match": 7,
+    "rate_ci95_wilson": [
+     0.1312,
+     0.3362
+    ]
+   },
+   "raw_voxcpm2": {
+    "n": 60,
+    "errors": 0,
+    "detected": 0,
+    "rate": 0.0,
+    "mean_score": 0.0004,
+    "min_score": 0.0,
+    "max_score": 0.007,
+    "mean_bits_match": 0.45,
+    "all_bits_match": 0,
+    "rate_ci95_wilson": [
+     0,
+     0.0602
+    ]
+   },
+   "real_speech": {
+    "n": 210,
+    "errors": 0,
+    "detected": 0,
+    "rate": 0.0,
+    "mean_score": 0.0011,
+    "min_score": 0.0,
+    "max_score": 0.0596,
+    "mean_bits_match": 0.5223,
+    "all_bits_match": 0,
+    "rate_ci95_wilson": [
+     0,
+     0.018
+    ]
+   },
+   "all_unwatermarked": {
+    "n": 270,
+    "errors": 0,
+    "detected": 0,
+    "rate": 0.0,
+    "mean_score": 0.001,
+    "min_score": 0.0,
+    "max_score": 0.0596,
+    "mean_bits_match": 0.5062,
+    "all_bits_match": 0,
+    "rate_ci95_wilson": [
+     0.0,
+     0.014
+    ]
+   }
+  },
+  "excerpt_3s": {
+   "ba_watermarked": {
+    "n": 60,
+    "errors": 0,
+    "detected": 50,
+    "rate": 0.8333,
+    "mean_score": 0.797,
+    "min_score": 0.0,
+    "max_score": 1.0,
+    "mean_bits_match": 0.7823,
+    "all_bits_match": 27,
+    "rate_ci95_wilson": [
+     0.7197,
+     0.9069
+    ]
+   },
+   "raw_voxcpm2": {
+    "n": 60,
+    "errors": 0,
+    "detected": 0,
+    "rate": 0.0,
+    "mean_score": 0.0003,
+    "min_score": 0.0,
+    "max_score": 0.0173,
+    "mean_bits_match": 0.424,
+    "all_bits_match": 0,
+    "rate_ci95_wilson": [
+     0,
+     0.0602
+    ]
+   },
+   "real_speech": {
+    "n": 210,
+    "errors": 0,
+    "detected": 0,
+    "rate": 0.0,
+    "mean_score": 0.0005,
+    "min_score": 0.0,
+    "max_score": 0.0404,
+    "mean_bits_match": 0.428,
+    "all_bits_match": 0,
+    "rate_ci95_wilson": [
+     0,
+     0.018
+    ]
+   },
+   "all_unwatermarked": {
+    "n": 270,
+    "errors": 0,
+    "detected": 0,
+    "rate": 0.0,
+    "mean_score": 0.0005,
+    "min_score": 0.0,
+    "max_score": 0.0404,
+    "mean_bits_match": 0.4271,
+    "all_bits_match": 0,
+    "rate_ci95_wilson": [
+     0.0,
+     0.014
+    ]
+   }
+  },
+  "gain_-20dB": {
+   "ba_watermarked": {
+    "n": 60,
+    "errors": 0,
+    "detected": 52,
+    "rate": 0.8667,
+    "mean_score": 0.6325,
+    "min_score": 0.3049,
+    "max_score": 0.8611,
+    "mean_bits_match": 0.8938,
+    "all_bits_match": 4,
+    "rate_ci95_wilson": [
+     0.7583,
+     0.9309
+    ]
+   },
+   "raw_voxcpm2": {
+    "n": 60,
+    "errors": 0,
+    "detected": 0,
+    "rate": 0.0,
+    "mean_score": 0.0011,
+    "min_score": 0.0,
+    "max_score": 0.0353,
+    "mean_bits_match": 0.4281,
+    "all_bits_match": 0,
+    "rate_ci95_wilson": [
+     0,
+     0.0602
+    ]
+   },
+   "real_speech": {
+    "n": 210,
+    "errors": 0,
+    "detected": 0,
+    "rate": 0.0,
+    "mean_score": 0.0156,
+    "min_score": 0.0,
+    "max_score": 0.1861,
+    "mean_bits_match": 0.503,
+    "all_bits_match": 0,
+    "rate_ci95_wilson": [
+     0,
+     0.018
+    ]
+   },
+   "all_unwatermarked": {
+    "n": 270,
+    "errors": 0,
+    "detected": 0,
+    "rate": 0.0,
+    "mean_score": 0.0124,
+    "min_score": 0.0,
+    "max_score": 0.1861,
+    "mean_bits_match": 0.4863,
+    "all_bits_match": 0,
+    "rate_ci95_wilson": [
+     0.0,
+     0.014
+    ]
+   }
+  },
+  "gain_-10dB": {
+   "ba_watermarked": {
+    "n": 60,
+    "errors": 0,
+    "detected": 60,
+    "rate": 1.0,
+    "mean_score": 0.9984,
+    "min_score": 0.9306,
+    "max_score": 1.0,
+    "mean_bits_match": 1.0,
+    "all_bits_match": 60,
+    "rate_ci95_wilson": [
+     0.9398,
+     1.0
+    ]
+   },
+   "raw_voxcpm2": {
+    "n": 60,
+    "errors": 0,
+    "detected": 0,
+    "rate": 0.0,
+    "mean_score": 0.0002,
+    "min_score": 0.0,
+    "max_score": 0.0035,
+    "mean_bits_match": 0.4073,
+    "all_bits_match": 0,
+    "rate_ci95_wilson": [
+     0,
+     0.0602
+    ]
+   },
+   "real_speech": {
+    "n": 210,
+    "errors": 0,
+    "detected": 0,
+    "rate": 0.0,
+    "mean_score": 0.0205,
+    "min_score": 0.0,
+    "max_score": 0.3856,
+    "mean_bits_match": 0.5033,
+    "all_bits_match": 0,
+    "rate_ci95_wilson": [
+     0,
+     0.018
+    ]
+   },
+   "all_unwatermarked": {
+    "n": 270,
+    "errors": 0,
+    "detected": 0,
+    "rate": 0.0,
+    "mean_score": 0.016,
+    "min_score": 0.0,
+    "max_score": 0.3856,
+    "mean_bits_match": 0.4819,
+    "all_bits_match": 0,
+    "rate_ci95_wilson": [
+     0.0,
+     0.014
+    ]
+   }
+  },
+  "gain_+6dB_clipped": {
+   "ba_watermarked": {
+    "n": 60,
+    "errors": 0,
+    "detected": 60,
+    "rate": 1.0,
+    "mean_score": 0.9994,
+    "min_score": 0.966,
+    "max_score": 1.0,
+    "mean_bits_match": 1.0,
+    "all_bits_match": 60,
+    "rate_ci95_wilson": [
+     0.9398,
+     1.0
+    ]
+   },
+   "raw_voxcpm2": {
+    "n": 60,
+    "errors": 0,
+    "detected": 0,
+    "rate": 0.0,
+    "mean_score": 0.0006,
+    "min_score": 0.0,
+    "max_score": 0.0147,
+    "mean_bits_match": 0.4333,
+    "all_bits_match": 0,
+    "rate_ci95_wilson": [
+     0,
+     0.0602
+    ]
+   },
+   "real_speech": {
+    "n": 210,
+    "errors": 0,
+    "detected": 0,
+    "rate": 0.0,
+    "mean_score": 0.0093,
+    "min_score": 0.0,
+    "max_score": 0.1054,
+    "mean_bits_match": 0.4994,
+    "all_bits_match": 0,
+    "rate_ci95_wilson": [
+     0,
+     0.018
+    ]
+   },
+   "all_unwatermarked": {
+    "n": 270,
+    "errors": 0,
+    "detected": 0,
+    "rate": 0.0,
+    "mean_score": 0.0074,
+    "min_score": 0.0,
+    "max_score": 0.1054,
+    "mean_bits_match": 0.4847,
+    "all_bits_match": 0,
+    "rate_ci95_wilson": [
+     0.0,
+     0.014
+    ]
+   }
+  },
+  "loudnorm_-14LUFS": {
+   "ba_watermarked": {
+    "n": 60,
+    "errors": 0,
+    "detected": 60,
+    "rate": 1.0,
+    "mean_score": 1.0,
+    "min_score": 1.0,
+    "max_score": 1.0,
+    "mean_bits_match": 1.0,
+    "all_bits_match": 60,
+    "rate_ci95_wilson": [
+     0.9398,
+     1.0
+    ]
+   },
+   "raw_voxcpm2": {
+    "n": 60,
+    "errors": 0,
+    "detected": 0,
+    "rate": 0.0,
+    "mean_score": 0.0008,
+    "min_score": 0.0,
+    "max_score": 0.0145,
+    "mean_bits_match": 0.4344,
+    "all_bits_match": 0,
+    "rate_ci95_wilson": [
+     0,
+     0.0602
+    ]
+   },
+   "real_speech": {
+    "n": 210,
+    "errors": 0,
+    "detected": 0,
+    "rate": 0.0,
+    "mean_score": 0.0086,
+    "min_score": 0.0,
+    "max_score": 0.1944,
+    "mean_bits_match": 0.4994,
+    "all_bits_match": 0,
+    "rate_ci95_wilson": [
+     0,
+     0.018
+    ]
+   },
+   "all_unwatermarked": {
+    "n": 270,
+    "errors": 0,
+    "detected": 0,
+    "rate": 0.0,
+    "mean_score": 0.0069,
+    "min_score": 0.0,
+    "max_score": 0.1944,
+    "mean_bits_match": 0.485,
+    "all_bits_match": 0,
+    "rate_ci95_wilson": [
+     0.0,
+     0.014
+    ]
+   }
+  }
+ },
+ "false_positives_all_attacks": {
+  "detected": 0,
+  "n": 6750,
+  "rate": 0.0,
+  "ci95_wilson": [
+   0,
+   0.0006
+  ]
+ },
+ "ffmpeg": "ffmpeg version 6.1.1-3ubuntu5 Copyright (c) 2000-2023 the FFmpeg developers",
+ "command": "/tmp/ba/venvs/ba/bin/python BA/eval/scripts/watermark_attacks.py"
+}

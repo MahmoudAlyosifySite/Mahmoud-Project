@@ -1,8 +1,29 @@
 \section{Additional tables}\label{app:tables}
 
-\pending{Full bake-off tables for every condition (Egyptian, digits, diacritised, code-switched, English, French,
-cross-language, long passages) with failure counts and speed, generated from bakeoff.json and
-dialect\_classifier2.json; reference clips and their dialect labels; Chatterbox V3 under the two loaders.}
+\Cref{tab:bakeoff_full} gives the bake-off with intervals for every metric, and \cref{tab:watermark} the watermark
+test condition by condition.
+
+\begin{table}[H]
+\centering\small
+\caption{Full bake-off on the Egyptian main set (32 texts, 96 utterances per system; digits: 8 texts, 24 utterances),
+one seed, means with two-way bootstrap 95\% intervals over texts and voices. CER on digit sentences is the best of the
+spelled-out Egyptian and the digit reference.}
+\label{tab:bakeoff_full}
+\begin{adjustbox}{max width=\linewidth}
+\rawinput{generated/tab_bakeoff_full.tex}
+\end{adjustbox}
+\end{table}
+
+\begin{table}[H]
+\centering\small
+\caption{Watermark detection after processing: \R{wm:att:nwm} held-out \BA outputs (detected: AudioSeal probability
+$\geq 0.5$; all 16 bits: the fixed message decoded without error) and false positives on \R{wm:att:nclean}
+unwatermarked clips passed through the same processing.}
+\label{tab:watermark}
+\begin{adjustbox}{max width=\linewidth}
+\rawinput{generated/tab_watermark.tex}
+\end{adjustbox}
+\end{table}
 
 \section{Claim-to-results map}\label{app:claims}
 
@@ -15,9 +36,12 @@ records the command that produced it.
 Section & Results files (\texttt{BA/eval/results/}) \\
 \midrule
 \Cref{sec:protocol} (calibration) & \texttt{bakeoff.json}, \texttt{dialect\_classifier2.json} \\
-\Cref{sec:dissociation} & \texttt{bakeoff.json}, \texttt{bakeoff\_utterances.csv}, \texttt{dialect\_classifier2.json}, \texttt{listening\_test.json} \\
-\Cref{sec:engine} & \texttt{codeswitch\_policy.json}, \texttt{asr\_check.json}, \texttt{chunk\_length.json}, \texttt{reference\_thresholds.json}, \texttt{engine.json} \\
-\Cref{sec:results} & \texttt{uncertainty.json}, \texttt{ablations.json}, \texttt{engine.json}, \texttt{bench.json} \\
+\Cref{sec:dissociation} & \texttt{bakeoff.json}, \texttt{bakeoff\_utterances.csv}, \texttt{dialect\_classifier2.json}, \\
+ & \texttt{selection.json}, \texttt{uncertainty.json}, \texttt{listening\_test.json} \\
+\Cref{sec:engine} & \texttt{codeswitch\_policy.json}, \texttt{asr\_check.json}, \texttt{chunk\_length.json}, \\
+ & \texttt{reference\_thresholds.json}, \texttt{engine.json} \\
+\Cref{sec:results} & \texttt{uncertainty.json}, \texttt{ablations.json}, \texttt{engine.json}, \texttt{long\_form.json}, \\
+ & \texttt{long\_form\_windows.json}, \texttt{bench.json} \\
 \Cref{sec:release} & \texttt{watermark.json}, \texttt{watermark\_attacks.json} \\
 \bottomrule
 \end{tabular}
