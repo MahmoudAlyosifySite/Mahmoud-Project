@@ -4,7 +4,7 @@ after label-free pretraining? Two confounds make this hard to answer: the comput
 receives, and evaluations that use labels the practitioner does not have. We remove both with a
 compute-matched $2\times2$ design that separates the use of labels from the choice of images: SimCLR and
 supervised contrastive learning (SupCon), each trained on the labeled subset or on all images, with the same
-number of gradient steps, on CIFAR-10, CIFAR-100 and STL-10. Three results stand out. First, labels inside
+number of gradient steps, on CIFAR-10, CIFAR-100, STL-10 and Tiny-ImageNet. Three results stand out. First, labels inside
 the loss buy speed, not a better end point: with 10\% of the CIFAR-10 labels, SupCon leads SimCLR by
 \R{d:simclr-supcon:lp50:e10}\pt after 970 steps and trails it by \R{long:d:simclr-supcon}\pt after
 \R{long:steps}. Second, the evaluation protocol decides the ranking: the standard linear probe, trained with

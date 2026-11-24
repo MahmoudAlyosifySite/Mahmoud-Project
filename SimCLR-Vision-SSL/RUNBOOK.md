@@ -62,7 +62,7 @@ fine-tuning recipe search with the label budget (fails for label-using encoders:
 separated) and oracle grid (3 seeds: about half of the fine-tuning gap is the recipe; SimCLR stays ~3 points ahead);
 two-stage fine-tuning; SimCLR v2-style self-distillation; BYOL fine-tuning;
 38,800-step runs (3 seeds: SupCon flat at ~84, SimCLR 89.9); colour jitter with 3 seeds incl. SupCon+U; CIFAR-100
-at 9,700 and 19,400 steps with 3 seeds (probes and fine-tuning); ResNet-50 fine-tuning at 19,400 steps (3 seeds);
+at 9,700 and 19,400 steps with 3 seeds (probes and fine-tuning); Tiny-ImageNet at 19,500 and 39,000 steps (3 seeds, probes, fine-tuning, CDNV); ResNet-50 fine-tuning at 19,400 steps (3 seeds);
 STL-10 at 20,500 steps (3 seeds, incl. FixMatch from scratch); STL-10 at 41,000 steps (3 seeds: probes,
 fine-tuning, oracle recipe, FixMatch from the encoders); coverage intervention (10 pool types, 3-5 seeds; the
 label-limited probes of `reeval.py` for these runs are computed but not used in the paper); FixMatch from every encoder (3 seeds) and the
@@ -70,8 +70,7 @@ equal-total-compute comparison with FixMatch from scratch; three-way CDNV split 
 ratio during training; ResNet-50 at 19,400 steps (3 seeds); SupCon regularisation at 38,800 steps (weight decay, stronger augmentation, both; 1 seed each); label fraction x budget grid (1-100% of the labels, 2,425-38,800 steps, LP-all, LP-f and FT-f; one seed except f=10%; the FT cell at f=10%, 2,425 steps is `jobs/rev_p14b_ft_grid_fill.txt`); 97,000 steps for all four arms (3 seeds, probes and fine-tuning); compute table; statistics (hierarchical bootstrap, Holm,
 TOST); new related work, audit of budget reporting, journal statements, elsarticle template.
 
-Waiting for runs (phase in `jobs/phases.txt`): Tiny-ImageNet (p17-p20). The paper text does not mention Tiny-ImageNet
-yet: when the runs are done, add a paragraph to Section 4.4 and the dataset to the abstract and the introduction.
+All 438 runs of `jobs/phases.txt` are finished (2026-11-24) and in the paper; no `\pending` text is left.
 
 Before submission (authors' decisions, see `paper/SUBMISSION.md`): CRediT roles, funding, the journal's
 generative-AI declaration, JCR quartile check, Zenodo DOI for the code, the journal's Guide for Authors.

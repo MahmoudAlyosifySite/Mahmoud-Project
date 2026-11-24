@@ -1,0 +1,27 @@
+{
+ "name": "ft_tin_simclr_all_e100_s2",
+ "args": {
+  "name": "ft_tin_simclr_all_e100_s2",
+  "from_run": "tin_simclr_all_e100_s2",
+  "out": "results/runs",
+  "ckpt_dir": "/home/jovyan/simclr_store/ckpt",
+  "data_dir": "/home/jovyan/simclr_store/data",
+  "dataset": "tinyimagenet",
+  "backbone": "resnet18_mp",
+  "label_fraction": 0.1,
+  "seed": 2,
+  "epochs": 60.0,
+  "batch_size": 128,
+  "lr": 0.01,
+  "wd": 0.0005,
+  "holdout": 0,
+  "force": false
+ },
+ "n_labeled": 10000,
+ "steps": 4688,
+ "train_time_s": 149.38543272018433,
+ "metrics": {
+  "finetune_acc": 35.64999997615814,
+  "linear_lab_acc": 28.610000014305115
+ }
+}

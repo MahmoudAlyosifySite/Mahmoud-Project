@@ -131,11 +131,13 @@ CIFAR-10 and CIFAR-100 \citep{krizhevsky2009cifar} have 50,000 training and 10,0
 use $f=10\%$ (5,000 labels) unless stated and fractions from 1\% to 100\% in \cref{sec:fractions}. STL-10
 \citep{coates2011analysis} has 5,000 labeled training images, 8,000 test images and 100,000 unlabeled images
 at 96 px. Its unlabeled set comes from a broader distribution than the ten classes, so it tests the
-``all images'' column with data that are not curated to match the labels.
+``all images'' column with data that are not curated to match the labels. Tiny-ImageNet \citep{le2015tiny} has
+100,000 training images of 200 classes at 64 px; its 10,000 validation images serve as the test set, and
+$f=10\%$ gives 50 labeled images per class, as on CIFAR-100.
 
 \paragraph{Models and optimisation}
 The encoder is a ResNet-18 \citep{he2016resnet} with a $3\times3$ stride-1 first convolution and no max-pooling
-for 32-px images; for STL-10 the max-pooling layer is kept. A ResNet-50 is used in \cref{sec:datasets}. The
+for 32-px images; for STL-10 and Tiny-ImageNet the max-pooling layer is kept. A ResNet-50 is used in \cref{sec:datasets}. The
 projection head is linear--batch-norm--ReLU--linear with 128 outputs. We train with SGD (momentum 0.9,
 weight decay $10^{-4}$, learning rate 0.25 for batch 512, 5\% linear warm-up, cosine decay), the recipe of the
 official \supcon code, in mixed precision with the loss computed in float32. The augmentation is the CIFAR

@@ -36,7 +36,8 @@ uses the labels, and whether the pretraining pool is the labeled subset or all i
 receives the same number of gradient steps, from 970 to 97,000, and every encoder is evaluated both with the
 all-label probe, which we call the \emph{oracle-label probe}, and with protocols that respect the label
 budget. The main experiments use CIFAR-10 with 10\% of the labels (5,000 images), a ResNet-18 and five
-seeds; we repeat them on CIFAR-100, on STL-10 with its 100,000 unlabeled images, and with a ResNet-50.
+seeds; we repeat them on CIFAR-100, on STL-10 with its 100,000 unlabeled images, on Tiny-ImageNet with 200
+classes, and with a ResNet-50.
 
 \paragraph{Contributions}
 \begin{enumerate}[leftmargin=1.6em]

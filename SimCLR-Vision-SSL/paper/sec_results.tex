@@ -167,7 +167,7 @@ LP-$f$ probe is fitted on exactly these images, which are likely collapsed far m
 \begin{table}[t]
 \centering
 \small
-\caption{The four arms on CIFAR-100, on STL-10 and with a ResNet-50 (test accuracy in \%, mean $\pm$
+\caption{The four arms on CIFAR-100, STL-10 and Tiny-ImageNet and with a ResNet-50 (test accuracy in \%, mean $\pm$
 standard deviation over seeds). LP-all uses all training labels and is not available on STL-10, whose
 5,000 labels are the whole labeled set; LP-budget and FT-budget use the labels of the budget only.}
 \label{tab:datasets}
@@ -239,6 +239,27 @@ FixMatch started from the three encoders keeps the order, with much smaller gaps
 pseudo-labels, which likely overwrites most of what distinguished the encoders. All three starts end above
 FixMatch from scratch with the same FixMatch budget (\R{stl_fixmatch:clf:pm}\%), but only when the cost of
 pretraining is not counted.
+
+\paragraph{Tiny-ImageNet}
+With 200 classes and 10\% labels there are again 50 labeled images per class (three seeds; 19,500 and 39,000
+steps are about 100 and 200 passes over the 100,000 images). The picture is that of CIFAR-100. At 19,500 steps
+\union is first under the oracle-label probe (\R{tin_union_f0.1_e100:lp50}\%, against \R{tin_simclr_all_e100:lp50}\% for
+\simclr and \R{tin_supcon_lab_f0.1_e100:lp50}\% for \supcon) and level with \simclr under LP-10k
+(\R{tin_union_f0.1_e100:lp5}\% and \R{tin_simclr_all_e100:lp5}\%), while fine-tuning on the 10,000 labels already ranks
+\simclr first (\R{tin_simclr_all_e100:ft}\%, \R{d:tin:simclr-union:ft:e100}\pt above \union and
+\R{d:tin:simclr-supcon:ft:e100}\pt above \supcon). At 39,000 steps \simclr is first under every protocol: it climbs to
+\R{tin_simclr_all_e200:lp50}\% (LP-all), \R{tin_simclr_all_e200:lp5}\% (LP-10k) and \R{tin_simclr_all_e200:ft}\% (FT-10k),
+\supcon stays where it was (\R{tin_supcon_lab_f0.1_e200:lp50}\%, \R{tin_supcon_lab_f0.1_e200:lp5}\% and
+\R{tin_supcon_lab_f0.1_e200:ft}\%), and \union loses under the label-budget protocols (LP-10k
+\R{tin_union_f0.1_e200:lp5}\%, from \R{tin_union_f0.1_e100:lp5}\%; FT-10k \R{tin_union_f0.1_e200:ft}\%, from
+\R{tin_union_f0.1_e100:ft}\%). As on CIFAR-100, the CDNV of \union on its labeled images falls between the two
+budgets (\R{tin_union_f0.1_e100:cdnv_lab} to \R{tin_union_f0.1_e200:cdnv_lab}) while that of test images changes little
+(\R{tin_union_f0.1_e100:cdnv_test} to \R{tin_union_f0.1_e200:cdnv_test}), so a probe fitted on the labeled images likely
+meets a class structure that test images do not share. \simclrsub gets worse with more steps
+(\R{tin_simclr_sub_f0.1_e100:lp50}\% to \R{tin_simclr_sub_f0.1_e200:lp50}\% under LP-all; test CDNV
+\R{tin_simclr_sub_f0.1_e100:cdnv_test} to \R{tin_simclr_sub_f0.1_e200:cdnv_test}): on 10,000 images, 39,000 steps are about
+2,000 passes, and instance discrimination likely learns features of single images rather than of classes
+(\cref{sec:coverage}).
 
 \paragraph{ResNet-50}
 With a ResNet-50 the crossover under the oracle-label probe comes later than with a ResNet-18, as expected
