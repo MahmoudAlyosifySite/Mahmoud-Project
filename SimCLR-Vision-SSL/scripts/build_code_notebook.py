@@ -222,6 +222,7 @@ they are text, not code, and are not repeated here. The two scripts below build 
 """)
 src("paper/build.sh", "builds `arxiv.pdf`, `submission.pdf` and `highlights.pdf` and reports errors and undefined references.")
 src("paper/make_arxiv_package.sh", "packs the sources, the `.bbl` file and the figures for arXiv and checks that the package compiles on its own.")
+src("scripts/zenodo_upload.py", "archives the code, the per-run results, the paper and every model checkpoint on Zenodo under one DOI (prepare, reserve, upload, publish).")
 
 # ------------------------------------------------------------------------------------------------------------
 md("""

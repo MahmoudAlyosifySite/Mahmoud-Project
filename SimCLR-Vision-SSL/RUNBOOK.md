@@ -75,6 +75,19 @@ All 438 runs of `jobs/phases.txt` are finished (2026-11-24) and in the paper; no
 Before submission (authors' decisions, see `paper/SUBMISSION.md`): CRediT roles, funding, the journal's
 generative-AI declaration, JCR quartile check, Zenodo DOI for the code, the journal's Guide for Authors.
 
+## Archive on Zenodo (checkpoints are not on GitHub)
+
+The checkpoints (`/home/jovyan/simclr_store/ckpt`, 357 runs, 8.7 GB) exist only on the server. To archive them
+with the code, results and paper under one DOI:
+```bash
+# once: a Zenodo personal access token with scopes deposit:write and deposit:actions, stored without echo
+mkdir -p ~/.config/zenodo && read -rs T && printf %s "$T" > ~/.config/zenodo/token && chmod 600 ~/.config/zenodo/token
+python scripts/zenodo_upload.py reserve     # draft record + reserved DOI -> put the DOI into paper/statements.tex, commit
+python scripts/zenodo_upload.py prepare     # archives in /tmp/simclr_zenodo (code archive from HEAD)
+python scripts/zenodo_upload.py upload      # resumes if interrupted; the record stays a draft
+python scripts/zenodo_upload.py publish     # only after checking the draft on zenodo.org (irreversible)
+```
+
 ## Continuing with a new Claude session
 
 Start the session in this folder and give it this message:
