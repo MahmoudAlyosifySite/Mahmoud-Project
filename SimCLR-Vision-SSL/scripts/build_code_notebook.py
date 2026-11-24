@@ -363,6 +363,8 @@ setup = ('import os\n\n'
          'print("writing the code tree into", os.getcwd())\n')
 cells[SETUP_INDEX + 1] = new_code_cell(setup)
 
+for i, c in enumerate(cells):      # stable ids, so that regenerating the notebook gives no diff
+    c["id"] = f"cell-{i:03d}"
 nb = new_notebook(cells=cells, metadata={
     "kernelspec": {"display_name": "Python 3", "language": "python", "name": "python3"},
     "language_info": {"name": "python"}})
