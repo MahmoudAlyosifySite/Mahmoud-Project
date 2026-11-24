@@ -106,7 +106,7 @@ Abstract ({len(abstract)} of {ABSTRACT_LIMIT} characters):
 {abstract}
 
 Comments:
-{pages} pages, {n_figs} figure, {n_tables} tables. Code, evaluation texts, per-utterance scores and the scripts behind every number: https://github.com/MahmoudAlyosifySite/Mahmoud-Project/tree/main/BA (archived at https://doi.org/10.5281/zenodo.24517175)
+{pages} pages, {n_figs} figure, {n_tables} tables. Model: https://huggingface.co/mahmoudalyosify/BA . Demo: https://huggingface.co/spaces/mahmoudalyosify/BA . Code, evaluation texts, per-utterance scores and the scripts behind every number: https://github.com/MahmoudAlyosifySite/Mahmoud-Project/tree/main/BA (archived at https://doi.org/10.5281/zenodo.24517175)
 
 Primary category: cs.CL (Computation and Language)
 Cross-lists: eess.AS (Audio and Speech Processing), cs.SD (Sound)
