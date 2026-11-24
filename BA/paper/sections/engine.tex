@@ -3,7 +3,8 @@
 \vox already clears every G3 bar for Egyptian Arabic, English and French, so the planned fine-tune was not needed to
 list Egyptian, and no Egyptian training data with a licence and provenance we could accept exists beyond two
 synthetic voices (NileTTS). \BA therefore keeps the \vox weights unchanged and adds an engine around them. Each
-component targets an error we measured in the bake-off; each default was chosen on the tuning sentences only.
+component targets a problem seen in the bake-off; each default was chosen on the tuning sentences only. The
+ablations in \cref{sec:results} show which of them move the automatic metrics.
 
 \paragraph{Egyptian number and symbol normaliser}
 Digits were the largest error source for every system: on sentences with numbers, CER rose for all of them, and

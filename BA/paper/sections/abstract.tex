@@ -11,7 +11,8 @@ selects, we build BA, an engine that leaves the weights unchanged and adds Egypt
 normalisation, a loanword policy for code-switching, automatic reference transcription, reference screening and
 checked long-text generation. On held-out sentences BA lowers CER from \R{ho:voxcpm2:cer} to \R{ho:ba:cer} and
 raises speaker similarity from \R{ho:voxcpm2:ecapa} to \R{ho:ba:ecapa}, matching the lowest-CER system on
-intelligibility while keeping the dialect. We also audit the licences of Egyptian-capable models, most of which
+intelligibility while keeping the dialect; ablations trace this gain to automatic reference transcription, while
+the Egyptian number normaliser is invisible to CER, a second instance of the same blind spot. We also audit the licences of Egyptian-capable models, most of which
 cannot be built on commercially, and release BA with a required consent step, no storage of uploads, and an
 inaudible watermark on every output. BA is named after the ancient Egyptian \emph{ba}, the part of the soul that
 carries a person's individuality.

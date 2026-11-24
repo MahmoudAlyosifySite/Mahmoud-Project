@@ -42,10 +42,37 @@ understates the normaliser's effect, because a recogniser can transcribe an MSA 
 digits; whether the number \emph{sounds} Egyptian is a question for listeners (\cref{sec:limitations}).
 
 \subsection{Ablations: where the gain comes from}
-\pending{Table and text from ablations.json: full \BA against \BA without the normaliser, without the loanword
-policy, without the reference transcript, and without reference preparation, on held-out Egyptian, digit,
-code-switched and English sentences, with paired intervals.}
 
+\begin{table}[t]
+\centering\small
+\caption{Ablations on held-out sentences (seed index 0, same utterances in every row). Each middle row removes one
+component from \BA; the last row is \vox used directly. Bold: the paired 95\% interval of the difference from full
+\BA excludes zero. CER$_\text{canon.}$: CER after mapping Latin and Arabic-script spellings of the same loanword to
+one form. Egy.: share labelled Egyptian by classifier~1. Intervals for every cell are in \texttt{ablations.md}.}
+\label{tab:ablation}
+\begin{adjustbox}{max width=\linewidth}
+\rawinput{generated/tab_ablation.tex}
+\end{adjustbox}
+\end{table}
+
+\Cref{tab:ablation} removes one component at a time. One component carries almost all of the measurable gain: the
+automatic reference transcript. Without it, Egyptian CER rises from \R{ab:full:egy_main:err} to
+\R{ab:no_transcript:egy_main:err} (an interval that includes zero), speaker similarity falls by
+\R{ab:no_transcript:egy_main:sim_ecapa:diff} (CI \R{ab:no_transcript:egy_main:sim_ecapa:ci}), and on code-switched
+sentences the Egyptian share falls from \R{ab:full:cs:c1} to \R{ab:no_transcript:cs:c1} while CER rises; in English,
+similarity falls by \R{ab:no_transcript:en:sim_ecapa:diff}. Removing it accounts for about \R{ab:share:notrans:ecapa}
+of \BA's similarity gain over \vox (plain) and \R{ab:share:notrans:cer} of its CER gain on Egyptian sentences.
+
+The other components leave the automatic metrics unchanged. Reference preparation makes no measurable difference on
+FLEURS references, which are already clean studio-quality clips; its job is to reject or repair the phone recordings
+of real users, which this test set does not contain. The chunk check never triggered (\R{ab:chunk:retries} retries
+in 150 utterances), so removing it would reproduce full \BA. Most telling for this paper, the Egyptian number
+normaliser does not change CER on digit sentences (\R{ab:full:egy_digits:err} with it, \R{ab:no_normaliser:egy_digits:err}
+without) and the loanword policy does not change canonical CER. Both change \emph{what is said}: without the
+normaliser, \vox reads \emph{7:30} or \emph{15} as it sees fit (the bake-off listening check found that most systems did
+not say numbers the Egyptian way), and the recogniser writes any reading back as the same digits. The metric that cannot see a dialect cannot see a dialectal number either. Whether
+these components make the speech sound more Egyptian is a question for listeners, and we leave it to the listening
+test rather than claim it.
 \subsection{English, French and cross-language cloning}
 All three languages pass G3 on held-out sentences. In English, \BA's WER is \R{ho:ba:en:wer} with no failures
 (\R{ho:ba:en:fail}), and speaker similarity rises from \R{ho:voxcpm2:en:ecapa} for \vox (plain), below the G3 bar of

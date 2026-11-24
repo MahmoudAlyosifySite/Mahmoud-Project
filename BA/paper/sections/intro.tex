@@ -19,11 +19,13 @@ Egyptian CER, \cbthree (CER~\R{bk:cb-v3:cer}), was heard as not Egyptian. A dial
 ran, ranked systems by CER and chose \cbthree; we amended it, in public and with the reason, before building on the
 result (\cref{sec:protocol}).
 
-We then build \BA on the model that a dialect-aware protocol selects, and close much of the remaining gap at
-inference time without training: an Egyptian number and symbol normaliser, a loanword policy for code-switched
-text, automatic reference transcription, reference screening, and long-text chunking with checks. On held-out
-sentences, \BA lowers Egyptian CER from \R{ho:voxcpm2:cer} to \R{ho:ba:cer} and raises speaker similarity from
-\R{ho:voxcpm2:ecapa} to \R{ho:ba:ecapa} relative to the same model used directly. Every output carries an
+We then build \BA on the model that a dialect-aware protocol selects, without training: an Egyptian number and
+symbol normaliser, a loanword policy for code-switched text, automatic reference transcription, reference
+screening, and long-text chunking with checks. On held-out sentences, \BA lowers Egyptian CER from
+\R{ho:voxcpm2:cer} to \R{ho:ba:cer} and raises speaker similarity from \R{ho:voxcpm2:ecapa} to \R{ho:ba:ecapa}
+relative to the same model used directly. Ablations trace almost all of this measurable gain to the automatic
+reference transcript; the Egyptian number normaliser leaves CER unchanged, because a recogniser writes an Egyptian
+and an MSA reading of a number as the same digits: a second, small instance of the same blind spot. Every output carries an
 inaudible watermark, and the demo will not run without a consent statement.
 
 \paragraph{Contributions}
