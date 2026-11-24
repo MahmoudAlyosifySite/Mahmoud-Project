@@ -10,6 +10,32 @@ Written 2026-11-15. Target: an arXiv preprint (free), primary category cs.CL, cr
 
 Class: `elsarticle` (`preprint,12pt` or `5p` two-column), matching the `\author[a]...\corref` syntax. It is not installed on this server; it is on arXiv's TeX Live, and its CTAN files (LPPL) can be placed next to `main.tex` for local builds.
 
+## 0. Status and revised order (2026-11-24)
+
+The A40 is free again (the SimCLR runs finished). `/tmp/ba` was lost in a container restart, so the venvs are rebuilt
+first; generated audio in `/home/jovyan/ba-work/` survived.
+
+| Item | State |
+|---|---|
+| Second dialect classifier on the bake-off, BA and calibration speech | **Done** (`dialect_classifier2.md`): classifiers agree on ranking (Spearman 0.85), kappa 0.64 on real speech |
+| Uncertainty analysis with two-way bootstrap, paired tests, Holm | **Done for seed 0**; seeds 1-2 not generated yet (38 of 180 BA files exist) |
+| Seeds 1-2 for BA, raw VoxCPM2, Chatterbox V3, NAMAA | To run (GPU, about 1.5 h) |
+| Ablations: no normaliser, no loanword policy, no transcript, raw reference | To run (GPU, about 40 min), then `ablations.py` |
+| Long-form set: 24 new passages (8 per language) x 2 voices, BA and raw VoxCPM2 | To run (GPU, about 2-3 h) |
+| Watermark under 25 attacks, 60 watermarked + 290 clean clips | To run (CPU/GPU, about 1 h) |
+| Literature and novelty check | Half done (`novelty.md`, 45 verified entries in `refs.bib`) |
+| Multi-rater listening test, volunteer voices | Needs the owner (section 7) |
+
+Order from here: (1) all automated runs in one queue (`run_paper.sh`), (2) literature check finished and the
+related-work section written meanwhile, (3) full draft with every number from results files, (4) listening test
+with volunteer voices, (5) final paper and arXiv package. A v1 on arXiv after step 3 is possible, with the one-rater
+check reported honestly; the listening test then becomes v2.
+
+**The name, as the owner wants it stated** (introduction, one short paragraph, with an Egyptological citation): in
+ancient Egyptian belief, the *ba* is the part of the soul that carries a person's true personality and
+individuality; a voice is the most personal sound a person makes, so a system that speaks in someone's own voice
+is named after it. The Arabic letter ب is read *ba*, and the mark draws it with a voice wave.
+
 ## 1. What the paper claims (and what it does not)
 
 BA v0.1 does not train a new model. It drives the unmodified VoxCPM2 weights with an engine built for Egyptian Arabic, chosen and evaluated by a protocol fixed in advance. A paper that sells BA as a new model would be rejected by any careful reader. The strong, true story is this:
