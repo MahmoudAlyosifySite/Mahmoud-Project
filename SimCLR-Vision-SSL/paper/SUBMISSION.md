@@ -21,10 +21,10 @@ that are still in the queue (`\pending{...}`); none may remain in a submitted ve
 1. **Author contributions (CRediT).** `statements.tex` contains a proposed split of roles. Check and correct it.
 2. **Funding and competing interests.** `statements.tex` uses the standard "no specific grant" and "no competing
    interests" sentences. Replace them if they are not accurate.
-3. **Declaration of generative AI.** Elsevier and Springer journals require authors to declare the use of generative
-   AI in preparing a manuscript (Elsevier: a section "Declaration of generative AI and AI-assisted technologies in the
-   manuscript preparation process" before the references). The manuscript currently contains no such section. Read
-   the policy of the chosen journal and add the declaration it requires.
+3. **Declaration of generative AI.** Added at the end of `statements.tex`, immediately before the references, with
+   the section title and the standard wording of Elsevier's policy. Check that the stated use matches how the
+   tool was used, and adapt it if the chosen journal (or Springer, which wants it in the Methods section) asks
+   for something else.
 4. **Anonymity.** If the journal is double-anonymised, set `\anontrue` in `submission.tex` (this hides the authors,
    the CRediT section and the repository link) and prepare an anonymised copy of the repository.
 5. **Code archive.** Create a release of the repository and archive it on Zenodo to obtain a DOI; put the DOI and the
