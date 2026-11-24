@@ -1,0 +1,31 @@
+\section{A consent-first release}\label{sec:release}
+
+A voice is personal data, and a cloning system can be used to impersonate people
+\citep{hutiri2024notmyvoice}. \BA's release follows from that.
+
+\paragraph{What is published}
+The engine (code and text normalisers), its configuration, the evaluation texts, per-utterance scores and all
+scripts are public. The model repository serves the unchanged \vox weights with \BA's configuration and package; the
+demo runs the same code. \BA's own work is under a non-commercial community licence with conditions against
+impersonation and use without consent; \vox and the other components keep their own licences (Apache-2.0 and MIT),
+which allow a derivative to carry stricter terms. The licence has not been reviewed by a lawyer, and we say so.
+
+\paragraph{What is not published}
+No FLEURS speaker's audio or clone is redistributed: those speakers licensed recordings for speech research, not
+public demonstrations of their cloned voices saying new things. Samples on the model card clone two synthetic
+Egyptian voices designed from a text description with \vox.
+
+\paragraph{Consent and storage}
+The demo does not generate until the user confirms, in Arabic and English, that the voice is theirs or that they
+have the speaker's explicit permission. Uploads are copied to a per-request temporary directory that is deleted when
+the request ends; the prepared voice lives only in the browser session's memory; no text or audio is logged, and
+analytics are off.
+
+\paragraph{Watermark}
+Every output carries an AudioSeal watermark with a fixed 16-bit message. In a first check, it was detected in all
+\R{wm:ba:n} held-out \BA outputs as WAV, as MP3 at 128 and 64\,kbit/s and after resampling to 16\,kHz, and in none
+of the \R{wm:clean:n} unwatermarked clips (plain \vox outputs and real speech).
+\pending{Robustness under 25 attacks (noise and babble at 20/10/5\,dB, speed and tempo changes, telephone band,
+MP3/AAC/Opus at low bit rates and chains of them, 3-second excerpts, gain and loudness changes), with detection and
+false-positive rates, from watermark\_attacks.py.} A watermark helps platforms and investigators identify \BA output;
+it does not stop someone who strips it or uses another system, and we do not present it as a safeguard on its own.

@@ -1,0 +1,42 @@
+\section{Systems and licence provenance}\label{sec:systems}
+
+We screened every open voice-cloning model with Arabic support that we could find in November 2026, and checked
+two things for each: the licence of the \emph{weights} (which often differs from the code's), and the licence of
+whatever the weights were derived from. \Cref{tab:licences} shows the result. A model can serve as the base of a
+system that its owner may later use commercially only if its weights are under a permissive licence; a fine-tune
+cannot drop a non-commercial term of its parent, whatever its own label says.
+
+\begin{table}[t]
+\centering\small
+\caption{Licence screening of open voice-cloning models with Arabic or Egyptian support. ``Measured'' marks the
+systems in our bake-off; models marked ``reference only'' are measured but cannot be a base. Parameters in billions.}
+\label{tab:licences}
+\begin{adjustbox}{max width=\linewidth}
+\begin{tabular}{@{}lllll@{}}
+\toprule
+Model & Params & Weights licence & Arabic & Role here \\
+\midrule
+\vox \citep{zhou2026voxcpm2} & 2.0 & Apache-2.0 & yes & measured; eligible \\
+Chatterbox Multilingual V2 and V3 \citep{resemble2025chatterbox} & 0.5 & MIT & yes & measured; eligible \\
+NAMAA-Egyptian-TTS \citep{namaa2026egyptiantts} & 0.5 & MIT (Chatterbox fine-tune; data undocumented) & Egyptian & measured; baseline \\
+lahgtna-chatterbox-v1 \citep{oddadmix2026lahgtna} & 0.5 & MIT (Chatterbox fine-tune; data undocumented) & Egyptian & measured; baseline \\
+OmniVoice \citep{zhu2026omnivoice} & -- & CC-BY-NC (code Apache-2.0) & yes & measured; reference only \\
+VoiceTut-TTS \citep{aly2026voicetut} & -- & labelled Apache-2.0, parent CC-BY-NC & Egyptian & measured; reference only \\
+Habibi, F5-TTS \citep{chen2026habibi,chen2025f5tts} & -- & CC-BY-NC-SA, CC-BY-NC & dialects & not measured \\
+XTTS-v2 and its Egyptian fine-tunes \citep{casanova2024xtts} & -- & Coqui CPML (non-commercial) & MSA & not measured \\
+Fish-Speech / OpenAudio S1 \citep{liao2024fishspeech} & -- & CC-BY-NC-SA & yes & not measured \\
+CosyVoice 3, Qwen3-TTS \citep{du2025cosyvoice3,hu2026qwen3tts} & -- & Apache-2.0 & no & not applicable \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\end{table}
+
+Two findings matter beyond this paper. First, most models that speak Egyptian at all are non-commercial, directly or
+through their parent. Second, a permissive label on the Hub is not evidence: VoiceTut-TTS is tagged Apache-2.0 but is
+fine-tuned from OmniVoice, whose weights are CC-BY-NC. The two Egyptian Chatterbox fine-tunes do not document their
+training data, so their provenance cannot be checked; we use them as baselines, not as bases.
+
+The bake-off covers seven models in nine configurations: the seven measured models in \cref{tab:licences}, plus
+\vox with the reference transcript supplied (its ``prompt'' mode, which \BA uses) and Chatterbox V3 loaded through
+the older PyPI package, kept as a diagnostic because the two loaders behave very differently
+(\cref{app:tables}). Each runs with its published defaults.

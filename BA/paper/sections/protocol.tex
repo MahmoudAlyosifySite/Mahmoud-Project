@@ -1,0 +1,72 @@
+\section{Evaluation protocol}\label{sec:protocol}
+
+The protocol, its thresholds and the rule for choosing a base model were written down and committed before any model
+was run. Every number in this paper is read by a script from a results file produced by a saved command
+(\cref{app:claims}).
+
+\paragraph{Texts}
+Forty colloquial Egyptian sentences written for this study (12 everyday statements, 8 questions, 6 emotional, 8 with
+digits, 6 long), a diacritised copy of ten of them, six Arabic--English code-switched sentences, twenty English and
+twenty French sentences, and one passage of about 120 words per language. The digit sentences carry a hand-written
+Egyptian spelled-out form, used as a second ASR reference. Ten Egyptian and six English sentences were set aside
+before any engine experiment to tune \BA; all engine results are on the remaining \emph{held-out} sentences
+(24 Egyptian, 6 with digits, 14 English). A second set of 24 long passages (8 per language) was written later for
+the long-form test and never used for tuning.
+
+\paragraph{Voices}
+Twelve FLEURS speakers \citep{conneau2023fleurs}: six Egyptian (three male from the training split, because the
+Egyptian test split is all female, and three female), three American English and three French. Each has a
+reference clip of 8--15\,s and a second clip of the same speaker. FLEURS is read speech, mostly MSA in register,
+which makes it a harder reference for colloquial cloning than everyday speech would be; \cref{sec:limitations}
+discusses this.
+
+\paragraph{Metrics and their calibration}
+Every metric is also computed on real speech, so that a score on generated speech can be read against what the
+metric gives for the real thing (\cref{tab:calibration}).
+\begin{itemize}[leftmargin=*]
+  \item \emph{Intelligibility:} CER (Egyptian) or WER (English, French) of Whisper large-v3 \citep{radford2023whisper}
+  with the language forced, after normalisation (Arabic: diacritics removed, alef, yaa and taa marbuta unified,
+  punctuation dropped). On real colloquial Egyptian speech its CER is \R{cal:lahgtna:cer} (lahgtna) and
+  \R{cal:niletts:cer} (NileTTS); on read Egyptian FLEURS it is \R{cal:fleurs:cer}.
+  \item \emph{Speaker similarity:} cosine similarity between reference and output under ECAPA-TDNN
+  \citep{desplanques2020ecapa,speechbrain2021ecapavoxceleb} and WavLM-SV \citep{chen2022wavlm,microsoft2022wavlmsv}. Two clips of
+  the same real Egyptian speaker give \R{cal:spk:ceiling} (ECAPA ceiling); clips of different speakers give
+  \R{cal:spk:floor}.
+  \item \emph{Dialect:} the share of outputs whose top label is Egyptian under two independent classifiers:
+  classifier~1, MMS-300M fine-tuned on MGB-3 ADI-5 broadcast speech \citep{abdullah2025tamyizcard,pratap2024mms}, and
+  classifier~2, HuBERT fine-tuned on ADI-17 YouTube speech and QASR MSA \citep{ibrahimamin2025hubertadi}. Classifier~2
+  was added after the bake-off, to test whether the dissociation depends on one model.
+  \item \emph{Predicted quality:} DNSMOS P.808 \citep{reddy2021dnsmos}. It is trained on English and is reported
+  only as a secondary signal.
+  \item \emph{Failure:} no output, an empty or near-silent output, an output cut off at the model's length cap, or
+  a speaking rate outside $[0.5\,P_5,\ 1.5\,P_{95}]$ of real speech in that language.
+\end{itemize}
+
+\begin{table}[t]
+\centering\small
+\caption{Metrics on real speech. The dialect classifiers separate colloquial Egyptian (lahgtna, NileTTS) from read
+Egyptian FLEURS, which is mostly MSA in register. Bootstrap intervals in \cref{app:tables}.}
+\label{tab:calibration}
+\rawinput{generated/tab_calibration.tex}
+\end{table}
+
+\paragraph{Uncertainty}
+Texts and voices are both sampled, so intervals come from a two-way bootstrap that resamples texts and voices
+independently (10,000 resamples, 95\% percentile intervals); paired comparisons use the same resampling on
+per-utterance differences, and the six primary tests are Holm-corrected. With three voices per language, intervals
+are wide; we report them rather than hide them.
+
+\paragraph{Gates, and the one amendment}
+Three gates were fixed in advance. \textbf{G1} chooses the base: among licence-eligible systems with a failure
+rate of at most 5\%, the lowest Egyptian CER wins, with ties broken by speaker similarity and then size.
+\textbf{G2} decides whether a fine-tune ships (not used: no fine-tune was trained, see \cref{sec:engine}).
+\textbf{G3} decides which languages the final system may list: per language, a failure rate of at most 5\%, CER
+within 0.10 of the ASR's CER on real colloquial speech, similarity at least 80\% of the same-speaker ceiling, and,
+for the label ``Egyptian Arabic'', a dialect share at least 60\% of the share on real colloquial Egyptian speech.
+
+Applied as written, G1 selected \cbthree. Its Egyptian outputs, however, fail G3's dialect bar
+(\R{bk:cb-v3:c1pct} against a bar of \R{g1:bar}), so G1 would have chosen a base that could not be called Egyptian
+without training data we do not have. We amended G1 to require G3's dialect bar before ranking on CER, recorded the
+change with its date, its reason and the fact that it was made after seeing the results, and kept the original
+outcome in the record. Under the amended rule \vox is the only eligible system that passes. The amendment is not a
+detail of our process; it is the first evidence for the paper's main finding.

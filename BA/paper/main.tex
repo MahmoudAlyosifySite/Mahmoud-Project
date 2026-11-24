@@ -1,0 +1,40 @@
+% BA paper (arXiv preprint).   Build: bash build.sh
+\documentclass[preprint,3p,10pt]{elsarticle}
+\input{preamble.tex}
+\makeatletter   % no "Preprint submitted to <journal>" footer
+\def\ps@pprintTitle{\let\@oddhead\@empty\let\@evenhead\@empty\def\@oddfoot{\hfil\thepage\hfil}\let\@evenfoot\@oddfoot}
+\makeatother
+\begin{document}
+\begin{frontmatter}
+\title{\papertitle}
+\author[a]{Mahmoud Alyosify\,\orcidlink{0009-0005-1336-2726}\corref{cor1}}
+\ead{mahmoud.alyosify@queensu.ca}
+\cortext[cor1]{Corresponding author.}
+\affiliation[a]{organization={Queen's University}, city={Kingston}, state={Ontario}, country={Canada}}
+\begin{abstract}
+\input{sections/abstract.tex}
+\end{abstract}
+\begin{keyword}
+voice cloning \sep zero-shot text-to-speech \sep Egyptian Arabic \sep dialect identification \sep
+evaluation \sep audio watermarking
+\end{keyword}
+\end{frontmatter}
+
+\input{sections/intro.tex}
+\input{sections/related.tex}
+\input{sections/systems.tex}
+\input{sections/protocol.tex}
+\input{sections/dissociation.tex}
+\input{sections/engine.tex}
+\input{sections/results.tex}
+\input{sections/release.tex}
+\input{sections/limitations.tex}
+\input{sections/conclusion.tex}
+\input{sections/statements.tex}
+
+\bibliographystyle{elsarticle-num-names}
+\bibliography{refs}
+
+\appendix
+\input{sections/appendix.tex}
+\end{document}

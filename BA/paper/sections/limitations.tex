@@ -1,0 +1,28 @@
+\section{Limitations}\label{sec:limitations}
+
+\paragraph{Human judgement}
+The listening evidence is one native listener, the author, rating six sentences per system blind. It agrees with two
+classifiers on the decision that matters, but it is not a listening test. A blind test with multiple native Egyptian
+listeners rating naturalness, Egyptian authenticity, similarity and correctness, with real speech as a hidden
+anchor, is the next step \pending{and will be reported in a revision}.
+
+\paragraph{Reference voices}
+FLEURS speakers read prepared text, mostly in an MSA register; only some of their clips are labelled Egyptian by the
+classifiers. Cloning colloquial Egyptian from such references is harder than from everyday speech, and our numbers
+may understate what all systems do with a colloquial reference. Six Egyptian voices, three per sentence, also make
+the intervals wide.
+
+\paragraph{Classifiers as dialect measures}
+Both classifiers label real colloquial Egyptian speech as Egyptian most of the time, but they are trained on
+broadcast and online speech, not on synthetic speech, and they disagree on many single utterances. We therefore use
+system-level shares, calibrate the bar on real speech, and report both classifiers.
+
+\paragraph{Scope}
+\BA adds no training; dialect features that \vox cannot produce, \BA cannot add. Results are for Egyptian Arabic,
+English and French with the systems available in November 2026. The text normaliser covers Cairene usage; other
+Egyptian varieties (for example Upper Egyptian) are not covered.
+
+\paragraph{Misuse}
+Despite the consent step and the watermark, a determined user can clone a voice without permission. We release
+because the same technology is already public in less careful forms, and because an open, measured Egyptian system
+helps people build, audit and detect such systems; this is a judgement, not a guarantee.

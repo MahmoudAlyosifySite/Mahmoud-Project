@@ -1,0 +1,39 @@
+% preamble of main.tex
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{multirow}
+\usepackage{enumitem}
+\usepackage{microtype}
+\usepackage{adjustbox}
+\usepackage{xspace}
+\usepackage{url}
+\usepackage[hidelinks]{hyperref}
+\usepackage{orcidlink}
+\usepackage[capitalise,noabbrev]{cleveref}
+\crefformat{appendix}{#2#1#3}\Crefformat{appendix}{#2#1#3}
+\hypersetup{colorlinks=true, linkcolor=[rgb]{0.1,0.25,0.6}, citecolor=[rgb]{0.1,0.25,0.6}, urlcolor=[rgb]{0.1,0.25,0.6}}
+\setlist{itemsep=2pt, topsep=3pt}
+\xspaceaddexceptions{\%}
+
+\makeatletter\newcommand{\rawinput}{\@@input}\makeatother
+\input{generated/numbers.tex}
+
+% Arabic is typeset once, by scripts/make_arabic.py (XeLaTeX), and included here as small PDFs,
+% so that the paper itself builds with pdfLaTeX (arXiv's default).
+\newcommand{\ar}[1]{\raisebox{-0.55ex}{\includegraphics[height=2.6ex]{generated/ar/#1.pdf}}}
+
+\newcommand{\BA}{BA\xspace}
+\newcommand{\vox}{VoxCPM2\xspace}
+\newcommand{\cbthree}{Chatterbox~V3\xspace}
+\newcommand{\repo}{\url{https://github.com/MahmoudAlyosifySite/Mahmoud-Project/tree/main/BA}}
+\newcommand{\hfmodel}{\url{https://huggingface.co/mahmoudalyosify/BA}}
+\newcommand{\hfspace}{\url{https://huggingface.co/spaces/mahmoudalyosify/BA}}
+\newcommand{\papertitle}{BA: Right Words, Wrong Dialect.\\ Choosing, Building and Releasing\\ Consent-First Voice Cloning for Egyptian Arabic}
+\AtBeginDocument{\hypersetup{pdftitle={BA: Right Words, Wrong Dialect. Choosing, Building and Releasing Consent-First Voice Cloning for Egyptian Arabic}, pdfauthor={Mahmoud Alyosify}}}
+% text that depends on runs still in the queue (draft builds only; none may remain at submission)
+\newcommand{\pending}[1]{{\color{gray}\itshape [#1]}}

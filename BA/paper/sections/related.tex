@@ -1,0 +1,42 @@
+\section{Related work}\label{sec:related}
+
+\paragraph{Zero-shot voice cloning}
+Codec language models \citep{chen2025valle}, factorised diffusion \citep{ju2024naturalspeech3}, flow matching
+\citep{chen2025f5tts} and large-language-model backbones with speech tokens \citep{du2024cosyvoice,du2024cosyvoice2,
+du2025cosyvoice3,hu2026qwen3tts,liao2024fishspeech,casanova2024xtts} clone a voice from a few seconds of reference
+audio. Several open models list Arabic among their languages: \vox, a tokenizer-free 2B-parameter model trained on a
+multilingual corpus and released under Apache-2.0 \citep{zhou2025voxcpm,zhou2026voxcpm2,openbmb2026voxcpm2card};
+Chatterbox Multilingual (MIT) \citep{resemble2025chatterbox}; and OmniVoice, which covers hundreds of languages under
+a non-commercial licence \citep{zhu2026omnivoice}. Their reports evaluate Arabic, if at all, on MSA test sets.
+
+\paragraph{Egyptian and dialectal Arabic speech synthesis}
+Doan et al.\ \citep{doan2024arabicdialects} fine-tune XTTS for Arabic dialects and observe that the fine-tunes
+produce dialectal speech while their WER rises; they read the rise as a cost. Habibi \citep{chen2026habibi} trains
+unified dialectal models and reports WER against two recognisers next to a dialect MOS from listeners; its Egyptian
+results include a system with lower WER and a lower dialect MOS than a commercial system, which the authors do not
+discuss. NileTTS \citep{khamis2026niletts} builds a 38-hour synthetic Egyptian corpus from two voices and evaluates
+with Whisper WER and speaker similarity only. Community fine-tunes of Chatterbox and OmniVoice for Egyptian
+\citep{namaa2026egyptiantts,oddadmix2026lahgtna,aly2026voicetut} report no dialect measurement. None of these works
+compares systems on intelligibility and dialect at once, or asks which one a selection rule would choose.
+
+\paragraph{Evaluating dialect and accent}
+Recognition error rates are known to be unreliable for under-represented accents. Zhong et al.\ \citep{zhong2025accent}
+state that WER has ``significant limitations'' for assessing such accents and recommend against WER, CER and UTMOS
+for accent generation; their argument rests on English with an Edinburgh accent and on an assumed ranking of systems,
+not on listener ratings of intelligibility. Their follow-up \citep{zhong2026segmental} shows that segment-level
+listener annotations can rank systems differently from similarity ratings. Classifier-based evaluation of dialect
+and accent is proposed by Voxlect \citep{feng2025voxlect}, which reports agreement with native ratings for
+Mandarin dialects, and by Vox-Profile \citep{feng2025voxprofile} for accent preservation in voice conversion. For
+Arabic, dialect identification has been benchmarked in the MGB challenges \citep{ali2017mgb3,ali2019mgb5}; we use
+two public classifiers trained on different data \citep{abdullah2025tamyizcard,abdullah2025adivc,
+ibrahimamin2025hubertadi}. Automatic MOS predictors are known to transfer poorly to new languages and domains
+\citep{huang2022voicemos,cooper2023voicemos,kunesova2024zeroshotmos}, so we report DNSMOS \citep{reddy2021dnsmos,
+reddy2022dnsmosp835} only as a secondary signal. We are not aware of prior work showing, for any dialect, that the
+system with the lowest recognition error is the one judged least dialectal by classifiers and listeners alike, so
+that selection by intelligibility picks the wrong model.
+
+\paragraph{Watermarking and consent}
+AudioSeal \citep{sanroman2024audioseal} and WavMark \citep{chen2023wavmark} embed detectable marks in generated
+speech; AudioSeal is localised and fast, and is what \BA uses. Hutiri et al.\ \citep{hutiri2024notmyvoice} catalogue
+harms of speech generators, including impersonation and non-consensual cloning, which motivate the release choices in
+\cref{sec:release}.

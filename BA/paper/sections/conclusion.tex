@@ -1,0 +1,9 @@
+\section{Conclusion}\label{sec:conclusion}
+
+For Egyptian Arabic voice cloning, the metric that a practitioner would reach for first, intelligibility, selects
+the wrong model: the open system with the lowest character error rate was the least Egyptian, by two independent
+classifiers and by ear, and our own selection rule would have chosen it. A protocol that pairs intelligibility with
+a dialect bar calibrated on real colloquial speech selects a different base, on which \BA, an inference-time engine
+for Egyptian text, references and long inputs, reaches the intelligibility of the best system while keeping the
+dialect, with no new training. For any dialect, we recommend that evaluations report a calibrated dialect measure
+next to error rates, and that selection rules state the dialect bar before the first model is run.

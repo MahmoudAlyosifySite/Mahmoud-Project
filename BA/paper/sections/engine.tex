@@ -1,0 +1,52 @@
+\section{BA: an inference-time engine for Egyptian Arabic}\label{sec:engine}
+
+\vox already clears every G3 bar for Egyptian Arabic, English and French, so the planned fine-tune was not needed to
+list Egyptian, and no Egyptian training data with a licence and provenance we could accept exists beyond two
+synthetic voices (NileTTS). \BA therefore keeps the \vox weights unchanged and adds an engine around them. Each
+component targets an error we measured in the bake-off; each default was chosen on the tuning sentences only.
+
+\paragraph{Egyptian number and symbol normaliser}
+Digits were the largest error source for every system: on sentences with numbers, CER rose for all of them, and
+the listening check noted that ``in most systems the number is not said the Egyptian way''. The normaliser writes
+numbers as Cairenes say them, never in MSA: cardinals up to the billions, years, dates, times (\emph{7:30}
+$\rightarrow$ \ar{sab3a-wnoss}), prices with currencies, percentages, decimals and simple fractions, phone numbers
+digit by digit, ordinals, counted plurals (\emph{4 days} $\rightarrow$ \ar{arba3-ayyam}, with the Egyptian
+counted form) and common symbols and abbreviations. Forms follow colloquial usage (\ar{khamastashar} ``fifteen'',
+\ar{tultumiyya} ``three hundred''), not MSA (\ar{khamsata3ashar}, \ar{thalathumi2a}). English and French have
+their own normalisers with the same coverage.
+
+\paragraph{Loanword policy for code-switched text}
+Egyptians mix English words into Arabic sentences. Left in Latin script, \vox reads them with English phonology;
+written in Arabic script as Egyptians say them (\emph{meeting} $\rightarrow$ \ar{meeting}), they are read as part of
+the Arabic sentence. \BA writes a list of common loanwords in Arabic script, spells short acronyms letter by letter
+and leaves other Latin words as they are. On the tuning set this kept intelligibility level (canonical-script CER
+\R{cs:keep:cer} kept vs \R{cs:arabic:cer} transliterated) and raised the Egyptian share from \R{cs:keep:c1pct} to
+\R{cs:arabic:c1pct}.
+
+\paragraph{Reference transcript}
+\vox can condition on the reference audio alone or on the audio and its transcript. In the bake-off the transcript
+raised speaker similarity from \R{bk:voxcpm2:ecapa} to \R{bk:voxcpm2-prompt:ecapa} and the Egyptian share from
+\R{bk:voxcpm2:c1pct} to \R{bk:voxcpm2-prompt:c1pct}. Users rarely type what they said, so \BA transcribes the
+reference with Whisper large-v3-turbo \citep{openai2024whisperturbo}, which on real colloquial Egyptian speech is
+close to large-v3 (\R{asr:turbo:cer} vs \R{asr:large:cer} CER) at a fraction of the cost.
+
+\paragraph{Reference preparation}
+Uploads are converted to mono 16\,kHz, screened, and cut to the cleanest 6--15\,s window: long pauses are shortened
+and the level is normalised. A recording is rejected, with a message the user can act on, if it is too short, too
+noisy or clipped. The noise and clipping thresholds were set midway between the worst clean and the best degraded
+references in a controlled test, and reject none of the \R{ref:clean:n} real clean clips we checked.
+
+\paragraph{Long text}
+\vox degrades on long inputs. \BA splits text into sentences, packs them into chunks of at most
+\R{chunk:maxchars} characters without breaking a sentence, generates each chunk, checks its speaking rate and level
+against the bands measured on real speech, retries a failing chunk up to twice with a new seed, and joins the chunks
+with pauses that depend on the punctuation.
+
+\paragraph{Generation settings and watermark}
+Classifier-free guidance 2.0 and 10 diffusion steps, chosen by a six-setting sweep on the tuning sentences. Every
+output is watermarked with AudioSeal \citep{sanroman2024audioseal} with a fixed 16-bit message: the mark is computed on
+a 16\,kHz copy and added to the 48\,kHz output, leaving content above 8\,kHz untouched (\cref{sec:release}).
+
+\paragraph{What \BA does not change}
+No weights are modified. Any gain over \vox therefore comes from what the model is given (text, reference, transcript)
+and how its output is checked, which the ablations in \cref{sec:results} separate.

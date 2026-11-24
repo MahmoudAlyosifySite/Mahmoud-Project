@@ -1,0 +1,17 @@
+Open zero-shot voice-cloning models are compared on intelligibility, speaker similarity and predicted quality. For
+dialects, this misses what listeners notice first. We measured seven open voice-cloning models on colloquial
+Egyptian Arabic and found that intelligibility selects the wrong model: the system with the lowest character error
+rate (CER \R{bk:cb-v3:cer}) is labelled Egyptian on only \R{bk:cb-v3:c1pct} of its sentences by a dialect
+classifier, against \R{cal:lahgtna:c1pct} for real colloquial speech, and was rated not Egyptian by a native listener
+on every sentence, while a model with almost twice the CER is labelled Egyptian \R{bk:voxcpm2:c1pct} of the time.
+Across systems, CER and the Egyptian share are uncorrelated (Spearman $\rho=\R{rank:cerc1:rho}$), and a second,
+independently trained classifier reproduces the ranking. Our own selection rule, fixed in advance, ranked by CER
+and would have chosen the non-Egyptian system; we report its amendment. On the model a dialect-aware protocol
+selects, we build BA, an engine that leaves the weights unchanged and adds Egyptian number and symbol
+normalisation, a loanword policy for code-switching, automatic reference transcription, reference screening and
+checked long-text generation. On held-out sentences BA lowers CER from \R{ho:voxcpm2:cer} to \R{ho:ba:cer} and
+raises speaker similarity from \R{ho:voxcpm2:ecapa} to \R{ho:ba:ecapa}, matching the lowest-CER system on
+intelligibility while keeping the dialect. We also audit the licences of Egyptian-capable models, most of which
+cannot be built on commercially, and release BA with a required consent step, no storage of uploads, and an
+inaudible watermark on every output. BA is named after the ancient Egyptian \emph{ba}, the part of the soul that
+carries a person's individuality.

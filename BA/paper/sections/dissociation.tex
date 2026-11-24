@@ -1,0 +1,70 @@
+\section{Right words, wrong dialect}\label{sec:dissociation}
+
+\Cref{tab:bakeoff} and \cref{fig:dissociation} give the bake-off on the 32 non-digit Egyptian sentences, each spoken
+in three Egyptian voices. The two quantities a practitioner would look at first, CER and dialect, do not agree.
+
+\begin{table}[t]
+\centering\small
+\caption{Bake-off on colloquial Egyptian text (32 sentences $\times$ 3 voices $= 96$ utterances per system; one seed).
+CER from Whisper large-v3 with a two-way bootstrap interval over texts and voices. ``Labelled Egyptian'': share of
+outputs whose top label is Egyptian under each dialect classifier (real colloquial Egyptian speech:
+\R{cal:lahgtna:c1pct} and \R{cal:lahgtna:c2pct}). Listener: the author's blind check on six sentences per system,
+rated Egyptian / partly / not Egyptian. $^\dagger$Non-commercial weights, measured for reference only. Below the line:
+a diagnostic loader of Chatterbox V3.}
+\label{tab:bakeoff}
+\begin{adjustbox}{max width=\linewidth}
+\rawinput{generated/tab_bakeoff.tex}
+\end{adjustbox}
+\end{table}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{figures/dissociation.pdf}
+\caption{Egyptian CER against the share of outputs labelled Egyptian, under two independent dialect classifiers.
+Marker size grows with the author's listening ratings (circles: rated systems). The lowest-CER systems (red) are the
+least Egyptian; CER and the Egyptian share are unrelated across systems (Spearman $\rho=\R{rank:cerc1:rho}$ and
+$\R{rank:cerc2:rho}$).}
+\label{fig:dissociation}
+\end{figure}
+
+\paragraph{Lowest CER, least Egyptian}
+\cbthree has the lowest CER of all systems (\R{bk:cb-v3:cer}), and Chatterbox~V2 the second lowest
+(\R{bk:cb-v2:cer}). Classifier~1 labels only \R{bk:cb-v3:c1pct} and \R{bk:cb-v2:c1pct} of their outputs Egyptian,
+against \R{cal:lahgtna:c1pct} for real colloquial Egyptian speech; most of the rest is labelled Levantine
+(\R{lab:cb-v3:Levantine} for V3), Gulf (\R{lab:cb-v3:Gulf}) or MSA (\R{lab:cb-v3:MSA}). \vox has nearly twice the
+CER of V3 (\R{bk:voxcpm2:cer}) and is labelled Egyptian \R{bk:voxcpm2:c1pct} of the time. Across the nine
+configurations, the rank correlation between CER and the Egyptian share is \R{rank:cerc1:rho} ($p=\R{rank:cerc1:p}$)
+under classifier~1 and \R{rank:cerc2:rho} ($p=\R{rank:cerc2:p}$) under classifier~2: knowing a system's CER tells
+nothing about whether it sounds Egyptian. The intervals on CER are wide and overlap for most pairs, but the dialect
+gap between the two Chatterbox bases and \vox is large and holds under both classifiers.
+
+\paragraph{Two classifiers, trained on different data, agree}
+The finding could be an artefact of one classifier. Classifier~2 was trained on different speech (YouTube rather
+than broadcast) with a different backbone and label set. It is more generous to every system, but it ranks the
+systems in nearly the same order (Spearman $\rho=\R{rank:c1c2:rho}$, $p=\R{rank:c1c2:p}$), and under it too both
+Chatterbox bases fall below the dialect bar while \vox clears it. Per utterance the classifiers agree moderately
+(Cohen's $\kappa=\R{kappa:real}$ on real speech, \R{kappa:gen} on generated speech), so we rely on system-level shares,
+not on single labels.
+
+\paragraph{The ear agrees}
+In a blind check of six sentences per system, with names hidden and order shuffled, the author, a native Egyptian
+speaker, rated both Chatterbox bases ``not Egyptian'' on \R{lt:cb-v3:not} sentences, and \vox ``not
+Egyptian'' on none (Egyptian on \R{lt:voxcpm2:egy}, partly on \R{lt:voxcpm2:mid}). One listener and six sentences
+settle nothing on their own, but the check agrees with both classifiers on the decision that matters: which base
+can be called Egyptian. A multi-listener test is in preparation (\cref{sec:limitations}).
+
+\paragraph{Why}
+The pattern fits the training data rather than the architecture. The three Chatterbox-based systems without documented Egyptian
+training data (V3, V2 and the lahgtna fine-tune) are labelled Levantine more than anything else
+(\R{lab:chat:lev} of their outputs together), while NAMAA, a Chatterbox fine-tune on Egyptian speech, is labelled
+Egyptian \R{bk:namaa:c1pct} of the time. A recogniser trained mostly on MSA and pan-Arabic data transcribes Levantine-
+or MSA-accented Egyptian sentences correctly: the words survive, the dialect does not, and CER cannot see the
+difference. Accent can even help CER: speech closer to the recogniser's training distribution is easier to
+transcribe, which is consistent with the lowest CERs belonging to the least Egyptian systems. Our data cannot
+separate these explanations, but neither rescues CER as a selection criterion.
+
+\paragraph{Consequence for model selection}
+A selection rule that ranks by intelligibility, as our own pre-registered gate G1 did, picks \cbthree. With a dialect
+bar, it picks \vox. For any product whose purpose is to speak a dialect, intelligibility has to be paired with a
+calibrated dialect measure and, where possible, native listeners; the bar should be fixed relative to the same
+measure on real dialectal speech, since classifiers differ in how generous they are.

@@ -1,0 +1,55 @@
+\section{Introduction}\label{sec:intro}
+
+Zero-shot voice cloning can now render a few seconds of someone's speech as new sentences in their voice, in dozens of
+languages \citep{chen2025valle,ju2024naturalspeech3,chen2025f5tts,du2024cosyvoice2,zhou2026voxcpm2}. For Arabic, ``supported''
+usually means Modern Standard Arabic (MSA), the written standard. Very few people speak it at home: everyday
+speech in Egypt is Egyptian Arabic, with its own sounds, words and grammar. A system that reads an Egyptian
+sentence with MSA or Levantine pronunciation produces every word and still sounds wrong to an Egyptian listener.
+Numbers, prices and times have the same problem: \emph{7:30} is \ar{sab3a-wnoss} (``seven and a half'') in
+Cairo, and the MSA reading is heard as foreign.
+
+Open models are usually compared on intelligibility, the word or character error rate (WER, CER) of an automatic
+speech recogniser run on the output, plus speaker similarity and a predicted quality score. This paper starts from
+an observation made while choosing a base model for an Egyptian voice-cloning system: \textbf{for Egyptian Arabic,
+the intelligibility metric picks the wrong model.} Across the open systems we measured, the one with the lowest
+Egyptian CER, \cbthree (CER~\R{bk:cb-v3:cer}), was heard as not Egyptian. A dialect classifier labelled
+\R{bk:cb-v3:c1pct} of its Egyptian sentences Egyptian, and a native listener rated it ``not Egyptian'' on
+\R{lt:cb-v3:not} sentences. \vox, with almost twice the CER (\R{bk:voxcpm2:cer}), was labelled Egyptian
+\R{bk:voxcpm2:c1pct} of the time and never rated ``not Egyptian''. Our own selection rule, fixed before any model
+ran, ranked systems by CER and chose \cbthree; we amended it, in public and with the reason, before building on the
+result (\cref{sec:protocol}).
+
+We then build \BA on the model that a dialect-aware protocol selects, and close much of the remaining gap at
+inference time without training: an Egyptian number and symbol normaliser, a loanword policy for code-switched
+text, automatic reference transcription, reference screening, and long-text chunking with checks. On held-out
+sentences, \BA lowers Egyptian CER from \R{ho:voxcpm2:cer} to \R{ho:ba:cer} and raises speaker similarity from
+\R{ho:voxcpm2:ecapa} to \R{ho:ba:ecapa} relative to the same model used directly. Every output carries an
+inaudible watermark, and the demo will not run without a consent statement.
+
+\paragraph{Contributions}
+\begin{enumerate}[leftmargin=*]
+  \item \textbf{The dissociation.} On seven open voice-cloning models, Egyptian CER and Egyptian dialect
+  authenticity disagree, and selection by CER fails. Two independent dialect classifiers, calibrated on real
+  colloquial and read speech, and a native listening check agree on this (\cref{sec:dissociation}).
+  \item \textbf{A dialect-aware evaluation protocol} for dialectal voice cloning, with gates fixed in advance,
+  every metric calibrated on real speech, and a public record of the one gate amendment (\cref{sec:protocol}).
+  \item \textbf{A licence-provenance audit} of the open Egyptian-capable systems, which shows that most cannot be
+  built on commercially, including one whose permissive label hides a non-commercial parent (\cref{sec:systems}).
+  \item \textbf{\BA, an inference-time engine for Egyptian Arabic} on unmodified \vox weights, with held-out
+  results over three seeds, ablations of each component and long-form tests (\cref{sec:engine,sec:results}).
+  \item \textbf{A consent-first release}: model, code and demo are public, uploads are not stored, and the
+  watermark's robustness to common audio processing is measured (\cref{sec:release}).
+\end{enumerate}
+\BA is not a new acoustic model, and we do not claim one: the paper's evidence concerns how such systems should be
+chosen and evaluated for a dialect, and how far an engine around an unchanged model can go.
+
+\paragraph{The name}
+In ancient Egyptian belief, the \emph{ba} is the part of a person's soul that carries their personality and
+individuality; it is usually drawn as a bird with a human head \citep{taylor2001death}. A voice is among the most
+personal things a person has, and \BA exists to let people speak, in their own voice, in their own dialect. The Arabic
+letter \ar{beh} is read \emph{ba}; the project's mark draws it with a voice wave.
+
+\paragraph{Openness}
+Code, evaluation texts, per-utterance scores and all scripts that produce the paper's numbers are public (\repo).
+The model is at \hfmodel and the demo at \hfspace. Reference voices from FLEURS \citep{conneau2023fleurs} are used for
+measurement only; neither they nor their clones are redistributed (\cref{sec:release}).

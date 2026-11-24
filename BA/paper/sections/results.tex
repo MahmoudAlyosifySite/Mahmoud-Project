@@ -1,0 +1,67 @@
+\section{Results}\label{sec:results}
+
+All engine results are on held-out sentences (\cref{sec:protocol}) with the bake-off's voices. ``\vox (plain)'' is
+the same model driven directly with the reference audio, as in the bake-off.
+
+\subsection{\BA against the base model and the Egyptian baselines}
+
+\begin{table}[t]
+\centering\small
+\caption{Held-out Egyptian sentences over \R{s3:nseeds} seeds per utterance (mean and two-way bootstrap 95\% interval over
+texts and voices; seeds of one utterance are kept together). NAMAA is the best Egyptian fine-tune with permissive
+weights; Chatterbox V3 is the lowest-CER system of the bake-off.}
+\label{tab:seeds}
+\begin{adjustbox}{max width=\linewidth}
+\rawinput{generated/tab_seeds.tex}
+\end{adjustbox}
+\end{table}
+
+\Cref{tab:seeds} compares \BA with \vox (plain), NAMAA and \cbthree. Against its own base, \BA lowers Egyptian CER
+from \R{s3:voxcpm2:egy_main:cer_best} to \R{s3:ba:egy_main:cer_best}
+(paired difference \R{pt:ba_minus_voxcpm2:egy_main:cer_best:diff}, 95\% CI \R{pt:ba_minus_voxcpm2:egy_main:cer_best:ci},
+$\R{pt:ba_minus_voxcpm2:egy_main:cer_best:pholm}$) and raises speaker similarity from
+\R{s3:voxcpm2:egy_main:sim_ecapa} to \R{s3:ba:egy_main:sim_ecapa}
+(\R{pt:ba_minus_voxcpm2:egy_main:sim_ecapa:diff}, CI \R{pt:ba_minus_voxcpm2:egy_main:sim_ecapa:ci},
+$\R{pt:ba_minus_voxcpm2:egy_main:sim_ecapa:pholm}$). The Egyptian share also rises
+(\R{pt:ba_minus_voxcpm2:egy_main:c1:diff} under classifier~1), but its interval includes zero
+(\R{pt:ba_minus_voxcpm2:egy_main:c1:ci}); with three voices per condition, a difference of this size cannot be
+resolved, and we do not claim it. \BA matches \cbthree on CER
+(\R{pt:ba_minus_cb-v3:egy_main:cer_best:diff}, CI \R{pt:ba_minus_cb-v3:egy_main:cer_best:ci}) while being labelled
+Egyptian far more often (\R{pt:ba_minus_cb-v3:egy_main:c1:diff}, CI \R{pt:ba_minus_cb-v3:egy_main:c1:ci}). In short,
+\BA has the intelligibility of the lowest-CER system and the dialect of the Egyptian ones, with the highest speaker
+similarity of the four. Predicted quality (DNSMOS) favours \cbthree slightly; as an English-trained predictor, it is
+a weak signal for Arabic \citep{kunesova2024zeroshotmos}.
+
+\pending{Three-seed numbers are filled in automatically when seeds 1--2 of all four systems are scored; the
+interpretation above is checked against them before release.}
+
+\paragraph{Numbers}
+On held-out sentences with digits, scored against the best of the spelled-out Egyptian form and the digit text,
+\BA's CER is \R{s3:ba:egy_digits:cer_best} against \R{s3:voxcpm2:egy_digits:cer_best} for \vox (plain). CER here
+understates the normaliser's effect, because a recogniser can transcribe an MSA reading of a number into the same
+digits; whether the number \emph{sounds} Egyptian is a question for listeners (\cref{sec:limitations}).
+
+\subsection{Ablations: where the gain comes from}
+\pending{Table and text from ablations.json: full \BA against \BA without the normaliser, without the loanword
+policy, without the reference transcript, and without reference preparation, on held-out Egyptian, digit,
+code-switched and English sentences, with paired intervals.}
+
+\subsection{English, French and cross-language cloning}
+All three languages pass G3 on held-out sentences. In English, \BA's WER is \R{ho:ba:en:wer} with no failures
+(\R{ho:ba:en:fail}), and speaker similarity rises from \R{ho:voxcpm2:en:ecapa} for \vox (plain), below the G3 bar of
+\R{g3:en:simbar}, to \R{ho:ba:en:ecapa}; plain \vox also produced empty outputs on \R{ho:voxcpm2:en:fail} English
+sentences. In French, WER is \R{ho:ba:fr:wer} and similarity \R{ho:ba:fr:ecapa} (bar \R{g3:fr:simbar}). When an
+Egyptian voice speaks English or French, similarity is \R{xl:cross_en:ba} and \R{xl:cross_fr:ba} for \BA against
+\R{xl:cross_en:raw} and \R{xl:cross_fr:raw} for \vox (plain); the French figure sits at 80\% of the Egyptian
+same-speaker ceiling, and the model card lists cross-language use as a limitation.
+
+\subsection{Long text}
+\pending{Long-form results from the 24 new passages (8 per language, 2 voices each) for \BA and \vox (plain):
+completion, CER/WER, similarity, Egyptian share, retries, with intervals.}
+
+\subsection{Speed and memory}
+On one NVIDIA A40, \BA loads in \R{bench:load}\,s, prepares a voice from a 10\,s recording in \R{bench:voice}\,s, and
+speaks a \R{bench:arz:words}-word Egyptian sentence (\R{bench:arz:audio}\,s of audio) in \R{bench:arz:time}\,s and a
+\R{bench:arzlong:words}-word passage (\R{bench:arzlong:audio}\,s) in \R{bench:arzlong:time}\,s, with a peak of
+\R{bench:vram}\,GB of GPU memory. On two CPU threads \vox runs about \R{bk:voxcpm2:cpurtf} times slower than real
+time, so the public demo needs a GPU.

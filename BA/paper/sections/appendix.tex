@@ -1,0 +1,24 @@
+\section{Additional tables}\label{app:tables}
+
+\pending{Full bake-off tables for every condition (Egyptian, digits, diacritised, code-switched, English, French,
+cross-language, long passages) with failure counts and speed, generated from bakeoff.json and
+dialect\_classifier2.json; reference clips and their dialect labels; Chatterbox V3 under the two loaders.}
+
+\section{Claim-to-results map}\label{app:claims}
+
+Every number in the paper is produced by \texttt{BA/paper/scripts/make\_assets.py} from the files below, each of which
+records the command that produced it.
+
+\begin{center}\small
+\begin{tabular}{@{}ll@{}}
+\toprule
+Section & Results files (\texttt{BA/eval/results/}) \\
+\midrule
+\Cref{sec:protocol} (calibration) & \texttt{bakeoff.json}, \texttt{dialect\_classifier2.json} \\
+\Cref{sec:dissociation} & \texttt{bakeoff.json}, \texttt{bakeoff\_utterances.csv}, \texttt{dialect\_classifier2.json}, \texttt{listening\_test.json} \\
+\Cref{sec:engine} & \texttt{codeswitch\_policy.json}, \texttt{asr\_check.json}, \texttt{chunk\_length.json}, \texttt{reference\_thresholds.json}, \texttt{engine.json} \\
+\Cref{sec:results} & \texttt{uncertainty.json}, \texttt{ablations.json}, \texttt{engine.json}, \texttt{bench.json} \\
+\Cref{sec:release} & \texttt{watermark.json}, \texttt{watermark\_attacks.json} \\
+\bottomrule
+\end{tabular}
+\end{center}
