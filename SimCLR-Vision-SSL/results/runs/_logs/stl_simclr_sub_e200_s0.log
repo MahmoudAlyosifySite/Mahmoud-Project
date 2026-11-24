@@ -1,0 +1,9 @@
+[run] stl_simclr_sub_e200_s0: simclr | pool 5000 | labeled 5000 | 41000 steps | lr 0.25 wd 0.0001 tau 0.5
+  step   5125/41000  loss 5.1277  knn 71.05  (1103s)
+  step  10250/41000  loss 5.0645  knn 71.76  (2177s)
+  step  15375/41000  loss 5.0182  knn 70.48  (3251s)
+  step  20500/41000  loss 5.0181  knn 67.50  (4326s)
+  step  25625/41000  loss 4.9966  knn 68.59  (5401s)
+  step  30750/41000  loss 4.9878  knn 67.06  (6475s)
+  step  35875/41000  loss 4.9777  knn 67.78  (7549s)
+[done] stl_simclr_sub_e200_s0: linear_acc 69.74  knn_acc 68.21  | train 143.7 min

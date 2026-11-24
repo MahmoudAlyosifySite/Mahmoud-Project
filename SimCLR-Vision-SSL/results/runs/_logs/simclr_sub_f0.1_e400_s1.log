@@ -1,0 +1,17 @@
+[run] simclr_sub_f0.1_e400_s1: simclr | pool 5000 | labeled 5000 | 38800 steps | lr 0.25 wd 0.0001 tau 0.5
+  step   2425/38800  loss 5.3086  knn 68.25  (393s)
+  step   4850/38800  loss 5.2079  knn 71.98  (771s)
+  step   7275/38800  loss 5.1818  knn 72.06  (1149s)
+  step   9700/38800  loss 5.1335  knn 70.30  (1527s)
+  step  12125/38800  loss 5.1246  knn 70.38  (1905s)
+  step  14550/38800  loss 5.1155  knn 70.00  (2283s)
+  step  16975/38800  loss 5.0686  knn 69.78  (2661s)
+  step  19400/38800  loss 5.0562  knn 68.12  (3039s)
+  step  21825/38800  loss 5.0553  knn 66.64  (3418s)
+  step  24250/38800  loss 5.0380  knn 67.26  (3796s)
+  step  26675/38800  loss 5.0228  knn 67.11  (4174s)
+  step  29100/38800  loss 5.0014  knn 67.16  (4552s)
+  step  31525/38800  loss 4.9921  knn 67.31  (4929s)
+  step  33950/38800  loss 4.9871  knn 67.08  (5307s)
+  step  36375/38800  loss 4.9871  knn 67.49  (5695s)
+[done] simclr_sub_f0.1_e400_s1: linear_acc 72.54  knn_acc 67.57  linear_lab_acc 66.06  | train 101.4 min

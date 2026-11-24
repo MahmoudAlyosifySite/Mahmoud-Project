@@ -1,0 +1,12 @@
+[run] fixmatch_f0.1_s1: fixmatch | labeled 5000 | 10347 steps
+  step   1034/10347 loss 0.813 ema-acc 48.32 mask 0.28 (175s)
+  step   2068/10347 loss 0.513 ema-acc 72.10 mask 0.58 (335s)
+  step   3102/10347 loss 0.458 ema-acc 79.20 mask 0.68 (498s)
+  step   4136/10347 loss 0.342 ema-acc 82.08 mask 0.71 (658s)
+  step   5170/10347 loss 0.266 ema-acc 83.55 mask 0.76 (819s)
+  step   6204/10347 loss 0.300 ema-acc 85.02 mask 0.79 (981s)
+  step   7238/10347 loss 0.243 ema-acc 86.63 mask 0.81 (1141s)
+  step   8272/10347 loss 0.269 ema-acc 88.21 mask 0.81 (1301s)
+  step   9306/10347 loss 0.208 ema-acc 89.52 mask 0.86 (1462s)
+  step  10340/10347 loss 0.175 ema-acc 90.48 mask 0.87 (1622s)
+[done] fixmatch_f0.1_s1: classifier_acc 90.49  linear_acc 91.28  | train 27.1 min

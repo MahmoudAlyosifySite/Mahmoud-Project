@@ -1,0 +1,13 @@
+[run] stl_fixmatch_from_union_e200_s2: fixmatch | labeled 5000 | 21867 steps
+[init] encoder from stl_union_e200_s2 (120 tensors)
+  step   2186/21867 loss 0.253 ema-acc 90.58 mask 0.63 (480s)
+  step   4372/21867 loss 0.147 ema-acc 91.34 mask 0.63 (940s)
+  step   6558/21867 loss 0.178 ema-acc 91.99 mask 0.66 (1400s)
+  step   8744/21867 loss 0.140 ema-acc 92.15 mask 0.68 (1859s)
+  step  10930/21867 loss 0.144 ema-acc 92.71 mask 0.74 (2318s)
+  step  13116/21867 loss 0.150 ema-acc 93.19 mask 0.73 (2778s)
+  step  15302/21867 loss 0.150 ema-acc 93.14 mask 0.75 (3237s)
+  step  17488/21867 loss 0.111 ema-acc 93.26 mask 0.73 (3696s)
+  step  19674/21867 loss 0.115 ema-acc 93.65 mask 0.81 (4155s)
+  step  21860/21867 loss 0.104 ema-acc 93.91 mask 0.84 (4614s)
+[done] stl_fixmatch_from_union_e200_s2: classifier_acc 93.91  linear_acc 93.88  | train 76.9 min

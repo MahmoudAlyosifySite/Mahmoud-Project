@@ -1,0 +1,9 @@
+[run] simsiam_all_e100_s0: simsiam | pool 50000 | labeled 0 | 9700 steps | lr 0.06 wd 0.0005 tau None
+  step   1212/9700  loss -0.7226  knn 46.49  (139s)
+  step   2425/9700  loss -0.7419  knn 55.03  (253s)
+  step   3638/9700  loss -0.7570  knn 61.94  (360s)
+  step   4850/9700  loss -0.7602  knn 65.93  (467s)
+  step   6062/9700  loss -0.7618  knn 69.50  (574s)
+  step   7275/9700  loss -0.7615  knn 70.54  (687s)
+  step   8488/9700  loss -0.7304  knn 70.95  (794s)
+[done] simsiam_all_e100_s0: linear_acc 76.91  knn_acc 71.10  | train 15.0 min

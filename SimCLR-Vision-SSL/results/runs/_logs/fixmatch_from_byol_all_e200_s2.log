@@ -1,0 +1,13 @@
+[run] fixmatch_from_byol_all_e200_s2: fixmatch | labeled 5000 | 10347 steps
+[init] encoder from byol_all_e200_s2 (120 tensors)
+  step   1034/10347 loss 0.635 ema-acc 10.00 mask 0.47 (174s)
+  step   2068/10347 loss 0.437 ema-acc 54.86 mask 0.68 (334s)
+  step   3102/10347 loss 0.398 ema-acc 83.75 mask 0.75 (494s)
+  step   4136/10347 loss 0.326 ema-acc 87.24 mask 0.82 (654s)
+  step   5170/10347 loss 0.256 ema-acc 88.63 mask 0.84 (814s)
+  step   6204/10347 loss 0.276 ema-acc 89.53 mask 0.87 (975s)
+  step   7238/10347 loss 0.206 ema-acc 90.55 mask 0.85 (1135s)
+  step   8272/10347 loss 0.196 ema-acc 91.36 mask 0.87 (1294s)
+  step   9306/10347 loss 0.191 ema-acc 91.84 mask 0.85 (1454s)
+  step  10340/10347 loss 0.196 ema-acc 92.14 mask 0.89 (1613s)
+[done] fixmatch_from_byol_all_e200_s2: classifier_acc 92.15  linear_acc 92.40  | train 26.9 min

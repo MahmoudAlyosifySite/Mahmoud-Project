@@ -1,0 +1,9 @@
+[run] byol_all_e200_s2: byol | pool 50000 | labeled 0 | 19400 steps | lr 0.24 wd 0.0005 tau None
+  step   2425/19400  loss -1.7410  knn 66.73  (516s)
+  step   4850/19400  loss -1.7942  knn 77.50  (1024s)
+  step   7275/19400  loss -1.8158  knn 80.66  (1530s)
+  step   9700/19400  loss -1.8204  knn 84.32  (1945s)
+  step  12125/19400  loss -1.8321  knn 86.27  (2453s)
+  step  14550/19400  loss -1.8463  knn 87.09  (2961s)
+  step  16975/19400  loss -1.8761  knn 88.65  (3392s)
+[done] byol_all_e200_s2: linear_acc 90.55  knn_acc 88.85  | train 64.1 min

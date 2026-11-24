@@ -1,0 +1,6 @@
+[teacher] fine-tuned on 5000 labels: 89.18
+  step   2000/9700 loss 0.1946 (289s)
+  step   4000/9700 loss 0.1912 (510s)
+  step   6000/9700 loss 0.1586 (732s)
+  step   8000/9700 loss 0.1391 (955s)
+[done] distill_simclr_all_e200_s1: student 90.17 (teacher 89.18) | 19.1 min

@@ -1,0 +1,17 @@
+[run] union_f0.05_e400_s0: supcon | pool 50000 | labeled 2500 | 38800 steps | lr 0.25 wd 0.0001 tau 0.1
+  step   2425/38800  loss 5.3457  knn 77.47  (389s)
+  step   4850/38800  loss 5.1307  knn 76.51  (762s)
+  step   7275/38800  loss 5.0148  knn 76.92  (1139s)
+  step   9700/38800  loss 4.9904  knn 78.90  (1516s)
+  step  12125/38800  loss 4.9496  knn 78.93  (1893s)
+  step  14550/38800  loss 5.0043  knn 77.47  (2271s)
+  step  16975/38800  loss 4.8856  knn 79.66  (2648s)
+  step  19400/38800  loss 4.8371  knn 80.62  (3025s)
+  step  21825/38800  loss 4.8390  knn 81.08  (3402s)
+  step  24250/38800  loss 4.8275  knn 81.57  (3779s)
+  step  26675/38800  loss 4.8068  knn 81.97  (4156s)
+  step  29100/38800  loss 4.7353  knn 82.82  (4533s)
+  step  31525/38800  loss 4.7336  knn 83.31  (4910s)
+  step  33950/38800  loss 4.7251  knn 83.85  (5287s)
+  step  36375/38800  loss 4.6835  knn 84.01  (5663s)
+[done] union_f0.05_e400_s0: linear_acc 85.97  knn_acc 84.15  linear_lab_acc 75.86  | train 100.6 min

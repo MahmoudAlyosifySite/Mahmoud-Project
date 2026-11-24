@@ -1,0 +1,2 @@
+[done] ft_byol_all_e100_s0: finetune_acc 85.78 (linear probe on the same labels 82.70)
+[skip] results/runs/ft_byol_all_e100_s0/result.json exists

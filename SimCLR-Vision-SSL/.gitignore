@@ -230,3 +230,7 @@ paper/*.fls
 paper/*.fdb_latexmk
 paper/*.synctex.gz
 paper/_arxiv/
+
+# per-run training logs of the study are kept
+!results/runs/_logs/
+!results/runs/_logs/*.log

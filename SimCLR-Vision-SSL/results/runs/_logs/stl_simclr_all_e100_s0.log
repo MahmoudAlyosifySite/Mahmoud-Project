@@ -1,0 +1,109 @@
+[run] stl_simclr_all_e100_s0: simclr | pool 105000 | labeled 0 | 20500 steps | lr 0.25 wd 0.0001 tau 0.5
+  step   2562/20500  loss 5.2605  knn 65.85  (1244s)
+  step   5125/20500  loss 5.2214  knn 71.56  (2472s)
+  step   7688/20500  loss 5.1802  knn 73.61  (3715s)
+  step  10250/20500  loss 5.1790  knn 75.51  (4944s)
+  step  12812/20500  loss 5.1531  knn 77.84  (6160s)
+  step  15375/20500  loss 5.1431  knn 79.66  (7374s)
+  step  17938/20500  loss 5.1063  knn 80.68  (8588s)
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/jovyan/Mahmoud-Project/SimCLR-Vision-SSL/dlt/train.py", line 326, in <module>
+    main()
+  File "/home/jovyan/Mahmoud-Project/SimCLR-Vision-SSL/dlt/train.py", line 296, in main
+    metrics, preds = evaluate_encoder(model.encoder, eval_data, aug.normalize, eval_lab, eval_pool,
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/conda/lib/python3.12/site-packages/torch/utils/_contextlib.py", line 124, in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jovyan/Mahmoud-Project/SimCLR-Vision-SSL/dlt/evaluate.py", line 280, in evaluate_encoder
+    z1, z2 = head(encoder(v1)), head(encoder(v2))
+                  ^^^^^^^^^^^
+  File "/opt/conda/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1779, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/conda/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1790, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/conda/lib/python3.12/site-packages/torchvision/models/resnet.py", line 285, in forward
+    return self._forward_impl(x)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/conda/lib/python3.12/site-packages/torchvision/models/resnet.py", line 271, in _forward_impl
+    x = self.maxpool(x)
+        ^^^^^^^^^^^^^^^
+  File "/opt/conda/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1779, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/conda/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1790, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/conda/lib/python3.12/site-packages/torch/nn/modules/pooling.py", line 224, in forward
+    return F.max_pool2d(
+           ^^^^^^^^^^^^^
+  File "/opt/conda/lib/python3.12/site-packages/torch/_jit_internal.py", line 636, in fn
+    return if_false(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/conda/lib/python3.12/site-packages/torch/nn/functional.py", line 835, in _max_pool2d
+    return torch.max_pool2d(input, kernel_size, stride, padding, dilation, ceil_mode)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 5.49 GiB. GPU 0 has a total capacity of 44.42 GiB of which 4.24 GiB is free. Including non-PyTorch memory, this process has 18.01 GiB memory in use. Process 1104094 has 22.16 GiB memory in use. Of the allocated memory 11.31 GiB is allocated by PyTorch, and 6.32 GiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/docs/stable/notes/cuda.html#optimizing-memory-usage-with-pytorch-cuda-alloc-conf)
+[run] stl_simclr_all_e100_s0: simclr | pool 105000 | labeled 0 | 20500 steps | lr 0.25 wd 0.0001 tau 0.5
+  step   2562/20500  loss 5.2564  knn 66.00  (1219s)
+  step   5125/20500  loss 5.2219  knn 71.19  (2415s)
+  step   7688/20500  loss 5.1838  knn 73.91  (3611s)
+  step  10250/20500  loss 5.1804  knn 74.78  (4806s)
+  step  12812/20500  loss 5.1511  knn 77.89  (6000s)
+  step  15375/20500  loss 5.1424  knn 79.91  (7195s)
+  step  17938/20500  loss 5.1110  knn 80.45  (8390s)
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/jovyan/Mahmoud-Project/SimCLR-Vision-SSL/dlt/train.py", line 326, in <module>
+    main()
+  File "/home/jovyan/Mahmoud-Project/SimCLR-Vision-SSL/dlt/train.py", line 296, in main
+    metrics, preds = evaluate_encoder(model.encoder, eval_data, aug.normalize, eval_lab, eval_pool,
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/conda/lib/python3.12/site-packages/torch/utils/_contextlib.py", line 124, in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jovyan/Mahmoud-Project/SimCLR-Vision-SSL/dlt/evaluate.py", line 280, in evaluate_encoder
+    z1 = torch.cat([head(encoder(v1[i:i + 500])) for i in range(0, v1.shape[0], 500)])
+                  ^^^^^^^^^^^
+  File "/opt/conda/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1779, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/conda/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1790, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/conda/lib/python3.12/site-packages/torchvision/models/resnet.py", line 285, in forward
+    return self._forward_impl(x)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/conda/lib/python3.12/site-packages/torchvision/models/resnet.py", line 271, in _forward_impl
+    x = self.maxpool(x)
+        ^^^^^^^^^^^^^^^
+  File "/opt/conda/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1779, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/conda/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1790, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/conda/lib/python3.12/site-packages/torch/nn/modules/pooling.py", line 224, in forward
+    return F.max_pool2d(
+           ^^^^^^^^^^^^^
+  File "/opt/conda/lib/python3.12/site-packages/torch/_jit_internal.py", line 636, in fn
+    return if_false(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/conda/lib/python3.12/site-packages/torch/nn/functional.py", line 835, in _max_pool2d
+    return torch.max_pool2d(input, kernel_size, stride, padding, dilation, ceil_mode)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 5.49 GiB. GPU 0 has a total capacity of 44.42 GiB of which 4.26 GiB is free. Process 1119851 has 22.15 GiB memory in use. Including non-PyTorch memory, this process has 18.01 GiB memory in use. Of the allocated memory 11.31 GiB is allocated by PyTorch, and 6.32 GiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/docs/stable/notes/cuda.html#optimizing-memory-usage-with-pytorch-cuda-alloc-conf)
+[run] stl_simclr_all_e100_s0: simclr | pool 105000 | labeled 0 | 20500 steps | lr 0.25 wd 0.0001 tau 0.5
+  step   2562/20500  loss 5.2643  knn 66.19  (567s)
+  step   5125/20500  loss 5.2144  knn 71.59  (1107s)
+  step   7688/20500  loss 5.1811  knn 73.96  (1647s)
+  step  10250/20500  loss 5.1803  knn 75.03  (2186s)
+  step  12812/20500  loss 5.1553  knn 77.88  (2725s)
+  step  15375/20500  loss 5.1404  knn 79.61  (3264s)
+  step  17938/20500  loss 5.1099  knn 80.30  (3803s)
+[done] stl_simclr_all_e100_s0: linear_acc 84.84  knn_acc 80.80  | train 72.3 min

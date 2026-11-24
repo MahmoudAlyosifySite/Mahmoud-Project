@@ -1,0 +1,1 @@
+[done] simclr_all_e200_s2: best {'head': 'lp', 'lr': 0.01, 'epochs': 30, 'reg': 'ls'} -> test 89.51 (default recipe 88.28)

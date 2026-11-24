@@ -1,0 +1,12 @@
+[run] mixmatch_f0.1_s2: mixmatch | labeled 5000 | 51733 steps
+  step   5173/51733 loss 1.082 ema-acc 83.49 (255s)
+  step  10346/51733 loss 1.787 ema-acc 88.03 (491s)
+  step  15519/51733 loss 1.511 ema-acc 89.54 (700s)
+  step  20692/51733 loss 1.276 ema-acc 90.58 (923s)
+  step  25865/51733 loss 1.806 ema-acc 91.10 (1159s)
+  step  31038/51733 loss 0.319 ema-acc 91.39 (1395s)
+  step  36211/51733 loss 0.653 ema-acc 91.85 (1631s)
+  step  41384/51733 loss 0.950 ema-acc 92.01 (1866s)
+  step  46557/51733 loss 1.461 ema-acc 92.18 (2103s)
+  step  51730/51733 loss 0.584 ema-acc 92.54 (2340s)
+[done] mixmatch_f0.1_s2: classifier_acc 92.54  linear_acc 93.01  | train 39.0 min

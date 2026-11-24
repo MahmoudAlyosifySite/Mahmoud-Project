@@ -1,0 +1,13 @@
+[run] stl_fixmatch_from_supcon_lab_e200_s1: fixmatch | labeled 5000 | 21867 steps
+[init] encoder from stl_supcon_lab_e200_s1 (120 tensors)
+  step   2186/21867 loss 0.228 ema-acc 90.60 mask 0.62 (480s)
+  step   4372/21867 loss 0.206 ema-acc 91.38 mask 0.63 (939s)
+  step   6558/21867 loss 0.187 ema-acc 91.86 mask 0.66 (1397s)
+  step   8744/21867 loss 0.208 ema-acc 92.31 mask 0.68 (1856s)
+  step  10930/21867 loss 0.202 ema-acc 92.83 mask 0.71 (2315s)
+  step  13116/21867 loss 0.128 ema-acc 93.04 mask 0.77 (2773s)
+  step  15302/21867 loss 0.169 ema-acc 93.16 mask 0.71 (3232s)
+  step  17488/21867 loss 0.138 ema-acc 93.51 mask 0.77 (3690s)
+  step  19674/21867 loss 0.119 ema-acc 93.58 mask 0.80 (4149s)
+  step  21860/21867 loss 0.086 ema-acc 93.80 mask 0.82 (4608s)
+[done] stl_fixmatch_from_supcon_lab_e200_s1: classifier_acc 93.80  linear_acc 93.78  | train 76.8 min

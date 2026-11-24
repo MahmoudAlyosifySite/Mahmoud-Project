@@ -1,0 +1,9 @@
+[run] pilot_union_t0.5: supcon | pool 45000 | labeled 4500 | 4350 steps | lr 0.25 wd 0.0001 tau 0.5
+  step    544/4350  loss 5.6225  knn 59.12  (63s)
+  step   1088/4350  loss 5.5230  knn 68.36  (105s)
+  step   1631/4350  loss 5.4840  knn 71.78  (146s)
+  step   2175/4350  loss 5.4337  knn 73.34  (187s)
+  step   2719/4350  loss 5.4685  knn 75.04  (229s)
+  step   3262/4350  loss 5.3731  knn 77.14  (270s)
+  step   3806/4350  loss 5.3814  knn 77.62  (311s)
+[done] pilot_union_t0.5: linear_acc 82.50  knn_acc 77.74  linear_lab_acc 80.18  | train 5.9 min

@@ -1,0 +1,9 @@
+[run] stl_union_e200_s2: supcon | pool 105000 | labeled 5000 | 41000 steps | lr 0.25 wd 0.0001 tau 0.1
+  step   5125/41000  loss 5.0825  knn 80.10  (1104s)
+  step  10250/41000  loss 4.9481  knn 80.79  (2181s)
+  step  15375/41000  loss 4.9155  knn 80.55  (3257s)
+  step  20500/41000  loss 4.8817  knn 81.38  (4333s)
+  step  25625/41000  loss 4.7990  knn 82.13  (5409s)
+  step  30750/41000  loss 4.7152  knn 82.28  (6485s)
+  step  35875/41000  loss 4.7398  knn 83.71  (7561s)
+[done] stl_union_e200_s2: linear_acc 83.54  knn_acc 83.59  | train 143.9 min

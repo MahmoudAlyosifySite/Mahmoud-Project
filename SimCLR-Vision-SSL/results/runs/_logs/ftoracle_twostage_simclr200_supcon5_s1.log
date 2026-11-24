@@ -1,0 +1,1 @@
+[done] twostage_simclr200_supcon5_s1: best {'head': 'lp', 'lr': 0.01, 'epochs': 120, 'reg': 'mixup'} -> test 89.63 (default recipe 88.12)

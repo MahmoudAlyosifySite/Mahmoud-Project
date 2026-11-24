@@ -1,0 +1,1 @@
+[done] stl_union_e200_s2: best {'head': 'random', 'lr': 0.1, 'epochs': 60, 'reg': 'mixup'} -> test 88.48 (default recipe 83.85)

@@ -1,0 +1,9 @@
+[run] simclr_all_e50_s2: simclr | pool 50000 | labeled 0 | 4850 steps | lr 0.25 wd 0.0001 tau 0.5
+  step    606/4850  loss 5.4805  knn 58.16  (64s)
+  step   1212/4850  loss 5.3990  knn 66.12  (110s)
+  step   1819/4850  loss 5.3728  knn 69.26  (156s)
+  step   2425/4850  loss 5.3062  knn 71.10  (202s)
+  step   3031/4850  loss 5.3132  knn 72.30  (249s)
+  step   3638/4850  loss 5.3033  knn 73.07  (295s)
+  step   4244/4850  loss 5.2944  knn 73.63  (341s)
+[done] simclr_all_e50_s2: linear_acc 80.11  knn_acc 73.89  | train 6.4 min

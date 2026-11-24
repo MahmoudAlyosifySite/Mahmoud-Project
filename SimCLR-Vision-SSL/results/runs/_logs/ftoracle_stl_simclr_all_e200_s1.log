@@ -1,0 +1,1 @@
+[done] stl_simclr_all_e200_s1: best {'head': 'lp', 'lr': 0.01, 'epochs': 60, 'reg': 'mixup'} -> test 91.71 (default recipe 90.61)

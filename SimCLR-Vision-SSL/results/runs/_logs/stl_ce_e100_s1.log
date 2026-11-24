@@ -1,0 +1,9 @@
+[run] stl_ce_e100_s1: ce | pool 5000 | labeled 5000 | 20500 steps | lr 0.2 wd 0.0005 tau None
+  step   2562/20500  loss 0.0278  knn 71.61  (519s)
+  step   5125/20500  loss 0.0180  knn 75.23  (1009s)
+  step   7688/20500  loss 0.4857  knn 67.53  (1498s)
+  step  10250/20500  loss 0.0153  knn 74.01  (1985s)
+  step  12812/20500  loss 0.0015  knn 79.80  (2474s)
+  step  15375/20500  loss 0.0012  knn 74.68  (2961s)
+  step  17938/20500  loss 0.0014  knn 74.74  (3448s)
+[done] stl_ce_e100_s1: linear_acc 74.71  knn_acc 74.56  classifier_acc 74.53  | train 65.5 min

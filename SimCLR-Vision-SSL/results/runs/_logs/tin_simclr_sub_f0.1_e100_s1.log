@@ -1,0 +1,9 @@
+[run] tin_simclr_sub_f0.1_e100_s1: simclr | pool 10000 | labeled 10000 | 19500 steps | lr 0.25 wd 0.0001 tau 0.5
+  step   2438/19500  loss 5.3187  knn 17.07  (542s)
+  step   4875/19500  loss 5.2300  knn 20.35  (1068s)
+  step   7312/19500  loss 5.1938  knn 21.69  (1592s)
+  step   9750/19500  loss 5.1456  knn 21.26  (2116s)
+  step  12188/19500  loss 5.1161  knn 21.13  (2640s)
+  step  14625/19500  loss 5.0588  knn 20.49  (3164s)
+  step  17062/19500  loss 5.0358  knn 19.66  (3686s)
+[done] tin_simclr_sub_f0.1_e100_s1: linear_acc 24.59  knn_acc 20.37  linear_lab_acc 16.33  | train 69.9 min

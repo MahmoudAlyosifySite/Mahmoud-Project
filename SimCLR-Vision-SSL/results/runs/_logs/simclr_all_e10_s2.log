@@ -1,0 +1,9 @@
+[run] simclr_all_e10_s2: simclr | pool 50000 | labeled 0 | 970 steps | lr 0.25 wd 0.0001 tau 0.5
+  step    121/970  loss 5.8246  knn 43.60  (28s)
+  step    242/970  loss 5.6639  knn 48.44  (38s)
+  step    364/970  loss 5.5769  knn 51.93  (48s)
+  step    485/970  loss 5.5320  knn 54.92  (59s)
+  step    606/970  loss 5.4901  knn 56.23  (69s)
+  step    728/970  loss 5.4641  knn 57.51  (79s)
+  step    849/970  loss 5.4533  knn 57.80  (90s)
+[done] simclr_all_e10_s2: linear_acc 67.47  knn_acc 57.89  | train 1.6 min

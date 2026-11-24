@@ -1,0 +1,1 @@
+[done] stl_supcon_lab_e200_s2: best {'head': 'random', 'lr': 0.1, 'epochs': 60, 'reg': 'mixup'} -> test 88.96 (default recipe 85.03)

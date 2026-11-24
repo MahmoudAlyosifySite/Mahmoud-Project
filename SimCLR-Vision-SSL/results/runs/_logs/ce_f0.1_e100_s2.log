@@ -1,0 +1,9 @@
+[run] ce_f0.1_e100_s2: ce | pool 5000 | labeled 5000 | 9700 steps | lr 0.2 wd 0.0005 tau None
+  step   1212/9700  loss 0.0493  knn 75.88  (103s)
+  step   2425/9700  loss 0.0322  knn 76.48  (188s)
+  step   3638/9700  loss 0.0109  knn 78.58  (273s)
+  step   4850/9700  loss 0.0217  knn 77.28  (357s)
+  step   6062/9700  loss 0.0010  knn 82.20  (442s)
+  step   7275/9700  loss 0.0014  knn 83.03  (526s)
+  step   8488/9700  loss 0.0013  knn 82.96  (607s)
+[done] ce_f0.1_e100_s2: linear_acc 83.34  knn_acc 83.00  linear_lab_acc 83.04  classifier_acc 82.94  | train 11.5 min

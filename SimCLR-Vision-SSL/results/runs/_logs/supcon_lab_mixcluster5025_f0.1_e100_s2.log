@@ -1,0 +1,9 @@
+[run] supcon_lab_mixcluster5025_f0.1_e100_s2: supcon | pool 5000 | labeled 5000 | 9700 steps | lr 0.25 wd 0.0001 tau 0.1
+  step   1212/9700  loss 5.2741  knn 78.86  (203s)
+  step   2425/9700  loss 4.9434  knn 78.52  (397s)
+  step   3638/9700  loss 4.8498  knn 79.90  (592s)
+  step   4850/9700  loss 4.7913  knn 79.92  (787s)
+  step   6062/9700  loss 4.7148  knn 80.29  (982s)
+  step   7275/9700  loss 4.6785  knn 80.85  (1178s)
+  step   8488/9700  loss 4.6593  knn 81.23  (1373s)
+[done] supcon_lab_mixcluster5025_f0.1_e100_s2: linear_acc 83.09  knn_acc 81.53  linear_lab_acc 80.52  | train 26.1 min

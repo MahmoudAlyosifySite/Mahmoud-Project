@@ -1,0 +1,9 @@
+[run] simclr_sub_mixcluster5025_f0.1_e100_s1: simclr | pool 5000 | labeled 5000 | 9700 steps | lr 0.25 wd 0.0001 tau 0.5
+  step   1212/9700  loss 5.3765  knn 65.39  (204s)
+  step   2425/9700  loss 5.2643  knn 69.48  (395s)
+  step   3638/9700  loss 5.2092  knn 70.93  (585s)
+  step   4850/9700  loss 5.1803  knn 71.76  (775s)
+  step   6062/9700  loss 5.1124  knn 72.26  (965s)
+  step   7275/9700  loss 5.0814  knn 73.17  (1155s)
+  step   8488/9700  loss 5.0577  knn 73.17  (1344s)
+[done] simclr_sub_mixcluster5025_f0.1_e100_s1: linear_acc 76.58  knn_acc 73.23  linear_lab_acc 70.09  | train 25.5 min

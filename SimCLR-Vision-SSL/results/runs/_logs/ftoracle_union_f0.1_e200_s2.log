@@ -1,0 +1,1 @@
+[done] union_f0.1_e200_s2: best {'head': 'random', 'lr': 0.1, 'epochs': 60, 'reg': 'ls'} -> test 86.89 (default recipe 82.90)

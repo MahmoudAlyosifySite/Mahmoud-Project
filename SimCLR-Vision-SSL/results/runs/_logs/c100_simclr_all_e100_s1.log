@@ -1,0 +1,9 @@
+[run] c100_simclr_all_e100_s1: simclr | pool 50000 | labeled 0 | 9700 steps | lr 0.25 wd 0.0001 tau 0.5
+  step   1212/9700  loss 5.4348  knn 26.80  (211s)
+  step   2425/9700  loss 5.3631  knn 30.82  (409s)
+  step   3638/9700  loss 5.3347  knn 34.91  (605s)
+  step   4850/9700  loss 5.2925  knn 37.84  (802s)
+  step   6062/9700  loss 5.2597  knn 39.35  (993s)
+  step   7275/9700  loss 5.2718  knn 40.63  (1183s)
+  step   8488/9700  loss 5.2352  knn 42.32  (1374s)
+[done] c100_simclr_all_e100_s1: linear_acc 54.75  knn_acc 42.52  | train 26.0 min

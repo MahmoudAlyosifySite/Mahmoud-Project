@@ -1,0 +1,2 @@
+[done] ft_simsiam_all_e100_s0: finetune_acc 82.50 (linear probe on the same labels 73.15)
+[skip] results/runs/ft_simsiam_all_e100_s0/result.json exists

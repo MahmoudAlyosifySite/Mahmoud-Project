@@ -1,0 +1,9 @@
+[run] simclr_all_e25_s0: simclr | pool 50000 | labeled 0 | 2425 steps | lr 0.25 wd 0.0001 tau 0.5
+  step    303/2425  loss 5.6188  knn 51.25  (41s)
+  step    606/2425  loss 5.4615  knn 59.05  (65s)
+  step    909/2425  loss 5.3908  knn 62.35  (88s)
+  step   1212/2425  loss 5.4069  knn 65.04  (112s)
+  step   1516/2425  loss 5.3595  knn 66.64  (136s)
+  step   1819/2425  loss 5.3367  knn 67.87  (160s)
+  step   2122/2425  loss 5.3338  knn 68.33  (184s)
+[done] simclr_all_e25_s0: linear_acc 74.86  knn_acc 68.32  | train 3.4 min

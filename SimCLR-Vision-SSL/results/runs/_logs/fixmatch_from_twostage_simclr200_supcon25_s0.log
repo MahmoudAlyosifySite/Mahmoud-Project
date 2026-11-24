@@ -1,0 +1,13 @@
+[run] fixmatch_from_twostage_simclr200_supcon25_s0: fixmatch | labeled 5000 | 10347 steps
+[init] encoder from twostage_simclr200_supcon25_s0 (120 tensors)
+  step   1034/10347 loss 0.315 ema-acc 89.44 mask 0.78 (176s)
+  step   2068/10347 loss 0.259 ema-acc 91.12 mask 0.78 (337s)
+  step   3102/10347 loss 0.231 ema-acc 91.86 mask 0.88 (497s)
+  step   4136/10347 loss 0.251 ema-acc 92.50 mask 0.87 (657s)
+  step   5170/10347 loss 0.179 ema-acc 93.00 mask 0.88 (817s)
+  step   6204/10347 loss 0.223 ema-acc 93.45 mask 0.88 (977s)
+  step   7238/10347 loss 0.181 ema-acc 93.72 mask 0.90 (1137s)
+  step   8272/10347 loss 0.142 ema-acc 93.90 mask 0.90 (1298s)
+  step   9306/10347 loss 0.189 ema-acc 94.21 mask 0.91 (1458s)
+  step  10340/10347 loss 0.090 ema-acc 94.57 mask 0.92 (1617s)
+[done] fixmatch_from_twostage_simclr200_supcon25_s0: classifier_acc 94.58  linear_acc 94.59  | train 27.0 min

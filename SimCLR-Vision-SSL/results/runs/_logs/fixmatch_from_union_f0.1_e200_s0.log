@@ -1,0 +1,13 @@
+[run] fixmatch_from_union_f0.1_e200_s0: fixmatch | labeled 5000 | 10347 steps
+[init] encoder from union_f0.1_e200_s0 (120 tensors)
+  step   1034/10347 loss 0.225 ema-acc 87.50 mask 0.78 (180s)
+  step   2068/10347 loss 0.246 ema-acc 89.67 mask 0.81 (340s)
+  step   3102/10347 loss 0.234 ema-acc 90.61 mask 0.83 (501s)
+  step   4136/10347 loss 0.258 ema-acc 91.43 mask 0.86 (662s)
+  step   5170/10347 loss 0.179 ema-acc 92.20 mask 0.83 (823s)
+  step   6204/10347 loss 0.222 ema-acc 92.68 mask 0.85 (983s)
+  step   7238/10347 loss 0.175 ema-acc 93.11 mask 0.89 (1143s)
+  step   8272/10347 loss 0.144 ema-acc 93.29 mask 0.88 (1302s)
+  step   9306/10347 loss 0.150 ema-acc 93.60 mask 0.88 (1462s)
+  step  10340/10347 loss 0.074 ema-acc 93.69 mask 0.91 (1622s)
+[done] fixmatch_from_union_f0.1_e200_s0: classifier_acc 93.68  linear_acc 93.79  | train 27.1 min

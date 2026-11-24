@@ -1,0 +1,9 @@
+[run] byol_all_e100_s0: byol | pool 50000 | labeled 0 | 9700 steps | lr 0.24 wd 0.0005 tau None
+  step   1212/9700  loss -1.6991  knn 54.83  (179s)
+  step   2425/9700  loss -1.7405  knn 67.33  (359s)
+  step   3638/9700  loss -1.7892  knn 73.45  (527s)
+  step   4850/9700  loss -1.8010  knn 76.40  (745s)
+  step   6062/9700  loss -1.8292  knn 79.67  (933s)
+  step   7275/9700  loss -1.8574  knn 81.42  (1058s)
+  step   8488/9700  loss -1.8588  knn 82.68  (1183s)
+[done] byol_all_e100_s0: linear_acc 86.14  knn_acc 82.87  | train 21.8 min

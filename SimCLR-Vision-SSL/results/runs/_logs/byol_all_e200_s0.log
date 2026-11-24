@@ -1,0 +1,11 @@
+[run] byol_all_e200_s0: byol | pool 50000 | labeled 0 | 19400 steps | lr 0.24 wd 0.0005 tau None
+  step   2425/19400  loss -1.7388  knn 66.29  (272s)
+[run] byol_all_e200_s0: byol | pool 50000 | labeled 0 | 19400 steps | lr 0.24 wd 0.0005 tau None
+  step   2425/19400  loss -1.7383  knn 66.07  (669s)
+  step   4850/19400  loss -1.7827  knn 76.76  (1147s)
+  step   7275/19400  loss -1.8150  knn 81.19  (1716s)
+  step   9700/19400  loss -1.7975  knn 82.61  (2276s)
+  step  12125/19400  loss -1.8102  knn 86.20  (2837s)
+  step  14550/19400  loss -1.8328  knn 87.44  (3274s)
+  step  16975/19400  loss -1.8664  knn 88.45  (3865s)
+[done] byol_all_e200_s0: linear_acc 90.52  knn_acc 88.70  | train 74.3 min

@@ -1,0 +1,1 @@
+[done] byol_all_e200_s2: best {'head': 'lp', 'lr': 0.003, 'epochs': 120, 'reg': 'ls'} -> test 91.06 (default recipe 87.65)

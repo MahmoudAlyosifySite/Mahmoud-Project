@@ -1,0 +1,9 @@
+[run] tin_supcon_lab_f0.1_e200_s2: supcon | pool 10000 | labeled 10000 | 39000 steps | lr 0.25 wd 0.0001 tau 0.1
+  step   4875/39000  loss 2.5335  knn 31.54  (1049s)
+  step   9750/39000  loss 2.2715  knn 31.03  (2082s)
+  step  14625/39000  loss 2.1761  knn 32.90  (3115s)
+  step  19500/39000  loss 2.0701  knn 31.96  (4148s)
+  step  24375/39000  loss 1.9415  knn 32.00  (5180s)
+  step  29250/39000  loss 1.7926  knn 32.98  (6213s)
+  step  34125/39000  loss 1.7034  knn 33.40  (7245s)
+[done] tin_supcon_lab_f0.1_e200_s2: linear_acc 35.41  knn_acc 33.25  linear_lab_acc 26.22  | train 137.8 min

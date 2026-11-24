@@ -1,0 +1,13 @@
+[run] fixmatch_from_simclr_all_e200_s2: fixmatch | labeled 5000 | 10347 steps
+[init] encoder from simclr_all_e200_s2 (120 tensors)
+  step   1034/10347 loss 0.336 ema-acc 86.82 mask 0.72 (175s)
+  step   2068/10347 loss 0.303 ema-acc 90.12 mask 0.83 (333s)
+  step   3102/10347 loss 0.254 ema-acc 91.24 mask 0.84 (493s)
+  step   4136/10347 loss 0.161 ema-acc 92.15 mask 0.89 (654s)
+  step   5170/10347 loss 0.223 ema-acc 92.63 mask 0.89 (814s)
+  step   6204/10347 loss 0.204 ema-acc 93.07 mask 0.89 (974s)
+  step   7238/10347 loss 0.198 ema-acc 93.18 mask 0.90 (1134s)
+  step   8272/10347 loss 0.217 ema-acc 93.60 mask 0.89 (1295s)
+  step   9306/10347 loss 0.216 ema-acc 93.93 mask 0.93 (1455s)
+  step  10340/10347 loss 0.189 ema-acc 94.15 mask 0.93 (1615s)
+[done] fixmatch_from_simclr_all_e200_s2: classifier_acc 94.15  linear_acc 94.43  | train 26.9 min

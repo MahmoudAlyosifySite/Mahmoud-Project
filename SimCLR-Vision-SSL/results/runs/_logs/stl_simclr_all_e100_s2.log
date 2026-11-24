@@ -1,0 +1,9 @@
+[run] stl_simclr_all_e100_s2: simclr | pool 105000 | labeled 0 | 20500 steps | lr 0.25 wd 0.0001 tau 0.5
+  step   2562/20500  loss 5.2639  knn 66.43  (1221s)
+  step   5125/20500  loss 5.2267  knn 70.84  (2417s)
+  step   7688/20500  loss 5.1929  knn 74.03  (3612s)
+  step  10250/20500  loss 5.1766  knn 75.79  (4807s)
+  step  12812/20500  loss 5.1369  knn 78.51  (6001s)
+  step  15375/20500  loss 5.1239  knn 79.00  (7196s)
+  step  17938/20500  loss 5.1262  knn 80.64  (8390s)
+[done] stl_simclr_all_e100_s2: linear_acc 84.76  knn_acc 80.78  | train 159.7 min

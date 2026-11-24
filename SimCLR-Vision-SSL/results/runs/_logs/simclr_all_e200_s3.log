@@ -1,0 +1,9 @@
+[run] simclr_all_e200_s3: simclr | pool 50000 | labeled 0 | 19400 steps | lr 0.25 wd 0.0001 tau 0.5
+  step   2425/19400  loss 5.3503  knn 70.04  (247s)
+  step   4850/19400  loss 5.3009  knn 74.36  (429s)
+  step   7275/19400  loss 5.2686  knn 77.61  (611s)
+  step   9700/19400  loss 5.2427  knn 80.16  (792s)
+  step  12125/19400  loss 5.1864  knn 82.38  (973s)
+  step  14550/19400  loss 5.1771  knn 83.90  (1155s)
+  step  16975/19400  loss 5.1649  knn 85.05  (1336s)
+[done] simclr_all_e200_s3: linear_acc 87.96  knn_acc 85.47  | train 25.3 min

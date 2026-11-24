@@ -1,0 +1,10 @@
+[run] twostage_simclr100_supcon25_lr0.25_s0: supcon | pool 5000 | labeled 5000 | 2425 steps | lr 0.25 wd 0.0001 tau 0.1
+[init] simclr_all_e100_s0: loaded 128 tensors, 0 left at initialisation
+  step    303/2425  loss 5.4700  knn 80.14  (41s)
+  step    606/2425  loss 5.1911  knn 81.86  (65s)
+  step    909/2425  loss 5.0472  knn 81.95  (89s)
+  step   1212/2425  loss 4.9201  knn 81.67  (112s)
+  step   1516/2425  loss 4.7805  knn 82.95  (136s)
+  step   1819/2425  loss 4.8231  knn 83.52  (160s)
+  step   2122/2425  loss 4.7139  knn 83.79  (184s)
+[done] twostage_simclr100_supcon25_lr0.25_s0: linear_acc 85.26  knn_acc 84.03  linear_lab_acc 83.50  | train 3.4 min

@@ -1,0 +1,9 @@
+[run] pilot_simclr_t0.5: simclr | pool 45000 | labeled 0 | 4350 steps | lr 0.25 wd 0.0001 tau 0.5
+  step    544/4350  loss 5.5183  knn 57.68  (63s)
+  step   1088/4350  loss 5.3893  knn 64.72  (105s)
+  step   1631/4350  loss 5.3758  knn 68.16  (146s)
+  step   2175/4350  loss 5.3234  knn 69.76  (188s)
+  step   2719/4350  loss 5.3309  knn 71.22  (243s)
+  step   3262/4350  loss 5.2851  knn 72.18  (304s)
+  step   3806/4350  loss 5.2788  knn 72.70  (352s)
+[done] pilot_simclr_t0.5: linear_acc 79.18  knn_acc 72.80  | train 6.6 min

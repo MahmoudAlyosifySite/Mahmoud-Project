@@ -1,0 +1,9 @@
+[run] union_f0.1_e50_s0: supcon | pool 50000 | labeled 5000 | 4850 steps | lr 0.25 wd 0.0001 tau 0.1
+  step    606/4850  loss 5.9455  knn 69.80  (63s)
+  step   1212/4850  loss 5.8375  knn 77.89  (110s)
+  step   1819/4850  loss 5.6282  knn 80.53  (156s)
+  step   2425/4850  loss 5.4356  knn 82.33  (202s)
+  step   3031/4850  loss 5.3288  knn 82.17  (249s)
+  step   3638/4850  loss 5.2380  knn 83.19  (295s)
+  step   4244/4850  loss 5.1713  knn 82.61  (341s)
+[done] union_f0.1_e50_s0: linear_acc 85.57  knn_acc 82.54  linear_lab_acc 82.18  | train 6.4 min

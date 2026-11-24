@@ -1,0 +1,1 @@
+[done] supcon_lab_f0.1_e200_s1: best {'head': 'lp', 'lr': 0.1, 'epochs': 120, 'reg': 'mixup'} -> test 86.63 (default recipe 82.32)
