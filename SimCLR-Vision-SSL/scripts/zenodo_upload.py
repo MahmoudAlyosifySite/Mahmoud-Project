@@ -71,11 +71,11 @@ def prepare(a):
     groups = {}
     for r in runs:
         groups.setdefault(group(r), []).append(r)
-    # keep each archive below about 2.5 GB, so that one interrupted upload costs little
+    # keep each archive below about 1.2 GB: longer single uploads to Zenodo were cut off from this server
     archives = {}
     for g, rs in groups.items():
         size = sum(os.path.getsize(os.path.join(a.ckpt_dir, r, "model.pt")) for r in rs)
-        parts = max(1, -(-size // int(2.5e9)))
+        parts = max(1, -(-size // int(1.2e9)))
         for i in range(parts):
             chunk = rs[i * len(rs) // parts:(i + 1) * len(rs) // parts]
             name = f"checkpoints_{g}" + (f"_part{i + 1}" if parts > 1 else "") + ".tar"
@@ -203,10 +203,21 @@ def upload(a):
             print(f"already uploaded: {n}")
             continue
         t0 = time.time()
-        with open(p, "rb") as f:
-            r = call("PUT", f"{state['bucket']}/{n}", tok, data=f)
-        if r.status_code not in (200, 201):
-            sys.exit(f"upload of {n} failed: {r.status_code} {r.text[:300]}")
+        r = None
+        for attempt in range(4):     # reopen the file for every attempt: a failed attempt consumes the stream
+            import requests
+            try:
+                with open(p, "rb") as f:
+                    r = requests.put(f"{state['bucket']}/{n}", data=f, headers={"Authorization": f"Bearer {tok}"},
+                                     timeout=(60, 6 * 3600))
+                if r.status_code in (200, 201):
+                    break
+                print(f"  {n}: HTTP {r.status_code}, retrying")
+            except requests.RequestException as e:
+                print(f"  {n}: network error ({e.__class__.__name__}), retrying")
+            time.sleep(30 * 2 ** attempt)
+        if r is None or r.status_code not in (200, 201):
+            sys.exit(f"upload of {n} failed: " + ("no response" if r is None else f"{r.status_code} {r.text[:300]}"))
         print(f"uploaded {n} ({os.path.getsize(p) / 1e9:.2f} GB, {(time.time() - t0) / 60:.1f} min)")
     reserve(a)        # refresh the description from the final README
     print("all files uploaded; check the draft on zenodo.org, then run: publish")
