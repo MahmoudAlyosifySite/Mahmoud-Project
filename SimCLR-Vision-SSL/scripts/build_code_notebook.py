@@ -50,7 +50,7 @@ def job_count(path):
 md("""
 # SimCLR-Vision-SSL: the complete code
 
-Code behind the paper *Where Do Scarce Labels Belong? A Compute-Matched Study of Contrastive Pretraining*
+Code behind the paper *Where Do Scarce Labels Belong? A Compute-Matched Study of Supervised and Self-Supervised Contrastive Pretraining*
 (Mahmoud Alyosify, Mirna Imbabi, Natalie Nashed, Hazem M. Abbas; Queen's University), together with the earlier
 course project it grew out of.
 

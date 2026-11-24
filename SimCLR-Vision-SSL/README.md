@@ -1,6 +1,6 @@
 # SimCLR-Vision-SSL
 
-> **Paper:** *Where Do Scarce Labels Belong? A Compute-Matched Study of Contrastive Pretraining*
+> **Paper:** *Where Do Scarce Labels Belong? A Compute-Matched Study of Supervised and Self-Supervised Contrastive Pretraining*
 > Mahmoud Alyosify, Mirna Imbabi, Natalie Nashed, Hazem M. Abbas (Queen's University). Preprint: [`paper/arxiv.pdf`](paper/arxiv.pdf);
 > journal layout: [`paper/submission.pdf`](paper/submission.pdf).
 > The study behind the paper lives in [`dlt/`](dlt), [`scripts/`](scripts), [`jobs/`](jobs) and [`results/`](results); see
