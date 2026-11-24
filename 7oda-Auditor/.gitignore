@@ -1,0 +1,16 @@
+# Swift / Xcode
+.build/
+.swiftpm/
+DerivedData/
+xcuserdata/
+*.xcuserstate
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+# large research outputs never belong in git (checkpoints, shards, caches)
+research/**/checkpoints/
+research/**/shards/
+research/**/*.pt
+research/**/*.ckpt
+research/**/*.npy
