@@ -221,7 +221,6 @@ node_modules
 # paper study
 data/
 results/runs/*/model.pt
-results/runs/_logs/
 paper/*.aux
 paper/*.log
 paper/*.out
