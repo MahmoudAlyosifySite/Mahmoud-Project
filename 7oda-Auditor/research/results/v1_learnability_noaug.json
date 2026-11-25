@@ -1,0 +1,103 @@
+{
+ "tag": "noaug",
+ "args": {
+  "data": "/home/jovyan/7oda-work/v1/data/learn",
+  "people": 200,
+  "sessions": 5,
+  "per_hand": 12,
+  "workers": 14,
+  "phone_seed": 3,
+  "imu_mode": "none",
+  "person_seed_base": 700000,
+  "epochs": 80,
+  "width": 64,
+  "tag": "noaug",
+  "no_aug": true,
+  "margin": 0.2,
+  "lr": 0.002,
+  "device": "cuda"
+ },
+ "people": 200,
+ "classes": 400,
+ "chance_top1": 0.0025,
+ "chance_person": 0.005,
+ "n": {
+  "train": 12799,
+  "same_grip": 3192,
+  "new_grip": 2763,
+  "next_session": 4690
+ },
+ "v0": {
+  "train": {
+   "top1": 0.45784826939604656,
+   "person": 0.45823892491600904,
+   "hand_via_class": 0.9985155090241425
+  },
+  "same_grip": {
+   "top1": 0.31296992481203006,
+   "person": 0.31359649122807015,
+   "hand_via_class": 0.9987468671679198
+  },
+  "new_grip": {
+   "top1": 0.29714078899746654,
+   "person": 0.2975027144408252,
+   "hand_via_class": 0.9985522982265653
+  },
+  "next_session": {
+   "top1": 0.25948827292110876,
+   "person": 0.2603411513859275,
+   "hand_via_class": 0.997867803837953
+  }
+ },
+ "v1_params": 3093379,
+ "v1_classifier": {
+  "train": {
+   "top1": 1.0,
+   "person": 1.0,
+   "hand_via_class": 1.0
+  },
+  "same_grip": {
+   "top1": 0.29385964912280704,
+   "person": 0.2941729323308271,
+   "hand_via_class": 0.9981203007518797
+  },
+  "new_grip": {
+   "top1": 0.3007600434310532,
+   "person": 0.3011219688744119,
+   "hand_via_class": 0.9981903727832067
+  },
+  "next_session": {
+   "top1": 0.25948827292110876,
+   "person": 0.25991471215351813,
+   "hand_via_class": 0.9987206823027719
+  }
+ },
+ "v1_prototype": {
+  "train": {
+   "top1": 1.0,
+   "person": 1.0,
+   "hand_via_class": 1.0
+  },
+  "same_grip": {
+   "top1": 0.30545112781954886,
+   "person": 0.3057644110275689,
+   "hand_via_class": 0.9984335839598998
+  },
+  "new_grip": {
+   "top1": 0.30256967064784657,
+   "person": 0.30293159609120524,
+   "hand_via_class": 0.997828447339848
+  },
+  "next_session": {
+   "top1": 0.2537313432835821,
+   "person": 0.25415778251599147,
+   "hand_via_class": 0.9989339019189766
+  }
+ },
+ "v1_hand_head": {
+  "train": 1.0,
+  "same_grip": 1.0,
+  "new_grip": 0.9996380745566413,
+  "next_session": 0.9989339019189766
+ }
+}

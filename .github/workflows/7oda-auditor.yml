@@ -1,0 +1,213 @@
+name: 7oda Auditor
+
+on:
+  push:
+    paths:
+      - "7oda-Auditor/**"
+      - ".github/workflows/7oda-auditor.yml"
+  pull_request:
+    paths:
+      - "7oda-Auditor/**"
+      - ".github/workflows/7oda-auditor.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  checks: write
+
+concurrency:
+  group: 7oda-auditor-${{ github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  research:
+    name: research (Python)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - name: Install
+        run: |
+          python -m pip install -r 7oda-Auditor/research/requirements.txt 2>&1 | tail -n 3
+          # CPU-only torch for the v1 model tests (the A40 build is not needed to test shapes and losses)
+          python -m pip install torch --index-url https://download.pytorch.org/whl/cpu 2>&1 | tail -n 2
+      - name: Test
+        working-directory: 7oda-Auditor/research
+        run: |
+          set -o pipefail
+          python -m pytest -q -p no:cacheprovider -rfE 2>&1 | tee "$RUNNER_TEMP/research.log"
+      - name: Annotate
+        if: always()
+        run: |
+          python3 7oda-Auditor/tools/ci_annotate.py --kind pytest --log "$RUNNER_TEMP/research.log" \
+            --summary "$RUNNER_TEMP/summary.md" --label "research (Python)"
+      - name: Publish log
+        if: always()
+        uses: actions/github-script@v8
+        env:
+          SUMMARY_FILE: ${{ runner.temp }}/summary.md
+          LOG_NAME: research
+        with:
+          script: |
+            const fs = require('fs');
+            const f = process.env.SUMMARY_FILE;
+            const text = fs.existsSync(f) ? fs.readFileSync(f, 'utf8') : 'no summary written';
+            await github.rest.checks.create({
+              owner: context.repo.owner, repo: context.repo.repo,
+              name: `7oda log: ${process.env.LOG_NAME}`, head_sha: context.sha,
+              status: 'completed', conclusion: 'neutral',
+              output: { title: `7oda log: ${process.env.LOG_NAME}`,
+                        summary: text.slice(0, 60000), text: text.slice(60000, 120000) || 'end' }
+            });
+
+  core-linux:
+    name: AuditorCore (Linux)
+    runs-on: ubuntu-24.04
+    container: swift:6.2-noble
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v5
+      - name: Toolchain
+        run: |
+          swift --version
+          command -v python3 || (apt-get update -qq && apt-get install -y -qq python3 >/dev/null)
+      - name: Test
+        run: |
+          set -o pipefail
+          swift test --package-path 7oda-Auditor/AuditorCore 2>&1 | tee /tmp/core-linux.log
+      - name: Annotate (1)
+        if: always()
+        run: python3 7oda-Auditor/tools/ci_annotate.py --log /tmp/core-linux.log --offset 0 --summary /tmp/summary.md --label "AuditorCore (Linux)"
+      - name: Annotate (2)
+        if: always()
+        run: python3 7oda-Auditor/tools/ci_annotate.py --log /tmp/core-linux.log --offset 10
+      - name: Annotate (3)
+        if: always()
+        run: python3 7oda-Auditor/tools/ci_annotate.py --log /tmp/core-linux.log --offset 20
+      - name: Publish log
+        if: always()
+        uses: actions/github-script@v8
+        env:
+          SUMMARY_FILE: /tmp/summary.md
+          LOG_NAME: core-linux
+        with:
+          script: |
+            const fs = require('fs');
+            const f = process.env.SUMMARY_FILE;
+            const text = fs.existsSync(f) ? fs.readFileSync(f, 'utf8') : 'no summary written';
+            await github.rest.checks.create({
+              owner: context.repo.owner, repo: context.repo.repo,
+              name: `7oda log: ${process.env.LOG_NAME}`, head_sha: context.sha,
+              status: 'completed', conclusion: 'neutral',
+              output: { title: `7oda log: ${process.env.LOG_NAME}`,
+                        summary: text.slice(0, 60000), text: text.slice(60000, 120000) || 'end' }
+            });
+
+  ios:
+    name: iOS app (Xcode)
+    runs-on: macos-15
+    timeout-minutes: 75
+    steps:
+      - uses: actions/checkout@v5
+      - name: Select Xcode
+        run: |
+          latest=$(ls -d /Applications/Xcode_*.app 2>/dev/null | grep -v -i beta | sort -V | tail -n 1 || true)
+          if [ -n "$latest" ]; then sudo xcode-select -s "$latest"; fi
+          xcodebuild -version
+          swift --version
+      - name: Core tests (macOS)
+        run: |
+          set -o pipefail
+          swift test --package-path 7oda-Auditor/AuditorCore 2>&1 | tee "$RUNNER_TEMP/core-macos.log"
+      - name: Pick simulator
+        id: sim
+        if: always()
+        run: |
+          xcrun simctl list devices available --json > "$RUNNER_TEMP/devices.json"
+          python3 - "$RUNNER_TEMP/devices.json" >> "$GITHUB_OUTPUT" <<'PY'
+          import json, re, sys
+          data = json.load(open(sys.argv[1]))["devices"]
+          best = None
+          for runtime, devices in data.items():
+              m = re.search(r"iOS-(\d+)-(\d+)", runtime)
+              if not m:
+                  continue
+              version = (int(m.group(1)), int(m.group(2)))
+              for d in devices:
+                  if d.get("isAvailable") and d["name"].startswith("iPhone"):
+                      key = (version, "Pro" not in d["name"], d["name"])
+                      if best is None or key[0] > best[0][0]:
+                          best = (key, d["udid"], d["name"])
+          print(f"id={best[1]}")
+          print(f"name={best[2]} iOS {best[0][0][0]}.{best[0][0][1]}", file=sys.stderr)
+          PY
+      - name: App tests (simulator)
+        if: always()
+        run: |
+          set +e
+          xcodebuild test -project 7oda-Auditor/Auditor.xcodeproj -scheme Auditor \
+            -destination "id=${{ steps.sim.outputs.id }}" -derivedDataPath "$RUNNER_TEMP/dd-sim" \
+            CODE_SIGNING_ALLOWED=NO > "$RUNNER_TEMP/app-test.log" 2>&1
+          status=$?
+          grep -E "error:|Test Suite|Test Case.*failed|Executed|BUILD|TEST" "$RUNNER_TEMP/app-test.log" | tail -n 300
+          exit $status
+      - name: Device build (generic iOS, unsigned)
+        if: always()
+        run: |
+          set +e
+          xcodebuild build -project 7oda-Auditor/Auditor.xcodeproj -scheme Auditor -configuration Release \
+            -destination "generic/platform=iOS" -derivedDataPath "$RUNNER_TEMP/dd-device" \
+            CODE_SIGNING_ALLOWED=NO > "$RUNNER_TEMP/app-device.log" 2>&1
+          status=$?
+          grep -E "error:|BUILD" "$RUNNER_TEMP/app-device.log" | tail -n 200
+          exit $status
+      - uses: actions/setup-python@v6
+        if: always() && hashFiles('7oda-Auditor/research/v1/artifacts/reference_io.npz') != ''
+        with:
+          python-version: "3.11"
+      - name: Core ML check
+        if: always() && hashFiles('7oda-Auditor/research/v1/artifacts/reference_io.npz') != ''
+        run: |
+          set -o pipefail
+          python -m pip install -q coremltools numpy 2>&1 | tail -n 3
+          python 7oda-Auditor/research/v1/verify_coreml.py 2>&1 | tee "$RUNNER_TEMP/coreml.log"
+      - name: Annotate (1)
+        if: always()
+        run: |
+          python3 7oda-Auditor/tools/ci_annotate.py --offset 0 --summary "$RUNNER_TEMP/summary.md" --label "iOS app (Xcode)" \
+            --log "$RUNNER_TEMP/core-macos.log" --log "$RUNNER_TEMP/app-test.log" --log "$RUNNER_TEMP/app-device.log" --log "$RUNNER_TEMP/coreml.log"
+      - name: Annotate (2)
+        if: always()
+        run: |
+          python3 7oda-Auditor/tools/ci_annotate.py --offset 10 \
+            --log "$RUNNER_TEMP/core-macos.log" --log "$RUNNER_TEMP/app-test.log" --log "$RUNNER_TEMP/app-device.log" --log "$RUNNER_TEMP/coreml.log"
+      - name: Annotate (3)
+        if: always()
+        run: |
+          python3 7oda-Auditor/tools/ci_annotate.py --offset 20 \
+            --log "$RUNNER_TEMP/core-macos.log" --log "$RUNNER_TEMP/app-test.log" --log "$RUNNER_TEMP/app-device.log" --log "$RUNNER_TEMP/coreml.log"
+      - name: Publish log
+        if: always()
+        uses: actions/github-script@v8
+        env:
+          SUMMARY_FILE: ${{ runner.temp }}/summary.md
+          LOG_NAME: ios
+        with:
+          script: |
+            const fs = require('fs');
+            const f = process.env.SUMMARY_FILE;
+            const text = fs.existsSync(f) ? fs.readFileSync(f, 'utf8') : 'no summary written';
+            await github.rest.checks.create({
+              owner: context.repo.owner, repo: context.repo.repo,
+              name: `7oda log: ${process.env.LOG_NAME}`, head_sha: context.sha,
+              status: 'completed', conclusion: 'neutral',
+              output: { title: `7oda log: ${process.env.LOG_NAME}`,
+                        summary: text.slice(0, 60000), text: text.slice(60000, 120000) || 'end' }
+            });

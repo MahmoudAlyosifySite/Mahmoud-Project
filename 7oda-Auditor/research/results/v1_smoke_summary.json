@@ -1,0 +1,43 @@
+{
+ "run": "smoke",
+ "kind": "supervised",
+ "arch": "teacher_small",
+ "params": 3093379,
+ "steps": 46,
+ "best_val_top1_id": 0.0346875,
+ "final_val": {
+  "hand_acc": 0.9965,
+  "top1_id": 0.0346875,
+  "top1_person": 0.035520833333333335,
+  "eer": 0.2829083333333333,
+  "n_ids": 200
+ },
+ "args": {
+  "run": "smoke",
+  "train": "/home/jovyan/7oda-work/v1/data/learn/shard_0000*.npz",
+  "val": "/home/jovyan/7oda-work/v1/data/learn/shard_0001*.npz",
+  "arch": "teacher_small",
+  "epochs": 2.0,
+  "batch": 512,
+  "lr": 0.002,
+  "wd": 0.05,
+  "warmup": 20,
+  "margin": 0.3,
+  "scale": 32.0,
+  "margin_warmup_epochs": 1.0,
+  "hand_weight": 0.5,
+  "mirror_fraction": 0.25,
+  "mirror_mode": "reflect",
+  "ssl_weight": 0.0,
+  "no_aug": false,
+  "aug": "light",
+  "init": "",
+  "max_train": 0,
+  "eval_every": 40,
+  "seed": 0,
+  "device": "cuda"
+ },
+ "train_samples": 12000,
+ "classes": 200,
+ "minutes": 0.1
+}

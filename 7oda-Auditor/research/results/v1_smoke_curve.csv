@@ -1,0 +1,3 @@
+step,time_s,val_eer,val_hand_acc,val_n_ids,val_top1_id,val_top1_person
+40,6.7,0.28313,0.99508,200,0.029479,0.031146
+46,7.5,0.28291,0.9965,200,0.034688,0.035521

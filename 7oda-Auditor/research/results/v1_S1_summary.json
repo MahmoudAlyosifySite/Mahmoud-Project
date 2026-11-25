@@ -1,0 +1,42 @@
+{
+ "run": "S1",
+ "kind": "distill",
+ "teachers": [
+  "/home/jovyan/7oda-work/v1/runs/T2/best.pt"
+ ],
+ "params": 219747,
+ "steps": 10150,
+ "best_val_top1_id": 0.9572916666666667,
+ "final_val": {
+  "hand_acc": 0.7230288461538461,
+  "top1_id": 0.9567361111111111,
+  "top1_person": 0.9629861111111111,
+  "eer": 0.006593611111111127,
+  "n_ids": 400
+ },
+ "args": {
+  "run": "S1",
+  "teachers": "/home/jovyan/7oda-work/v1/runs/T2/best.pt",
+  "train": "/home/jovyan/7oda-work/v1/data/train10/shard_*.npz",
+  "val": "/home/jovyan/7oda-work/v1/data/val/shard_*.npz",
+  "epochs": 10.0,
+  "batch": 1024,
+  "lr": 0.003,
+  "wd": 0.02,
+  "warmup": 1000,
+  "w_cos": 1.0,
+  "w_rel": 1.0,
+  "w_arc": 0.5,
+  "w_hand": 0.5,
+  "w_kd": 0.5,
+  "margin": 0.3,
+  "scale": 32.0,
+  "mirror_fraction": 0.25,
+  "mirror_mode": "actuator",
+  "max_train": 0,
+  "eval_every": 2000,
+  "seed": 0,
+  "aug": "light"
+ },
+ "minutes": 26.3
+}
