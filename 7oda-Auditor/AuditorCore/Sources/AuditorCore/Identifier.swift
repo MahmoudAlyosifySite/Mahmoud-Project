@@ -117,13 +117,17 @@ public struct Identifier {
     public let modelConfig: ModelConfig
     public let config: IdentifierConfig
 
-    /// Trains the model and the hand head. All samples must have the same feature
-    /// dimension; samples whose dimension differs from the first sample's are ignored.
+    /// Trains the model and the hand head. Samples of the current `FeatureExtractor.version`
+    /// are used when there are any (stale templates must be recomputed from their raw
+    /// recordings, SPEC 7); otherwise all samples. Of those, samples whose feature dimension
+    /// differs from the first one's are ignored.
     public init(samples: [TemplateSample], modelConfig: ModelConfig = .default, config: IdentifierConfig = .default) {
         self.modelConfig = modelConfig
         self.config = config
-        let dimension = samples.first?.features.count ?? 0
-        let used = samples.filter { $0.features.count == dimension }
+        let current = samples.filter { $0.featureVersion == FeatureExtractor.version }
+        let pool = current.isEmpty ? samples : current
+        let dimension = pool.first?.features.count ?? 0
+        let used = pool.filter { $0.features.count == dimension }
         let protos = Array(Set(used.map { $0.prototype })).sorted()
         prototypes = protos
         var index: [PrototypeKey: Int] = [:]

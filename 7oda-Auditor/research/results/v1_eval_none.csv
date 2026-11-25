@@ -1,0 +1,41 @@
+model,thresholds,slack_or_absFactor,name_margin,hand_margin,tuning_met_target,tuning_stranger_accept,tuning_name_and_hand,checks_enrolled,checks_stranger,top1,hand_acc,name_and_hand,wrong_name,false_unknown,hand_unclear,stranger_accept,patterns_per_answer,top1_std_groups,closed_top1_1pattern,closed_name_hand_1pattern,imu_mode,groups
+teacher,tuned,0.04,0.08,0.0,True,0.02,0.7275,8000,2000,0.8449,0.7206,0.7177,0.003,0.1521,0.1259,0.018,1.9164,0.0256,0.9728,0.9691,none,10
+teacher,tuned for stranger accept <= 5%,0.08,0.02,0.0,True,0.044,0.7893,8000,2000,0.9149,0.785,0.7776,0.0083,0.0769,0.1363,0.049,1.7956,,,,none,10
+teacher,tuned for stranger accept <= 10%,0.12,0.08,0.0,True,0.099,0.8115,8000,2000,0.9337,0.799,0.7931,0.0063,0.06,0.1391,0.0925,1.7689,,,,none,10
+teacher (pooled hand model),tuned,0.04,0.13,0.0,True,0.019,0.8313,8000,2000,0.8323,0.8321,0.8305,0.0016,0.1661,0.0009,0.02,1.7172,0.0314,0.9728,0.9691,none,10
+teacher (pooled hand model),tuned for stranger accept <= 5%,0.08,0.09,0.0,True,0.047,0.9105,8000,2000,0.9067,0.9076,0.9039,0.0037,0.0895,0.0015,0.048,1.567,,,,none,10
+teacher (pooled hand model),tuned for stranger accept <= 10%,0.1,0.02,0.0,True,0.083,0.9425,8000,2000,0.936,0.9443,0.933,0.0112,0.0527,0.0016,0.092,1.4758,,,,none,10
+teacher (no hand check),tuned,0.04,0.13,0.0,True,0.019,0.8315,8000,2000,0.8325,0.8319,0.8303,0.0016,0.1659,0.0,0.02,1.7145,0.0316,0.9728,0.9691,none,10
+teacher (no hand check),tuned for stranger accept <= 5%,0.08,0.09,0.0,True,0.047,0.911,8000,2000,0.9067,0.9074,0.9036,0.0037,0.0895,0.0,0.048,1.5639,,,,none,10
+teacher (no hand check),tuned for stranger accept <= 10%,0.1,0.02,0.0,True,0.083,0.943,8000,2000,0.936,0.944,0.9327,0.0112,0.0527,0.0,0.092,1.4719,,,,none,10
+student,tuned,0.0,0.12,0.0,True,0.02,0.5793,8000,2000,0.6566,0.5894,0.5869,0.0026,0.3407,0.069,0.0275,2.1285,0.0309,0.9247,0.9191,none,10
+student,tuned for stranger accept <= 5%,0.02,0.06,0.0,True,0.049,0.6875,8000,2000,0.7731,0.6991,0.689,0.0107,0.2161,0.0834,0.0645,1.9353,,,,none,10
+student,tuned for stranger accept <= 10%,0.04,0.02,0.0,True,0.097,0.7402,8000,2000,0.831,0.7655,0.7419,0.0244,0.1446,0.0885,0.1215,1.8068,,,,none,10
+student (pooled hand model),tuned,-0.02,0.02,0.0,True,0.017,0.648,8000,2000,0.6575,0.6683,0.6561,0.0121,0.3304,0.0008,0.0275,1.973,0.0284,0.9247,0.9191,none,10
+student (pooled hand model),tuned for stranger accept <= 5%,0.02,0.08,0.0,True,0.049,0.757,8000,2000,0.7649,0.7714,0.7629,0.0085,0.2266,0.0011,0.0635,1.8102,,,,none,10
+student (pooled hand model),tuned for stranger accept <= 10%,0.04,0.05,0.0,True,0.099,0.8265,8000,2000,0.8259,0.8407,0.8239,0.0169,0.1573,0.0011,0.115,1.6708,,,,none,10
+student (no hand check),tuned,-0.02,0.02,0.0,True,0.017,0.649,8000,2000,0.6576,0.6679,0.6558,0.0121,0.3302,0.0,0.0275,1.9708,0.0286,0.9247,0.9191,none,10
+student (no hand check),tuned for stranger accept <= 5%,0.02,0.08,0.0,True,0.049,0.758,8000,2000,0.7649,0.7708,0.7622,0.0085,0.2266,0.0,0.0635,1.8072,,,,none,10
+student (no hand check),tuned for stranger accept <= 10%,0.04,0.05,0.0,True,0.099,0.8275,8000,2000,0.8259,0.8401,0.8233,0.0169,0.1573,0.0,0.115,1.6678,,,,none,10
+student_palettized,tuned,-0.02,0.02,0.0,True,0.016,0.5933,8000,2000,0.6454,0.6045,0.593,0.0119,0.3427,0.0521,0.0295,2.0955,0.0382,0.9196,0.9143,none,10
+student_palettized,tuned for stranger accept <= 5%,0.02,0.09,0.0,True,0.049,0.6707,8000,2000,0.7412,0.6837,0.678,0.0059,0.2529,0.0622,0.0535,1.9867,,,,none,10
+student_palettized,tuned for stranger accept <= 10%,0.04,0.07,0.0,True,0.097,0.7312,8000,2000,0.8014,0.7454,0.7336,0.0124,0.1862,0.0673,0.087,1.8763,,,,none,10
+student_palettized (pooled hand model),tuned,-0.02,0.04,0.0,True,0.019,0.6472,8000,2000,0.6509,0.6599,0.6492,0.0106,0.3385,0.0013,0.029,1.991,0.037,0.9196,0.9143,none,10
+student_palettized (pooled hand model),tuned for stranger accept <= 5%,0.0,0.02,0.0,True,0.044,0.7298,8000,2000,0.739,0.7564,0.7371,0.0192,0.2417,0.0014,0.055,1.8254,,,,none,10
+student_palettized (pooled hand model),tuned for stranger accept <= 10%,0.04,0.08,0.0,True,0.098,0.791,8000,2000,0.7933,0.8014,0.7911,0.0103,0.1965,0.0015,0.089,1.7536,,,,none,10
+student_palettized (no hand check),tuned,-0.02,0.04,0.0,True,0.019,0.6482,8000,2000,0.651,0.6599,0.6492,0.0106,0.3384,0.0,0.029,1.9879,0.0371,0.9196,0.9143,none,10
+student_palettized (no hand check),tuned for stranger accept <= 5%,0.0,0.02,0.0,True,0.044,0.7308,8000,2000,0.7391,0.7562,0.737,0.0192,0.2416,0.0,0.055,1.8219,,,,none,10
+student_palettized (no hand check),tuned for stranger accept <= 10%,0.04,0.08,0.0,True,0.098,0.792,8000,2000,0.7933,0.8011,0.7909,0.0103,0.1965,0.0,0.089,1.7499,,,,none,10
+student_scratch,tuned,-0.04,0.01,0.0,True,0.014,0.4565,8000,2000,0.5315,0.462,0.4511,0.0114,0.4571,0.0798,0.0275,2.3094,0.0443,0.906,0.9021,none,10
+student_scratch,tuned for stranger accept <= 5%,-0.02,0.01,0.0,True,0.05,0.5707,8000,2000,0.6703,0.5897,0.5716,0.0194,0.3104,0.0988,0.0635,2.1158,,,,none,10
+student_scratch,tuned for stranger accept <= 10%,0.0,0.04,0.0,True,0.097,0.6392,8000,2000,0.7435,0.6494,0.6326,0.0177,0.2387,0.1106,0.0925,2.0297,,,,none,10
+student_scratch (pooled hand model),tuned,-0.04,0.01,0.0,True,0.018,0.5413,8000,2000,0.5505,0.5606,0.547,0.0136,0.4359,0.0009,0.032,2.1334,0.0424,0.906,0.9021,none,10
+student_scratch (pooled hand model),tuned for stranger accept <= 5%,-0.02,0.06,0.0,True,0.05,0.6398,8000,2000,0.6462,0.6516,0.6424,0.0092,0.3445,0.0011,0.054,1.9975,,,,none,10
+student_scratch (pooled hand model),tuned for stranger accept <= 10%,0.0,0.05,0.0,True,0.099,0.735,8000,2000,0.7399,0.753,0.7358,0.0173,0.2429,0.0013,0.094,1.8267,,,,none,10
+student_scratch (no hand check),tuned,-0.04,0.01,0.0,True,0.018,0.5433,8000,2000,0.5507,0.5613,0.5476,0.0136,0.4356,0.0,0.032,2.1311,0.0426,0.906,0.9021,none,10
+student_scratch (no hand check),tuned for stranger accept <= 5%,-0.02,0.06,0.0,True,0.05,0.6415,8000,2000,0.6465,0.6522,0.643,0.0092,0.3443,0.0,0.054,1.9951,,,,none,10
+student_scratch (no hand check),tuned for stranger accept <= 10%,0.0,0.05,0.0,True,0.099,0.7368,8000,2000,0.7399,0.7535,0.7362,0.0173,0.2429,0.0,0.094,1.8243,,,,none,10
+v0,tuned,1.1,25.0,0.0,True,0.018,0.0503,8000,2000,0.0576,0.064,0.0573,0.0067,0.9356,0.0004,0.0135,2.8429,0.019,0.5049,0.5,none,10
+v0,tuned for stranger accept <= 5%,9.0,20.0,0.0,True,0.043,0.0948,8000,2000,0.1024,0.1216,0.1014,0.0206,0.877,0.0014,0.0505,2.7507,,,,none,10
+v0,tuned for stranger accept <= 10%,9.0,15.0,0.0,True,0.095,0.1565,8000,2000,0.1635,0.2026,0.1609,0.0423,0.7943,0.002,0.1055,2.628,,,,none,10
+v0,spec defaults,1.5,6.0,3.0,,,,8000,2000,0.3904,0.581,0.3827,0.1994,0.4103,0.0059,0.4905,2.0227,,,,none,10

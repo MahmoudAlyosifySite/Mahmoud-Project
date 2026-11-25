@@ -1,0 +1,43 @@
+{
+ "run": "S0",
+ "kind": "supervised",
+ "arch": "student",
+ "params": 219747,
+ "steps": 10150,
+ "best_val_top1_id": 0.9457638888888888,
+ "final_val": {
+  "hand_acc": 0.6417788461538462,
+  "top1_id": 0.9457638888888888,
+  "top1_person": 0.9536805555555555,
+  "eer": 0.006252499999999989,
+  "n_ids": 400
+ },
+ "args": {
+  "run": "S0",
+  "train": "/home/jovyan/7oda-work/v1/data/train10/shard_*.npz",
+  "val": "/home/jovyan/7oda-work/v1/data/val/shard_*.npz",
+  "arch": "student",
+  "epochs": 10.0,
+  "batch": 1024,
+  "lr": 0.003,
+  "wd": 0.02,
+  "warmup": 1000,
+  "margin": 0.3,
+  "scale": 32.0,
+  "margin_warmup_epochs": 1.0,
+  "hand_weight": 0.5,
+  "mirror_fraction": 0.25,
+  "mirror_mode": "actuator",
+  "ssl_weight": 0.0,
+  "no_aug": false,
+  "aug": "light",
+  "init": "",
+  "max_train": 0,
+  "eval_every": 2000,
+  "seed": 0,
+  "device": "cuda"
+ },
+ "train_samples": 1040000,
+ "classes": 20000,
+ "minutes": 16.8
+}

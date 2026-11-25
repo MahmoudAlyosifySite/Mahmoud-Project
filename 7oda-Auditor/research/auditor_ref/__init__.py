@@ -15,7 +15,8 @@ Modules, in pipeline order:
 - ``dsp``          biquads, zero-phase filter, resampling (sections 5.2-5.4)
 - ``signal``       grid, envelopes, template, alignment (section 5)
 - ``quality``      quality gate (section 6)
-- ``features``     v0 features (section 7)
+- ``features``     v0 features, featureVersion 2 (section 7)
+- ``features_v1``  featureVersion 1, kept for comparisons
 - ``calibration``  on-table calibration (section 8)
 - ``model``        shared-covariance Gaussian model (section 9.2)
 - ``identifier``   prototypes, hand head, sequential decision (section 9)
@@ -23,7 +24,7 @@ Modules, in pipeline order:
 """
 
 SPEC_VERSION = "v0 MVP"
-FEATURE_VERSION = 1
+FEATURE_VERSION = 2
 
 __all__ = [
     "rng",

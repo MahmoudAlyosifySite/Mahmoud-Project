@@ -1,4 +1,4 @@
-"""Recording -> compact item (quality report + v0 features), using auditor_ref only."""
+"""Recording -> compact item (quality report + SPEC 7 features), using auditor_ref only."""
 from __future__ import annotations
 
 import copy
@@ -12,26 +12,28 @@ import importlib
 from auditor_ref import calibration as calib_mod
 from auditor_ref import features, quality, signal
 
-# Feature names and index groups of SPEC section 7 (d = 36)
-_AX = ("ax", "ay", "az", "gx", "gy", "gz")
-FEATURE_NAMES = ([f"tap_alpha_{c}" for c in _AX] + ["tap_beta_total", "tap_gamma_total"]
-                 + [f"tap_share_{c}" for c in _AX] + ["tap_log_accel_gyro_ratio", "tap_decay", "tap_settle",
-                 "ramp_gain_accel", "ramp_exponent_accel", "ramp_gain_gyro", "ramp_exponent_gyro", "ramp_rise",
-                 "ramp_decay"] + [f"ramp_share_{c}" for c in _AX]
-                 + ["quiet_tremor_accel", "quiet_tremor_gyro", "quiet_rms_accel", "quiet_rms_gyro",
-                    "gravity_x", "gravity_y", "gravity_z"])
-TAP = list(range(0, 17))
-RAMP = list(range(17, 29))
-QUIET = list(range(29, 33))
-GRAVITY = [33, 34, 35]
-GYRO_ONLY = [3, 4, 5, 11, 12, 13, 14, 19, 20, 26, 27, 28, 30, 32]
+# Feature names and index groups of SPEC section 7 (featureVersion 2, d = 39)
+FEATURE_NAMES = list(features.FEATURE_NAMES)
+
+
+def _where(pred) -> list:
+    return [i for i, n in enumerate(FEATURE_NAMES) if pred(n)]
+
+
+TAP = _where(lambda n: n.startswith("tap_"))
+RAMP = _where(lambda n: n.startswith("ramp_"))
+QUIET = _where(lambda n: n.startswith("quiet_"))
+GRAVITY = _where(lambda n: n.startswith("gravity_"))
+FREE_RESPONSE = _where(lambda n: n.startswith("tap_tail_"))
+GYRO_ONLY = _where(lambda n: "gyro" in n or n.endswith(("_gx", "_gy", "_gz")))
 MASKS = {
-    "all": list(range(36)),
+    "all": list(range(len(FEATURE_NAMES))),
     "taps+quiet+gravity (no ramps)": TAP + QUIET + GRAVITY,
     "taps only": TAP,
     "ramps+quiet+gravity (no taps)": RAMP + QUIET + GRAVITY,
-    "no gyro-derived features": [i for i in range(36) if i not in GYRO_ONLY],
-    "no gravity": [i for i in range(36) if i not in GRAVITY],
+    "no free-response (tap tail) features": [i for i in range(len(FEATURE_NAMES)) if i not in FREE_RESPONSE],
+    "no gyro-derived features": [i for i in range(len(FEATURE_NAMES)) if i not in GYRO_ONLY],
+    "no gravity": [i for i in range(len(FEATURE_NAMES)) if i not in GRAVITY],
 }
 METRIC_KEYS = ("ncc", "snr", "lag", "peakMargin", "gapFraction", "motionRMS", "gravityAngleDeg", "quietGyroRMS")
 
@@ -49,7 +51,7 @@ def zero_gyro(rec: dict) -> dict:
 
 
 #: Feature sets that can be computed next to the adopted one (item key ``f_abs_<name>``, absolute values).
-EXTRA_FEATURES = {"v1": "auditor_ref.features_v1", "v2": "auditor_ref.features_v2"}
+EXTRA_FEATURES = {"v1": "auditor_ref.features_v1"}
 
 
 def extra_extractor(name: str):

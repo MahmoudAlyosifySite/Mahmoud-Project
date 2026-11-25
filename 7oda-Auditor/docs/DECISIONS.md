@@ -35,3 +35,14 @@ The development server is Linux and running a Swift toolchain there was not perm
 
 ## D9. What simulated results mean (2026-11-24)
 The physics simulator validates the pipeline's mechanics (alignment, features, thresholds, sequential checks, Unknown). Its accuracy numbers are not evidence about real hands. Real accuracy comes only from the week-2 pilot and the 20-person study.
+
+## D10. Feature set v2 (2026-11-25)
+**Finding:** on the simulator, 18 of the 36 v1 features had a cross-session Fisher ratio below 0.3. With 100 Hz point samples of a 140–200 Hz carrier, one tap's energy depends on the sampling phase, so per-tap regressions, decay/settle times and ramp exponents carried mostly noise; the axis shares (ratios of simultaneously sampled channels, where the phase cancels) carried the identity.
+**Change:** featureVersion 2 (d = 39, SPEC §7): energies are summed over samples and taps before any logarithm; the response is described mainly by axis shares and normalized cross products; each tap window is split into the driven burst and the free response.
+**Result (simulated, 20 people, cross-session):** forced choice 62.1 → 62.5 % (aliasing) and 83.2 → 86.4 % (filtered); features with Fisher < 0.3: 18 → 6. A real but modest gain: the open-set limit of hand-made features remains (see D12).
+
+## D11. Replay check on the alignment peak (2026-11-25)
+A recording made for an old challenge, fed into a new one, can still reach a high correlation at some lag, but its correlation peak is flat. SPEC §6 now also fails `weakAlignment` when `peakMargin < 0.05`. On the simulator (filtered mode) replays accepted as the victim fell from 9.5 % to 3.0 % while genuine pass rate went from 78.3 % to 77.4 %. Default to be checked in the pilot (D6).
+
+## D12. v1 learned encoder in the app (2026-11-25)
+The proposal ships v1 only if it beats v0 cross-session. On the simulator (held-out people, same recordings and protocol, thresholds tuned on a held-out session, ≤ 2 % strangers accepted) the 8-bit Core ML student (220 k parameters, 323 KB) names the right person in 65 % (aliasing) / 84 % (filtered) of checks, against 6 % / 8 % for v0; the 10.7 M teacher reaches 83 % / 95 %. The app therefore ships both recognizers, runs both on every check, uses v1 by default and logs both, so the pilot can confirm or overturn this on real hands. Simulated numbers are not evidence about real hands (D9); if v1 loses on real data the default switches back with one setting.

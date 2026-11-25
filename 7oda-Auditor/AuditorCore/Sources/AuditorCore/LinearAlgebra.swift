@@ -59,4 +59,30 @@ enum LinearAlgebra {
         }
         return s
     }
+
+    /// Solves `(L Lᵀ) x = b` for a lower Cholesky factor `L` (forward, then backward substitution).
+    static func choleskySolve(_ low: [[Double]], _ b: [Double]) -> [Double] {
+        let d = low.count
+        var y = [Double](repeating: 0.0, count: d)
+        for i in 0..<d {
+            var acc = i < b.count ? b[i] : 0.0
+            for k in 0..<i {
+                acc = acc - low[i][k] * y[k]
+            }
+            y[i] = acc / low[i][i]
+        }
+        var x = [Double](repeating: 0.0, count: d)
+        var i = d - 1
+        while i >= 0 {
+            var acc = y[i]
+            var k = i + 1
+            while k < d {
+                acc = acc - low[k][i] * x[k]
+                k += 1
+            }
+            x[i] = acc / low[i][i]
+            i -= 1
+        }
+        return x
+    }
 }

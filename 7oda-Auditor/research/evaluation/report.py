@@ -127,7 +127,8 @@ def render(rep: dict, title: str) -> str:
         if key in ab:
             rows = [_row(f"{v['name']} ({_th(v['tuned'])})", v["test"]) for v in ab[key]]
             if key == "features":
-                rows.insert(0, _row(f"all 36 features ({_th(m['tuned'])})", m["test"]))
+                n_all = len((rep.get("diagnostics") or {}).get("features") or []) or "all"
+                rows.insert(0, _row(f"all {n_all} features ({_th(m['tuned'])})", m["test"]))
             L += [f"## {title2}", "", _table(rows), ""]
     if "accessory" in ab:
         a = ab["accessory"]

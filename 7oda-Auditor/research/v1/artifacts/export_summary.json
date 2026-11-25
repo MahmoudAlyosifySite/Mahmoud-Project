@@ -1,0 +1,18 @@
+{
+ "path": "/home/jovyan/Mahmoud-Project/7oda-Auditor/research/v1/artifacts/HandEncoder.mlpackage",
+ "size_bytes": 323183,
+ "lut_ops": {
+  "constexpr_lut_to_dense": 18
+ },
+ "palettized_tensors": 18,
+ "params": 219747,
+ "palettization_max_delta": 0.09316658973693848,
+ "inputs": [
+  "x"
+ ],
+ "outputs": [
+  "embedding",
+  "hand"
+ ],
+ "spec_version": 8
+}

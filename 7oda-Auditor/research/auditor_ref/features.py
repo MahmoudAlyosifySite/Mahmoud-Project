@@ -1,8 +1,21 @@
-"""v0 features (SPEC section 7): 36 hand-made features, ``featureVersion = 1``.
+"""v0 features (SPEC section 7): 39 hand-made features, ``featureVersion = 2``.
 
-``extract_absolute(proc)`` gives the absolute features; ``extract(proc,
-calibration)`` subtracts the calibration's table features on the indices
-``CAL_RELATIVE`` (SPEC 7.6).
+Every amplitude statistic is a ratio of sums: energies are summed over samples and
+over events first, and a logarithm (if any) is taken only of the aggregate. Shapes
+(axis shares and normalised cross products) divide sums of simultaneously sampled
+channels of one stream, so the unknown sampling phase of an aliased carrier, the
+actuator's frequency response and the grid interpolation cancel. Tap windows are
+split into the driven burst ``[o - 1, o + 2)`` and the free response ``[o + 2, o + 9)``
+(the phone ringing on the hand after the click).
+
+All sums are left-to-right (``seq_sum``); no comparisons are made on computed values,
+so no tie audit is needed. Empty windows contribute zero sums, and every ratio
+carries an epsilon, so all features are finite for any input (a recording with no
+taps or no ramps gives 0 for that group's features).
+
+``extract_absolute(proc)`` gives the absolute features; ``extract(proc, calibration)``
+subtracts the calibration's table features on the indices ``CAL_RELATIVE`` (SPEC 7.5).
+The previous set (featureVersion 1, d = 36) is kept in ``features_v1`` for comparisons.
 """
 
 from __future__ import annotations
@@ -12,84 +25,77 @@ import math
 import numpy as np
 
 from . import dsp
-from ._numerics import TieAudit, mean, median, note, note_argmax, seq_sum, solve_partial_pivot
+from ._numerics import TieAudit, mean, note, seq_sum
 from .challenge import curve_at
 from .signal import Processed
 
-FEATURE_VERSION = 1
+FEATURE_VERSION = 2
 
-FEATURE_NAMES = (
-    "tap_alpha_ax", "tap_alpha_ay", "tap_alpha_az", "tap_alpha_gx", "tap_alpha_gy", "tap_alpha_gz",
-    "tap_beta_total", "tap_gamma_total",
-    "tap_share_ax", "tap_share_ay", "tap_share_az",
-    "tap_share_gx", "tap_share_gy", "tap_share_gz",
-    "tap_log_accel_gyro_ratio", "tap_decay", "tap_settle",
-    "ramp_gain_accel", "ramp_exponent_accel", "ramp_gain_gyro", "ramp_exponent_gyro",
-    "ramp_rise", "ramp_decay",
-    "ramp_share_ax", "ramp_share_ay", "ramp_share_az",
-    "ramp_share_gx", "ramp_share_gy", "ramp_share_gz",
-    "quiet_tremor_accel", "quiet_tremor_gyro", "quiet_rms_accel", "quiet_rms_gyro",
-    "gravity_x", "gravity_y", "gravity_z",
+_A = ("ax", "ay", "az")
+_G = ("gx", "gy", "gz")
+_X = ("axy", "axz", "ayz")
+_PAIRS = ((0, 1), (0, 2), (1, 2))
+
+FEATURE_NAMES = tuple(
+    ["tap_gain_accel", "tap_log_accel_gyro"]
+    + [f"tap_burst_share_{c}" for c in _A] + [f"tap_burst_cross_{c}" for c in _X]
+    + [f"tap_burst_share_{c}" for c in _G]
+    + [f"tap_tail_share_{c}" for c in _A] + [f"tap_tail_cross_{c}" for c in _X]
+    + [f"tap_tail_share_{c}" for c in _G] + ["tap_tail_log_accel_gyro"]
+    + ["ramp_gain_accel", "ramp_log_accel_gyro"]
+    + [f"ramp_share_{c}" for c in _A] + [f"ramp_cross_{c}" for c in _X] + [f"ramp_share_{c}" for c in _G]
+    + ["quiet_tremor_accel", "quiet_tremor_gyro", "quiet_rms_accel", "quiet_rms_gyro",
+       "gravity_x", "gravity_y", "gravity_z"]
 )
-assert len(FEATURE_NAMES) == 36
+assert len(FEATURE_NAMES) == 39
 
-#: Calibration-relative indices R of SPEC 7.6.
-CAL_RELATIVE = (0, 1, 2, 3, 4, 5, 6, 7, 14, 17, 18, 19, 20)
+#: Calibration-relative indices R of SPEC 7.5 (log gains and log accel/gyro ratios).
+CAL_RELATIVE = (0, 1, 20, 21, 22)
 
-TAP_RIDGE_LAMBDA = 0.01
-RAMP_RIDGE_LAMBDA = 0.001
-
-
-def ridge(rows: list[list[float]], targets: list[float], lam: float) -> list[float]:
-    """Ridge fit with an unpenalised intercept (SPEC 7.2).
-
-    Solves ``(X^T X + diag(0, lam, ..., lam)) theta = X^T y`` by Gaussian
-    elimination with partial pivoting; ``X^T X`` and ``X^T y`` are
-    accumulated row by row (left-to-right sums), then ``lam`` is added to
-    the slope diagonal entries. ``ridge3`` = rows ``[1, u, v]``, ``ridge2`` =
-    rows ``[1, u]``.
-    """
-    k = len(rows[0])
-    a = [[0.0] * k for _ in range(k)]
-    b = [0.0] * k
-    for x, y in zip(rows, targets):
-        for r in range(k):
-            xr = x[r]
-            for c in range(k):
-                a[r][c] = a[r][c] + xr * x[c]
-            b[r] = b[r] + xr * y
-    for r in range(1, k):
-        a[r][r] = a[r][r] + lam
-    return solve_partial_pivot(a, b)
+EPS = 1e-12
+BURST = (-1, 2)       # burst window [o - 1, o + 2)
+TAIL = (2, 9)         # free-response window [o + 2, o + 9)
+RAMP_SKIP = 2         # ramp core window [s + 2, e)
 
 
-def ls_slope(y: list[float]) -> float:
-    """Least-squares slope of ``y`` against ``0, 1, ..., m-1``.
-
-    ``slope = sum((x - xbar) * (y - ybar)) / sum((x - xbar)^2)``.
-    """
-    m = len(y)
-    xs = [float(i) for i in range(m)]
-    xbar = mean(xs)
-    ybar = mean(y)
-    sxy = 0.0
-    sxx = 0.0
-    for xi, yi in zip(xs, y):
-        dx = xi - xbar
-        sxy = sxy + dx * (yi - ybar)
-        sxx = sxx + dx * dx
-    return sxy / sxx
+def _ln_ratio(a: float, b: float) -> float:
+    return math.log((a + EPS) / (b + EPS))
 
 
-def _sumsq(arr: np.ndarray) -> float:
-    return seq_sum(arr * arr)
+class _Shape:
+    """Running per-channel energy and cross-product totals of one stream (left-to-right)."""
+
+    def __init__(self, cross: bool):
+        self.e = [0.0, 0.0, 0.0]
+        self.x = [0.0, 0.0, 0.0] if cross else None
+
+    def add(self, sig: np.ndarray, a: int, b: int) -> None:
+        if b <= a:
+            return
+        for c in range(3):
+            v = sig[c, a:b]
+            self.e[c] = self.e[c] + seq_sum(v * v)
+        if self.x is not None:
+            for k, (c, d) in enumerate(_PAIRS):
+                self.x[k] = self.x[k] + seq_sum(sig[c, a:b] * sig[d, a:b])
+
+    @property
+    def total(self) -> float:
+        return (self.e[0] + self.e[1]) + self.e[2]
+
+    def shares(self) -> list[float]:
+        t = self.total
+        return [self.e[c] / (t + EPS) for c in range(3)]
+
+    def cross(self) -> list[float]:
+        t = self.total
+        return [self.x[k] / (t + EPS) for k in range(3)]
 
 
-def tap_measurements(proc: Processed, audit: TieAudit | None = None) -> list[dict]:
-    """Per-tap window measurements of SPEC 7.1 (skipped taps omitted)."""
+def tap_windows(proc: Processed) -> list[dict]:
+    """Per-tap windows (time order); ``u = min(next - 1, N)`` bounds all three."""
     events = proc.challenge.get("events") or []
     n = proc.n
-    env = proc.envelope
     end_next = proc.end_index + 25
     out = []
     for ei, ev in enumerate(events):
@@ -97,182 +103,78 @@ def tap_measurements(proc: Processed, audit: TieAudit | None = None) -> list[dic
             continue
         o = proc.index(ev["time"])
         nxt = proc.index(events[ei + 1]["time"]) if ei + 1 < len(events) else end_next
-        ws = max(o - 1, 0)
-        we = min(o + 9, nxt - 1, n)
-        if ws >= we:
-            continue
-        energies = [_sumsq(proc.accel_hp[c, ws:we]) for c in range(3)]
-        energies += [_sumsq(proc.gyro_hp[c, ws:we]) for c in range(3)]
-        ea = energies[0] + energies[1] + energies[2]
-        eg = energies[3] + energies[4] + energies[5]
-        # peak: first max of env over [ws, min(o + 3, we))
-        pe = min(o + 3, we)
-        if pe <= ws:
-            p = ws
-        else:
-            p = ws
-            best = env[ws]
-            for i in range(ws + 1, pe):
-                if env[i] > best:
-                    best = env[i]
-                    p = i
-            note_argmax(audit, f"tap{ei}.peak", [float(env[i]) for i in range(ws, pe)], p - ws)
-        # decay
-        last = min(p + 4, we - 1)
-        pts = list(range(p, last + 1))
-        if len(pts) >= 3:
-            decay = -ls_slope([math.log(float(env[i]) + 0.1) for i in pts])
-        else:
-            decay = 0.0
-        # settle
-        settle = we - p
-        thr = 0.1 * float(env[p])
-        k = 0
-        while p + k < we:
-            val = float(env[p + k])
-            note(audit, f"tap{ei}.settle{k}", val, thr)
-            if val < thr:
-                settle = k
-                break
-            k += 1
+        u = min(nxt - 1, n)
         out.append({
-            "event": ei,
-            "onset": o,
-            "window": (ws, we),
-            "energies": energies,
-            "EA": ea,
-            "EG": eg,
-            "peak": p,
-            "decay": decay,
-            "settle": settle,
-            "intensity": float(ev["intensity"]),
-            "sharpness": float(ev["sharpness"]),
+            "event": ei, "onset": o, "intensity": float(ev["intensity"]),
+            "full": (max(o + BURST[0], 0), min(o + TAIL[1], u)),
+            "burst": (max(o + BURST[0], 0), min(o + BURST[1], u)),
+            "tail": (max(o + TAIL[0], 0), min(o + TAIL[1], u)),
         })
     return out
 
 
-def tap_features(meas: list[dict]) -> list[float]:
-    """Features 0-16 (SPEC 7.3); all zero if every tap was skipped."""
-    if not meas:
-        return [0.0] * 17
-    rows = [[1.0, math.log(m["intensity"]), m["sharpness"] - 0.5] for m in meas]
-    f = []
-    for c in range(6):
-        theta = ridge(rows, [math.log(m["energies"][c] + 1e-7) for m in meas], TAP_RIDGE_LAMBDA)
-        f.append(theta[0])
-    theta = ridge(rows, [math.log(m["EA"] / 1e-4 + m["EG"] / 1e-4 + 1e-6) for m in meas], TAP_RIDGE_LAMBDA)
-    f.append(theta[1])
-    f.append(theta[2])
-    for c in range(3):
-        f.append(median([m["energies"][c] / (m["EA"] + 1e-12) for m in meas]))
-    for c in range(3, 6):
-        f.append(median([m["energies"][c] / (m["EG"] + 1e-12) for m in meas]))
-    f.append(median([math.log((m["EA"] + 1e-7) / (m["EG"] + 1e-7)) for m in meas]))
-    f.append(median([m["decay"] for m in meas]))
-    f.append(mean([float(m["settle"]) for m in meas]))
+def tap_features(proc: Processed) -> list[float]:
+    """Features 0-20 (SPEC 7.1-7.2)."""
+    ea_full = eg_full = i2 = 0.0
+    burst_a, burst_g = _Shape(True), _Shape(False)
+    tail_a, tail_g = _Shape(True), _Shape(False)
+    for w in tap_windows(proc):
+        a, b = w["full"]
+        if b <= a:
+            continue                      # a tap whose full window is empty is skipped entirely
+        ea_full = ea_full + seq_sum(proc.energy_accel[a:b])
+        eg_full = eg_full + seq_sum(proc.energy_gyro[a:b])
+        i2 = i2 + w["intensity"] * w["intensity"]
+        burst_a.add(proc.accel_hp, *w["burst"])
+        burst_g.add(proc.gyro_hp, *w["burst"])
+        tail_a.add(proc.accel_hp, *w["tail"])
+        tail_g.add(proc.gyro_hp, *w["tail"])
+    f = [_ln_ratio(ea_full, i2), _ln_ratio(ea_full, eg_full)]
+    f += burst_a.shares() + burst_a.cross() + burst_g.shares()
+    f += tail_a.shares() + tail_a.cross() + tail_g.shares()
+    f.append(_ln_ratio(tail_a.total, tail_g.total))
     return f
 
 
-def ramp_measurements(proc: Processed, audit: TieAudit | None = None) -> list[dict]:
-    """Per-ramp measurements of SPEC 7.4."""
-    cfg = proc.config
+def ramp_windows(proc: Processed) -> list[dict]:
+    """Per-ramp core windows ``[s + 2, e)`` (time order; s, e clamped to [0, N])."""
     events = proc.challenge.get("events") or []
-    n = proc.n
-    lag = proc.lag
-    amp_a = np.sqrt(proc.energy_accel)
-    amp_g = np.sqrt(proc.energy_gyro)
     out = []
     for ei, ev in enumerate(events):
         if ev["kind"] != "ramp":
             continue
-        tj = ev["time"]
-        dj = ev["duration"]
-        s = proc.clamp(proc.index(tj))
-        e = proc.clamp(proc.index(tj + dj))
-
-        def intensity(i: int) -> float:
-            tau = float(i - lag) / cfg.fs - cfg.pre_roll - tj
-            tau = min(max(tau, 0.0), dj)
-            return curve_at(ev, tau)
-
-        pts = list(range(s + 2, e))
-        u = [math.log(intensity(i)) for i in pts]
-        ya = [math.log(float(amp_a[i]) + 1e-4) for i in pts]
-        yg = [math.log(float(amp_g[i]) + 1e-4) for i in pts]
-        if len(pts) >= 3:
-            rows = [[1.0, ui] for ui in u]
-            rho_a, kappa_a = ridge(rows, ya, RAMP_RIDGE_LAMBDA)
-            rho_g, kappa_g = ridge(rows, yg, RAMP_RIDGE_LAMBDA)
-        else:
-            kappa_a = kappa_g = 1.0
-            if pts:
-                rho_a = mean(ya) - mean(u)
-                rho_g = mean(yg) - mean(u)
-            else:
-                rho_a = rho_g = 0.0
-        # rise
-        if s >= e:
-            rise = 0
-        else:
-            mx = max(float(v) for v in amp_a[s:e])
-            thr = 0.63 * mx
-            rise = 0
-            k = 0
-            while s + k < e:
-                val = float(amp_a[s + k])
-                note(audit, f"ramp{ei}.rise{k}", val, thr)
-                if val >= thr:
-                    rise = k
-                    break
-                k += 1
-        # decay after the ramp end
-        ref_idx = [i for i in (e - 2, e - 1) if s <= i < e]
-        ref = mean([float(amp_a[i]) for i in ref_idx]) if ref_idx else 0.0
-        thr = 0.37 * ref
-        decay_t = 10
-        for k in range(10):
-            if e + k >= n:
-                continue
-            val = float(amp_a[e + k])
-            note(audit, f"ramp{ei}.decay{k}", val, thr)
-            if val < thr:
-                decay_t = k
-                break
-        denom_a = seq_sum(proc.energy_accel[s:e]) + 1e-12
-        denom_g = seq_sum(proc.energy_gyro[s:e]) + 1e-12
-        shares_a = [_sumsq(proc.accel_hp[c, s:e]) / denom_a for c in range(3)]
-        shares_g = [_sumsq(proc.gyro_hp[c, s:e]) / denom_g for c in range(3)]
-        out.append({
-            "event": ei,
-            "range": (s, e),
-            "rhoA": rho_a, "kappaA": kappa_a, "rhoG": rho_g, "kappaG": kappa_g,
-            "rise": rise, "decayT": decay_t,
-            "sharesA": shares_a, "sharesG": shares_g,
-        })
+        s = proc.clamp(proc.index(ev["time"]))
+        e = proc.clamp(proc.index(ev["time"] + ev["duration"]))
+        out.append({"event": ei, "ramp": ev, "core": (s + RAMP_SKIP, e)})
     return out
 
 
-def ramp_features(meas: list[dict]) -> list[float]:
-    """Features 17-28 (SPEC 7.4): means over ramps (0 if there are none)."""
-    if not meas:
-        return [0.0] * 12
-    f = [
-        mean([m["rhoA"] for m in meas]),
-        mean([m["kappaA"] for m in meas]),
-        mean([m["rhoG"] for m in meas]),
-        mean([m["kappaG"] for m in meas]),
-        mean([float(m["rise"]) for m in meas]),
-        mean([float(m["decayT"]) for m in meas]),
-    ]
-    for c in range(3):
-        f.append(mean([m["sharesA"][c] for m in meas]))
-    for c in range(3):
-        f.append(mean([m["sharesG"][c] for m in meas]))
+def ramp_features(proc: Processed) -> list[float]:
+    """Features 21-31 (SPEC 7.3)."""
+    cfg = proc.config
+    lag = proc.lag
+    shape_a, shape_g = _Shape(True), _Shape(False)
+    i2 = 0.0
+    for w in ramp_windows(proc):
+        a, b = w["core"]
+        if b <= a:
+            continue
+        ev = w["ramp"]
+        tj, dj = float(ev["time"]), float(ev["duration"])
+        for i in range(a, b):
+            tau = float(i - lag) / cfg.fs - cfg.pre_roll - tj
+            tau = min(max(tau, 0.0), dj)
+            c = curve_at(ev, tau)
+            i2 = i2 + c * c
+        shape_a.add(proc.accel_hp, a, b)
+        shape_g.add(proc.gyro_hp, a, b)
+    f = [_ln_ratio(shape_a.total, i2), _ln_ratio(shape_a.total, shape_g.total)]
+    f += shape_a.shares() + shape_a.cross() + shape_g.shares()
     return f
 
 
 def tremor_bandpassed(proc: Processed) -> tuple[np.ndarray, np.ndarray]:
-    """``bA``, ``bG`` of SPEC 7.5 (cached on ``proc``)."""
+    """``bA``, ``bG`` of SPEC 7.4 (cached on ``proc``)."""
     if "tremor_bp" not in proc.cache:
         cfg = proc.config
         bp = cfg.tremor_bandpass()
@@ -286,7 +188,7 @@ def tremor_bandpassed(proc: Processed) -> tuple[np.ndarray, np.ndarray]:
 
 
 def quiet_features(proc: Processed, audit: TieAudit | None = None) -> list[float]:
-    """Features 29-35 (SPEC 7.5)."""
+    """Features 32-38 (SPEC 7.4)."""
     q0, q1 = proc.quiet_range
     ba, bg = tremor_bandpassed(proc)
     tre_a = ba[0] * ba[0] + ba[1] * ba[1] + ba[2] * ba[2]
@@ -310,15 +212,13 @@ def quiet_features(proc: Processed, audit: TieAudit | None = None) -> list[float
 
 
 def extract_absolute(proc: Processed, audit: TieAudit | None = None) -> np.ndarray:
-    """The 36 absolute features of SPEC 7.3-7.5."""
-    f = tap_features(tap_measurements(proc, audit))
-    f += ramp_features(ramp_measurements(proc, audit))
-    f += quiet_features(proc, audit)
+    """The 39 absolute features of SPEC 7.2-7.4."""
+    f = tap_features(proc) + ramp_features(proc) + quiet_features(proc, audit)
     return np.asarray(f, dtype=np.float64)
 
 
 def relative(features_abs, calibration: dict | None) -> np.ndarray:
-    """Apply SPEC 7.6 to an absolute feature vector."""
+    """Apply SPEC 7.5 to an absolute feature vector."""
     f = np.array(features_abs, dtype=np.float64, copy=True)
     if calibration is not None:
         table = calibration["tableFeatures"]

@@ -274,6 +274,7 @@ For an event at pattern time `t`: `idx(t) = Int((preRoll + t) * fs + 0.5) + lag`
 | maxMotionRMS | 0.30 rad/s |
 | maxGravityAngleDeg | 10 |
 | minNCC | 0.30 |
+| minPeakMargin | 0.05 |
 | minSNR | 2.0 |
 
 ### 6.3 Rules
@@ -282,7 +283,7 @@ Mode `handheld` (enrollment, checks) issues, evaluated in this order and all rep
 2. `lowSampleRate` if `sampleRate < minSampleRate`.
 3. `resting` ("Hold the phone") if `gravityZ >= flatGravityZ` and `quietGyroRMS < restThreshold`, where `restThreshold = restingGyroFactor * calibration.quietGyroRMS` if a calibration exists else `restingGyroAbsolute`.
 4. `moving` ("Hold still") if `motionRMS > maxMotionRMS` or `gravityAngleDeg > maxGravityAngleDeg`.
-5. `weakAlignment` if `ncc < minNCC`.
+5. `weakAlignment` if `ncc < minNCC` or `peakMargin < minPeakMargin`. (A recorded response fed into a new challenge — a replay — correlates almost as well at lags far from its best one, so its peak is flat even when its `ncc` is high.)
 6. `weakSignal` if `snr < minSNR`.
 
 Mode `onTable` (calibration): rules 1, 2, 5, 6, plus `notResting` if `gravityZ < flatGravityZ` or `motionRMS > 0.05`.
@@ -291,68 +292,78 @@ Mode `onTable` (calibration): rules 1, 2, 5, 6, plus `notResting` if `gravityZ <
 
 ---
 
-## 7. Features (v0, `featureVersion = 1`, d = 36)
+## 7. Features (v0, `featureVersion = 2`, d = 39)
 
-Inputs: processed signal (section 5), challenge, lag, calibration (optional). Let `taps` be the tap events in time order and `ramps` the ramp events in time order.
+Inputs: processed signal (section 5), challenge, lag, calibration (optional). Let `taps` be the tap events in time order and `ramps` the ramp events in time order. `FeatureExtractor.version = 2`; its `names` are the 39 names below in index order. Where sections 8 and 10 speak of 36 features or names they mean these d = 39 (`Calibration.tableFeatures` holds all 39 absolute values) and `FeatureExtractor.version` is 2. Templates stored with another `featureVersion` are recomputed from their raw recordings.
 
-### 7.1 Tap windows
-For tap i with onset `o_i = idx(t_i)` and next-event onset `next_i` (the onset of the next event of any kind, or `endIdx + 25` for the last event):
-`W_i = [max(o_i - 1, 0), min(o_i + 9, next_i - 1, N))`. If the window is empty, the tap is skipped (if all taps are skipped, the tap features are all 0).
-- `E_{i,c} = Σ_{n∈W_i} aH_c[n]²` for c ∈ {x,y,z} (accel), and with `gH` for the gyro → 6 energies, channel order `ax, ay, az, gx, gy, gz`.
-- `EA_i = Σ accel energies`, `EG_i = Σ gyro energies`.
-- Peak `p_i` = argmax of `env[n]` over `n ∈ [W_i.start, min(o_i + 3, W_i.end))` (first max on ties; if that range is empty use `W_i.start`).
-- Decay: points `n = p_i … min(p_i + 4, W_i.end - 1)`; if at least 3 points, `decay_i = -slope` of least squares of `ln(env[n] + 0.1)` vs `(n - p_i)`; else `decay_i = 0`.
-- Settle: `settle_i` = smallest `k ≥ 0` with `p_i + k < W_i.end` and `env[p_i + k] < 0.1 * env[p_i]`; if none, `settle_i = W_i.end - p_i`.
+Conventions:
+- `ε = 1e-12`. `ln` is the natural logarithm. `v²` means `v * v`.
+- Every `Σ` is a plain left-to-right sum starting from 0.0: over samples in increasing `n`, over events in time order. A total over events adds each event's own window sum (itself a left-to-right sum over its samples) to the running total; it is not one flat sum over all samples.
+- A window `[a, b)` with `b <= a` is empty; an empty sum is 0.
+- No feature compares computed values, so features have no ties. Every feature is finite for any input: all quotients carry `ε`, so a recording whose taps (ramps) all have empty windows gives 0 for every tap (ramp) feature.
 
-### 7.2 Ridge regression helper
-`ridge3(rows x_i = [1, u_i, v_i], targets y_i, λ)` minimizes `Σ (y_i − x_iᵀθ)² + λ(θ₁² + θ₂²)` (intercept not penalized): solve the 3×3 system `(XᵀX + diag(0, λ, λ)) θ = Xᵀy` by Gaussian elimination with partial pivoting. With `u_i = ln(I_i)`, `v_i = S_i − 0.5`, `λ = 0.01`.
-`ridge2(rows [1, u_i], y_i, λ)` is the same with one slope (`λ` on the slope only).
+Design (featureVersion 1 → 2): with 100 Hz point samples of a vibration whose carrier is near or above the Nyquist frequency, a single tap's energy depends on the sampling phase (`A·cos φ` with arbitrary `φ`), on the actuator's response at the event's frequency and on the grid interpolation. v2 therefore (a) sums energies over samples and taps before taking any logarithm, (b) describes the response mainly by its shape — axis shares and normalized cross products of simultaneously sampled channels of one stream, in which those factors cancel — and (c) splits each tap window into the driven burst and the free response (the phone ringing on the hand after the click), whose shapes differ. Per-tap regressions, decay and settle times and ramp exponents are gone (cross-session Fisher ratios ≈ 0.01–0.07 on the simulator; DECISIONS D10).
 
-### 7.3 Tap features (indices 0–16)
+### 7.1 Tap windows and sums
+For tap i with onset `o_i = idx(t_i)`, intensity `I_i` and next-event onset `next_i` (the onset of the next event of any kind, or `endIdx + 25` for the last event), let `u_i = min(next_i − 1, N)`:
+- full window `W_i = [max(o_i − 1, 0), min(o_i + 9, u_i))`
+- burst window `B_i = [max(o_i − 1, 0), min(o_i + 2, u_i))`
+- tail (free-response) window `T_i = [max(o_i + 2, 0), min(o_i + 9, u_i))`
+
+A tap whose full window `W_i` is empty is skipped: it adds nothing to any total below (not even to `SI`). For the remaining taps, in time order:
+```
+SEA = Σ_i Σ_{n∈W_i} EA[n]          SEG = Σ_i Σ_{n∈W_i} EG[n]          SI = Σ_i I_i²
+for V ∈ {B, T}, c ∈ {x, y, z}, (c, d) ∈ {(x, y), (x, z), (y, z)}:
+  A^V_c  = Σ_i Σ_{n∈V_i} aH_c[n]²
+  G^V_c  = Σ_i Σ_{n∈V_i} gH_c[n]²
+  X^V_cd = Σ_i Σ_{n∈V_i} aH_c[n] * aH_d[n]
+  A^V = (A^V_x + A^V_y) + A^V_z      G^V = (G^V_x + G^V_y) + G^V_z
+```
+`EA`, `EG`, `aH`, `gH` are those of 5.5.
+
+### 7.2 Tap features (indices 0–20)
 | # | Name | Definition |
 |---|---|---|
-| 0–5 | tap_alpha_{ax,ay,az,gx,gy,gz} | intercept θ₀ of `ridge3` with `y_i = ln(E_{i,c} + 1e-7)` |
-| 6 | tap_beta_total | θ₁ of `ridge3` with `y_i = ln(EA_i/1e-4 + EG_i/1e-4 + 1e-6)` |
-| 7 | tap_gamma_total | θ₂ of the same fit |
-| 8–10 | tap_share_{ax,ay,az} | `median_i(E_{i,c} / (EA_i + 1e-12))` |
-| 11–13 | tap_share_{gx,gy,gz} | `median_i(E_{i,c} / (EG_i + 1e-12))` |
-| 14 | tap_log_accel_gyro_ratio | `median_i ln((EA_i + 1e-7) / (EG_i + 1e-7))` |
-| 15 | tap_decay | `median_i decay_i` |
-| 16 | tap_settle | `mean_i settle_i` |
+| 0 | tap_gain_accel | `ln((SEA + ε) / (SI + ε))` |
+| 1 | tap_log_accel_gyro | `ln((SEA + ε) / (SEG + ε))` |
+| 2–4 | tap_burst_share_{ax,ay,az} | `A^B_c / (A^B + ε)` |
+| 5–7 | tap_burst_cross_{axy,axz,ayz} | `X^B_cd / (A^B + ε)` for (x,y), (x,z), (y,z) |
+| 8–10 | tap_burst_share_{gx,gy,gz} | `G^B_c / (G^B + ε)` |
+| 11–13 | tap_tail_share_{ax,ay,az} | `A^T_c / (A^T + ε)` |
+| 14–16 | tap_tail_cross_{axy,axz,ayz} | `X^T_cd / (A^T + ε)` |
+| 17–19 | tap_tail_share_{gx,gy,gz} | `G^T_c / (G^T + ε)` |
+| 20 | tap_tail_log_accel_gyro | `ln((A^T + ε) / (G^T + ε))` |
 
-Median: numpy semantics (mean of the two middle values for even counts).
+### 7.3 Ramp features (indices 21–31)
+For ramp j: `s = idx(t_j)`, `e = idx(t_j + d_j)`, both clamped to `[0, N]`; core window `C_j = [s + 2, e)`. A ramp with an empty core is skipped. Commanded intensity at sample n: `I(n) = curve(τ)` with `τ = clamp(Double(n − lag)/fs − preRoll − t_j, 0, d_j)` (3.3). Over the remaining ramps, in time order:
+```
+RI = Σ_j Σ_{n∈C_j} I(n)²
+RA_c = Σ_j Σ_{n∈C_j} aH_c[n]²     RG_c = Σ_j Σ_{n∈C_j} gH_c[n]²     RX_cd = Σ_j Σ_{n∈C_j} aH_c[n] * aH_d[n]
+RA = (RA_x + RA_y) + RA_z         RG = (RG_x + RG_y) + RG_z
+```
 
-### 7.4 Ramp features (indices 17–28)
-For ramp j: `s = idx(t_j)`, `e = idx(t_j + d_j)` (clamped to `[0, N]`).
-`ampA[n] = sqrt(EA[n])`, `ampG[n] = sqrt(EG[n])`. Commanded intensity at sample n: `I(n) = curve(τ)` with `τ = clamp(Double(n - lag)/fs - preRoll - t_j, 0, d_j)`.
-- Gain fit on `n ∈ [s + 2, e)`: `ridge2` with `u = ln(I(n))`, `y = ln(ampA[n] + 1e-4)`, `λ = 0.001` → `ρA_j = θ₀`, `κA_j = θ₁`; same with `ampG` → `ρG_j`, `κG_j`. If fewer than 3 points: `κ = 1`, `ρ = mean(y) − mean(u)` (0 if no points).
-- `rise_j` = smallest `k ≥ 0` with `s + k < e` and `ampA[s + k] >= 0.63 * max(ampA[s..<e])`; if `s >= e`, 0.
-- `decayT_j`: `ref = mean(ampA[e-2], ampA[e-1])` (only indices inside `[s, e)`; if none, ref = 0); smallest `k` in `0..<10` with `e + k < N` and `ampA[e + k] < 0.37 * ref`; if none, 10.
-- Shares: `Σ_{n∈[s,e)} aH_c[n]² / (Σ_{n∈[s,e)} EA[n] + 1e-12)` for c ∈ {x,y,z}; gyro likewise with `gH` and `EG`.
-
-| # | Name | Definition (mean over ramps) |
-|---|---|---|
-| 17 | ramp_gain_accel | ρA |
-| 18 | ramp_exponent_accel | κA |
-| 19 | ramp_gain_gyro | ρG |
-| 20 | ramp_exponent_gyro | κG |
-| 21 | ramp_rise | rise |
-| 22 | ramp_decay | decayT |
-| 23–25 | ramp_share_{ax,ay,az} | accel shares |
-| 26–28 | ramp_share_{gx,gy,gz} | gyro shares |
-
-### 7.5 Quiet and grip features (indices 29–35)
-`bA[c] = filtfiltZ(a_c, BP tremor)` and `bG[c]` likewise on the whole grid.
 | # | Name | Definition |
 |---|---|---|
-| 29 | quiet_tremor_accel | `ln(mean_{n∈Q} Σ_c bA_c[n]² + 1e-10)` |
-| 30 | quiet_tremor_gyro | `ln(mean_{n∈Q} Σ_c bG_c[n]² + 1e-10)` |
-| 31 | quiet_rms_accel | `ln(sqrt(mean_{n∈Q} EA[n]) + 1e-6)` |
-| 32 | quiet_rms_gyro | `ln(sqrt(mean_{n∈Q} EG[n]) + 1e-6)` |
-| 33–35 | gravity_{x,y,z} | mean of (Gx, Gy, Gz) over the grid, normalized to unit length; `[0, 0, -1]` if the norm < 1e-6 |
+| 21 | ramp_gain_accel | `ln((RA + ε) / (RI + ε))` |
+| 22 | ramp_log_accel_gyro | `ln((RA + ε) / (RG + ε))` |
+| 23–25 | ramp_share_{ax,ay,az} | `RA_c / (RA + ε)` |
+| 26–28 | ramp_cross_{axy,axz,ayz} | `RX_cd / (RA + ε)` for (x,y), (x,z), (y,z) |
+| 29–31 | ramp_share_{gx,gy,gz} | `RG_c / (RG + ε)` |
 
-### 7.6 Calibration-relative features
-Indices `R = {0,1,2,3,4,5,6,7,14,17,18,19,20}` are reported relative to the phone on the table: `f[r] − calibration.tableFeatures[r]`. Without a calibration they are absolute. (Within one phone this is a constant offset and does not change identification; it matters across phones.)
+### 7.4 Quiet and grip features (indices 32–38)
+`bA[c] = filtfiltZ(a_c, BP tremor)` and `bG[c]` likewise on the whole grid (raw accel and gyro, 5.2).
+| # | Name | Definition |
+|---|---|---|
+| 32 | quiet_tremor_accel | `ln(mean_{n∈Q} (bA_x[n]² + bA_y[n]² + bA_z[n]²) + 1e-10)` |
+| 33 | quiet_tremor_gyro | `ln(mean_{n∈Q} (bG_x[n]² + bG_y[n]² + bG_z[n]²) + 1e-10)` |
+| 34 | quiet_rms_accel | `ln(sqrt(mean_{n∈Q} EA[n]) + 1e-6)` |
+| 35 | quiet_rms_gyro | `ln(sqrt(mean_{n∈Q} EG[n]) + 1e-6)` |
+| 36–38 | gravity_{x,y,z} | mean of (Gx, Gy, Gz) over the grid, divided by its norm `sqrt(gx² + gy² + gz²)`; `[0, 0, -1]` if the norm < 1e-6 |
+
+`mean` = left-to-right sum divided by the count (0 for an empty window). `Q` is the quiet window of 5.7.
+
+### 7.5 Calibration-relative features
+Indices `R = {0, 1, 20, 21, 22}` (the log gains and log accel/gyro ratios) are reported relative to the phone on the table: `f[r] − calibration.tableFeatures[r]`. Without a calibration they are absolute. (Within one phone this is a constant offset and does not change identification; it matters across phones.) `FeatureExtractor.calibrationRelativeIndices = R`.
 
 ---
 
@@ -581,8 +592,8 @@ Written by `research/scripts/make_fixtures.py` into `AuditorCore/Tests/AuditorCo
 1. `rng_vectors.json`: `{"cases":[{"seed":"0x…","splitmix":["0x…"×5],"xoshiro":["0x…"×10],"uniform":[5 doubles],"ints":[{"lo":6,"hi":8,"values":[10 ints]}]}]}` — each list drawn from a fresh generator.
 2. `challenge_vectors.json`: `{"cases":[{"seed":"0x…","spec":{…}}]}` — at least 50 seeds, including 0, 1, 2^64−1.
 3. `dsp_vectors.json`: `{"biquads":[{"kind":"highpass|lowpass|bandpass","fc":…,"fs":…,"q":…,"coeffs":[b0,b1,b2,a1,a2]}], "filters":[{"kind":…,"fc":…,"fs":…,"q":…,"pad":30,"dcGain":…,"x":[…],"lfilter":[…],"filtfilt":[…]}], "resample":[{"t":[…],"v":[…],"grid":[…],"gapTolerance":0.025,"values":[…],"missing":[bools]}]}`. Include edge cases (n = 0, 1, 2, < pad).
-4. `pipeline_vectors.json`: `{"cases":[{"name":…,"recording":{…Recording…},"calibration":{…}|null,"mode":"handheld|onTable","expected":{"n":…,"lag":…,"ncc":…,"peakMargin":…,"noiseAccel":…,"noiseGyro":…,"gapFraction":…,"sampleRate":…,"quietRange":[a,b],"eventRange":[a,b],"metrics":{…QualityMetrics…},"issues":[…],"featuresAbsolute":[36],"features":[36]}}]}` — at least 8 cases covering: normal handheld, on-table, gaps, jittered/unsorted timestamps, duplicate timestamps, moving, resting, weak signal, with and without calibration.
-5. `model_vectors.json`: `{"config":{…ModelConfig…},"identifierConfig":{…},"samples":[{"personID":…,"hand":…,"accessory":…,"source":…,"features":[36]}],"expected":{"prototypes":[[personID,hand,accessory]…],"mean":[…],"scale":[…],"shrinkage":…,"absThreshold":…,"handShrinkage":…},"queries":[{"patterns":[[36]…],"distances":[[K]… per pattern],"handLogOdds":[… per pattern],"outcome":{"type":"identified|identifiedHandUnclear|needMorePatterns|unknown","personID":…,"hand":…,"reason":…},"bestDistance":…,"marginName":…,"marginHand":…}]}` — include 3+ persons, both hands, one accessory prototype, a single-person case, strangers (unknown), and multi-pattern queries.
+4. `pipeline_vectors.json`: `{"cases":[{"name":…,"recording":{…Recording…},"calibration":{…}|null,"mode":"handheld|onTable","expected":{"n":…,"lag":…,"ncc":…,"peakMargin":…,"noiseAccel":…,"noiseGyro":…,"gapFraction":…,"sampleRate":…,"quietRange":[a,b],"eventRange":[a,b],"metrics":{…QualityMetrics…},"issues":[…],"featuresAbsolute":[39],"features":[39]}}]}` — at least 8 cases covering: normal handheld, on-table, gaps, jittered/unsorted timestamps, duplicate timestamps, moving, resting, weak signal, with and without calibration.
+5. `model_vectors.json`: `{"config":{…ModelConfig…},"identifierConfig":{…},"samples":[{"personID":…,"hand":…,"accessory":…,"source":…,"features":[39]}],"expected":{"prototypes":[[personID,hand,accessory]…],"mean":[…],"scale":[…],"shrinkage":…,"absThreshold":…,"handShrinkage":…},"queries":[{"patterns":[[39]…],"distances":[[K]… per pattern],"handLogOdds":[… per pattern],"outcome":{"type":"identified|identifiedHandUnclear|needMorePatterns|unknown","personID":…,"hand":…,"reason":…},"bestDistance":…,"marginName":…,"marginHand":…}]}` — include 3+ persons, both hands, one accessory prototype, a single-person case, strangers (unknown), and multi-pattern queries.
 
 Infinite values (e.g. a margin with no competitor) are written as `null` and read back as `+infinity`. NaN must never appear.
 
@@ -627,15 +638,43 @@ Built from a `ProcessedSignal` `p` (section 5) with `s = p.alignment.lag`. Time 
 | 0–2 | `accelHP[c][n] / 0.02` |
 | 3–5 | `gyroHP[c][n] / 0.05` |
 | 6–8 | `gravity[c][n]` (device-motion gravity, g) |
-| 9 | `template[u]` (the lag-0 template of 5.6, evaluated at `u`, 0 if `u ≥ N`) |
+| 9 | `template[u]` (the lag-0 template of 5.6, evaluated at `u`), written only where `n = u + s` is inside `[0, N)` and `u < N`, else 0 — as in `research/v1/data.py`, which the model was trained on |
 All values are clipped to `[-50, 50]`.
 
 ### 14.2 Outputs
 - `embedding`: `[1, 128]`, L2-normalized.
 - `hand`: `[1, 3]` logits for `right, left, twoHanded`.
 
-### 14.3 On-device scoring (mirrors 9.4 with similarities)
-Prototype = L2-normalized mean embedding of a `(person, hand, accessory)`. Score = cosine similarity. Fused over patterns by averaging. `absThreshold` = `quantile_{1−looQuantile}` of leave-one-out similarities minus a slack (tuned on held-out sessions); name and hand margins are similarity differences. The hand head replaces the pooled Gaussian hand model.
+### 14.3 On-device decision (v1)
+Per pattern the encoder gives an L2-normalized embedding `e` (128 values; renormalize in Double). Prototype keys and their order are those of 9.1.
+- Prototype `p_k` = normalize(Σ of the enrollment embeddings of key k). Leave-one-out similarity for every sample i whose key has ≥ 2 samples: `normalize(sum_k − e_i) · e_i`.
+- `simThreshold = quantile_linear(loo, 1 − looQuantile) − slack` (if no LOO value: `−1 − slack`).
+- Scores per pattern j: `s_k⁽ʲ⁾ = e⁽ʲ⁾ · p_k`; fused `S̄_k = mean_j s_k⁽ʲ⁾`. The decision is expressed in **cosine distance** `D̄_k = 1 − S̄_k` so it reuses `Decision` of 10.1: `absThreshold = 1 − simThreshold`, `bestDistance = 1 − S̄_{k*}`, margins as in 9.4 (they equal similarity differences), `prototypeDistances` = `1 − S̄_k`.
+- Hand model (replaces the network's hand head, which was less accurate on the simulator): from all enrollment embeddings labelled right (r) or left (l), if both have ≥ 2: `μ_r, μ_l`, residuals `R` (each embedding minus its hand mean), `C = RᵀR / n`, `C ← (1 − handShrinkage)·C + handShrinkage·(tr C / 128)·I`, `w = C⁻¹(μ_r − μ_l)` (Cholesky solve), `b = −½ w·(μ_r + μ_l)`. Hand log-odds per pattern `h = w·e + b`, fused by the mean; `headOK` as in 9.4.
+- Outcome logic, `needMorePatterns`, `identifiedHandUnclear` and `unknown` reasons exactly as 9.4 with `absOK = D̄_{k*} ≤ absThreshold`.
+- Defaults (tuned on the simulator for the palettized student at ≤ 2 % stranger accept): `looQuantile 0.95, slack 0.0, nameMargin 0.03, handMargin 0.0, handShrinkage 0.1, maxPatterns 3`.
+- Template updates (9.5 analog): after `identified` with `marginName ≥ 2·nameMargin` and `D̄_{k*} ≤ absThreshold − 0.05`, the pattern embeddings join the prototype as adaptive samples (cap 20 per prototype).
+- Person display scores: softmax over persons of `S̄_max(person) / 0.05`.
 
 ### 14.4 Core ML artifact
 `HandEncoder.mlpackage`, ML Program, minimum deployment iOS 17, input name `x`, outputs `embedding` and `hand`, weights 8-bit palettized, target size < 1 MB, latency < 10 ms. Exported by `research/v1/export_coreml.py` together with `reference_io.npz` (inputs and PyTorch outputs) so the conversion can be checked on macOS.
+
+### 14.5 Swift API additions (AuditorCore)
+```swift
+public enum EncoderInput {
+    public static let channels = 10, length = 256, patternStart = 25
+    public static func build(_ p: ProcessedSignal) -> [Float]          // 14.1, row-major [channel][u], count 2560
+}
+public struct EmbeddingSample: Codable, Equatable { public var prototype: PrototypeKey; public var embedding: [Double]; public var source: SampleSource; public var createdAt: Date }
+public struct EmbeddingConfig: Equatable, Codable { public var looQuantile = 0.95, slack = 0.0, nameMargin = 0.03, handMargin = 0.0, handShrinkage = 0.1
+    public var maxPatterns = 3; public var adaptiveMaxPerPrototype = 20; public static let `default` }
+public struct EmbeddingIdentifier {
+    public let prototypes: [PrototypeKey]; public let absThreshold: Double; public let config: EmbeddingConfig
+    public init(samples: [EmbeddingSample], config: EmbeddingConfig = .default)
+    public func decide(_ patterns: [[Double]]) -> Decision                  // 14.3 (cosine-distance units)
+    public func adaptiveSamples(for decision: Decision, patterns: [[Double]], now: Date) -> [EmbeddingSample]
+}
+```
+Fixtures: `v1_vectors.json` written by `research/scripts/make_v1_fixtures.py` from the Python implementation in `research/v1/` (tensor cases from recordings; identifier cases with embedding sets, queries and expected decisions). Tolerances: tensor `|Δ| ≤ 1e-5·max(1,|x|)` (Float), identifier as for the model (11).
+
+<!-- features-v2-final -->

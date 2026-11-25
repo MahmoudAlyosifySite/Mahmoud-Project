@@ -23,8 +23,8 @@ from pathlib import Path
 
 import numpy as np
 
-from auditor_ref import features as adopted
-from auditor_ref import features_v1, features_v2
+from auditor_ref import features as adopted          # featureVersion 2 (SPEC 7)
+from auditor_ref import features_v1
 
 from .decision import Thresholds
 from .protocol import (Scorer, checks_where, closed_set, dataset_from_study, enrollment_samples, grid_rows, pick,
@@ -34,7 +34,8 @@ from .study import StudyConfig
 
 TARGETS = (0.02, 0.05, 0.10)
 V1_NAMES = tuple(features_v1.FEATURE_NAMES)
-V2_NAMES = tuple(features_v2.FEATURE_NAMES)
+V2_NAMES = tuple(adopted.FEATURE_NAMES)
+assert adopted.FEATURE_VERSION == 2
 V2_TAIL = [i for i, n in enumerate(V2_NAMES) if n.startswith("tap_tail_")]
 
 

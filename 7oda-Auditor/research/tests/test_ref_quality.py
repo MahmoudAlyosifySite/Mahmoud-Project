@@ -99,6 +99,23 @@ def test_weak_alignment_with_a_different_challenge():
     assert "weakAlignment" in rep["issues"]
 
 
+def test_weak_alignment_by_flat_correlation_peak(clean):
+    # SPEC 6.3 rule 5: ncc < minNCC OR peakMargin < minPeakMargin (default 0.05)
+    assert quality.DEFAULT_CONFIG.min_peak_margin == 0.05
+    m = clean.alignment
+    assert m.ncc >= quality.DEFAULT_CONFIG.min_ncc and m.peak_margin >= 0.05
+    strict = quality.QualityConfig(min_peak_margin=m.peak_margin + 1e-6)
+    rep = quality.evaluate(clean, config=strict)
+    assert rep["issues"] == ["weakAlignment"]
+    rep = quality.evaluate(clean, config=quality.QualityConfig(min_peak_margin=m.peak_margin - 1e-6))
+    assert rep["passed"]
+    # the margin rule alone, with the NCC rule switched off
+    rep = quality.evaluate(clean, config=quality.QualityConfig(min_ncc=-1.0, min_peak_margin=1.0))
+    assert rep["issues"] == ["weakAlignment"]
+    table_rep = quality.evaluate(clean, mode="onTable", config=quality.QualityConfig(min_peak_margin=1.0))
+    assert "weakAlignment" in table_rep["issues"]
+
+
 def test_on_table_mode(table, clean):
     assert quality.evaluate(table, mode="onTable")["issues"] == []
     rep = quality.evaluate(clean, mode="onTable")

@@ -1,4 +1,4 @@
-"""SPEC section 7 (features) and section 8 (calibration)."""
+"""SPEC section 7 (features, featureVersion 2) and section 8 (calibration)."""
 
 import copy
 import math
@@ -6,10 +6,14 @@ import math
 import numpy as np
 import pytest
 
-from auditor_ref import calibration, features, quality, synth
-from auditor_ref.features import CAL_RELATIVE, FEATURE_NAMES, ls_slope, ridge
+from auditor_ref import calibration, features, features_v1, quality, synth
+from auditor_ref.challenge import curve_at
+from auditor_ref.features import CAL_RELATIVE, FEATURE_NAMES
 from auditor_ref.signal import process
 from auditor_ref.synth import TABLE, SynthOptions
+
+EPS = 1e-12
+PAIRS = ((0, 1), (0, 2), (1, 2))
 
 
 @pytest.fixture(scope="module")
@@ -32,25 +36,142 @@ def table_cal():
     return procs, reps
 
 
+def _spec_tap_ramp(p):
+    """Features 0-31 transcribed from the SPEC 7.1-7.3 text with plain loops."""
+    ev = p.challenge["events"]
+    aH, gH, EA, EG = p.accel_hp, p.gyro_hp, p.energy_accel, p.energy_gyro
+    sea = seg = si = 0.0
+    tot = {(s, v): [0.0, 0.0, 0.0] for s in "AGX" for v in "BT"}
+    for i, e in enumerate(ev):
+        if e["kind"] != "tap":
+            continue
+        o = p.index(e["time"])
+        nxt = p.index(ev[i + 1]["time"]) if i + 1 < len(ev) else p.end_index + 25
+        u = min(nxt - 1, p.n)
+        W = range(max(o - 1, 0), min(o + 9, u))
+        if len(W) == 0:
+            continue
+        sea += sum(float(EA[n]) for n in W)
+        seg += sum(float(EG[n]) for n in W)
+        si += e["intensity"] * e["intensity"]
+        for v, win in (("B", range(max(o - 1, 0), min(o + 2, u))), ("T", range(max(o + 2, 0), min(o + 9, u)))):
+            for c in range(3):
+                tot[("A", v)][c] += sum(float(aH[c, n] * aH[c, n]) for n in win)
+                tot[("G", v)][c] += sum(float(gH[c, n] * gH[c, n]) for n in win)
+            for k, (c, d) in enumerate(PAIRS):
+                tot[("X", v)][k] += sum(float(aH[c, n] * aH[d, n]) for n in win)
+    A = {v: (tot[("A", v)][0] + tot[("A", v)][1]) + tot[("A", v)][2] for v in "BT"}
+    G = {v: (tot[("G", v)][0] + tot[("G", v)][1]) + tot[("G", v)][2] for v in "BT"}
+    f = [math.log((sea + EPS) / (si + EPS)), math.log((sea + EPS) / (seg + EPS))]
+    for v in "BT":
+        f += [x / (A[v] + EPS) for x in tot[("A", v)]] + [x / (A[v] + EPS) for x in tot[("X", v)]]
+        f += [x / (G[v] + EPS) for x in tot[("G", v)]]
+    f.append(math.log((A["T"] + EPS) / (G["T"] + EPS)))
+    ri = 0.0
+    ra, rg, rx = [0.0] * 3, [0.0] * 3, [0.0] * 3
+    for e in ev:
+        if e["kind"] != "ramp":
+            continue
+        s, en = p.clamp(p.index(e["time"])), p.clamp(p.index(e["time"] + e["duration"]))
+        C = range(s + 2, en)
+        if len(C) == 0:
+            continue
+        for n in C:
+            tau = min(max(float(n - p.lag) / 100.0 - 0.25 - e["time"], 0.0), e["duration"])
+            ri += curve_at(e, tau) ** 2
+        for c in range(3):
+            ra[c] += sum(float(aH[c, n] * aH[c, n]) for n in C)
+            rg[c] += sum(float(gH[c, n] * gH[c, n]) for n in C)
+        for k, (c, d) in enumerate(PAIRS):
+            rx[k] += sum(float(aH[c, n] * aH[d, n]) for n in C)
+    RA, RG = (ra[0] + ra[1]) + ra[2], (rg[0] + rg[1]) + rg[2]
+    f += [math.log((RA + EPS) / (ri + EPS)), math.log((RA + EPS) / (RG + EPS))]
+    f += [x / (RA + EPS) for x in ra] + [x / (RA + EPS) for x in rx] + [x / (RG + EPS) for x in rg]
+    return f
+
+
 def test_names():
-    assert len(FEATURE_NAMES) == 36 and len(set(FEATURE_NAMES)) == 36
-    assert FEATURE_NAMES[14] == "tap_log_accel_gyro_ratio" and FEATURE_NAMES[35] == "gravity_z"
-    assert CAL_RELATIVE == (0, 1, 2, 3, 4, 5, 6, 7, 14, 17, 18, 19, 20)
+    assert features.FEATURE_VERSION == 2 and len(FEATURE_NAMES) == 39 and len(set(FEATURE_NAMES)) == 39
+    assert FEATURE_NAMES[0] == "tap_gain_accel" and FEATURE_NAMES[20] == "tap_tail_log_accel_gyro"
+    assert FEATURE_NAMES[21] == "ramp_gain_accel" and FEATURE_NAMES[38] == "gravity_z"
+    assert CAL_RELATIVE == (0, 1, 20, 21, 22)
+    # quiet and grip features are those of featureVersion 1
+    assert FEATURE_NAMES[32:] == features_v1.FEATURE_NAMES[29:]
 
 
 @pytest.mark.parametrize("seed", [1, 2, 3, 4])
-def test_finite_and_gravity_unit(seed):
+def test_matches_spec_transcription(seed):
     p = process(synth.synth_recording(seed, hand=synth.make_hand(seed), challenge_seed=seed + 40))
     f = features.extract_absolute(p)
-    assert f.shape == (36,) and np.all(np.isfinite(f))
-    assert np.linalg.norm(f[33:36]) == pytest.approx(1.0, abs=1e-12)
-    assert np.all(f[8:14] >= 0) and np.all(f[8:14] <= 1)
+    assert f.shape == (39,) and np.all(np.isfinite(f))
+    np.testing.assert_allclose(f[:32], _spec_tap_ramp(p), rtol=1e-12, atol=1e-15)
+    np.testing.assert_array_equal(f[32:], features_v1.extract_absolute(p)[29:])
+    assert np.linalg.norm(f[36:39]) == pytest.approx(1.0, abs=1e-12)
 
 
-def test_degenerate_recordings_stay_finite():
+def test_shares_and_cross_bounds(proc):
+    f = features.extract_absolute(proc)
+    for a in (2, 8, 11, 17, 23, 29):                     # share triples sum to 1
+        assert np.all(f[a:a + 3] >= 0) and f[a:a + 3].sum() == pytest.approx(1.0, abs=1e-6)   # eps in the quotient
+    for a in (5, 14, 26):                                # |sum xy| <= (sum x^2 + sum y^2) / 2
+        assert np.all(np.abs(f[a:a + 3]) <= 0.5 + 1e-12)
+
+
+def test_tap_windows_follow_spec(proc):
+    ev = proc.challenge["events"]
+    wins = features.tap_windows(proc)
+    assert [w["event"] for w in wins] == [i for i, e in enumerate(ev) if e["kind"] == "tap"]
+    for w in wins:
+        i, o = w["event"], w["onset"]
+        nxt = proc.index(ev[i + 1]["time"]) if i + 1 < len(ev) else proc.end_index + 25
+        u = min(nxt - 1, proc.n)
+        assert w["full"] == (max(o - 1, 0), min(o + 9, u))
+        assert w["burst"] == (max(o - 1, 0), min(o + 2, u)) and w["tail"] == (max(o + 2, 0), min(o + 9, u))
+    for w in features.ramp_windows(proc):
+        e = proc.challenge["events"][w["event"]]
+        assert w["core"] == (proc.clamp(proc.index(e["time"])) + 2, proc.clamp(proc.index(e["time"] + e["duration"])))
+
+
+def test_accel_and_gyro_scaling(rec, proc):
+    k = 3.0
+    f0 = features.extract_absolute(proc)
+    for stream, sign in (("accel", 1.0), ("gyro", -1.0)):
+        r = copy.deepcopy(rec)
+        for c in ("x", "y", "z"):
+            r[stream][c] = [k * v for v in r[stream][c]]
+        f1 = features.extract_absolute(process(r))
+        ratios = [1, 20, 22]                             # log accel/gyro ratios
+        np.testing.assert_allclose(f1[ratios] - f0[ratios], sign * 2.0 * math.log(k), atol=1e-6)
+        gains = [0, 21]
+        np.testing.assert_allclose(f1[gains] - f0[gains], 2.0 * math.log(k) if stream == "accel" else 0.0, atol=1e-6)
+        shapes = [i for i in range(32) if i not in ratios + gains]
+        np.testing.assert_allclose(f1[shapes], f0[shapes], atol=1e-9)
+
+
+def test_degenerate_recordings_stay_finite(rec):
     for opts in (SynthOptions(drop_gyro=True), SynthOptions(signal_scale=0.0), SynthOptions(gap=(0.0, 3.0))):
         f = features.extract_absolute(process(synth.synth_recording(3, opts=opts, challenge_seed=8)))
         assert np.all(np.isfinite(f))
+    r = copy.deepcopy(rec)
+    for s in ("accel", "gyro", "motion"):
+        for key in r[s]:
+            r[s][key] = []
+    p = process(r)
+    f = features.extract_absolute(p)
+    assert np.all(np.isfinite(f))
+    # a zero signal: every share, cross product and accel/gyro ratio is 0; the gains are ln(eps / (SI + eps))
+    si = sum(e["intensity"] ** 2 for e in p.challenge["events"] if e["kind"] == "tap")
+    assert f[0] == pytest.approx(math.log(EPS / (si + EPS)), rel=1e-12) and f[21] < -20
+    assert all(f[i] == 0.0 for i in range(32) if i not in (0, 21))
+
+
+def test_group_fallbacks(rec):
+    # without ramps every ramp feature is 0; without taps every tap feature is 0
+    for kind, sl in (("ramp", slice(21, 32)), ("tap", slice(0, 21))):
+        r = copy.deepcopy(rec)
+        r["challenge"]["events"] = [e for e in r["challenge"]["events"] if e["kind"] != kind]
+        f = features.extract_absolute(process(r))
+        assert np.all(np.isfinite(f)) and np.all(f[sl] == 0.0)
 
 
 def test_gravity_fallback(rec):
@@ -59,121 +180,15 @@ def test_gravity_fallback(rec):
     for k in ("gravityX", "gravityY", "gravityZ"):
         r["motion"][k] = [0.0] * n
     f = features.extract_absolute(process(r))
-    assert list(f[33:36]) == [0.0, 0.0, -1.0]
-
-
-def test_accel_scaling_shifts_alpha(rec, proc):
-    k = 3.0
-    r = copy.deepcopy(rec)
-    for c in ("x", "y", "z"):
-        r["accel"][c] = [k * v for v in r["accel"][c]]
-    f0 = features.extract_absolute(proc)
-    f1 = features.extract_absolute(process(r))
-    np.testing.assert_allclose(f1[0:3] - f0[0:3], 2.0 * math.log(k), atol=0.02)
-    # the envelope is invariant (EA/nA), so gyro features do not move
-    np.testing.assert_allclose(f1[3:6], f0[3:6], atol=1e-9)
-    assert f1[17] - f0[17] == pytest.approx(math.log(k), abs=0.05)
-
-
-def test_tap_windows_follow_spec(proc):
-    meas = features.tap_measurements(proc)
-    ev = proc.challenge["events"]
-    env = proc.envelope
-    assert meas
-    for m in meas:
-        i = m["event"]
-        o = proc.index(ev[i]["time"])
-        nxt = proc.index(ev[i + 1]["time"]) if i + 1 < len(ev) else proc.end_index + 25
-        ws, we = m["window"]
-        assert (ws, we) == (max(o - 1, 0), min(o + 9, nxt - 1, proc.n))
-        pe = min(o + 3, we)
-        assert m["peak"] == ws + int(np.argmax(env[ws:pe]))
-        p = m["peak"]
-        below = [k for k in range(we - p) if env[p + k] < 0.1 * env[p]]
-        assert m["settle"] == (below[0] if below else we - p)
-        pts = np.arange(p, min(p + 4, we - 1) + 1)
-        if pts.size >= 3:
-            slope = np.polyfit(pts - p, np.log(env[pts] + 0.1), 1)[0]
-            assert m["decay"] == pytest.approx(-slope, rel=1e-9, abs=1e-12)
-        e = m["energies"]
-        assert e[0] == pytest.approx(np.sum(proc.accel_hp[0, ws:we] ** 2), rel=1e-12)
-        assert e[5] == pytest.approx(np.sum(proc.gyro_hp[2, ws:we] ** 2), rel=1e-12)
-
-
-def test_tap_features_by_hand(proc):
-    meas = features.tap_measurements(proc)
-    f = features.extract_absolute(proc)
-    X = np.array([[1.0, math.log(m["intensity"]), m["sharpness"] - 0.5] for m in meas])
-    P = np.diag([0.0, 0.01, 0.01])
-    for c in range(6):
-        y = np.log(np.array([m["energies"][c] for m in meas]) + 1e-7)
-        theta = np.linalg.solve(X.T @ X + P, X.T @ y)
-        assert f[c] == pytest.approx(theta[0], rel=1e-10, abs=1e-12)
-    ea = np.array([m["EA"] for m in meas])
-    eg = np.array([m["EG"] for m in meas])
-    theta = np.linalg.solve(X.T @ X + P, X.T @ np.log(ea / 1e-4 + eg / 1e-4 + 1e-6))
-    assert f[6] == pytest.approx(theta[1], rel=1e-10) and f[7] == pytest.approx(theta[2], rel=1e-10)
-    assert f[8] == pytest.approx(np.median([m["energies"][0] / (m["EA"] + 1e-12) for m in meas]), rel=1e-12)
-    assert f[13] == pytest.approx(np.median([m["energies"][5] / (m["EG"] + 1e-12) for m in meas]), rel=1e-12)
-    assert f[14] == pytest.approx(np.median(np.log((ea + 1e-7) / (eg + 1e-7))), rel=1e-12)
-    assert f[15] == pytest.approx(np.median([m["decay"] for m in meas]), rel=1e-12)
-    assert f[16] == pytest.approx(np.mean([m["settle"] for m in meas]), rel=1e-12)
-    assert features.tap_features([]) == [0.0] * 17
-
-
-def test_ramp_features_by_hand(proc):
-    meas = features.ramp_measurements(proc)
-    assert len(meas) == 2
-    amp_a = np.sqrt(proc.energy_accel)
-    for m in meas:
-        ev = proc.challenge["events"][m["event"]]
-        s, e = m["range"]
-        assert (s, e) == (proc.clamp(proc.index(ev["time"])), proc.clamp(proc.index(ev["time"] + ev["duration"])))
-        idx = np.arange(s + 2, e)
-        tau = np.clip((idx - proc.lag) / 100.0 - 0.25 - ev["time"], 0.0, ev["duration"])
-        c = ev["curve"]
-        u = np.log(np.interp(tau, [p["time"] for p in c], [p["intensity"] for p in c]))
-        X = np.column_stack([np.ones_like(u), u])
-        theta = np.linalg.solve(X.T @ X + np.diag([0.0, 0.001]), X.T @ np.log(amp_a[idx] + 1e-4))
-        assert (m["rhoA"], m["kappaA"]) == pytest.approx(tuple(theta), rel=1e-9)
-        seg = amp_a[s:e]
-        assert m["rise"] == int(np.argmax(seg >= 0.63 * seg.max()))
-        ref = (amp_a[e - 2] + amp_a[e - 1]) / 2.0
-        after = [k for k in range(10) if e + k < proc.n and amp_a[e + k] < 0.37 * ref]
-        assert m["decayT"] == (after[0] if after else 10)
-        den = proc.energy_accel[s:e].sum() + 1e-12
-        assert m["sharesA"][1] == pytest.approx((proc.accel_hp[1, s:e] ** 2).sum() / den, rel=1e-12)
-
-
-def test_quiet_features(proc):
-    f = features.extract_absolute(proc)
-    q0, q1 = proc.quiet_range
-    ba, bg = features.tremor_bandpassed(proc)
-    assert f[29] == pytest.approx(math.log(np.mean((ba[:, q0:q1] ** 2).sum(axis=0)) + 1e-10), rel=1e-12)
-    assert f[30] == pytest.approx(math.log(np.mean((bg[:, q0:q1] ** 2).sum(axis=0)) + 1e-10), rel=1e-12)
-    assert f[31] == pytest.approx(math.log(math.sqrt(np.mean(proc.energy_accel[q0:q1])) + 1e-6), rel=1e-12)
-    g = proc.gravity.mean(axis=1)
-    np.testing.assert_allclose(f[33:36], g / np.linalg.norm(g), atol=1e-12)
-
-
-def test_ridge_and_slope_helpers():
-    rows = [[1.0, 0.1 * i, (-1) ** i * 0.3] for i in range(6)]
-    y = [0.5 + 0.2 * i for i in range(6)]
-    X = np.array(rows)
-    theta = np.linalg.solve(X.T @ X + np.diag([0.0, 0.01, 0.01]), X.T @ np.array(y))
-    np.testing.assert_allclose(ridge(rows, y, 0.01), theta, rtol=1e-12)
-    # intercept is not penalised: a huge lambda drives the slopes to 0, the intercept to mean(y)
-    big = ridge(rows, y, 1e12)
-    assert big[0] == pytest.approx(np.mean(y), rel=1e-9) and abs(big[1]) < 1e-9
-    assert ls_slope([1.0, 3.0, 5.0, 7.0]) == pytest.approx(2.0)
+    assert list(f[36:39]) == [0.0, 0.0, -1.0]
 
 
 def test_calibration_relative(proc):
-    table = [0.1 * k for k in range(36)]
+    table = [0.1 * k for k in range(39)]
     cal = {"tableFeatures": table, "quietGyroRMS": 0.001}
     fa = features.extract_absolute(proc)
     fr = features.extract(proc, cal)
-    for k in range(36):
+    for k in range(39):
         assert fr[k] == (fa[k] - table[k] if k in CAL_RELATIVE else fa[k])
     np.testing.assert_array_equal(features.extract(proc, None), fa)
 
@@ -183,7 +198,7 @@ def test_calibration_build(table_cal):
     passed = [r["passed"] for r in reps]
     assert sum(passed) >= 12
     cal = calibration.build(procs, reps, "iPhone16,1", "2026-11-24T10:00:00Z")
-    assert cal["patternsUsed"] == sum(passed) and cal["version"] == 1 and len(cal["tableFeatures"]) == 36
+    assert cal["patternsUsed"] == sum(passed) and cal["version"] == 1 and len(cal["tableFeatures"]) == 39
     used = [i for i, ok in enumerate(passed) if ok]
     feats = np.array([features.extract_absolute(procs[i]) for i in used])
     np.testing.assert_allclose(cal["tableFeatures"], np.median(feats, axis=0), rtol=1e-12)

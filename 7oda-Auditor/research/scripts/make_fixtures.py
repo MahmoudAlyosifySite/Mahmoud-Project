@@ -270,6 +270,10 @@ def pipeline_specs(cal: dict) -> list[dict]:
              opts=O(), cal=None, mode="handheld", label=lab, swap_challenge=True),
         dict(issues=[], name="lateOnset", desc="haptic onset 0.18 s after hapticStart", hand=PERSON2, opts=O(latency=0.18),
              cal=cal, mode="handheld", label=lab2),
+        dict(issues=["weakAlignment"], name="replayFlatPeak",
+             desc="a different pattern than the one played, ncc >= minNCC but a flat correlation peak (peakMargin < minPeakMargin)",
+             hand=PERSON, opts=O(), cal=None, mode="handheld", label=lab, swap_challenge=True, attempts=400,
+             accept=lambda e: e["ncc"] >= quality.DEFAULT_CONFIG.min_ncc),
     ]
 
 
@@ -294,7 +298,7 @@ def make_pipeline() -> tuple[dict, dict]:
     cal = build_calibration()
     cases = []
     for idx, spec in enumerate(pipeline_specs(cal)):
-        for attempt in range(40):
+        for attempt in range(spec.get("attempts", 40)):
             seed = 1000 * (idx + 1) + attempt
             rec = synth.synth_recording(seed, hand=spec["hand"], opts=spec["opts"],
                                         challenge_seed=50000 + seed, purpose=spec.get("purpose", "check"),
@@ -304,7 +308,8 @@ def make_pipeline() -> tuple[dict, dict]:
             rec = round_recording(rec)
             expected, audit = run_pipeline(rec, spec["cal"], spec["mode"])
             if (margin_ok(audit) and expected["issues"] == spec["issues"]
-                    and all(math.isfinite(v) for v in expected["featuresAbsolute"])):
+                    and all(math.isfinite(v) for v in expected["featuresAbsolute"])
+                    and spec.get("accept", lambda e: True)(expected)):
                 break
         else:
             raise RuntimeError(f"no suitable draw for pipeline case {spec['name']}: {expected['issues']} {audit.worst()}")

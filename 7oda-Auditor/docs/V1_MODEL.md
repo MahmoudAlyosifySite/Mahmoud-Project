@@ -11,7 +11,7 @@ compare v0 and v1 on the same synthetic recordings; they are not evidence about 
 (DECISIONS D9). The ship decision for the phone (D7) has to be made again on the pilot and study
 data.
 
-**Verdict (simulator): RESULTS_VERDICT**
+**Verdict (simulator): v1 beats v0 on cross-session open-set identification by a wide margin on the simulator: at ≤ 2 % strangers accepted the shipped 8-bit student names the right person in 65 % (aliasing) / 84 % (filtered) of checks against 6 % / 8 % for v0, and the teacher reaches 83 % / 95 %. Following the proposal's rule the app ships v1 as the default recognizer and keeps v0 running beside it (DECISIONS D12); the pilot on real hands decides whether that stays.**
 
 ## 1. Contract (SPEC 14)
 
@@ -107,7 +107,7 @@ from the open-set thresholds (below), not from features that carry no identity.
 
 ### 5.1 Teacher (`v1.train_teacher`)
 
-TEACHER_SCHEDULE
+Run **T2**: 1D ResNet teacher with FiLM conditioning on the challenge channel, 10,729,475 parameters, ArcFace on 20,000 simulated person-hand identities (1.04 M patterns from 10,000 people, 12 per hand per session over 4 sessions, two-handed and accessory conditions mixed in, IMU modes mixed), light augmentation, batch 1024, AdamW, lr 0.002 with warm-up and cosine decay, bf16, 16 epochs (16,240 steps, 54 min on the A40). Validation on 400 held-out identities (closed set, next session): top-1 98.3 %, EER 0.33 %. A short run with the self-supervised objective (SSL1, 3.1 M parameters, 4 epochs, 7 min) reached only 77 % and was not continued.
 
 Mirror augmentation (hand head only): a random 25 % of each batch is appended mirrored across
 the phone's y-z plane with swapped hand labels and no identity label. The Taptic Engine pushes
@@ -138,7 +138,7 @@ where most data will be unlabelled (proposal step 2); test it there against fine
 
 ### 5.3 Student (`v1.distill`)
 
-STUDENT_SCHEDULE
+Run **S1**: depthwise-separable 1D CNN student, 219,747 parameters, distilled from T2 for 10 epochs (10,150 steps, 26 min): cosine match to the teacher embedding + relational (pairwise distance) loss + ArcFace on the labels. Validation top-1 95.7 % (EER 0.66 %) against 94.6 % for the same student trained without the teacher (S0); in the open-set evaluation the teacher's guidance is worth about 10 points of top-1 (section 6).
 
 ## 6. Evaluation (`v1.evaluate_v1`)
 
@@ -159,11 +159,39 @@ identified with the right hand; stranger accept = strangers given any name; fals
 enrolled checks answered Unknown; closed-set = nearest prototype with 1 pattern and no Unknown
 option.
 
-RESULTS_TABLES
+**IMU mode aliasing (`none`)** — 10 groups × (20 enrolled + 5 test strangers), sessions 2–3; thresholds tuned on session 1 for the target.
+
+| Model | target | top-1 | name + hand | stranger accept | false Unknown | patterns / answer | closed-set top-1 (1 pattern) |
+|---|---|---|---|---|---|---|---|
+| teacher, 10.7 M | ≤ 2 % | 83.2 % | 83.0 % | 2.0 % | 16.6 % | 1.72 | 97.3 % |
+| teacher, 10.7 M | ≤ 5 % | 90.7 % | 90.4 % | 4.8 % | 8.9 % | 1.57 | – |
+| student, 220 k (fp32) | ≤ 2 % | 65.8 % | 65.6 % | 2.8 % | 33.0 % | 1.97 | 92.5 % |
+| student, 220 k (fp32) | ≤ 5 % | 76.5 % | 76.3 % | 6.3 % | 22.7 % | 1.81 | – |
+| student, 8-bit (shipped) | ≤ 2 % | 65.1 % | 64.9 % | 2.9 % | 33.9 % | 1.99 | 92.0 % |
+| student, 8-bit (shipped) | ≤ 5 % | 73.9 % | 73.7 % | 5.5 % | 24.2 % | 1.83 | – |
+| student trained without teacher | ≤ 2 % | 55.0 % | 54.7 % | 3.2 % | 43.6 % | 2.13 | 90.6 % |
+| student trained without teacher | ≤ 5 % | 64.6 % | 64.2 % | 5.4 % | 34.4 % | 2.00 | – |
+| v0 features + Gaussian | ≤ 2 % | 5.8 % | 5.7 % | 1.4 % | 93.6 % | 2.84 | 50.5 % |
+| v0 features + Gaussian | ≤ 5 % | 10.2 % | 10.1 % | 5.1 % | 87.7 % | 2.75 | – |
+
+**IMU mode filtered (`lpf`)** — 10 groups × (20 enrolled + 5 test strangers), sessions 2–3; thresholds tuned on session 1 for the target.
+
+| Model | target | top-1 | name + hand | stranger accept | false Unknown | patterns / answer | closed-set top-1 (1 pattern) |
+|---|---|---|---|---|---|---|---|
+| teacher, 10.7 M | ≤ 2 % | 95.4 % | 95.1 % | 1.8 % | 4.3 % | 1.46 | 99.2 % |
+| teacher, 10.7 M | ≤ 5 % | 96.9 % | 96.6 % | 3.0 % | 2.8 % | 1.43 | – |
+| student, 220 k (fp32) | ≤ 2 % | 83.9 % | 83.6 % | 1.6 % | 15.3 % | 1.65 | 97.5 % |
+| student, 220 k (fp32) | ≤ 5 % | 91.1 % | 90.7 % | 5.6 % | 8.4 % | 1.53 | – |
+| student, 8-bit (shipped) | ≤ 2 % | 84.1 % | 83.7 % | 2.7 % | 15.1 % | 1.65 | 96.9 % |
+| student, 8-bit (shipped) | ≤ 5 % | 89.3 % | 88.9 % | 5.6 % | 9.6 % | 1.55 | – |
+| student trained without teacher | ≤ 2 % | 72.2 % | 71.8 % | 0.9 % | 26.9 % | 1.84 | 96.4 % |
+| student trained without teacher | ≤ 5 % | 83.3 % | 82.7 % | 2.4 % | 15.4 % | 1.66 | – |
+| v0 features + Gaussian | ≤ 2 % | 8.4 % | 7.4 % | 1.8 % | 91.6 % | 2.74 | 67.8 % |
+| v0 features + Gaussian | ≤ 5 % | 16.7 % | 15.5 % | 2.9 % | 82.8 % | 2.63 | – |
 
 ## 7. Core ML export (`v1.export_coreml`, `v1.verify_coreml`)
 
-EXPORT_RESULT
+The distilled student (run S1, 219,747 parameters) is folded (BatchNorm into convolutions), 8-bit palettized (18 weight tensors, max weight change 0.093) and converted to an ML Program for iOS 17: `research/v1/artifacts/HandEncoder.mlpackage`, **323 KB**. `reference_io.npz` holds 16 inputs with the PyTorch outputs; `verify_coreml.py` runs on the macOS CI runner and compares the Core ML outputs with them. The palettized model loses 1–3 points of top-1 against the fp32 student (table above).
 
 ## 8. How the phone uses it (SPEC 14.3)
 
@@ -175,7 +203,7 @@ EXPORT_RESULT
    so far; best prototype, name margin (best minus best other person) and hand margin (best minus
    the same person's other hand), absolute test `best >= quantile_5%(LOO) - slack`; the SPEC 9.4
    sequential rule with at most 3 patterns.
-4. Hand rule: HAND_RULE
+4. Hand rule: the network's hand head was weaker than expected on held-out people (hand accuracy 59–66 %), so the phone uses a pooled right-vs-left LDA on the enrollment embeddings (SPEC 14.3), which reaches 84–95 % hand accuracy at the same operating points. The network's `hand` output is logged for the two-handed class but not used for the answer.
 5. Template updates (SPEC 9.5) carry over unchanged with similarities.
 
 Thresholds tuned on the simulator are placeholders; tune them on the pilot data (held-out
@@ -208,4 +236,8 @@ environment is `~/7oda-work/venv-export` (torch 2.7 CPU + coremltools 9.0); trai
 
 ## 10. Open issues
 
-OPEN_ISSUES
+- All numbers are simulated. Real hands may differ in which cues carry identity; re-tune the simulator to the pilot recordings and fine-tune on study data (section 9) before trusting any number.
+- Thresholds (`slack`, `nameMargin`) were tuned on the simulator for the 8-bit student; tune them on a held-out pilot session.
+- The student's own hand head underperforms; the pooled LDA on embeddings is used instead (needs ≥ 2 enrollment patterns per hand).
+- Foundation-model initializations (MOMENT, Mantis, SSL-Wearables, LIMU-BERT) were not tried in this round: their inputs (single-channel 512-step series, 30 Hz wrist data) need adapters, and the simulator-pretrained teacher already reached 98 % closed-set validation top-1.
+- Accessories and two-handed grips are simulated as nuisance parameters only; the accessory quick add has not been evaluated for v1.

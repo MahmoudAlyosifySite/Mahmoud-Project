@@ -26,6 +26,9 @@ from pathlib import Path
 
 import numpy as np
 
+from auditor_ref import features as _features
+from auditor_ref import quality as _quality
+
 from .protocol import dataset_from_study, full_evaluation, variant, checks_where
 from .decision import Thresholds
 from .report import render
@@ -63,19 +66,24 @@ def write(rep: dict, mode: str, out_dir: Path):
     (out_dir / f"sim_study_{mode}.md").write_text(render(rep, f"Simulated study, IMU mode `{mode}`"))
 
 
+def pipeline_stamp() -> dict:
+    """What the cached items depend on besides the study configuration (feature version, quality thresholds)."""
+    return {"featureVersion": _features.FEATURE_VERSION, "quality": asdict(_quality.DEFAULT_CONFIG)}
+
+
 def load_or_run(cfg: StudyConfig, cache: Path, tag: str, log):
     path = cache / f"items_{tag}.pkl.gz"
     if path.exists():
         with gzip.open(path, "rb") as f:
             data = pickle.load(f)
-        if _key(data.get("config") or {}) == _key(asdict(cfg)):
+        if _key(data.get("config") or {}) == _key(asdict(cfg)) and data.get("pipeline") == pipeline_stamp():
             log(f"[{tag}] loaded cached items ({len(data['items'])})")
             return data
     data = run(cfg, log)
     cache.mkdir(parents=True, exist_ok=True)
     slim = [{k: v for k, v in it.items() if k not in ("createdAt",)} for it in data["items"]]
     with gzip.open(path, "wb", compresslevel=3) as f:
-        pickle.dump({**data, "items": slim}, f, protocol=pickle.HIGHEST_PROTOCOL)
+        pickle.dump({**data, "items": slim, "pipeline": pipeline_stamp()}, f, protocol=pickle.HIGHEST_PROTOCOL)
     return data
 
 

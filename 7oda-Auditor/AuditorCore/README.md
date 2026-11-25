@@ -25,10 +25,11 @@ Swift 5.9+ toolchain, Swift 5 language mode, platforms iOS 17 / macOS 13.
 | `DSP.swift` | 5.2–5.4 | `Biquad` (RBJ designs, direct form I, zero-phase `filtfiltZ`), `Resampler`, `StreamCleaner` (stable sort + dedup) |
 | `Signal.swift` | 5 | `SignalConfig`, `AlignmentResult`, `ProcessedSignal`, `SignalProcessor` (grid, filters, envelope, template, lag search, event indices) |
 | `Quality.swift` | 6 | `QualityMode`, `QualityIssue`, `QualityMetrics`, `QualityConfig`, `QualityReport`, `QualityGate` |
-| `Features.swift` | 7 | `FeatureExtractor` (feature names, version, calibration-relative indices) |
+| `Features.swift` | 7 | `FeatureExtractor`: 39 features, `version = 2` (summed energies, axis shares and cross products of tap bursts, tap tails and ramps; quiet and grip), calibration-relative indices |
 | `Calibration.swift` | 8 | `Calibration` and `Calibration.build` (median over passing on-table patterns) |
 | `Model.swift` | 9.1–9.2 | `PrototypeKey`, `SampleSource`, `TemplateSample`, `ModelConfig`, `GaussianModel` (Ledoit–Wolf shrinkage, Cholesky, leave-one-out threshold) |
 | `Identifier.swift` | 9.3–9.5 | `IdentifierConfig`, `Decision`, `DecisionOutcome`, `PersonScore`, `PrototypeDistance`, `Identifier` (hand head, sequential decision, adaptive samples and cap) |
+| `Embedding.swift` | 14.1, 14.3, 14.5 | v1 encoder support: `EncoderInput.build` (the `[10, 256]` tensor), `EmbeddingSample`, `EmbeddingConfig`, `EmbeddingIdentifier` (cosine prototypes, leave-one-out threshold, pooled LDA right/left model, decision in cosine-distance units reusing `Decision`, adaptive samples and cap) |
 | `Evaluation.swift` | – | `ConfusionMatrix` for the Lab test run |
 | `Numerics.swift`, `LinearAlgebra.swift` | – | internal helpers: left-to-right sums, numpy median and linear quantile, Gaussian elimination, Cholesky, forward substitution |
 
@@ -49,10 +50,11 @@ if report.passed {
 ## Parity with the Python reference
 
 `research/auditor_ref/` is the reference implementation. `research/scripts/make_fixtures.py`
-writes `Tests/AuditorCoreTests/Fixtures/*.json` (SPEC 11) and the parity tests read them
+writes `Tests/AuditorCoreTests/Fixtures/*.json` (SPEC 11), `research/scripts/make_v1_fixtures.py`
+writes `v1_vectors.json` (SPEC 14.5), and the parity tests read them
 through `Bundle.module`; a missing fixture is a failure, never a skip. Tolerances: RNG and
 challenge exact; DSP `1e-9·max(1,|x|)`; pipeline indices and issues exact, metrics and
-features `1e-6·max(1,|x|)`; model `1e-6·max(1,|x|)`, outcomes exact. Reductions are written
+features `1e-6·max(1,|x|)`; model `1e-6·max(1,|x|)`, outcomes exact; v1 tensor `1e-5·max(1,|x|)`, v1 identifier as the model. Reductions are written
 as left-to-right loops in the same order as the reference so that results agree to the
 last bits wherever the reference is sequential.
 
@@ -67,4 +69,6 @@ last bits wherever the reference is sequential.
   another dimension; recompute stored features from the raw recordings when
   `FeatureExtractor.version` changes. A feature vector of the wrong dimension is infinitely
   far from every prototype (the decision becomes Unknown, never a crash).
+- `EncoderInput.build` follows `research/v1/data.py`: the template channel is written only
+  where `u + lag` is inside the grid (the network was trained that way).
 - Grid length is capped at 100 000 samples so that a corrupted duration cannot exhaust memory.
