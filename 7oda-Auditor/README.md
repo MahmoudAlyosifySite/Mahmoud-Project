@@ -4,11 +4,19 @@ An offline iPhone app that names who is holding the phone, and with which hand, 
 
 Proposal: Nov 24, 2026, Mahmoud Sayed Youssef. This folder is the proof-of-concept implementation.
 
-> **Status:** MVP code complete — see [Status](#status) for exactly what has been verified and what still needs a physical iPhone.
+> **Status:** MVP complete and green in CI (core, app, Core ML); not yet run on a physical iPhone — see [Status](#status).
 
 ## Status
 
-<!-- STATUS-TABLE -->
+| Part | State | How it was checked |
+|---|---|---|
+| Swift core (`AuditorCore`) | Complete: challenge, recording, DSP, alignment, quality gate (with replay check), features v2, calibration, Gaussian model, sequential decision, v1 encoder input and embedding identifier | 47 XCTest tests pass on Linux (Swift 6.2) and macOS (Xcode 26.3), including parity tests against fixtures written by the Python reference (RNG, challenge, DSP, full pipeline, model, v1) |
+| iOS app (`Auditor`) | Complete: calibration, enrollment (both hands, 3 rounds), "Who's holding?" with sequential checks, people and accessories, Lab (signal plot, scores, test runs with confusion matrices, thresholds, signal check, export), encrypted storage, v0 + v1 recognizers | 17 unit tests pass on the iOS simulator (Core ML encoder, encrypted store, enrollment flow, export, haptic patterns, end-to-end with synthetic hands); unsigned Release build for a generic iOS device succeeds |
+| v1 model (`HandEncoder.mlpackage`, 323 KB) | Teacher (10.7 M) trained on the A40, distilled into a 220 k student, 8-bit palettized | Core ML outputs match PyTorch on macOS (max embedding difference 0.002, hand argmax identical) |
+| Python reference, simulator, evaluation | Complete, including `analyze_export` for pilot data | 335 tests pass locally and in CI |
+| Accuracy on real hands | **Not measured yet** | Needs a physical iPhone and the week-2 pilot; all numbers so far are simulated ([DECISIONS D9](docs/DECISIONS.md)) |
+
+Simulated results (20 people + strangers, cross-session, ≤ 2 % strangers accepted): v1 names the right person in 65 % (aliasing IMU) / 84 % (filtered IMU) of checks, v0 in 6 % / 8 %; without the Unknown option v0 is right in 62 % / 86 % ([V1_MODEL](docs/V1_MODEL.md), [feature comparison](research/results/feature_comparison.md)). The app therefore answers with v1 and logs v0 beside it ([D12](docs/DECISIONS.md)).
 
 ## Run it on an iPhone
 
@@ -30,9 +38,9 @@ The Simulator builds and runs the app, but it has no motion sensors or Taptic En
 1. **Challenge** — a random pattern from a secure seed: 6–8 taps with random intensity, sharpness and gaps, plus two intensity ramps (`AuditorCore/Sources/AuditorCore/Challenge.swift`, SPEC §3).
 2. **Recording** — accelerometer, gyroscope and device motion at 100 Hz from 0.25 s before to 0.25 s after the pattern, resampled onto a uniform grid by timestamp (SPEC §4–5).
 3. **Alignment and quality gate** — the recorded vibration energy is cross-correlated with the expected envelope of the pattern; a phone resting on a table, a moving hand, sensor gaps, a weak signal or a recording that does not line up with the fresh pattern (replay) are rejected before judging (SPEC §5.6, §6).
-4. **Features (v0)** — 36 numbers: per-axis tap gains and their dependence on intensity and sharpness, decay and settling, ramp gain and nonlinearity, rise and decay times, axis shares, tremor, and grip angle (SPEC §7).
+4. **Features (v0)** — 39 numbers built to survive 100 Hz sampling of a faster vibration: per-axis gains summed over taps, axis shares and cross products of simultaneously sampled channels (where the sampling phase cancels), driven-burst vs free-response shape, ramp gains and shares, tremor, and grip angle (SPEC §7, [D10](docs/DECISIONS.md)).
 5. **Decision** — a shared-covariance Gaussian model with Ledoit–Wolf shrinkage scores every (person, hand, accessory) prototype; the answer needs an absolute distance threshold, a margin over every other person, and a margin plus a hand-head agreement for the hand; otherwise another pattern is played, up to three, and then "Unknown" (SPEC §9).
-6. **v1 (research)** — a learned encoder trained on the A40 (simulator pretraining, self-supervised objectives, distillation into a small Core ML student). It ships only if it beats v0 on cross-session accuracy ([docs/V1_MODEL.md](docs/V1_MODEL.md)).
+6. **v1 (default recognizer)** — a learned encoder: a 10.7 M teacher trained on 1 M simulated patterns on the A40, distilled into a 220 k student and shipped as an 8-bit Core ML model (323 KB) that turns each pattern into a 128-d embedding compared with cosine prototypes (SPEC §14, [docs/V1_MODEL.md](docs/V1_MODEL.md)). v0 runs beside it on every check so the pilot can compare them on real hands.
 
 ## Repository layout
 

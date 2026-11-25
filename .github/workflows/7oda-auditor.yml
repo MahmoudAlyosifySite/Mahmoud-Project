@@ -168,6 +168,25 @@ jobs:
           status=$?
           grep -E "error:|BUILD" "$RUNNER_TEMP/app-device.log" | tail -n 200
           exit $status
+      - name: Unsigned IPA (for Sideloadly / AltStore)
+        id: ipa
+        run: |
+          set -e
+          xcodebuild archive -project 7oda-Auditor/Auditor.xcodeproj -scheme Auditor -configuration Release \
+            -destination "generic/platform=iOS" -archivePath "$RUNNER_TEMP/Auditor.xcarchive" \
+            -derivedDataPath "$RUNNER_TEMP/dd-archive" CODE_SIGNING_ALLOWED=NO > "$RUNNER_TEMP/archive.log" 2>&1 \
+            || { grep -E "error:" "$RUNNER_TEMP/archive.log" | head -n 50; exit 1; }
+          mkdir -p "$RUNNER_TEMP/ipa/Payload"
+          cp -R "$RUNNER_TEMP/Auditor.xcarchive/Products/Applications/Auditor.app" "$RUNNER_TEMP/ipa/Payload/"
+          (cd "$RUNNER_TEMP/ipa" && zip -qry ../7oda-Auditor-unsigned.ipa Payload)
+          ls -la "$RUNNER_TEMP/7oda-Auditor-unsigned.ipa"
+      - name: Upload IPA
+        if: steps.ipa.outcome == 'success'
+        uses: actions/upload-artifact@v4
+        with:
+          name: 7oda-Auditor-ios
+          path: ${{ runner.temp }}/7oda-Auditor-unsigned.ipa
+          retention-days: 30
       - uses: actions/setup-python@v6
         if: always() && hashFiles('7oda-Auditor/research/v1/artifacts/reference_io.npz') != ''
         with:
@@ -211,3 +230,87 @@ jobs:
               output: { title: `7oda log: ${process.env.LOG_NAME}`,
                         summary: text.slice(0, 60000), text: text.slice(60000, 120000) || 'end' }
             });
+
+  android:
+    name: Android app (Gradle)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v5
+      - name: Android project present?
+        id: check
+        run: if [ -f 7oda-Auditor/android/settings.gradle.kts ]; then echo "present=true" >> "$GITHUB_OUTPUT"; else echo "present=false" >> "$GITHUB_OUTPUT"; echo "no Android project yet"; fi
+      - uses: actions/setup-java@v4
+        if: steps.check.outputs.present == 'true'
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: gradle/actions/setup-gradle@v4
+        if: steps.check.outputs.present == 'true'
+        with:
+          gradle-version: "8.11.1"
+      - name: Unit tests and release APK
+        if: steps.check.outputs.present == 'true'
+        run: |
+          set -o pipefail
+          gradle -p 7oda-Auditor/android --no-daemon --stacktrace test assembleRelease 2>&1 | tee "$RUNNER_TEMP/android.log"
+          cp 7oda-Auditor/android/app/build/outputs/apk/release/*.apk "$RUNNER_TEMP/7oda-Auditor.apk"
+      - name: Upload APK
+        if: success() && steps.check.outputs.present == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: 7oda-Auditor-android
+          path: ${{ runner.temp }}/7oda-Auditor.apk
+          retention-days: 30
+      - name: Annotate (1)
+        if: always() && steps.check.outputs.present == 'true'
+        run: python3 7oda-Auditor/tools/ci_annotate.py --log "$RUNNER_TEMP/android.log" --offset 0 --summary "$RUNNER_TEMP/summary.md" --label "Android app (Gradle)"
+      - name: Annotate (2)
+        if: always() && steps.check.outputs.present == 'true'
+        run: python3 7oda-Auditor/tools/ci_annotate.py --log "$RUNNER_TEMP/android.log" --offset 10
+      - name: Publish log
+        if: always() && steps.check.outputs.present == 'true'
+        uses: actions/github-script@v8
+        env:
+          SUMMARY_FILE: ${{ runner.temp }}/summary.md
+          LOG_NAME: android
+        with:
+          script: |
+            const fs = require('fs');
+            const f = process.env.SUMMARY_FILE;
+            const text = fs.existsSync(f) ? fs.readFileSync(f, 'utf8') : 'no summary written';
+            await github.rest.checks.create({
+              owner: context.repo.owner, repo: context.repo.repo,
+              name: `7oda log: ${process.env.LOG_NAME}`, head_sha: context.sha,
+              status: 'completed', conclusion: 'neutral',
+              output: { title: `7oda log: ${process.env.LOG_NAME}`,
+                        summary: text.slice(0, 60000), text: text.slice(60000, 120000) || 'end' }
+            });
+
+  release:
+    name: Publish install files
+    needs: [ios, android]
+    if: always() && github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.ios.result == 'success' && needs.android.result == 'success'
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+      - name: Update the "7oda-auditor-latest" pre-release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          ls -la dist
+          gh release delete 7oda-auditor-latest --yes --cleanup-tag 2>/dev/null || true
+          cat > notes.md <<EOF
+          Latest 7oda Auditor builds from commit ${GITHUB_SHA::7} (passed CI).
+
+          - 7oda-Auditor-unsigned.ipa: iPhone (iOS 17+). Unsigned: install with Sideloadly or AltStore using your own Apple ID (see 7oda-Auditor/docs/INSTALL.md).
+          - 7oda-Auditor.apk: Android 8.0+ (if present). Allow installs from unknown sources, then open the file.
+          EOF
+          gh release create 7oda-auditor-latest dist/* --prerelease --title "7oda Auditor (latest build)" --notes-file notes.md --target "$GITHUB_SHA"
+
