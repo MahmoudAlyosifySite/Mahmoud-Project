@@ -1,0 +1,19 @@
+# v1 training and evaluation (Linux, NVIDIA GPU). Versions used for the reported runs.
+# The base research requirements (research/requirements.txt) also apply.
+torch==2.11.0          # CUDA 12.6 build on the A40; any CUDA build >= 2.4 should work
+numpy>=1.26
+scipy>=1.11
+
+# --- Core ML export: a SEPARATE virtualenv, CPU wheels are enough ---------------
+# coremltools 9.0 officially supports PyTorch up to 2.7 (release notes), so the
+# export environment pins that pair:
+#   uv venv venv-coreml --python 3.12
+#   uv pip install --python venv-coreml/bin/python torch==2.7.0 --index-url https://download.pytorch.org/whl/cpu
+#   uv pip install --python venv-coreml/bin/python coremltools==9.0 "numpy<2.4"
+# then: venv-coreml/bin/python -m v1.export_coreml --ckpt ... (run from research/)
+
+# --- optional: foundation-model teacher (Mantis-8M), a SEPARATE virtualenv --------
+#   uv venv --system-site-packages venv-fm --python python3.12
+#   uv pip install --python venv-fm/bin/python --no-deps mantis-tsfm==1.1.0 "einops>=0.8,<0.9" \
+#       safetensors "huggingface-hub==0.30.2"
+# (--no-deps keeps the system torch; weights download from paris-noah/Mantis-8M without a token)
