@@ -253,7 +253,7 @@ jobs:
         if: steps.check.outputs.present == 'true'
         run: |
           set -o pipefail
-          gradle -p 7oda-Auditor/android --no-daemon --stacktrace test assembleRelease 2>&1 | tee "$RUNNER_TEMP/android.log"
+          gradle -p 7oda-Auditor/android --no-daemon --continue test assembleRelease 2>&1 | tee "$RUNNER_TEMP/android.log"
           cp 7oda-Auditor/android/app/build/outputs/apk/release/*.apk "$RUNNER_TEMP/7oda-Auditor.apk"
       - name: Upload APK
         if: success() && steps.check.outputs.present == 'true'

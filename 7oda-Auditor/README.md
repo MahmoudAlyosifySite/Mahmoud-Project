@@ -20,6 +20,10 @@ Simulated results (20 people + strangers, cross-session, ≤ 2 % strangers accep
 
 ## Run it on an iPhone
 
+**No Mac?** Download the latest `.ipa` (and the Android `.apk`) from the [7oda-auditor-latest release](https://github.com/MahmoudAlyosifySite/Mahmoud-Project/releases/tag/7oda-auditor-latest) and follow [docs/INSTALL.md](docs/INSTALL.md) (Sideloadly on Windows, free Apple ID).
+
+With a Mac:
+
 Requirements: a Mac with **Xcode 16 or newer**, an iPhone 8 or newer on **iOS 17+** (Taptic Engine + Core Haptics), and an Apple ID (a free personal team is enough).
 
 1. Clone the repository and open `7oda-Auditor/Auditor.xcodeproj`.

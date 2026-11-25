@@ -1,0 +1,49 @@
+{
+ "onnx": "android/app/src/main/assets/hand_encoder.onnx",
+ "size_bytes": 902866,
+ "sha256": "68262eb68f4f265fe8dbdd5aae35f9877150559d2e9fdf9201ecec2e6d9aedac",
+ "opset": 17,
+ "weights": "fp32 storage of the BN-folded, 8-bit palettized student (same weights as HandEncoder.mlpackage)",
+ "palettized_tensors": 18,
+ "source_checkpoint": "S1",
+ "reference": "research/v1/artifacts/reference_io.npz",
+ "torch": "2.7.0+cpu",
+ "inputs": [
+  {
+   "name": "x",
+   "shape": [
+    1,
+    10,
+    256
+   ],
+   "type": "tensor(float)"
+  }
+ ],
+ "outputs": [
+  {
+   "name": "embedding",
+   "shape": [
+    1,
+    128
+   ],
+   "type": "tensor(float)"
+  },
+  {
+   "name": "hand",
+   "shape": [
+    1,
+    3
+   ],
+   "type": "tensor(float)"
+  }
+ ],
+ "cases": 16,
+ "max_abs_diff_embedding": 2.8312206268310547e-07,
+ "max_abs_diff_hand": 1.0967254638671875e-05,
+ "hand_argmax_agreement": 1.0,
+ "embedding_norm_min": 0.9999998807907104,
+ "embedding_norm_max": 1.0000001192092896,
+ "tolerance_embedding": 0.001,
+ "passed": true,
+ "onnxruntime": "1.32.0"
+}
