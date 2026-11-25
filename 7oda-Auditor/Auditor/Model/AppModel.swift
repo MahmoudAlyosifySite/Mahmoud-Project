@@ -256,7 +256,7 @@ final class AppModel {
             }
         case .reenroll:
             let replaced: (PrototypeKey, SampleSource) -> Bool = { key, source in
-                key.personID == personID && key.accessory == .none && source != .accessory
+                key.personID == personID && key.accessory == Accessory.none && source != .accessory
             }
             deleteRecordings(samples.filter { replaced($0.prototype, $0.source) }.compactMap { $0.recordingID })
             samples.removeAll { replaced($0.prototype, $0.source) }
@@ -313,19 +313,12 @@ final class AppModel {
     /// Sequential check: records patterns until the answering recognizer stops (at most
     /// `maxPatterns`), retrying each slot up to 3 times on quality failure. The other
     /// recognizer decides on the same patterns and both are logged.
-    func runCheck(purpose: RecordingPurpose = .check, truth: RecordingLabel? = nil,
+    func runCheck(purpose: RecordingPurpose = .check, truth: RecordingLabel? = nil, requestedHand: Hand? = nil,
                   status: (String) -> Void) async throws -> CheckResult {
         let started = Date()
         var answeredBy = effectiveRecognizer
         var notes: [String] = []
         if let note = recognizerNote { notes.append(note) }
-
-        var requestedHand: Hand?
-        if purpose == .check && settings.handChallenge {
-            let seed = (try? DeviceSupport.randomSeed()) ?? UInt64.random(in: 0...UInt64.max)
-            var rng = Xoshiro256StarStar(seed: seed)
-            requestedHand = rng.uniform() < 0.5 ? .right : .left
-        }
 
         let maxPatterns = max(1, settings.maxPatterns)
         var accepted: [AnalyzedPattern] = []
@@ -393,6 +386,13 @@ final class AppModel {
             challengePassed: result.challengePassed, qualityFailure: qualityFailure))
         saveChecks()
         return result
+    }
+
+    /// Random hand for the hand challenge (SPEC 9.6): `uniform() < 0.5` → right.
+    func drawChallengeHand() -> Hand {
+        let seed = (try? DeviceSupport.randomSeed()) ?? UInt64.random(in: 0...UInt64.max)
+        var rng = Xoshiro256StarStar(seed: seed)
+        return rng.uniform() < 0.5 ? .right : .left
     }
 
     /// Adaptive templates (SPEC 9.5 / 14.3): each recognizer learns from its own confident
@@ -590,8 +590,9 @@ final class AppModel {
         let anonymize = settings.anonymizeExports
         let names = Exporter.nameMap(people: people, anonymize: anonymize)
         let recordings = Exporter.prepare(store?.allRecordings() ?? [], names: names)
+        let jsonLines = try RecordingCoding.jsonLines(recordings)
         let files: [(String, Data)] = [
-            ("recordings.jsonl", try RecordingCoding.jsonLines(recordings)),
+            ("recordings.jsonl", jsonLines),
             ("features.csv", Data(Exporter.featuresCSV(samples: samples, names: names).utf8)),
             ("checks.csv", Data(Exporter.checksCSV(entries: checkLog, names: names).utf8)),
         ]

@@ -59,17 +59,17 @@ struct EnrollmentFlow {
             self.personID = personID
             name = ""
             step = .name
-            slots = Self.fullSlots()
+            slots = EnrollmentFlow.fullSlots()
         case .reenroll(let id, let existingName):
             self.personID = id
             name = existingName
             step = .checklist
-            slots = Self.fullSlots()
+            slots = EnrollmentFlow.fullSlots()
         case .accessory(let id, let existingName, _):
             self.personID = id
             name = existingName
             step = .checklist
-            slots = Self.accessorySlots()
+            slots = EnrollmentFlow.accessorySlots()
         }
     }
 

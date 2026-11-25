@@ -10,7 +10,9 @@ enum Exporter {
             a.createdAt != b.createdAt ? a.createdAt < b.createdAt : a.id < b.id
         }
         for (i, p) in ordered.enumerated() {
-            map[p.id] = anonymize ? String(format: "P%02d", i + 1) : p.name
+            let prefix: String = i + 1 < 10 ? "P0" : "P"
+            let code: String = prefix + String(i + 1)
+            map[p.id] = anonymize ? code : p.name
         }
         return map
     }
