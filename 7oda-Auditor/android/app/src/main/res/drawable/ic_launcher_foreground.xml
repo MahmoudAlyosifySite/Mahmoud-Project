@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Abstract mark: an open palm with vibration arcs on both sides. 108dp canvas, 66dp safe zone. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- palm -->
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M44,52 L44,36 Q44,33 46.5,33 Q49,33 49,36 L49,50 L50,50 L50,31 Q50,28 52.5,28 Q55,28 55,31 L55,50 L56,50 L56,33 Q56,30 58.5,30 Q61,30 61,33 L61,51 L62,51 L62,38 Q62,35 64.5,35 Q67,35 67,38 L67,62 Q67,76 55,76 Q47,76 43,69 L36,57 Q34.5,54 37,52.5 Q39.5,51 41.5,53.5 Z" />
+    <!-- vibration arcs, left -->
+    <path
+        android:strokeColor="#FF7FD1FF"
+        android:strokeWidth="3"
+        android:strokeLineCap="round"
+        android:fillColor="#00000000"
+        android:pathData="M33,40 Q29,47 33,54" />
+    <path
+        android:strokeColor="#FF7FD1FF"
+        android:strokeWidth="3"
+        android:strokeLineCap="round"
+        android:fillColor="#00000000"
+        android:pathData="M27,36 Q21,47 27,58" />
+    <!-- vibration arcs, right -->
+    <path
+        android:strokeColor="#FF7FD1FF"
+        android:strokeWidth="3"
+        android:strokeLineCap="round"
+        android:fillColor="#00000000"
+        android:pathData="M73,40 Q77,47 73,54" />
+    <path
+        android:strokeColor="#FF7FD1FF"
+        android:strokeWidth="3"
+        android:strokeLineCap="round"
+        android:fillColor="#00000000"
+        android:pathData="M79,36 Q85,47 79,58" />
+</vector>

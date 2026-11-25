@@ -14,3 +14,7 @@ research/**/shards/
 research/**/*.pt
 research/**/*.ckpt
 research/**/*.npy
+# Android / Gradle
+android/.gradle/
+android/**/build/
+android/local.properties

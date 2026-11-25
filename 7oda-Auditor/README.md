@@ -13,6 +13,7 @@ Proposal: Nov 24, 2026, Mahmoud Sayed Youssef. This folder is the proof-of-conce
 | Swift core (`AuditorCore`) | Complete: challenge, recording, DSP, alignment, quality gate (with replay check), features v2, calibration, Gaussian model, sequential decision, v1 encoder input and embedding identifier | 47 XCTest tests pass on Linux (Swift 6.2) and macOS (Xcode 26.3), including parity tests against fixtures written by the Python reference (RNG, challenge, DSP, full pipeline, model, v1) |
 | iOS app (`Auditor`) | Complete: calibration, enrollment (both hands, 3 rounds), "Who's holding?" with sequential checks, people and accessories, Lab (signal plot, scores, test runs with confusion matrices, thresholds, signal check, export), encrypted storage, v0 + v1 recognizers | 17 unit tests pass on the iOS simulator (Core ML encoder, encrypted store, enrollment flow, export, haptic patterns, end-to-end with synthetic hands); unsigned Release build for a generic iOS device succeeds |
 | v1 model (`HandEncoder.mlpackage`, 323 KB) | Teacher (10.7 M) trained on the A40, distilled into a 220 k student, 8-bit palettized | Core ML outputs match PyTorch on macOS (max embedding difference 0.002, hand argmax identical) |
+| Android app (`android/`) | Kotlin port of the core (same algorithms, parity-tested against the same fixtures), Jetpack Compose app with the same screens, sensor capture converted to the iOS units, vibration waveforms, ONNX encoder (v1), encrypted storage | Core unit and parity tests and app unit tests pass in CI; release APK built and signed in CI. Not yet run on a physical phone. See [docs/ANDROID.md](docs/ANDROID.md) |
 | Python reference, simulator, evaluation | Complete, including `analyze_export` for pilot data | 335 tests pass locally and in CI |
 | Accuracy on real hands | **Not measured yet** | Needs a physical iPhone and the week-2 pilot; all numbers so far are simulated ([DECISIONS D9](docs/DECISIONS.md)) |
 
@@ -57,6 +58,7 @@ The Simulator builds and runs the app, but it has no motion sensors or Taptic En
 | `research/sim/`, `research/evaluation/` | Physics simulator and the evaluation protocol of the proposal |
 | `research/v1/` | v1 teacher/student training on the GPU and Core ML export |
 | `docs/` | [SPEC](docs/SPEC.md), [DECISIONS](docs/DECISIONS.md), [APP](docs/APP.md), [SIMULATION](docs/SIMULATION.md), [V1_MODEL](docs/V1_MODEL.md) |
+| `android/` | Android version: `core/` (Kotlin port of AuditorCore) and `app/` (Compose) — [docs/ANDROID.md](docs/ANDROID.md) |
 | `tools/` | Project generator, icon generator, CI log annotator |
 
 ## Development
