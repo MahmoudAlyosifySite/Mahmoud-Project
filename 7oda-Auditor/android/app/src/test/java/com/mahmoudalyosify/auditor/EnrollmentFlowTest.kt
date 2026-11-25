@@ -25,7 +25,7 @@ class EnrollmentFlowTest {
     @Test
     fun newPersonHasThirtySlotsInSixRounds() {
         val flow = EnrollmentFlow(EnrollmentKind.NewPerson)
-        assertEquals(EnrollmentFlow.Step.name, flow.step)
+        assertEquals(EnrollmentFlow.Step.enterName, flow.step)
         assertEquals(30, flow.total)
         assertEquals(6, flow.roundCount)
         assertEquals(Hand.right, flow.slots.first().hand)

@@ -32,7 +32,7 @@ class EnrollmentFlow(
     personID: String = UUID.randomUUID().toString().uppercase(),
     val sessionID: String = UUID.randomUUID().toString().uppercase(),
 ) {
-    enum class Step { name, checklist, recording, summary, cancelled }
+    enum class Step { enterName, checklist, recording, summary, cancelled }
 
     enum class ChecklistItem { watchOff, ringsOff, braceletsOff, wearingAccessory }
 
@@ -94,7 +94,7 @@ class EnrollmentFlow(
             EnrollmentKind.NewPerson -> {
                 this.personID = personID
                 name = ""
-                step = Step.name
+                step = Step.enterName
                 slots = fullSlots()
             }
             is EnrollmentKind.Reenroll -> {
@@ -170,7 +170,7 @@ class EnrollmentFlow(
 
     /** Accepts a non-empty name and moves to the checklist. */
     fun submitName(raw: String): Boolean {
-        if (step != Step.name) return false
+        if (step != Step.enterName) return false
         val trimmed = raw.trim()
         if (trimmed.isEmpty()) return false
         name = trimmed

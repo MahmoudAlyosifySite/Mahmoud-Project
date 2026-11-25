@@ -66,7 +66,7 @@ fun EnrollmentScreen(model: AppModel, kind: EnrollmentKind, onDone: () -> Unit) 
         verticalArrangement = Arrangement.spacedBy(14.dp),
     ) {
         when (flow.step) {
-            EnrollmentFlow.Step.name -> NameStep(controller)
+            EnrollmentFlow.Step.enterName -> NameStep(controller)
             EnrollmentFlow.Step.checklist -> ChecklistStep(model, controller)
             EnrollmentFlow.Step.recording -> RecordingStep(model, controller)
             EnrollmentFlow.Step.summary -> SummaryStep(controller, onDone)
