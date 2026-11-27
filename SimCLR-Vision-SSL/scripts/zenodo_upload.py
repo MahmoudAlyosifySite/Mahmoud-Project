@@ -5,6 +5,12 @@
     python scripts/zenodo_upload.py upload      # upload the files to the draft (resumes; creates the draft if needed)
     python scripts/zenodo_upload.py publish     # publish the draft: irreversible, the files can no longer be removed
 
+New version of the published record (third revision): the checkpoint archives of version 1.0 are kept as they are,
+the checkpoints of the runs added since go into one more archive, and the code archive, README, checksums and
+checkpoint index are replaced. Nothing is published.
+    python scripts/zenodo_upload.py prepare_v2 --staging <dir>    # build the new and replaced files (no network for the tar)
+    python scripts/zenodo_upload.py newversion --staging <dir>    # create the draft of version 2.0 and upload them
+
 Order: reserve -> put the DOI into the paper and commit -> prepare (the code archive is taken from HEAD) -> upload
 -> check the draft on zenodo.org -> publish.
 
@@ -35,7 +41,9 @@ CREATORS = [
 ]
 KEYWORDS = ["contrastive learning", "supervised contrastive learning", "self-supervised learning",
             "semi-supervised learning", "evaluation protocol", "compute-matched comparison"]
-GITHUB = "https://github.com/MahmoudAlyosifySite/Mahmoud-Project/tree/main/SimCLR-Vision-SSL"
+GITHUB = "https://github.com/MahmoudAlyosify1/scarce-labels-contrastive"
+V1_RECORD = 24494138      # version 1.0, published 2026-11-24
+VERSION = "1.0"
 # paper-relevant part of the repository (the course project, the demo and W&B files stay on GitHub only)
 CODE_PATHS = ["dlt", "scripts", "jobs", "results", "paper", "notebooks", "tests", "README.md", "RUNBOOK.md",
               "LICENSE", "environment.yml", "requirements.txt", "Dockerfile"]
@@ -164,7 +172,7 @@ def metadata(a):
     return {"metadata": {
         "title": TITLE, "upload_type": "dataset", "creators": CREATORS, "keywords": KEYWORDS,
         "description": "<pre>" + desc.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;") + "</pre>",
-        "access_right": "open", "license": "cc-by-4.0", "version": "1.0", "prereserve_doi": True,
+        "access_right": "open", "license": "cc-by-4.0", "version": VERSION, "prereserve_doi": True,
         "related_identifiers": [{"identifier": GITHUB, "relation": "isSupplementTo", "resource_type": "software"}]}}
 
 
@@ -233,11 +241,80 @@ def publish(a):
     print(f"published: {d['links'].get('record_html', d['links'].get('html'))}  DOI {d.get('doi')}")
 
 
+def _v1_files():
+    import requests
+    r = requests.get(f"{API}/records/{V1_RECORD}", timeout=60).json()
+    return {f["key"]: f["links"]["self"] for f in r["files"]}
+
+
+def prepare_v2(a):
+    """Files of version 2.0: one archive with the checkpoints of the runs added since version 1.0, plus the new code
+    archive, README, checksums and checkpoint index. The checkpoint archives of version 1.0 stay as they are."""
+    import requests
+    os.makedirs(a.staging, exist_ok=True)
+    v1 = _v1_files()
+    index = requests.get(v1["checkpoint_index.json"], timeout=60).json()
+    sums = dict(l.split()[::-1] for l in requests.get(v1["SHA256SUMS.txt"], timeout=60).text.splitlines() if l.strip())
+    old = {r for rs in index.values() for r in rs}
+    runs = sorted(r for r in os.listdir(a.ckpt_dir) if os.path.exists(os.path.join(a.ckpt_dir, r, "model.pt")))
+    new = [r for r in runs if r not in old]
+    name = "checkpoints_third_revision.tar"
+    out = os.path.join(a.staging, name)
+    if not os.path.exists(out) or a.force:
+        with tarfile.open(out + ".tmp", "w") as tar:
+            for r in new:
+                tar.add(os.path.join(a.ckpt_dir, r, "model.pt"), arcname=f"checkpoints/{r}/model.pt")
+        os.replace(out + ".tmp", out)
+    print(f"{name}: {len(new)} runs, {os.path.getsize(out) / 1e9:.2f} GB")
+    index[name] = new
+    top = subprocess.run(["git", "rev-parse", "--show-toplevel"], cwd=REPO_DIR, capture_output=True, text=True).stdout.strip()
+    sub = os.path.relpath(REPO_DIR, top)
+    commit = subprocess.run(["git", "rev-parse", "HEAD"], cwd=top, capture_output=True, text=True).stdout.strip()
+    paths = [q for q in CODE_PATHS if subprocess.run(["git", "cat-file", "-e", f"HEAD:{sub}/{q}"], cwd=top).returncode == 0]
+    subprocess.run(["git", "archive", "--format=zip", "--prefix=SimCLR-Vision-SSL/", "-o",
+                    os.path.join(a.staging, CODE_ARCHIVE), f"HEAD:{sub}", *paths], cwd=top, check=True)
+    json.dump(index, open(os.path.join(a.staging, "checkpoint_index.json"), "w"), indent=1)
+    text = readme(index, commit).replace("## Contents", "Version 2.0 adds the runs of the third revision of the paper "
+                                         f"(`{name}`); the other checkpoint archives are those of version 1.0.\n\n## Contents")
+    open(os.path.join(a.staging, "README.md"), "w").write(text)
+    sums[name] = sha256(out)
+    sums[CODE_ARCHIVE] = sha256(os.path.join(a.staging, CODE_ARCHIVE))
+    with open(os.path.join(a.staging, "SHA256SUMS.txt"), "w") as f:
+        for n in sorted(sums):
+            f.write(f"{sums[n]}  {n}\n")
+    print(f"ready in {a.staging} (code archive from commit {commit[:7]})")
+
+
+def newversion(a):
+    """Create (once) the draft of version 2.0 of the published record and upload the files of prepare_v2."""
+    global VERSION
+    VERSION = "2.0"
+    tok = token()
+    state_path = os.path.join(a.staging, "zenodo_state.json")
+    state = json.load(open(state_path)) if os.path.exists(state_path) else {}
+    if "id" not in state:
+        r = call("POST", f"{API}/deposit/depositions/{V1_RECORD}/actions/newversion", tok)
+        if r.status_code not in (200, 201):
+            sys.exit(f"could not create the new version: {r.status_code} {r.text[:500]}")
+        draft = call("GET", r.json()["links"]["latest_draft"], tok).json()
+        state = {"id": draft["id"], "bucket": draft["links"]["bucket"], "html": draft["links"]["html"]}
+        json.dump(state, open(state_path, "w"), indent=1)
+        print(f"created draft of version 2.0: {state['html']}")
+    dep = f"{API}/deposit/depositions/{state['id']}"
+    replaced = (CODE_ARCHIVE, "README.md", "SHA256SUMS.txt", "checkpoint_index.json")
+    for f in call("GET", f"{dep}/files", tok).json():
+        if f["filename"] in replaced and f["filesize"] != os.path.getsize(os.path.join(a.staging, f["filename"])):
+            call("DELETE", f"{dep}/files/{f['id']}", tok)
+            print(f"removed from the draft: {f['filename']} (version 1.0)")
+    upload(a)
+
+
 if __name__ == "__main__":
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument("command", choices=["prepare", "reserve", "upload", "publish"])
+    p.add_argument("command", choices=["prepare", "reserve", "upload", "publish", "prepare_v2", "newversion"])
     p.add_argument("--ckpt_dir", default="/home/jovyan/simclr_store/ckpt")
     p.add_argument("--staging", default="/tmp/simclr_zenodo")
     p.add_argument("--force", action="store_true", help="prepare: rebuild archives that already exist")
     a = p.parse_args()
-    {"prepare": prepare, "reserve": reserve, "upload": upload, "publish": publish}[a.command](a)
+    {"prepare": prepare, "reserve": reserve, "upload": upload, "publish": publish, "prepare_v2": prepare_v2,
+     "newversion": newversion}[a.command](a)
