@@ -5,7 +5,7 @@ arXiv requires that every author agrees to the posting.
 
 **Title**
 
-Where Do Scarce Labels Belong? A Compute-Matched Study of Supervised and Self-Supervised Contrastive Pretraining
+Where Do Scarce Labels Belong? Evaluating Contrastive Pretraining under Equal Compute and Realistic Label Budgets
 
 **Authors**
 

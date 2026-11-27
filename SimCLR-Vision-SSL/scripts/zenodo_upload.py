@@ -31,8 +31,8 @@ import time
 REPO_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))     # .../SimCLR-Vision-SSL
 API = "https://zenodo.org/api"
 
-TITLE = ("Where Do Scarce Labels Belong? A Compute-Matched Study of Supervised and Self-Supervised Contrastive "
-         "Pretraining: code, per-run results and model checkpoints")
+TITLE = ("Where Do Scarce Labels Belong? Evaluating Contrastive Pretraining under Equal Compute and Realistic Label "
+         "Budgets: code, per-run results and model checkpoints")
 CREATORS = [
     {"name": "Alyosify, Mahmoud", "affiliation": "School of Computing, Queen's University", "orcid": "0009-0005-1336-2726"},
     {"name": "Imbabi, Mirna", "affiliation": "School of Computing, Queen's University", "orcid": "0009-0000-6699-3170"},
@@ -120,8 +120,8 @@ def prepare(a):
 
 def readme(archives, commit):
     lines = [f"# {TITLE}", "",
-             "Archive of the study behind the paper *Where Do Scarce Labels Belong? A Compute-Matched Study of "
-             "Supervised and Self-Supervised Contrastive Pretraining* (Alyosify, Imbabi, Nashed, Abbas; Queen's University).",
+             "Archive of the study behind the paper *Where Do Scarce Labels Belong? Evaluating Contrastive Pretraining "
+             "under Equal Compute and Realistic Label Budgets* (Alyosify, Imbabi, Nashed, Abbas; Queen's University).",
              "", f"Code repository: {GITHUB} (this archive: commit {commit[:12]}).", "",
              "## Contents", "",
              f"- `{CODE_ARCHIVE}`: the code (`dlt/`, `scripts/`, `tests/`), the job file of every run (`jobs/`), the "

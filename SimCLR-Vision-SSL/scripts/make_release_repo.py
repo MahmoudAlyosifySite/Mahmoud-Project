@@ -29,7 +29,7 @@ README = """# Where Do Scarce Labels Belong?
 
 Code, job files, per-run results and paper sources for
 
-> **Where Do Scarce Labels Belong? A Compute-Matched Study of Supervised and Self-Supervised Contrastive Pretraining**
+> **Where Do Scarce Labels Belong? Evaluating Contrastive Pretraining under Equal Compute and Realistic Label Budgets**
 > Mahmoud Alyosify, Mirna Imbabi, Natalie Nashed, Hazem M. Abbas. School of Computing, Queen's University.
 
 The paper (preprint layout) is [`paper/arxiv.pdf`](paper/arxiv.pdf). The checkpoints of all pretraining runs are

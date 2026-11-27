@@ -1,6 +1,6 @@
 # Runbook: second revision of the paper
 
-Paper: *Where Do Scarce Labels Belong? A Compute-Matched Study of Supervised and Self-Supervised Contrastive Pretraining*
+Paper: *Where Do Scarce Labels Belong? Evaluating Contrastive Pretraining under Equal Compute and Realistic Label Budgets*
 (target journal: Neural Networks; fallback: Pattern Recognition; arXiv version in the same `elsarticle` template).
 
 ## Where everything is

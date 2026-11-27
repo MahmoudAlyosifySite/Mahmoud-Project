@@ -5,8 +5,21 @@
 > labeled-subset arm (supervised training from scratch, their Figure 2) is plotted against the number of labeled
 > images, not compared with a larger pretraining pool. The paper therefore counts 16 applicable papers: 7 matched or
 > accounted, 3 unequal but disclosed, 1 equal epochs over pools of different size, 5 unclear. The audit had a single
-> reader, so the paper does not name the paper in the "equal epochs" category; its evidence is the Benato et al.
-> (2023) paragraph below. The tables and counts further down are those of the first reading.
+> reader; the one paper in the "equal epochs" category, Benato et al. (2023), was read a second time in full
+> before the paper names it (below). The tables and counts further down are those of the first reading.
+>
+> **Second reading of Benato et al. (2023)** (arXiv 2302.02663, version 1, the only version; no published version is
+> mentioned; full HTML text read). Verdict confirmed. Arms: "SupCon: Train with A on I_S and L_S" and "SimCLR:
+> Train with A on I_{S∪U}" (Sec. 4.4.1); split: "a supervised training-set S containing 1% supervised samples from D,
+> an unsupervised training-set U with 69% of the samples in D, and a test set T with 30%" (Sec. 4.2), i.e. 1% against
+> 70% of the data (Table 2: e.g. P. cysts S 95 / U 6,602). Budget: "We use 50 epochs and select the best model
+> through a checkpoint obtained from the lowest validation loss during training" (Sec. 4.3), and Table 3: "Both
+> methods are compared trained from scratch and with pre-trained weights during 50 epochs." No batch size, steps,
+> iterations or compute are stated. The paper discusses the size difference in samples ("SimCLR – even trained with
+> thousands of unsupervised samples (69%) – ... could not overpass SupCon which used only dozens of supervised samples
+> (1%)", Sec. 5.2) and explains the result by data separation, not by training effort. With an equal batch size the
+> SimCLR arm would take about 70 times the gradient steps; this ratio is our inference, since the batch size is not
+> given.
 
 Method: 26 papers read via ar5iv HTML (text search of setup/appendix sections, then reading hits). Limits: ar5iv strips some math/numbers; FixMatch (conversion failed) and Inoue & Goto 2020 (speaker-recognition, not images) were NOT audited; one reader, no code inspected (so "UNCLEAR" = not recoverable from text). BibTeX: DBLP is bot-walled for automated requests, so metadata is from the arXiv API and venues are given only when arXiv's own fields state them (see budget_audit.bib header).
 

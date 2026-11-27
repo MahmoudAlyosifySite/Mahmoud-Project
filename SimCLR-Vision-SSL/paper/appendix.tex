@@ -301,9 +301,11 @@ an arm trained on a larger pool. Ten papers turned out not to make such a compar
 \citet{cole2022when}, whose pools of different size are all used for self-supervised pretraining without
 labels. \Cref{tab:audit} classifies the other 16. The reading was done from the text of the papers only,
 without their code, by one reader; ``unclear'' means that we could not recover the budget of at least one arm
-from the paper, not that the comparison is unfair. Because of the single reader, we do not name the paper
-in the category of unmatched comparisons; the evidence for its verdict (quotations with their location) is
-in the repository.
+from the paper, not that the comparison is unfair. The one paper in the category of unmatched comparisons
+was read a second time in full (arXiv version 1), which confirmed the verdict: SupCon is trained on the 1\% of
+the data that is labeled and SimCLR on 70\%, both for 50 epochs; the paper discusses the difference in the number
+of images but not in gradient steps, and it does not state the batch size. The quotations behind every verdict,
+with their location, are in the repository.
 
 \begin{table}[h]
 \centering
@@ -325,7 +327,7 @@ unequal but disclosed (3) &
 epochs defined on the labeled set, or each arm trained to convergence \\
 \addlinespace
 equal epochs over pools of different size (1) &
-one application paper (not named; see the text) &
+\citet{Benato2023Linking} &
 the same number of epochs for every pool, no discussion of steps \\
 \addlinespace
 unclear (5) &
@@ -340,5 +342,5 @@ one ``epochs'' column without a definition, or no budget for the baseline \\
 The trap described in \cref{sec:compute} is therefore not common in this sample: most well-known papers
 match iterations or report the two budgets separately. The more frequent issue is that the unit of the
 budget is not stated in a way that lets a reader check the match. Our sample is small and leans towards
-widely cited self- and semi-supervised papers, so it says little about application papers, which is where
-we found the one unmatched comparison.
+widely cited self- and semi-supervised papers, so it says little about application papers, where
+\citet{Benato2023Linking} is an example of the unmatched comparison.
