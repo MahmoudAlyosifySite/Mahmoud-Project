@@ -38,7 +38,10 @@ standard deviation over seeds).}
 \includegraphics[width=\linewidth]{figures/fig_geometry.pdf}
 \caption{(a) CDNV on the labeled images, on the other training images and on test images at 19,400 steps
 (log scale, mean $\pm$ standard deviation over seeds). (b) Ratio of the CDNV on test images to the CDNV on
-the images the method used with labels (\supcon, \union) or trained on (\simclr), during training.}
+the images the method used with labels (\supcon, \union) or trained on (\simclr). Markers: separate runs at the
+end of their own schedule (mean $\pm$ standard deviation over three to five seeds; the 19,400-step values are
+those of \cref{tab:geometry}). Thin lines: checkpoints of the 97,000-step runs, taken while their learning rate
+is still high.}
 \label{fig:geometry}
 \end{figure}
 
@@ -49,17 +52,27 @@ the images the method used with labels (\supcon, \union) or trained on (\simclr)
 (\R{simclr_all_e200:cdnv_lab}), other training images (\R{simclr_all_e200:cdnv_rest}) and test images
 (\R{simclr_all_e200:cdnv_test}).
 
-\emph{\supcon is tight where it had labels.} Its CDNV is \R{supcon_lab_f0.1_e200:cdnv_lab} on the labeled
+\emph{\supcon is tightest where it had labels.} Its CDNV is \R{supcon_lab_f0.1_e200:cdnv_lab} on the labeled
 images and \R{supcon_lab_f0.1_e200:cdnv_test} on test images, a ratio of
 \R{supcon_lab_f0.1_e200:cdnv_ratio}. The other 45,000 training images, which it never saw, behave like test
-images (\R{supcon_lab_f0.1_e200:cdnv_rest}).
+images (\R{supcon_lab_f0.1_e200:cdnv_rest}). \supcon does tighten unseen images too, more than \simclr does; what
+the split shows is that it tightens the labeled images several times more.
 
 \emph{In \union the labels do not spread.} \union trains on all 50,000 images, yet its CDNV is
 \R{union_f0.1_e200:cdnv_lab} on the labeled 5,000 and \R{union_f0.1_e200:cdnv_rest} on the 45,000 images it
 saw without labels, which is as loose as on test images (\R{union_f0.1_e200:cdnv_test}) and as loose as
 \simclr. The joint loss makes the labeled images tight and leaves the unlabeled ones where instance
-discrimination puts them. This is the direct reason why \union looks good to a probe that brings fresh
-labels for the 45,000 images and gains nothing for a probe restricted to the 5,000.
+discrimination puts them. This is consistent with \union looking good to a probe that brings fresh labels for
+the 45,000 images and gaining nothing for a probe restricted to the 5,000, although the measurement does not
+show that the one causes the other.
+
+\emph{The diagnostic is a relative measure.} Across methods, the CDNV of test images does not track accuracy.
+\supcon is tighter on test images than \simclr (\R{supcon_lab_f0.1_e200:cdnv_test} against
+\R{simclr_all_e200:cdnv_test}) and less accurate under every probe and fine-tuning recipe, and cross-entropy on the 5,000 labels has
+by far the largest ratio between test and labeled images (\cref{tab:geometry}) and is still at least as
+accurate as \supcon followed by fine-tuning (\cref{tab:where}). We therefore read the split within a method, as an indication of
+how much of the label information stays on the labeled images, and not as a predictor of accuracy across
+methods.
 
 \paragraph{The gap is not specific to \supcon}
 Cross-entropy training on the 5,000 labels shows the same pattern in a stronger form: the labeled images
@@ -69,19 +82,23 @@ overfitting to a small labeled set, as described for neural collapse by \citet{h
 a property of the contrastive loss. What is specific to the label-scarce contrastive setting is its
 consequence: the labels have been used to fit 5,000 images, and reusing them in a probe or in fine-tuning
 adds little. Cross-entropy on the 5,000 labels is in fact tighter on test images than \supcon
-(\R{ce_f0.1_e200:cdnv_test} against \R{supcon_lab_f0.1_e200:cdnv_test}) and slightly more accurate
-(\cref{tab:where}).
+(\R{ce_f0.1_e200:cdnv_test} against \R{supcon_lab_f0.1_e200:cdnv_test}) and at least as accurate
+(\cref{sec:where}).
 
 \paragraph{Dynamics}
-\Cref{fig:geometry}(b) follows the ratio between the CDNV on test images and on the labeled images during
-the longest runs for which it was logged (\R{geomcurve:supcon:n} seeds, checkpoints up to
-\R{geomcurve:supcon:laststep} steps). For \supcon the ratio is already
-\R{geomcurve:supcon:first} at \R{geomcurve:supcon:firststep} steps, when its accuracy has almost stopped
-improving, and keeps rising to \R{geomcurve:supcon:last}; for \union it rises from \R{geomcurve:union:first}
-to \R{geomcurve:union:last}; for \simclr, measured between all training images and test images, it stays at
-\R{geomcurve:simclr:last}. The labeled images keep getting tighter relative to new images while the accuracy
-no longer improves. This is consistent with the plateau of \supcon being reached once the labeled images are
-fitted; the evidence is correlational and we do not claim more.
+\Cref{fig:geometry}(b) shows the ratio between the CDNV on test images and on the labeled images in two ways.
+The markers are separate runs, each evaluated at the end of its own cosine schedule, as in
+\cref{tab:geometry}; the thin lines follow the checkpoints of the 97,000-step runs (\R{geomcurve:supcon:n}
+seeds), whose learning rate is still high at intermediate checkpoints, which is why they differ from the
+end-of-schedule values. For \supcon the end-of-schedule ratio rises from \R{geomend:supcon:e10} at 970 steps to
+\R{geomend:supcon:e100} at 9,700 steps, the budget at which its accuracy stops improving, and then stays
+between \R{geomend:supcon:min_after} and \R{geomend:supcon:max_after} (\R{geomend:supcon:e1000} at 97,000
+steps); along the long runs it lies between \R{geomcurve:supcon:min} and \R{geomcurve:supcon:max}. For \union it
+rises from \R{geomend:union:e10} to \R{geomend:union:max}, and for \simclr, which uses no labels, it stays at
+\R{geomend:simclr:e1000}. The labeled images of \supcon thus become several times
+tighter than new images within the first 9,700 steps, about when its accuracy saturates. This is consistent
+with the plateau being reached once the labeled images are fitted; the evidence is correlational and we do
+not claim more.
 
 \subsection{Does the coverage of the labeled pool explain the limit of \supcon?}
 \label{sec:coverage}
@@ -94,7 +111,7 @@ the pool size at 5,000 images (500 per class) and changes only which images are 
 Features are taken from a reference encoder and $\ell_2$-normalised. For a pool $S$, the \emph{coverage
 radius} is the mean, over test images $x$, of the cosine distance from $x$ to the nearest pool image of the
 same class; the \emph{spread} is the mean cosine distance between two pool images of the same class. Both
-are averaged over classes (formulas in \cref{app:pools}). We build three families of pools: random; mixtures
+are averaged over classes (formulas in \ref{app:pools}). We build three families of pools: random; mixtures
 in which 25, 50, 75 or 100\% of each class is chosen by greedy $k$-center selection \citep{sener2018coreset},
 which favours atypical images, and the rest at random; and mixtures in which 25, 50, 75 or 100\% consists of
 groups of 50 near-duplicates in feature space (``redundant''), and the rest at random. Each pool is drawn
@@ -131,8 +148,11 @@ atypical there, so the two spaces disagree on this family. Across all pools the 
 coverage radius and the accuracy of \supcon is \R{rho:all:radius_simclr:supcon} (Spearman,
 $n=\R{rho:all:radius_simclr:supcon:n}$ pools); within the random and redundant pools it is
 \R{rho:nokc:radius_simclr:supcon}. The supervised reference space gives \R{rho:all:radius_supervised:supcon}
-and \R{rho:nokc:radius_supervised:supcon}. Across pool sizes from 1\% to 20\%, the partial rank correlation
-that controls for the pool size is \R{rho:partial}. The $k$-center pool is the kind of set that \citet{hacohen2022active} show to be a poor
+and \R{rho:nokc:radius_supervised:supcon}. Adding random pools of 1, 5 and 20\% of the data (one seed each) to the
+\R{rho:all:radius_simclr:supcon:n} pools of 10\% gives \R{rho:partial:n} pools; across them the rank correlation
+between coverage radius and the accuracy of \supcon is \R{rho:partial:raw}, and \R{rho:partial} after
+controlling for the pool size (partial Spearman correlation; that it equals the correlation across the pools
+of 10\% is a coincidence). The $k$-center pool is the kind of set that \citet{hacohen2022active} show to be a poor
 choice at low budgets for \emph{supervised} learners; here the labels make the \supcon encoder largely
 robust to it, and the label-free learner is the one that fails. $k$-center selection picks the images farthest from all others,
 that is, atypical images and outliers. Without labels, each of them has few similar images in the pool, so
@@ -141,9 +161,10 @@ class are positives of each other, and the class-level positives bridge the gaps
 
 We conclude that coverage explains part of the effect of pool composition, namely the cost of redundancy,
 and that no single statistic of the pool predicts the accuracy of both learners. Spread, a natural
-candidate, does not separate pools of different size (it is flat from 1\% to 100\% of the data,
-\cref{app:pools}) and ranks the $k$-center pool best; it does decrease with redundancy, in line with the
-accuracy of \supcon.
+candidate, does not separate pools of different size (from 1\% to 100\% of the data it stays between
+\R{poolsize:spread:simclr:min} and \R{poolsize:spread:simclr:max} in the \simclr space while the coverage radius
+falls from \R{poolsize:radius:simclr:f0.01} to \R{poolsize:radius:simclr:f1}; \cref{tab:poolsize}) and ranks the
+$k$-center pool best; it does decrease with redundancy, in line with the accuracy of \supcon.
 
 \subsection{Labels make colour augmentation less necessary}
 \label{sec:jitter}
@@ -156,13 +177,15 @@ class positives, while the unlabeled three quarters are trained by instance disc
 the colour shortcut like \simclr. Where good augmentations are not
 known, for example outside natural images, this is an argument for using labels in the loss that our
 accuracy comparison does not capture. The full analysis of colour reliance in \simclr is in
-\cref{app:colour}.
+\ref{app:colour}.
 
 \begin{table}[t]
 \centering
 \small
 \caption{Removing colour jitter from the augmentation (CIFAR-10, 10\% labels, 9,700 steps, \lpall accuracy
-in \%, mean $\pm$ standard deviation over seeds; the change is computed per seed).}
+in \%, mean $\pm$ standard deviation over seeds; the change is computed per seed). Both columns use only the
+seeds that have a run without colour jitter, so the first column can differ slightly from \cref{tab:main},
+which averages five seeds.}
 \label{tab:jitter}
 \input{generated/tab_jitter.tex}
 \end{table}

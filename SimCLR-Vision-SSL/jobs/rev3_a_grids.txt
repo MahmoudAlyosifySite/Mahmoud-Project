@@ -1,0 +1,39 @@
+# Third revision, recipe grids at seed 0 (each search shared by 4 worker processes; see scripts/ft_search.py)
+# parallel: 8
+# retries: 3
+-m scripts.ft_search --name ftorx_supcon_lab_f0.1_e200_s0 --from_run supcon_lab_f0.1_e200_s0 --seed 0 --oracle --grid ext --reuse_from ftoracle_supcon_lab_f0.1_e200_s0 --worker 0
+-m scripts.ft_search --name ftorx_supcon_lab_f0.1_e200_s0 --from_run supcon_lab_f0.1_e200_s0 --seed 0 --oracle --grid ext --reuse_from ftoracle_supcon_lab_f0.1_e200_s0 --worker 1
+-m scripts.ft_search --name ftorx_supcon_lab_f0.1_e200_s0 --from_run supcon_lab_f0.1_e200_s0 --seed 0 --oracle --grid ext --reuse_from ftoracle_supcon_lab_f0.1_e200_s0 --worker 2
+-m scripts.ft_search --name ftorx_supcon_lab_f0.1_e200_s0 --from_run supcon_lab_f0.1_e200_s0 --seed 0 --oracle --grid ext --reuse_from ftoracle_supcon_lab_f0.1_e200_s0 --worker 3
+-m scripts.ft_search --name ftorx_union_f0.1_e200_s0 --from_run union_f0.1_e200_s0 --seed 0 --oracle --grid ext --reuse_from ftoracle_union_f0.1_e200_s0 --worker 0
+-m scripts.ft_search --name ftorx_union_f0.1_e200_s0 --from_run union_f0.1_e200_s0 --seed 0 --oracle --grid ext --reuse_from ftoracle_union_f0.1_e200_s0 --worker 1
+-m scripts.ft_search --name ftorx_union_f0.1_e200_s0 --from_run union_f0.1_e200_s0 --seed 0 --oracle --grid ext --reuse_from ftoracle_union_f0.1_e200_s0 --worker 2
+-m scripts.ft_search --name ftorx_union_f0.1_e200_s0 --from_run union_f0.1_e200_s0 --seed 0 --oracle --grid ext --reuse_from ftoracle_union_f0.1_e200_s0 --worker 3
+-m scripts.ft_search --name ftorx_simclr_all_e200_s0 --from_run simclr_all_e200_s0 --seed 0 --oracle --grid ext --reuse_from ftoracle_simclr_all_e200_s0 --worker 0
+-m scripts.ft_search --name ftorx_simclr_all_e200_s0 --from_run simclr_all_e200_s0 --seed 0 --oracle --grid ext --reuse_from ftoracle_simclr_all_e200_s0 --worker 1
+-m scripts.ft_search --name ftorx_simclr_all_e200_s0 --from_run simclr_all_e200_s0 --seed 0 --oracle --grid ext --reuse_from ftoracle_simclr_all_e200_s0 --worker 2
+-m scripts.ft_search --name ftorx_simclr_all_e200_s0 --from_run simclr_all_e200_s0 --seed 0 --oracle --grid ext --reuse_from ftoracle_simclr_all_e200_s0 --worker 3
+-m scripts.ft_search --name ftsx_simclr_all_e200_s0 --from_run simclr_all_e200_s0 --seed 0 --grid ext --reuse_from ftsearch_simclr_all_e200_s0 --worker 0
+-m scripts.ft_search --name ftsx_simclr_all_e200_s0 --from_run simclr_all_e200_s0 --seed 0 --grid ext --reuse_from ftsearch_simclr_all_e200_s0 --worker 1
+-m scripts.ft_search --name ftsx_simclr_all_e200_s0 --from_run simclr_all_e200_s0 --seed 0 --grid ext --reuse_from ftsearch_simclr_all_e200_s0 --worker 2
+-m scripts.ft_search --name ftsx_simclr_all_e200_s0 --from_run simclr_all_e200_s0 --seed 0 --grid ext --reuse_from ftsearch_simclr_all_e200_s0 --worker 3
+-m scripts.ft_search --name ftorx_simclr_all_e100_s0 --from_run simclr_all_e100_s0 --seed 0 --oracle --grid ext --worker 0
+-m scripts.ft_search --name ftorx_simclr_all_e100_s0 --from_run simclr_all_e100_s0 --seed 0 --oracle --grid ext --worker 1
+-m scripts.ft_search --name ftorx_simclr_all_e100_s0 --from_run simclr_all_e100_s0 --seed 0 --oracle --grid ext --worker 2
+-m scripts.ft_search --name ftorx_simclr_all_e100_s0 --from_run simclr_all_e100_s0 --seed 0 --oracle --grid ext --worker 3
+-m scripts.ft_search --name ftorx_supcon_lab_f0.1_e100_s0 --from_run supcon_lab_f0.1_e100_s0 --seed 0 --oracle --grid ext --worker 0
+-m scripts.ft_search --name ftorx_supcon_lab_f0.1_e100_s0 --from_run supcon_lab_f0.1_e100_s0 --seed 0 --oracle --grid ext --worker 1
+-m scripts.ft_search --name ftorx_supcon_lab_f0.1_e100_s0 --from_run supcon_lab_f0.1_e100_s0 --seed 0 --oracle --grid ext --worker 2
+-m scripts.ft_search --name ftorx_supcon_lab_f0.1_e100_s0 --from_run supcon_lab_f0.1_e100_s0 --seed 0 --oracle --grid ext --worker 3
+-m scripts.ft_search --name ftorx_union_f0.1_e100_s0 --from_run union_f0.1_e100_s0 --seed 0 --oracle --grid ext --worker 0
+-m scripts.ft_search --name ftorx_union_f0.1_e100_s0 --from_run union_f0.1_e100_s0 --seed 0 --oracle --grid ext --worker 1
+-m scripts.ft_search --name ftorx_union_f0.1_e100_s0 --from_run union_f0.1_e100_s0 --seed 0 --oracle --grid ext --worker 2
+-m scripts.ft_search --name ftorx_union_f0.1_e100_s0 --from_run union_f0.1_e100_s0 --seed 0 --oracle --grid ext --worker 3
+-m scripts.ft_search --name ftsx_simclr_all_e100_s0 --from_run simclr_all_e100_s0 --seed 0 --grid ext --worker 0
+-m scripts.ft_search --name ftsx_simclr_all_e100_s0 --from_run simclr_all_e100_s0 --seed 0 --grid ext --worker 1
+-m scripts.ft_search --name ftsx_simclr_all_e100_s0 --from_run simclr_all_e100_s0 --seed 0 --grid ext --worker 2
+-m scripts.ft_search --name ftsx_simclr_all_e100_s0 --from_run simclr_all_e100_s0 --seed 0 --grid ext --worker 3
+-m scripts.ft_search --name ftorx_twostage_simclr200_supcon5_s0 --from_run twostage_simclr200_supcon5_s0 --seed 0 --oracle --grid ext --reuse_from ftoracle_twostage_simclr200_supcon5_s0 --worker 0
+-m scripts.ft_search --name ftorx_twostage_simclr200_supcon5_s0 --from_run twostage_simclr200_supcon5_s0 --seed 0 --oracle --grid ext --reuse_from ftoracle_twostage_simclr200_supcon5_s0 --worker 1
+-m scripts.ft_search --name ftorx_twostage_simclr200_supcon5_s0 --from_run twostage_simclr200_supcon5_s0 --seed 0 --oracle --grid ext --reuse_from ftoracle_twostage_simclr200_supcon5_s0 --worker 2
+-m scripts.ft_search --name ftorx_twostage_simclr200_supcon5_s0 --from_run twostage_simclr200_supcon5_s0 --seed 0 --oracle --grid ext --reuse_from ftoracle_twostage_simclr200_supcon5_s0 --worker 3

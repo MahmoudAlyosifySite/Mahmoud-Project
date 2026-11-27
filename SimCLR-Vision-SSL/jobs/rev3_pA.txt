@@ -1,0 +1,6 @@
+# Third revision, pretraining A: the held-out-labels arm, seeds 1-2 (seed 0 started from rev3_p_pre.txt)
+# parallel: 4
+--name hold_supcon_f0.1_e200_s1 --method supcon --pool labeled --pool_file results/pools/holdout_fit_f0.1_s1.npy --label_fraction 0.1 --epochs 200 --seed 1
+--name hold_union_f0.1_e200_s1 --method supcon --pool all --temperature_unlabeled 0.5 --labeled_share 0.25 --pool_file results/pools/holdout_fit_f0.1_s1.npy --label_fraction 0.1 --epochs 200 --seed 1
+--name hold_supcon_f0.1_e200_s2 --method supcon --pool labeled --pool_file results/pools/holdout_fit_f0.1_s2.npy --label_fraction 0.1 --epochs 200 --seed 2
+--name hold_union_f0.1_e200_s2 --method supcon --pool all --temperature_unlabeled 0.5 --labeled_share 0.25 --pool_file results/pools/holdout_fit_f0.1_s2.npy --label_fraction 0.1 --epochs 200 --seed 2

@@ -1,0 +1,1 @@
+{"head": "lp", "lr": 0.03, "epochs": 60, "reg": "mixup", "val_acc": 85.32999753952026, "test_acc": 85.32999753952026, "reused_from": "ftoracle_union_f0.1_e200_s0"}

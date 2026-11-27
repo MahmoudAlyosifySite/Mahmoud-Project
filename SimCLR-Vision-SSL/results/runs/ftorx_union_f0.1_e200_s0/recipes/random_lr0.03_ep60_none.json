@@ -1,0 +1,1 @@
+{"head": "random", "lr": 0.03, "epochs": 60, "reg": "none", "val_acc": 85.2899968624115, "test_acc": 85.2899968624115, "reused_from": "ftoracle_union_f0.1_e200_s0"}

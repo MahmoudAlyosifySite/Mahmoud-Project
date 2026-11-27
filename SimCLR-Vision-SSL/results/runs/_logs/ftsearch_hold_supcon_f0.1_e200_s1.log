@@ -1,0 +1,1 @@
+[done] hold_supcon_f0.1_e200_s1: best {'head': 'lp', 'lr': 0.1, 'epochs': 240, 'reg': 'mixup'} -> test 86.81 (default recipe 82.58999586105347)

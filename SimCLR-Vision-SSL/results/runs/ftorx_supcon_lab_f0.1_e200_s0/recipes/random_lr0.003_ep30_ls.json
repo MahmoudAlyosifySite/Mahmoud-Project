@@ -1,0 +1,1 @@
+{"head": "random", "lr": 0.003, "epochs": 30, "reg": "ls", "val_acc": 83.52999687194824, "test_acc": 83.52999687194824, "reused_from": "ftoracle_supcon_lab_f0.1_e200_s0"}

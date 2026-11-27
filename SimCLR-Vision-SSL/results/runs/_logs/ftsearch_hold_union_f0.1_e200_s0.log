@@ -1,0 +1,243 @@
+hold_union_f0.1_e200_s0 [w11] {'head': 'lp', 'lr': 0.003, 'epochs': 30, 'reg': 'none'} val 79.80 (192s)
+hold_union_f0.1_e200_s0 [w10] {'head': 'lp', 'lr': 0.003, 'epochs': 30, 'reg': 'ls'} val 76.00 (204s)
+hold_union_f0.1_e200_s0 [w11] {'head': 'lp', 'lr': 0.003, 'epochs': 30, 'reg': 'mixup'} val 78.70 (357s)
+hold_union_f0.1_e200_s0 [w10] {'head': 'lp', 'lr': 0.003, 'epochs': 60, 'reg': 'none'} val 79.70 (500s)
+hold_union_f0.1_e200_s0 [w11] {'head': 'lp', 'lr': 0.003, 'epochs': 60, 'reg': 'ls'} val 77.70 (630s)
+hold_union_f0.1_e200_s0 [w10] {'head': 'lp', 'lr': 0.003, 'epochs': 60, 'reg': 'mixup'} val 80.30 (724s)
+hold_union_f0.1_e200_s0 [w11] {'head': 'lp', 'lr': 0.003, 'epochs': 120, 'reg': 'none'} val 79.90 (1176s)
+hold_union_f0.1_e200_s0 [w0] {'head': 'lp', 'lr': 0.003, 'epochs': 120, 'reg': 'mixup'} val 81.50 (684s)
+hold_union_f0.1_e200_s0 [w1] {'head': 'lp', 'lr': 0.003, 'epochs': 120, 'reg': 'ls'} val 80.10 (698s)
+hold_union_f0.1_e200_s0 [w1] {'head': 'lp', 'lr': 0.01, 'epochs': 30, 'reg': 'none'} val 80.30 (882s)
+hold_union_f0.1_e200_s0 [w1] {'head': 'lp', 'lr': 0.01, 'epochs': 30, 'reg': 'ls'} val 78.80 (1073s)
+hold_union_f0.1_e200_s0 [w10] {'head': 'lp', 'lr': 0.003, 'epochs': 240, 'reg': 'none'} val 80.50 (1967s)
+hold_union_f0.1_e200_s0 [w1] {'head': 'lp', 'lr': 0.01, 'epochs': 30, 'reg': 'mixup'} val 81.20 (1263s)
+hold_union_f0.1_e200_s0 [w10] {'head': 'lp', 'lr': 0.01, 'epochs': 60, 'reg': 'none'} val 80.20 (2296s)
+hold_union_f0.1_e200_s0 [w1] {'head': 'lp', 'lr': 0.01, 'epochs': 60, 'reg': 'ls'} val 80.80 (1618s)
+hold_union_f0.1_e200_s0 [w11] {'head': 'lp', 'lr': 0.003, 'epochs': 240, 'reg': 'ls'} val 80.80 (2478s)
+hold_union_f0.1_e200_s0 [w10] {'head': 'lp', 'lr': 0.01, 'epochs': 60, 'reg': 'mixup'} val 82.50 (2641s)
+hold_union_f0.1_e200_s0 [w0] {'head': 'lp', 'lr': 0.003, 'epochs': 240, 'reg': 'mixup'} val 81.90 (2005s)
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/jovyan/Mahmoud-Project/SimCLR-Vision-SSL/scripts/ft_search.py", line 261, in <module>
+    main()
+  File "/home/jovyan/Mahmoud-Project/SimCLR-Vision-SSL/scripts/ft_search.py", line 217, in main
+    acc, _ = finetune(enc_sd, args.backbone, data, fit_idx, data["train_x"][vi], data["train_y"][vi], cfg,
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jovyan/Mahmoud-Project/SimCLR-Vision-SSL/scripts/ft_search.py", line 96, in finetune
+    ftr = extract_features(model.encoder, X[fi], aug.normalize)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/conda/lib/python3.12/site-packages/torch/utils/_contextlib.py", line 124, in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jovyan/Mahmoud-Project/SimCLR-Vision-SSL/dlt/models.py", line 115, in extract_features
+    h = encoder(xb)
+        ^^^^^^^^^^^
+  File "/opt/conda/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1779, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/conda/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1790, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/conda/lib/python3.12/site-packages/torchvision/models/resnet.py", line 285, in forward
+    return self._forward_impl(x)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/conda/lib/python3.12/site-packages/torchvision/models/resnet.py", line 273, in _forward_impl
+    x = self.layer1(x)
+        ^^^^^^^^^^^^^^
+  File "/opt/conda/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1779, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/conda/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1790, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/conda/lib/python3.12/site-packages/torch/nn/modules/container.py", line 253, in forward
+    input = module(input)
+            ^^^^^^^^^^^^^
+  File "/opt/conda/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1779, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/conda/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1790, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/conda/lib/python3.12/site-packages/torchvision/models/resnet.py", line 93, in forward
+    out = self.bn1(out)
+          ^^^^^^^^^^^^^
+  File "/opt/conda/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1779, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/conda/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1790, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/conda/lib/python3.12/site-packages/torch/nn/modules/batchnorm.py", line 194, in forward
+    return F.batch_norm(
+           ^^^^^^^^^^^^^
+  File "/opt/conda/lib/python3.12/site-packages/torch/nn/functional.py", line 2846, in batch_norm
+    return torch.batch_norm(
+           ^^^^^^^^^^^^^^^^^
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 250.00 MiB. GPU 0 has a total capacity of 44.42 GiB of which 115.75 MiB is free. Process 165919 has 30.00 MiB memory in use. Process 172406 has 2.00 GiB memory in use. Process 172405 has 2.00 GiB memory in use. Process 196707 has 1.84 GiB memory in use. Process 196706 has 1.84 GiB memory in use. Process 196704 has 1.84 GiB memory in use. Process 196705 has 1.84 GiB memory in use. Process 198391 has 3.12 GiB memory in use. Process 198390 has 3.07 GiB memory in use. Process 198387 has 1.84 GiB memory in use. Process 198388 has 1.82 GiB memory in use. Process 198389 has 1.84 GiB memory in use. Process 200210 has 1.84 GiB memory in use. Process 203191 has 1.15 GiB memory in use. Process 203186 has 1.39 GiB memory in use. Process 203185 has 3.73 GiB memory in use. Process 203187 has 1.64 GiB memory in use. Process 203192 has 1.39 GiB memory in use. Process 203188 has 1.39 GiB memory in use. Process 203189 has 3.71 GiB memory in use. Including non-PyTorch memory, this process has 1.15 GiB memory in use. Process 203193 has 3.71 GiB memory in use. Of the allocated memory 821.74 MiB is allocated by PyTorch, and 50.26 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/docs/stable/notes/cuda.html#optimizing-memory-usage-with-pytorch-cuda-alloc-conf)
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/jovyan/Mahmoud-Project/SimCLR-Vision-SSL/scripts/ft_search.py", line 261, in <module>
+    main()
+  File "/home/jovyan/Mahmoud-Project/SimCLR-Vision-SSL/scripts/ft_search.py", line 217, in main
+    acc, _ = finetune(enc_sd, args.backbone, data, fit_idx, data["train_x"][vi], data["train_y"][vi], cfg,
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jovyan/Mahmoud-Project/SimCLR-Vision-SSL/scripts/ft_search.py", line 96, in finetune
+    ftr = extract_features(model.encoder, X[fi], aug.normalize)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/conda/lib/python3.12/site-packages/torch/utils/_contextlib.py", line 124, in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jovyan/Mahmoud-Project/SimCLR-Vision-SSL/dlt/models.py", line 115, in extract_features
+    h = encoder(xb)
+        ^^^^^^^^^^^
+  File "/opt/conda/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1779, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/conda/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1790, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/conda/lib/python3.12/site-packages/torchvision/models/resnet.py", line 285, in forward
+    return self._forward_impl(x)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/conda/lib/python3.12/site-packages/torchvision/models/resnet.py", line 273, in _forward_impl
+    x = self.layer1(x)
+        ^^^^^^^^^^^^^^
+  File "/opt/conda/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1779, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/conda/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1790, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/conda/lib/python3.12/site-packages/torch/nn/modules/container.py", line 253, in forward
+    input = module(input)
+            ^^^^^^^^^^^^^
+  File "/opt/conda/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1779, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/conda/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1790, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/conda/lib/python3.12/site-packages/torchvision/models/resnet.py", line 93, in forward
+    out = self.bn1(out)
+          ^^^^^^^^^^^^^
+  File "/opt/conda/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1779, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/conda/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1790, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/conda/lib/python3.12/site-packages/torch/nn/modules/batchnorm.py", line 194, in forward
+    return F.batch_norm(
+           ^^^^^^^^^^^^^
+  File "/opt/conda/lib/python3.12/site-packages/torch/nn/functional.py", line 2846, in batch_norm
+    return torch.batch_norm(
+           ^^^^^^^^^^^^^^^^^
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 250.00 MiB. GPU 0 has a total capacity of 44.42 GiB of which 195.75 MiB is free. Process 165919 has 30.00 MiB memory in use. Process 172406 has 2.00 GiB memory in use. Process 172405 has 2.00 GiB memory in use. Process 196707 has 1.84 GiB memory in use. Process 196706 has 1.84 GiB memory in use. Process 196704 has 1.84 GiB memory in use. Process 196705 has 1.84 GiB memory in use. Process 198391 has 3.12 GiB memory in use. Process 198390 has 3.07 GiB memory in use. Process 198387 has 1.84 GiB memory in use. Process 198388 has 1.82 GiB memory in use. Process 198389 has 1.84 GiB memory in use. Process 200210 has 1.84 GiB memory in use. Including non-PyTorch memory, this process has 1.15 GiB memory in use. Process 203186 has 1.39 GiB memory in use. Process 203185 has 3.73 GiB memory in use. Process 203187 has 1.64 GiB memory in use. Process 203192 has 1.39 GiB memory in use. Process 203188 has 1.39 GiB memory in use. Process 203189 has 3.71 GiB memory in use. Process 203190 has 1.15 GiB memory in use. Process 203193 has 3.71 GiB memory in use. Of the allocated memory 821.74 MiB is allocated by PyTorch, and 50.26 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/docs/stable/notes/cuda.html#optimizing-memory-usage-with-pytorch-cuda-alloc-conf)
+hold_union_f0.1_e200_s0 [w1] {'head': 'lp', 'lr': 0.01, 'epochs': 120, 'reg': 'none'} val 80.40 (2244s)
+hold_union_f0.1_e200_s0 [w11] {'head': 'lp', 'lr': 0.01, 'epochs': 120, 'reg': 'ls'} val 82.50 (3161s)
+hold_union_f0.1_e200_s0 [w15] {'head': 'lp', 'lr': 0.03, 'epochs': 30, 'reg': 'none'} val 80.60 (244s)
+hold_union_f0.1_e200_s0 [w10] {'head': 'lp', 'lr': 0.01, 'epochs': 120, 'reg': 'mixup'} val 83.50 (3392s)
+hold_union_f0.1_e200_s0 [w11] {'head': 'lp', 'lr': 0.03, 'epochs': 30, 'reg': 'ls'} val 82.30 (3403s)
+hold_union_f0.1_e200_s0 [w15] {'head': 'lp', 'lr': 0.03, 'epochs': 30, 'reg': 'mixup'} val 83.20 (483s)
+hold_union_f0.1_e200_s0 [w10] {'head': 'lp', 'lr': 0.03, 'epochs': 60, 'reg': 'none'} val 81.20 (3822s)
+hold_union_f0.1_e200_s0 [w11] {'head': 'lp', 'lr': 0.03, 'epochs': 60, 'reg': 'ls'} val 83.20 (3853s)
+hold_union_f0.1_e200_s0 [w15] {'head': 'lp', 'lr': 0.03, 'epochs': 60, 'reg': 'mixup'} val 84.00 (941s)
+hold_union_f0.1_e200_s0 [w0] {'head': 'lp', 'lr': 0.01, 'epochs': 240, 'reg': 'none'} val 81.00 (3510s)
+hold_union_f0.1_e200_s0 [w12] {'head': 'lp', 'lr': 0.01, 'epochs': 240, 'reg': 'mixup'} val 83.90 (1715s)
+hold_union_f0.1_e200_s0 [w10] {'head': 'lp', 'lr': 0.03, 'epochs': 120, 'reg': 'none'} val 82.80 (4653s)
+hold_union_f0.1_e200_s0 [w1] {'head': 'lp', 'lr': 0.01, 'epochs': 240, 'reg': 'ls'} val 83.30 (4001s)
+hold_union_f0.1_e200_s0 [w11] {'head': 'lp', 'lr': 0.03, 'epochs': 120, 'reg': 'ls'} val 83.60 (4725s)
+hold_union_f0.1_e200_s0 [w15] {'head': 'lp', 'lr': 0.03, 'epochs': 120, 'reg': 'mixup'} val 84.90 (1819s)
+hold_union_f0.1_e200_s0 [w1] {'head': 'lp', 'lr': 0.1, 'epochs': 30, 'reg': 'none'} val 81.90 (4235s)
+hold_union_f0.1_e200_s0 [w11] {'head': 'lp', 'lr': 0.1, 'epochs': 30, 'reg': 'ls'} val 84.10 (4965s)
+hold_union_f0.1_e200_s0 [w15] {'head': 'lp', 'lr': 0.1, 'epochs': 30, 'reg': 'mixup'} val 82.80 (2060s)
+hold_union_f0.1_e200_s0 [w1] {'head': 'lp', 'lr': 0.1, 'epochs': 60, 'reg': 'none'} val 82.60 (4674s)
+hold_union_f0.1_e200_s0 [w11] {'head': 'lp', 'lr': 0.1, 'epochs': 60, 'reg': 'ls'} val 84.70 (5414s)
+hold_union_f0.1_e200_s0 [w15] {'head': 'lp', 'lr': 0.1, 'epochs': 60, 'reg': 'mixup'} val 84.60 (2517s)
+hold_union_f0.1_e200_s0 [w0] {'head': 'lp', 'lr': 0.03, 'epochs': 240, 'reg': 'none'} val 82.60 (5124s)
+hold_union_f0.1_e200_s0 [w1] {'head': 'lp', 'lr': 0.1, 'epochs': 120, 'reg': 'none'} val 81.60 (5527s)
+hold_union_f0.1_e200_s0 [w11] {'head': 'lp', 'lr': 0.1, 'epochs': 120, 'reg': 'ls'} val 84.40 (6290s)
+hold_union_f0.1_e200_s0 [w12] {'head': 'lp', 'lr': 0.03, 'epochs': 240, 'reg': 'ls'} val 84.10 (3420s)
+hold_union_f0.1_e200_s0 [w10] {'head': 'lp', 'lr': 0.03, 'epochs': 240, 'reg': 'mixup'} val 84.70 (6395s)
+hold_union_f0.1_e200_s0 [w15] {'head': 'lp', 'lr': 0.1, 'epochs': 120, 'reg': 'mixup'} val 85.30 (3396s)
+hold_union_f0.1_e200_s0 [w12] {'head': 'lp', 'lr': 0.3, 'epochs': 30, 'reg': 'none'} val 72.70 (3643s)
+hold_union_f0.1_e200_s0 [w10] {'head': 'lp', 'lr': 0.3, 'epochs': 30, 'reg': 'ls'} val 83.20 (6636s)
+hold_union_f0.1_e200_s0 [w15] {'head': 'lp', 'lr': 0.3, 'epochs': 30, 'reg': 'mixup'} val 83.40 (3635s)
+hold_union_f0.1_e200_s0 [w12] {'head': 'lp', 'lr': 0.3, 'epochs': 60, 'reg': 'none'} val 80.60 (4060s)
+hold_union_f0.1_e200_s0 [w10] {'head': 'lp', 'lr': 0.3, 'epochs': 60, 'reg': 'ls'} val 83.00 (7082s)
+hold_union_f0.1_e200_s0 [w15] {'head': 'lp', 'lr': 0.3, 'epochs': 60, 'reg': 'mixup'} val 83.30 (4074s)
+hold_union_f0.1_e200_s0 [w0] {'head': 'lp', 'lr': 0.1, 'epochs': 240, 'reg': 'none'} val 83.00 (6683s)
+hold_union_f0.1_e200_s0 [w12] {'head': 'lp', 'lr': 0.3, 'epochs': 120, 'reg': 'none'} val 80.70 (4816s)
+hold_union_f0.1_e200_s0 [w10] {'head': 'lp', 'lr': 0.3, 'epochs': 120, 'reg': 'ls'} val 83.00 (7901s)
+hold_union_f0.1_e200_s0 [w11] {'head': 'lp', 'lr': 0.1, 'epochs': 240, 'reg': 'mixup'} val 85.30 (7924s)
+hold_union_f0.1_e200_s0 [w1] {'head': 'lp', 'lr': 0.1, 'epochs': 240, 'reg': 'ls'} val 84.50 (7211s)
+hold_union_f0.1_e200_s0 [w15] {'head': 'lp', 'lr': 0.3, 'epochs': 120, 'reg': 'mixup'} val 83.60 (4890s)
+hold_union_f0.1_e200_s0 [w11] {'head': 'random', 'lr': 0.003, 'epochs': 30, 'reg': 'none'} val 81.10 (8116s)
+hold_union_f0.1_e200_s0 [w15] {'head': 'random', 'lr': 0.003, 'epochs': 30, 'reg': 'mixup'} val 81.20 (5099s)
+hold_union_f0.1_e200_s0 [w1] {'head': 'random', 'lr': 0.003, 'epochs': 30, 'reg': 'ls'} val 81.00 (7426s)
+hold_union_f0.1_e200_s0 [w11] {'head': 'random', 'lr': 0.003, 'epochs': 60, 'reg': 'none'} val 82.00 (8515s)
+hold_union_f0.1_e200_s0 [w15] {'head': 'random', 'lr': 0.003, 'epochs': 60, 'reg': 'ls'} val 81.70 (5527s)
+hold_union_f0.1_e200_s0 [w1] {'head': 'random', 'lr': 0.003, 'epochs': 60, 'reg': 'mixup'} val 82.40 (7871s)
+hold_union_f0.1_e200_s0 [w0] {'head': 'lp', 'lr': 0.3, 'epochs': 240, 'reg': 'none'} val 81.40 (8280s)
+hold_union_f0.1_e200_s0 [w11] {'head': 'random', 'lr': 0.003, 'epochs': 120, 'reg': 'none'} val 81.30 (9314s)
+hold_union_f0.1_e200_s0 [w15] {'head': 'random', 'lr': 0.003, 'epochs': 120, 'reg': 'ls'} val 81.00 (6384s)
+hold_union_f0.1_e200_s0 [w12] {'head': 'lp', 'lr': 0.3, 'epochs': 240, 'reg': 'ls'} val 82.70 (6532s)
+hold_union_f0.1_e200_s0 [w1] {'head': 'random', 'lr': 0.003, 'epochs': 120, 'reg': 'mixup'} val 82.60 (8763s)
+hold_union_f0.1_e200_s0 [w12] {'head': 'random', 'lr': 0.01, 'epochs': 30, 'reg': 'none'} val 81.80 (6732s)
+hold_union_f0.1_e200_s0 [w10] {'head': 'lp', 'lr': 0.3, 'epochs': 240, 'reg': 'mixup'} val 84.70 (9667s)
+hold_union_f0.1_e200_s0 [w1] {'head': 'random', 'lr': 0.01, 'epochs': 30, 'reg': 'ls'} val 81.60 (8986s)
+hold_union_f0.1_e200_s0 [w12] {'head': 'random', 'lr': 0.01, 'epochs': 30, 'reg': 'mixup'} val 82.20 (6947s)
+hold_union_f0.1_e200_s0 [w10] {'head': 'random', 'lr': 0.01, 'epochs': 60, 'reg': 'none'} val 81.90 (10073s)
+hold_union_f0.1_e200_s0 [w1] {'head': 'random', 'lr': 0.01, 'epochs': 60, 'reg': 'ls'} val 81.70 (9429s)
+hold_union_f0.1_e200_s0 [w12] {'head': 'random', 'lr': 0.01, 'epochs': 60, 'reg': 'mixup'} val 83.10 (7379s)
+hold_union_f0.1_e200_s0 [w0] {'head': 'random', 'lr': 0.003, 'epochs': 240, 'reg': 'none'} val 81.40 (9894s)
+hold_union_f0.1_e200_s0 [w10] {'head': 'random', 'lr': 0.01, 'epochs': 120, 'reg': 'none'} val 82.00 (10886s)
+hold_union_f0.1_e200_s0 [w11] {'head': 'random', 'lr': 0.003, 'epochs': 240, 'reg': 'ls'} val 81.20 (11023s)
+hold_union_f0.1_e200_s0 [w1] {'head': 'random', 'lr': 0.01, 'epochs': 120, 'reg': 'ls'} val 81.30 (10316s)
+hold_union_f0.1_e200_s0 [w15] {'head': 'random', 'lr': 0.003, 'epochs': 240, 'reg': 'mixup'} val 83.30 (8107s)
+hold_union_f0.1_e200_s0 [w12] {'head': 'random', 'lr': 0.01, 'epochs': 120, 'reg': 'mixup'} val 84.10 (8238s)
+hold_union_f0.1_e200_s0 [w1] {'head': 'random', 'lr': 0.03, 'epochs': 30, 'reg': 'none'} val 82.40 (10524s)
+hold_union_f0.1_e200_s0 [w15] {'head': 'random', 'lr': 0.03, 'epochs': 30, 'reg': 'ls'} val 82.10 (8322s)
+hold_union_f0.1_e200_s0 [w12] {'head': 'random', 'lr': 0.03, 'epochs': 30, 'reg': 'mixup'} val 82.90 (8454s)
+hold_union_f0.1_e200_s0 [w1] {'head': 'random', 'lr': 0.03, 'epochs': 60, 'reg': 'none'} val 82.00 (10941s)
+hold_union_f0.1_e200_s0 [w15] {'head': 'random', 'lr': 0.03, 'epochs': 60, 'reg': 'ls'} val 82.00 (8752s)
+hold_union_f0.1_e200_s0 [w12] {'head': 'random', 'lr': 0.03, 'epochs': 60, 'reg': 'mixup'} val 83.30 (8885s)
+hold_union_f0.1_e200_s0 [w0] {'head': 'random', 'lr': 0.01, 'epochs': 240, 'reg': 'none'} val 81.50 (11506s)
+hold_union_f0.1_e200_s0 [w1] {'head': 'random', 'lr': 0.03, 'epochs': 120, 'reg': 'none'} val 81.90 (11773s)
+hold_union_f0.1_e200_s0 [w10] {'head': 'random', 'lr': 0.01, 'epochs': 240, 'reg': 'ls'} val 81.70 (12620s)
+hold_union_f0.1_e200_s0 [w15] {'head': 'random', 'lr': 0.03, 'epochs': 120, 'reg': 'ls'} val 82.80 (9608s)
+hold_union_f0.1_e200_s0 [w12] {'head': 'random', 'lr': 0.03, 'epochs': 120, 'reg': 'mixup'} val 84.70 (9745s)
+hold_union_f0.1_e200_s0 [w11] {'head': 'random', 'lr': 0.01, 'epochs': 240, 'reg': 'mixup'} val 85.40 (12744s)
+hold_union_f0.1_e200_s0 [w15] {'head': 'random', 'lr': 0.1, 'epochs': 30, 'reg': 'none'} val 83.30 (9808s)
+hold_union_f0.1_e200_s0 [w12] {'head': 'random', 'lr': 0.1, 'epochs': 30, 'reg': 'ls'} val 83.80 (9958s)
+hold_union_f0.1_e200_s0 [w11] {'head': 'random', 'lr': 0.1, 'epochs': 30, 'reg': 'mixup'} val 83.90 (12959s)
+hold_union_f0.1_e200_s0 [w15] {'head': 'random', 'lr': 0.1, 'epochs': 60, 'reg': 'none'} val 83.00 (10204s)
+hold_union_f0.1_e200_s0 [w12] {'head': 'random', 'lr': 0.1, 'epochs': 60, 'reg': 'ls'} val 83.70 (10379s)
+hold_union_f0.1_e200_s0 [w11] {'head': 'random', 'lr': 0.1, 'epochs': 60, 'reg': 'mixup'} val 83.90 (13378s)
+hold_union_f0.1_e200_s0 [w0] {'head': 'random', 'lr': 0.03, 'epochs': 240, 'reg': 'none'} val 82.80 (13053s)
+hold_union_f0.1_e200_s0 [w15] {'head': 'random', 'lr': 0.1, 'epochs': 120, 'reg': 'none'} val 83.50 (10914s)
+hold_union_f0.1_e200_s0 [w12] {'head': 'random', 'lr': 0.1, 'epochs': 120, 'reg': 'ls'} val 84.30 (11129s)
+hold_union_f0.1_e200_s0 [w11] {'head': 'random', 'lr': 0.1, 'epochs': 120, 'reg': 'mixup'} val 83.90 (14125s)
+hold_union_f0.1_e200_s0 [w1] {'head': 'random', 'lr': 0.03, 'epochs': 240, 'reg': 'ls'} val 83.60 (13416s)
+hold_union_f0.1_e200_s0 [w10] {'head': 'random', 'lr': 0.03, 'epochs': 240, 'reg': 'mixup'} val 85.20 (14221s)
+hold_union_f0.1_e200_s0 [w11] {'head': 'random', 'lr': 0.3, 'epochs': 30, 'reg': 'none'} val 79.50 (14296s)
+hold_union_f0.1_e200_s0 [w1] {'head': 'random', 'lr': 0.3, 'epochs': 30, 'reg': 'ls'} val 85.40 (13605s)
+hold_union_f0.1_e200_s0 [w10] {'head': 'random', 'lr': 0.3, 'epochs': 30, 'reg': 'mixup'} val 82.50 (14403s)
+hold_union_f0.1_e200_s0 [w11] {'head': 'random', 'lr': 0.3, 'epochs': 60, 'reg': 'none'} val 82.10 (14620s)
+hold_union_f0.1_e200_s0 [w1] {'head': 'random', 'lr': 0.3, 'epochs': 60, 'reg': 'ls'} val 82.60 (13961s)
+hold_union_f0.1_e200_s0 [w10] {'head': 'random', 'lr': 0.3, 'epochs': 60, 'reg': 'mixup'} val 84.60 (14753s)
+hold_union_f0.1_e200_s0 [w0] {'head': 'random', 'lr': 0.1, 'epochs': 240, 'reg': 'none'} val 83.00 (14363s)
+hold_union_f0.1_e200_s0 [w11] {'head': 'random', 'lr': 0.3, 'epochs': 120, 'reg': 'none'} val 82.40 (15229s)
+hold_union_f0.1_e200_s0 [w15] {'head': 'random', 'lr': 0.1, 'epochs': 240, 'reg': 'ls'} val 83.30 (12265s)
+hold_union_f0.1_e200_s0 [w1] {'head': 'random', 'lr': 0.3, 'epochs': 120, 'reg': 'ls'} val 82.40 (14618s)
+hold_union_f0.1_e200_s0 [w12] {'head': 'random', 'lr': 0.1, 'epochs': 240, 'reg': 'mixup'} val 85.20 (12459s)
+hold_union_f0.1_e200_s0 [w10] {'head': 'random', 'lr': 0.3, 'epochs': 120, 'reg': 'mixup'} val 83.90 (15380s)
+hold_union_f0.1_e200_s0 [w0] {'head': 'random', 'lr': 0.3, 'epochs': 240, 'reg': 'none'} val 81.20 (15078s)
+hold_union_f0.1_e200_s0 [w11] {'head': 'random', 'lr': 0.3, 'epochs': 240, 'reg': 'ls'} val 82.80 (15856s)
+hold_union_f0.1_e200_s0 [w15] {'head': 'random', 'lr': 0.3, 'epochs': 240, 'reg': 'mixup'} val 83.20 (12831s)
+[done] hold_union_f0.1_e200_s0: best {'head': 'random', 'lr': 0.01, 'epochs': 240, 'reg': 'mixup'} -> test 85.61 (default recipe 84.77999567985535)
+[skip] results/runs/ftsearch_hold_union_f0.1_e200_s0/result.json
+[skip] results/runs/ftsearch_hold_union_f0.1_e200_s0/result.json

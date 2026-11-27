@@ -29,8 +29,11 @@ that are still in the queue (`\pending{...}`); none may remain in a submitted ve
    for something else.
 4. **Anonymity.** If the journal is double-anonymised, set `\anontrue` in `submission.tex` (this hides the authors,
    the CRediT section and the repository link) and prepare an anonymised copy of the repository.
-5. **Code archive.** Zenodo record 24494138 (DOI 10.5281/zenodo.24494138, reserved; the draft holds the code, results,
-   paper and all checkpoints). Publish it on zenodo.org once the authors agree; the DOI is already in `statements.tex`.
+5. **Code archive.** Zenodo record 24494138 (DOI 10.5281/zenodo.24494138) was published on 2026-11-24. The paper cites
+   the concept DOI 10.5281/zenodo.24494137, which always resolves to the latest version; the runs of the third
+   revision go into a new version of the record (to be published once the authors agree).
+6. **Repository.** The paper cites the dedicated repository https://github.com/MahmoudAlyosify1/scarce-labels-contrastive,
+   built from this folder by `scripts/make_release_repo.py` (pushed with a deploy key of the Lobot server).
 
 ## Journal
 

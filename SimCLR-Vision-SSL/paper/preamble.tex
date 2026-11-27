@@ -25,6 +25,16 @@
 \usepackage{url}
 \usepackage[hidelinks]{hyperref}
 \usepackage{orcidlink}
+% ORCID icon after an author's name; left out of the e-mail footnote, which repeats the names
+\DeclareRobustCommand{\orcid}[1]{\,\orcidlink{#1}}
+\makeatletter
+\gdef\emailauthor#1#2{\stepcounter{ead}%
+     \g@addto@macro\@elseads{\raggedright%
+      \let\corref\@gobble\let\orcid\@gobble\def\@@tmp{#1}%
+      \eadsep{\ttfamily\expandafter\strip@prefix\meaning\@@tmp}
+      (#2)\def\eadsep{\unskip,\space}}%
+}
+\makeatother
 \usepackage[capitalise,noabbrev]{cleveref}
 \crefformat{appendix}{#2#1#3}\Crefformat{appendix}{#2#1#3}
 \hypersetup{colorlinks=true, linkcolor=[rgb]{0.1,0.25,0.6}, citecolor=[rgb]{0.1,0.25,0.6}, urlcolor=[rgb]{0.1,0.25,0.6}}
@@ -42,7 +52,7 @@
 \newcommand{\lpfive}{LP-5k\xspace}
 \newcommand{\ftfive}{FT-5k\xspace}
 \newcommand{\pt}{\,points\xspace}
-\newcommand{\repo}{\ifanon\url{https://anonymous.4open.science} (anonymised for review)\else\url{https://github.com/MahmoudAlyosifySite/Mahmoud-Project/tree/main/SimCLR-Vision-SSL}\fi}
+\newcommand{\repo}{\ifanon\url{https://anonymous.4open.science} (anonymised for review)\else\url{https://github.com/MahmoudAlyosify1/scarce-labels-contrastive}\fi}
 \newcommand{\papertitle}{Where Do Scarce Labels Belong?\\ A Compute-Matched Study of Supervised and\\
   Self-Supervised Contrastive Pretraining}
 \AtBeginDocument{\hypersetup{pdftitle={Where Do Scarce Labels Belong? A Compute-Matched Study of Supervised and

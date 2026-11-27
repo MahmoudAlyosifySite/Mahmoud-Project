@@ -1,0 +1,17 @@
+# Third revision C (the held-out arm on seeds 1-2 was started by hand as soon as seed 0 finished): SimCLR->SupCon stage variants on the validation split
+# (45,000 training images, 4,500 labels, probe scored on 5,000 held-out training images; the test set is not used);
+# uniform-batch SupCon+U at 19,400 steps and fine-tuning of the uniform-batch encoders
+# parallel: 6
+--name val_twostage_st485_lr0.005_s0 --init_run val_simclr_all_s0 --method supcon --pool labeled --label_fraction 0.1 --holdout 5000 --epochs 5.5747 --lr 0.005 --seed 0
+--name val_twostage_st485_lr0.02_s0 --init_run val_simclr_all_s0 --method supcon --pool labeled --label_fraction 0.1 --holdout 5000 --epochs 5.5747 --lr 0.02 --seed 0
+--name val_twostage_st485_lr0.25_s0 --init_run val_simclr_all_s0 --method supcon --pool labeled --label_fraction 0.1 --holdout 5000 --epochs 5.5747 --lr 0.25 --seed 0
+--name val_twostage_st2425_lr0.005_s0 --init_run val_simclr_all_s0 --method supcon --pool labeled --label_fraction 0.1 --holdout 5000 --epochs 27.8736 --lr 0.005 --seed 0
+--name val_twostage_st2425_lr0.02_s0 --init_run val_simclr_all_s0 --method supcon --pool labeled --label_fraction 0.1 --holdout 5000 --epochs 27.8736 --lr 0.02 --seed 0
+--name val_twostage_st2425_lr0.25_s0 --init_run val_simclr_all_s0 --method supcon --pool labeled --label_fraction 0.1 --holdout 5000 --epochs 27.8736 --lr 0.25 --seed 0
+--name val_twostage_st9700_lr0.005_s0 --init_run val_simclr_all_s0 --method supcon --pool labeled --label_fraction 0.1 --holdout 5000 --epochs 111.494 --lr 0.005 --seed 0
+--name val_twostage_st9700_lr0.02_s0 --init_run val_simclr_all_s0 --method supcon --pool labeled --label_fraction 0.1 --holdout 5000 --epochs 111.494 --lr 0.02 --seed 0
+--name val_twostage_st9700_lr0.25_s0 --init_run val_simclr_all_s0 --method supcon --pool labeled --label_fraction 0.1 --holdout 5000 --epochs 111.494 --lr 0.25 --seed 0
+-m dlt.finetune --name ft_unionunif_f0.1_e100_s1 --from_run unionunif_f0.1_e100_s1 --label_fraction 0.1 --seed 1
+-m dlt.finetune --name ft_unionunif_f0.1_e100_s2 --from_run unionunif_f0.1_e100_s2 --label_fraction 0.1 --seed 2
+--name unionunif_f0.1_e200_s1 --method supcon --pool all --temperature_unlabeled 0.5 --label_fraction 0.1 --epochs 200 --seed 1
+--name unionunif_f0.1_e200_s2 --method supcon --pool all --temperature_unlabeled 0.5 --label_fraction 0.1 --epochs 200 --seed 2

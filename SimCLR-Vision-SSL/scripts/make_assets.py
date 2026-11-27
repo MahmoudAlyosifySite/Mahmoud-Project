@@ -16,6 +16,8 @@ Protocols (columns)
     fts    "selected recipe": ftt for label-free encoders, ftx for encoders that were trained with the labels
            (their own labeled images cannot serve as a validation set)
     fto    recipe chosen on the TEST set of seed 0 (an upper bound), evaluated on the other seeds
+           (third revision: the widened 120-recipe grid, runs ftorx_*, where it was run; else the 72-recipe grid)
+    lp5ho  LP-5k whose l2 strength is chosen on 1,000 labels held out from pretraining (scripts/holdout_eval.py)
     fm     FixMatch initialised from the encoder
     dist   SimCLR v2-style fine-tune + self-distillation
     clf    accuracy of the method's own classifier (cross-entropy, FixMatch, MixMatch)
@@ -66,6 +68,8 @@ for path in glob.glob(os.path.join(RUNS, "*", "result.json")):
     r = json.load(open(path))
     pj = os.path.join(d, "probes.json")
     r["probes"] = json.load(open(pj)) if os.path.exists(pj) else {}
+    hj = os.path.join(d, "holdout.json")
+    r["holdout"] = json.load(open(hj)) if os.path.exists(hj) else {}
     r["dir"] = d
     RUN[name] = r
 CONFIGS = sorted({re.sub(r"_s\d+$", "", n) for n in RUN if re.search(r"_s\d+$", n)})
@@ -75,16 +79,30 @@ def seeds(cfg):
     return sorted(int(m.group(1)) for n in RUN for m in [re.fullmatch(re.escape(cfg) + r"_s(\d+)", n)] if m)
 
 
+# Post-processing runs, in order of preference: the third revision widened the recipe grid (lr up to 0.3, up
+# to 240 passes); its runs (ftorx_, ftsx_, fttx_) replace those of the 72-recipe grid wherever they exist.
+PREFIX = {"ft": ["ft_"], "ftt": ["ftsx_", "ftsearch_"], "ftd": ["ftsx_", "ftsearch_"], "fm": ["fixmatch_from_"],
+          "dist": ["distill_"], "fto": ["ftorx_", "ftoracle_"], "fto0": ["ftorx_", "ftoracle_"],
+          "ftx": ["fttx_", "fttransfer_"]}
+
+
+def source_prefix(cfg, kind):
+    """The prefix whose runs exist for configuration ``cfg`` (all seeds of one source, never a mixture)."""
+    for pre in PREFIX[kind]:
+        if any(re.fullmatch(re.escape(pre + cfg) + r"_s\d+", n) for n in RUN):
+            return pre
+    return PREFIX[kind][-1]
+
+
 def companion(name, kind):
     """Name of the run that post-processes encoder ``name`` (fine-tuning, FixMatch, ...)."""
     if kind == "fm" and name.startswith("stl_"):
         return "stl_fixmatch_from_" + name[4:]
-    return {"ft": "ft_", "ftt": "ftsearch_", "ftd": "ftsearch_", "fm": "fixmatch_from_", "dist": "distill_",
-            "fto": "ftoracle_", "fto0": "ftoracle_", "ftx": "fttransfer_"}[kind] + name
+    return source_prefix(re.sub(r"_s\d+$", "", name), kind) + name
 
 
 def label_free(name):
-    return name.startswith(("simclr_all", "byol_all", "simsiam_all", "stl_simclr_all"))
+    return name.startswith(("simclr_all", "byol_all", "simsiam_all", "stl_simclr_all", "val_simclr"))
 
 
 def metric(name, proto):
@@ -119,6 +137,10 @@ def metric(name, proto):
         return m.get("test_cdnv") if stl else p.get("cdnv_test_0.1")
     if proto == "lp5_train":
         return p.get("linear_0.1_train")
+    if proto == "lp5ho":
+        return r["holdout"].get("linear_heldout")
+    if proto.startswith("ho:"):
+        return r["holdout"].get(proto[3:])
     if proto == "etf_lab":
         return p.get("etf_dev_labeled_0.1")
     if proto == "time":
@@ -189,7 +211,7 @@ def best_of(cfgs, proto):
 # macros for every configuration and protocol
 # ----------------------------------------------------------------------------
 PROTOS = ["lp50", "knn", "lp5", "ft", "ftt", "ftd", "fts", "ftx", "fto", "fto0", "fm", "dist", "clf", "cdnv_lab", "cdnv_rest", "cdnv_test",
-          "lp5_train", "seen_cdnv", "heldout_cdnv", "test_cdnv", "linear_acc_gray", "cka_hist", "cka_label"]
+          "lp5_train", "seen_cdnv", "heldout_cdnv", "test_cdnv", "linear_acc_gray", "cka_hist", "cka_label", "lp5ho"]
 for cfg in CONFIGS:
     for proto in PROTOS:
         v = V(cfg, proto)
@@ -217,10 +239,10 @@ def diffmacro(tag, a, pa, b, pb, d=1):
 # statistics: hierarchical bootstrap, Holm correction, TOST
 # ----------------------------------------------------------------------------
 PRED = {"lp50": [("{c}", "linear")], "knn": [("{c}", "knn")], "lp5": [("{c}", "linear_lab"), ("{c}", "linear_0.1")],
-        "ft": [("ft_{c}", "finetune")], "ftt": [("ftsearch_{c}", "finetune_tuned")],
-        "ftx": [("fttransfer_{c}", "finetune_tuned")],
-        "fm": [("fixmatch_from_{c}", "classifier")], "clf": [("{c}", "classifier")]}
+        "ft": [("ft_{c}", "finetune")], "fm": [("fixmatch_from_{c}", "classifier")], "clf": [("{c}", "classifier")],
+        "lp5ho": [("{c}", "linear_heldout")]}
 _Y = {}
+SRC = {}    # (cfg, proto) -> name of the runs whose predictions were used (part of the cache key)
 
 
 def correct(cfg, proto, dataset="cifar10"):
@@ -228,14 +250,20 @@ def correct(cfg, proto, dataset="cifar10"):
         _Y[dataset] = st.test_labels(dataset)
     if proto == "fts":
         proto = "ftt" if label_free(cfg) else "ftx"
-    if proto == "fto":      # seed 0 chose the recipe on its test set and is left out
-        c = st.load_correct(f"ftoracle_{cfg}", "finetune_tuned", _Y[dataset], RUNS)
-        return {k: v for k, v in c.items() if k != 0}
+    if proto in ("fto", "ftt", "ftx"):
+        src = source_prefix(cfg, proto) + cfg
+        c = st.load_correct(src, "finetune_tuned", _Y[dataset], RUNS)
+        SRC[(cfg, proto)] = src
+        if proto == "fto":     # seed 0 chose the recipe on its test set and is left out
+            c = {k: v for k, v in c.items() if k != 0}
+        return c
     for tmpl, key in PRED[proto]:
         if proto == "fm" and cfg.startswith("stl_"):
             tmpl = "stl_fixmatch_from_" + cfg[4:]
-        c = st.load_correct(tmpl.format(c=cfg), key, _Y[dataset], RUNS)
+        files = ("holdout_preds.npz",) if proto == "lp5ho" else ("preds.npz", "probes_preds.npz")
+        c = st.load_correct(tmpl.format(c=cfg), key, _Y[dataset], RUNS, files=files)
         if c:
+            SRC[(cfg, proto)] = tmpl.format(c=cfg)
             return c
     return {}
 
@@ -249,7 +277,11 @@ def cmp(a, pa, b, pb=None, dataset="cifar10"):
     ca, cb = correct(a, pa, dataset), correct(b, pb or pa, dataset)
     if len(ca) < 2 or len(cb) < 2:
         return None
+    sa_, sb_ = SRC.get((a, "ftt" if pa == "fts" and label_free(a) else "ftx" if pa == "fts" else pa), a), \
+        SRC.get((b, "ftt" if (pb or pa) == "fts" and label_free(b) else "ftx" if (pb or pa) == "fts" else (pb or pa)), b)
     key = f"{a}|{pa}|{sorted(ca)}|{b}|{pb or pa}|{sorted(cb)}|{N_BOOT}"
+    if sa_.startswith(("ftorx_", "ftsx_", "fttx_")) or sb_.startswith(("ftorx_", "ftsx_", "fttx_")):
+        key += f"|{sa_}|{sb_}"     # third-revision sources; older keys are unchanged so the cache stays valid
     if key not in CACHE:
         CACHE[key] = {k: (float(v) if not isinstance(v, (bool, int)) else v)
                       for k, v in st.hierarchical_bootstrap(ca, cb, n_boot=N_BOOT).items()}
@@ -274,6 +306,25 @@ for _p, _n in (("fts", "FT-5k (selected recipe)"), ("fto", "FT-5k (oracle recipe
                    "supcon_lab_f0.1_e200", _p))
     FAMILY.append((f"simclr-union:{_p}:e200", f"{_n}, 19,400 steps", r"\simclr $-$ \union", "simclr_all_e200", _p,
                    "union_f0.1_e200", _p))
+# third revision: the reversal at 9,700 steps under better fine-tuning recipes (reviewer comment 1), the order of
+# the two label-using methods (comment 4), and the arm that holds out labels for selection (comment 3)
+for _p, _n in (("fts", "FT-5k (selected recipe)"), ("fto", "FT-5k (oracle recipe)")):
+    FAMILY.append((f"simclr-supcon:{_p}:e100", f"{_n}, 9,700 steps", r"\simclr $-$ \supcon", "simclr_all_e100", _p,
+                   "supcon_lab_f0.1_e100", _p))
+    FAMILY.append((f"simclr-union:{_p}:e100", f"{_n}, 9,700 steps", r"\simclr $-$ \union", "simclr_all_e100", _p,
+                   "union_f0.1_e100", _p))
+for E, steps in ((100, "9,700"), (200, "19,400")):
+    for _p, _n in (("lp5", "LP-5k"), ("ft", "FT-5k")):
+        FAMILY.append((f"union-supcon:{_p}:e{E}", f"{_n}, {steps} steps", r"\union $-$ \supcon", f"union_f0.1_e{E}", _p,
+                       f"supcon_lab_f0.1_e{E}", _p))
+for _p, _q, _n in (("lp5", "lp5ho", "LP-5k"), ("fts", "ftt", "FT-5k (selected recipe)")):
+    for _k, _t in (("supcon", r"\supcon"), ("union", r"\union")):
+        FAMILY.append((f"simclr-hold{_k}:{_q}", f"{_n}, 1,000 labels held out from the label-using loss, 19,400 steps",
+                       rf"\simclr $-$ {_t} (held out)", "simclr_all_e200", _p, f"hold_{_k}_f0.1_e200", _q))
+for E, steps in ((100, "9,700"), (200, "19,400")):      # the uniform-batch variant of SupCon+U (reviewer comment 7)
+    for _p, _n in (("lp50", "LP-50k"), ("ft", "FT-5k")):
+        FAMILY.append((f"unionunif-union:{_p}:e{E}", f"SupCon+U variants, {_n}, {steps} steps",
+                       r"uniform batches $-$ 25\% labeled per batch", f"unionunif_f0.1_e{E}", _p, f"union_f0.1_e{E}", _p))
 FAMILY.append(("simclr-supcon:fm:e200", "FixMatch from encoder, 19,400 steps", r"\simclr $-$ \supcon", "simclr_all_e200", "fm",
                "supcon_lab_f0.1_e200", "fm"))
 FAMILY.append(("simclr-union:fm:e200", "FixMatch from encoder, 19,400 steps", r"\simclr $-$ \union", "simclr_all_e200", "fm",
@@ -599,7 +650,7 @@ def recipe(b):
 
 rows = []
 for name, c in ENC:
-    a, o = RUN.get(f"ftsearch_{c}_s0"), RUN.get(f"ftoracle_{c}_s0")
+    a, o = RUN.get(f"{source_prefix(c, 'ftt')}{c}_s0"), RUN.get(f"{source_prefix(c, 'fto')}{c}_s0")
     if a and a.get("grid"):
         g = a["grid"]
         vals = [x["val_acc"] for x in g]
@@ -615,13 +666,114 @@ for name, c in ENC:
         for reg in ("none", "ls", "mixup"):
             M[f"ftgrid:{c}:{reg}"] = f"{max(x['test_acc'] for x in g if x['reg'] == reg):.1f}"
         M[f"ftgrid:{c}:recipe"] = recipe(o["best"])
+        M[f"ftgrid:{c}:nrecipes"] = str(len(g))
         rows.append(f"{name} & test set (oracle) & {recipe(o['best'])} & {min(tv):.1f}--{max(tv):.1f} & {MS(c, 'fto')} \\\\")
-    if nseeds("fttransfer_" + c, "finetune_tuned_acc") or len(V(c, "ftx")):
+    if len(V(c, "ftx")):
         rows.append(f"{name} & recipe of \\simclr & -- & -- & {MS(c, 'ftx')} \\\\")
     rows.append(r"\addlinespace")
 write("tab_ftsearch.tex", "\\begin{tabular}{lllcc}\n\\toprule\nencoder & recipe chosen on & chosen recipe & range of the selection score over the grid & "
       "test accuracy \\\\\n\\midrule\n" + ("\n".join(rows[:-1]) if rows else r"\multicolumn{5}{c}{--} \\")
       + "\n\\bottomrule\n\\end{tabular}")
+
+# the widened grid: did any best recipe sit at its new edge (lr 0.3 or 240 passes)?
+for c in ("simclr_all_e200", "supcon_lab_f0.1_e200", "union_f0.1_e200", "twostage_simclr200_supcon5",
+          "simclr_all_e100", "supcon_lab_f0.1_e100", "union_f0.1_e100"):
+    for kind in ("fto", "ftt"):
+        o = RUN.get(f"{source_prefix(c, kind)}{c}_s0")
+        if o and o.get("grid") and source_prefix(c, kind) in ("ftorx_", "ftsx_"):
+            b_ = o["best"]
+            M[f"ftx:{kind}:{c}:recipe"] = recipe(b_)
+            M[f"ftx:{kind}:{c}:edge"] = "yes" if (b_["lr"] == 0.3 or b_["epochs"] == 240) else "no"
+            key = "test_acc" if kind == "fto" else "val_acc"
+            old = [x[key] for x in o["grid"] if x["lr"] <= 0.1 and x["epochs"] <= 120]
+            new = [x[key] for x in o["grid"] if x["lr"] > 0.1 or x["epochs"] > 120]
+            if old and new:
+                M[f"ftx:{kind}:{c}:bestold"], M[f"ftx:{kind}:{c}:bestnew"] = f"{max(old):.1f}", f"{max(new):.1f}"
+                M[f"ftx:{kind}:{c}:gain"] = f"{max(new) - max(old):+.1f}"
+
+# ----------------------------------------------------------------------------
+# Table: the reversal at two budgets, with three fine-tuning recipes (reviewer comment 1)
+# ----------------------------------------------------------------------------
+REV = [(r"\simclr", "simclr_all_e{E}"), (r"\supcon", "supcon_lab_f0.1_e{E}"), (r"\union", "union_f0.1_e{E}")]
+RCOLS = ("lp50", "lp5", "ft", "fts", "fto")
+rows = []
+for E, steps in ((100, "9,700"), (200, "19,400")):
+    cfgs = [c.format(E=E) for _, c in REV]
+    rk = {p_: ranks(cfgs, p_) for p_ in RCOLS}
+    rows.append(rf"\multicolumn{{{len(RCOLS) + 1}}}{{l}}{{\emph{{{steps} steps}}}} \\")
+    for (name, _), c in zip(REV, cfgs):
+        cells = []
+        for p_ in RCOLS:
+            cell = MS(c, p_)
+            if c in rk[p_]:
+                cell += rf"\,\textsuperscript{{({rk[p_][c]})}}"
+            cells.append(cell)
+        rows.append(f"\\quad {name} & " + " & ".join(cells) + r" \\")
+write("tab_reversal.tex", "\\begin{tabular}{lccccc}\n\\toprule\n & oracle labels & \\multicolumn{4}{c}{label budget (5,000 labels)} \\\\\n"
+      "\\cmidrule(lr){2-2}\\cmidrule(lr){3-6}\n & & & \\multicolumn{3}{c}{FT-5k, by recipe} \\\\\n\\cmidrule(lr){4-6}\n"
+      "encoder & LP-50k & LP-5k & default & selected & oracle \\\\\n\\midrule\n" + "\n".join(rows) + "\n\\bottomrule\n\\end{tabular}")
+
+# ----------------------------------------------------------------------------
+# Table: labels held out from pretraining for selection (reviewer comment 3)
+# ----------------------------------------------------------------------------
+HOLD = [(r"\simclr", "none", "simclr_all_e200", "lp5", "fts"),
+        (r"\supcon", "all 5,000", "supcon_lab_f0.1_e200", "lp5", "ftt"),
+        (r"\supcon", "4,000 (1,000 held out)", "hold_supcon_f0.1_e200", "lp5ho", "ftt"),
+        (r"\union", "all 5,000", "union_f0.1_e200", "lp5", "ftt"),
+        (r"\union", "4,000 (1,000 held out)", "hold_union_f0.1_e200", "lp5ho", "ftt")]
+rows = []
+for name, lab, c, plp, pft in HOLD:
+    if not nseeds(c):
+        continue
+    srch = RUN.get(f"{source_prefix(c, 'ftt')}{c}_s0")
+    vmax = f"{max(x['val_acc'] for x in srch['grid']):.1f}" if srch and srch.get("grid") else "--"
+    M[f"hold:{c}:valmax"] = vmax
+    def MS3(cfg, proto):      # every column of this table on the three seeds that all its arms have
+        v = V(cfg, proto, only=(0, 1, 2))
+        return "--" if not len(v) else f"{v.mean():.1f}" + (rf"{{\scriptsize$\,\pm\,${v.std(ddof=1):.1f}}}" if len(v) > 1 else "")
+    rows.append(f"{name} & {lab} & {MS3(c, 'lp50')} & {MS3(c, plp)} & {MS3(c, 'ftd')} & {MS3(c, pft)} & {vmax} \\\\")
+    for p_ in ("lp50", plp, "ftd", pft):      # the same three seeds, for the text
+        v = V(c, p_, only=(0, 1, 2))
+        if len(v):
+            M[f"s3:{c}:{p_}"] = f"{v.mean():.1f}"
+    for k in ("cdnv_fit", "cdnv_heldout", "cdnv_test", "fit_train_acc", "heldout_val_acc", "linear_std"):
+        v = V(c, "ho:" + k)
+        if len(v):
+            M[f"hold:{c}:{k}"] = f"{v.mean():.2f}" if "cdnv" in k else f"{v.mean():.1f}"
+write("tab_heldout.tex", "\\begin{tabular}{llccccc}\n\\toprule\n & & oracle labels & \\multicolumn{3}{c}{label budget (5,000 labels)} & \\\\\n"
+      "\\cmidrule(lr){3-3}\\cmidrule(lr){4-6}\nencoder & labels in the loss & LP-50k & LP-5k & FT-5k (default) & "
+      "FT-5k (selected) & best validation score \\\\\n\\midrule\n" + ("\n".join(rows) if rows else r"\multicolumn{7}{c}{--} \\")
+      + "\n\\bottomrule\n\\end{tabular}")
+
+# ----------------------------------------------------------------------------
+# Table: choosing the SimCLR->SupCon stage on a validation split (reviewer comment 7)
+# ----------------------------------------------------------------------------
+rows = []
+base = RUN.get("val_simclr_all_s0")
+if base:
+    m_ = dict(base["metrics"])
+    vp = os.path.join(base["dir"], "valprobe.json")      # the label-free base: probe from scripts/valsplit_probe.py
+    if os.path.exists(vp):
+        m_.update(json.load(open(vp)))
+    rows.append(f"no second stage & -- & {m_.get('linear_lab_acc', float('nan')):.1f} & {m_['linear_acc']:.1f} \\\\")
+    M["valstage:base:lp"] = f"{m_.get('linear_lab_acc', float('nan')):.1f}"
+best_vs = None
+for st_, ep_ in (("485", "5.5747"), ("2425", "27.8736"), ("9700", "111.494")):
+    for lr_ in ("0.005", "0.02", "0.25"):
+        r = RUN.get(f"val_twostage_st{st_}_lr{lr_}_s0")
+        if r:
+            m_ = r["metrics"]
+            rows.append(f"{int(st_):,} & {lr_} & {m_['linear_lab_acc']:.1f} & {m_['linear_acc']:.1f} \\\\")
+            M[f"valstage:st{st_}:lr{lr_}:lp"] = f"{m_['linear_lab_acc']:.1f}"
+            if best_vs is None or m_["linear_lab_acc"] > best_vs[0]:
+                best_vs = (m_["linear_lab_acc"], st_, lr_)
+if best_vs:
+    M["valstage:best:steps"], M["valstage:best:lr"], M["valstage:best:lp"] = f"{int(best_vs[1]):,}", best_vs[2], f"{best_vs[0]:.1f}"
+r5, r2 = RUN.get("val_twostage_st485_lr0.005_s0"), RUN.get("val_twostage_st485_lr0.02_s0")
+if r5 and r2:
+    M["d:valstage:lr"] = f"{r5['metrics']['linear_lab_acc'] - r2['metrics']['linear_lab_acc']:.1f}"
+write("tab_valstage.tex", "\\begin{tabular}{rccc}\n\\toprule\nsecond-stage steps & learning rate & LP (4,500 labels) & LP (45,000 labels) \\\\\n\\midrule\n"
+      + ("\n".join(rows) if rows else r"\multicolumn{4}{c}{--} \\") + "\n\\bottomrule\n\\end{tabular}")
 
 # ----------------------------------------------------------------------------
 # Table: where the labels should go (pipelines, CIFAR-10, 5,000 labels)
@@ -701,33 +853,50 @@ ax.set_title("(a) CDNV on three sets of images", loc="left")
 ax.legend(frameon=False, loc="upper center", bbox_to_anchor=(0.5, -0.2), ncol=3, fontsize=6.5, columnspacing=1.0)
 ax.grid(axis="x", visible=False)
 ax = axes[1]
-for k, cands, a_key in (("supcon", ["supcon_lab_f0.1_e1000", "supcon_lab_f0.1_e400", "supcon_lab_f0.1_e200"], "pool_cdnv"),
-                        ("union", ["union_f0.1_e1000", "union_f0.1_e400", "union_f0.1_e200"], "labeled_cdnv"),
-                        ("simclr", ["simclr_all_e1000", "simclr_all_e400", "simclr_all_e200"], "pool_cdnv")):
-    for c in cands:
-        curves = [RUN[f"{c}_s{s}"].get("geom_curve") for s in seeds(c)]
-        curves = [g for g in curves if g and a_key in g[0]]
-        if curves:
-            xs = [p["step"] for p in curves[0]]
-            R = np.array([[p["test_cdnv"] / max(p[a_key], 1e-9) for p in g] for g in curves if len(g) == len(xs)])
-            col, mk, ls, lab = STYLE[k]
-            ax.errorbar(xs, R.mean(0), yerr=R.std(0, ddof=1) if len(R) > 1 else None, color=col, marker=mk, ls=ls,
-                        label=lab.split(" (")[0], capsize=2, elinewidth=0.8, markersize=3)
-            M[f"geomcurve:{k}"] = c
-            M[f"geomcurve:{k}:first"], M[f"geomcurve:{k}:last"] = f"{R.mean(0)[0]:.1f}", f"{R.mean(0)[-1]:.1f}"
-            M[f"geomcurve:{k}:firststep"], M[f"geomcurve:{k}:laststep"] = f"{xs[0]:,}", f"{xs[-1]:,}"
-            M[f"geomcurve:{k}:n"] = str(len(R))
-            break
+# markers: separate runs, each at the end of its own schedule (the values of tab_geometry at 19,400 steps)
+GEND = {"supcon": "supcon_lab_f0.1_e{E}", "union": "union_f0.1_e{E}", "simclr": "simclr_all_e{E}"}
+for k, tmpl in GEND.items():
+    xs, ms_, sd_, vals = [], [], [], {}
+    for E in ES:
+        c = tmpl.format(E=E)
+        a, t = V(c, "cdnv_lab"), V(c, "cdnv_test")
+        if len(a) and len(a) == len(t):
+            r = t / a
+            xs.append(97 * E), ms_.append(r.mean()), sd_.append(r.std(ddof=1) if len(r) > 1 else 0)
+            vals[E] = r.mean()
+            M[f"geomend:{k}:e{E}"] = f"{r.mean():.1f}"
+    if xs:
+        col, mk, ls, lab = STYLE[k]
+        ax.errorbar(xs, ms_, yerr=sd_, color=col, marker=mk, ls=ls, label=lab.split(" (")[0], capsize=2, elinewidth=0.8,
+                    markersize=3.5)
+        M[f"geomend:{k}:max"] = f"{max(vals.values()):.1f}"
+        after = [v for E, v in vals.items() if E > 100]
+        if after:
+            M[f"geomend:{k}:min_after"], M[f"geomend:{k}:max_after"] = f"{min(after):.1f}", f"{max(after):.1f}"
+# thin lines: checkpoints of the longest runs (their learning rate is still high at intermediate checkpoints)
+for k, c, a_key in (("supcon", "supcon_lab_f0.1_e1000", "pool_cdnv"), ("union", "union_f0.1_e1000", "labeled_cdnv"),
+                    ("simclr", "simclr_all_e1000", "pool_cdnv")):
+    curves = [RUN[f"{c}_s{s_}"].get("geom_curve") for s_ in seeds(c)]
+    curves = [g for g in curves if g and a_key in g[0]]
+    if curves:
+        xs = [q["step"] for q in curves[0]]
+        R = np.array([[q["test_cdnv"] / max(q[a_key], 1e-9) for q in g] for g in curves if len(g) == len(xs)])
+        col = STYLE[k][0]
+        ax.plot(xs, R.mean(0), color=col, lw=0.7, ls=":", alpha=0.9)
+        M[f"geomcurve:{k}"] = c
+        M[f"geomcurve:{k}:min"], M[f"geomcurve:{k}:max"] = f"{R.mean(0).min():.1f}", f"{R.mean(0).max():.1f}"
+        M[f"geomcurve:{k}:n"] = str(len(R))
 ax.set_xscale("log")
 ax.minorticks_off()
-tk = [t for t in (2425, 4850, 9700, 19400, 38800, 97000) if ax.get_xlim()[0] <= t <= ax.get_xlim()[1]]
+tk = [t for t in (970, 2425, 9700, 38800, 97000) if ax.get_xlim()[0] <= t <= ax.get_xlim()[1]]
 ax.set_xticks(tk)
-ax.set_xticklabels([f"{t / 1000:.1f}k".replace(".0k", "k") for t in tk])
+ax.set_xticklabels(["970" if t < 1000 else f"{t / 1000:.1f}k".replace(".0k", "k") for t in tk])
 ax.axhline(1, color="black", lw=0.6, ls=":")
 ax.set_xlabel("gradient steps")
 ax.set_ylabel("CDNV(test) / CDNV(labeled)")
-ax.set_title("(b) the gap during training", loc="left")
-ax.legend(frameon=False, fontsize=6.5)
+ax.set_title("(b) the gap against the training budget", loc="left")
+ax.plot([], [], color="grey", lw=0.7, ls=":", label="97k-step runs, checkpoints")
+ax.legend(frameon=False, fontsize=6.2, loc="lower right", bbox_to_anchor=(1.0, 0.07))
 fig.savefig(os.path.join(FIG, "fig_geometry.pdf"))
 plt.close(fig)
 
@@ -829,19 +998,67 @@ if DIV:
         M["rho:partial:raw"] = f"{cxy:+.2f}"
         M["rho:partial:n"] = str(len(xs))
 
-fig, axes = plt.subplots(1, 2, figsize=(7.2, 2.6), sharex=True)
+if DIV:
+    rows = []
+    sp_vals = []
+    for f in (0.01, 0.05, 0.1, 0.2, 0.5, 1.0):
+        cells, nseed = [], 0
+        for space in ("simclr", "supervised", "pixel"):
+            v = [DIV[space]["pools"][k] for k in DIV[space]["pools"] if re.fullmatch(rf"random_f{f}_s\d+", k)]
+            nseed = max(nseed, len(v))
+            r_, s_ = (float(np.mean([x[key] for x in v])) if v else float("nan") for key in ("radius", "spread"))
+            cells += [fmt(r_, 3), fmt(s_, 3)]
+            if space == "simclr" and v:
+                M[f"poolsize:radius:simclr:f{f:g}"] = f"{r_:.3f}"
+                sp_vals.append(s_)
+        rows.append(f"{100 * f:g}\\% & {int(round(f * 50000)):,} & {nseed} & " + " & ".join(cells) + r" \\")
+    if sp_vals:
+        M["poolsize:spread:simclr:min"], M["poolsize:spread:simclr:max"] = f"{min(sp_vals):.3f}", f"{max(sp_vals):.3f}"
+    write("tab_poolsize.tex", "\\begin{tabular}{rrccccccc}\n" + "\\toprule\n & & & \\multicolumn{2}{c}{\\simclr space} & "
+          "\\multicolumn{2}{c}{supervised space} & \\multicolumn{2}{c}{pixel space} \\\\\n"
+          "\\cmidrule(lr){4-5}\\cmidrule(lr){6-7}\\cmidrule(lr){8-9}\n"
+          "random pool & images & seeds & radius & spread & radius & spread & radius & spread \\\\\n\\midrule\n"
+          + "\n".join(rows) + "\n\\bottomrule\n\\end{tabular}")
+
+fig, axes = plt.subplots(1, 2, figsize=(7.2, 2.7), sharex=True, gridspec_kw={"wspace": 0.22})
 fam = {"random": ("#000000", "o"), "kcenter": ("#009E73", "^"), "cluster": ("#D55E00", "s")}
+# short labels: share (%) of the pool chosen by the construction; points of a family are joined in order of share
+SHORT = {"random": "", "mixkcenter25": "25", "mixkcenter50": "50", "mixkcenter75": "75", "kcenter": "100",
+         "mixcluster5025": "25", "mixcluster5050": "50", "mixcluster5075": "75", "cluster10": "100, $k$=10",
+         "cluster50": "100, $k$=50"}
+# label offsets in points, per panel, chosen so that no two labels overlap
+OFF = {"supcon": {"mixkcenter25": (0, 8, "center"), "mixkcenter50": (4, 3, "left"), "mixkcenter75": (4, 3, "left"),
+                  "kcenter": (-5, 4, "right"), "mixcluster5025": (4, -3, "left"), "mixcluster5050": (4, -3, "left"),
+                  "mixcluster5075": (4, -3, "left"), "cluster10": (-5, -3, "right"), "cluster50": (-5, 3, "right")},
+       "sub": {"mixkcenter25": (4, -2, "left"), "mixkcenter50": (4, -2, "left"), "mixkcenter75": (4, -2, "left"),
+               "kcenter": (-5, 3, "right"), "mixcluster5025": (0, -10, "center"), "mixcluster5050": (0, 6, "center"),
+               "mixcluster5075": (0, 6, "center"), "cluster10": (0, -10, "center"), "cluster50": (-5, 5, "right")}}
 for ax, (yk, title) in zip(axes, (("supcon", "(a) SupCon trained on the pool"), ("sub", "(b) SimCLR trained on the pool"))):
+    pts_ = {}
     for kind, label, _ in KINDS:
-        a, r = agg(kind, yk), agg(kind, "radius_simclr")
-        if a is None or r is None:
+        a_, r_ = agg(kind, yk), agg(kind, "radius_simclr")
+        if a_ is None or r_ is None:
             continue
-        col, mk = fam["kcenter" if "kcenter" in kind else "cluster" if "cluster" in kind else "random"]
-        ax.errorbar(r[0], a[0], yerr=a[1], xerr=r[1], color=col, marker=mk, capsize=2, elinewidth=0.8, ls="none")
-        ax.annotate(label, (r[0], a[0]), textcoords="offset points", xytext=(4, 3), fontsize=6, color=col)
-    ax.set_xlabel("coverage radius of the pool (larger = worse coverage)")
+        pts_[kind] = (r_[0], a_[0])
+        famk = "kcenter" if "kcenter" in kind else "cluster" if "cluster" in kind else "random"
+        col, mk = fam[famk]
+        ax.errorbar(r_[0], a_[0], yerr=a_[1], xerr=r_[1], color=col, marker=mk, capsize=2, elinewidth=0.8, ls="none")
+        if SHORT[kind]:
+            dx, dy, ha = OFF[yk][kind]
+            ax.annotate(SHORT[kind], (r_[0], a_[0]), textcoords="offset points", xytext=(dx, dy), fontsize=6, color=col,
+                        ha=ha, va="center")
+    for famk, chain in (("kcenter", ["random", "mixkcenter25", "mixkcenter50", "mixkcenter75", "kcenter"]),
+                        ("cluster", ["random", "mixcluster5025", "mixcluster5050", "mixcluster5075", "cluster50"])):
+        xy = [pts_[k] for k in chain if k in pts_]
+        if len(xy) > 1:
+            ax.plot(*zip(*xy), color=fam[famk][0], lw=0.6, alpha=0.5, zorder=0)
     ax.set_title(title, loc="left")
+    ax.margins(x=0.08, y=0.1)
 axes[0].set_ylabel("LP-50k accuracy (%)")
+fig.supxlabel("coverage radius of the pool in the SimCLR reference space (larger = worse coverage)", fontsize=8, y=-0.02)
+handles = [plt.Line2D([], [], color=fam[k][0], marker=fam[k][1], ls="-", lw=0.6, label=l) for k, l in
+           (("random", "random pool"), ("kcenter", "k-center share (%)"), ("cluster", "redundant share (%)"))]
+axes[1].legend(handles=handles, frameon=False, fontsize=6.5, loc="lower left")
 fig.savefig(os.path.join(FIG, "fig_coverage.pdf"))
 plt.close(fig)
 
@@ -903,21 +1120,24 @@ write("tab_r50.tex", "\\begin{tabular}{llrcccc}\n\\toprule\nencoder & method & s
 # ----------------------------------------------------------------------------
 # Table: compute accounting (per step and for the reference budget)
 # ----------------------------------------------------------------------------
-COMP = [(r"\simclr, \supcon, \union", "1,024", "1,024", "1,024", "9,700", "simclr_all_e100"),
-        ("BYOL", "1,024", "2,048", "1,024", "9,700", "byol_all_e100"),
-        ("SimSiam", "1,024", "1,024", "1,024", "9,700", "simsiam_all_e100"),
-        ("cross-entropy", "512", "512", "512", "9,700", "ce_f0.1_e100"),
-        ("FixMatch", "64 + 448 + 448", "960", "960", "10,347", "fixmatch_f0.1"),
-        ("MixMatch", "64 + 2$\\times$64", "320", "192", "51,733", "mixmatch_f0.1"),
-        ("fine-tuning on the 5k (FT-5k)", "128", "128", "128", "2,344", "ft_simclr_all_e100")]
+COMP = [(r"\simclr, \supcon, \union", "1,024", "1,024", "1,024", "9,700", "simclr_all_e100", "reference"),
+        ("BYOL", "1,024", "2,048", "1,024", "9,700", "byol_all_e100", "views; 2$\\times$ forward passes$^a$"),
+        ("SimSiam", "1,024", "1,024", "1,024", "9,700", "simsiam_all_e100", "views"),
+        ("cross-entropy", "512", "512", "512", "9,700", "ce_f0.1_e100", "steps; 0.5$\\times$ views$^b$"),
+        ("FixMatch", "64 + 448 + 448", "960", "960", "10,347", "fixmatch_f0.1", "views"),
+        ("MixMatch", "64 + 2$\\times$64", "320", "192", "51,733", "mixmatch_f0.1", "views; 1.67$\\times$ forward passes$^c$"),
+        ("fine-tuning on the 5k (FT-5k)", "128", "128", "128", "2,344", "ft_simclr_all_e100", "added after pretraining"),
+        ("self-distillation (after FT-5k)", "512", "1,024", "512", "9,700", "distill_simclr_all_e200", "added after FT-5k$^d$")]
 rows = []
-for name, views, fw, bw, steps, c in COMP:
+for name, views, fw, bw, steps, c, note in COMP:
     t = V(c, "time")
+    nv = {"64 + 448 + 448": 960, "64 + 2$\\times$64": 192}.get(views) or float(views.replace(",", ""))
+    vtot = nv * float(steps.replace(",", "")) / 1e6
     tot = float(fw.replace(",", "")) * float(steps.replace(",", "")) / 1e6
-    rows.append(f"{name} & {views} & {fw} & {bw} & {steps} & {tot:.1f} & {t.min():.0f} \\\\" if len(t) else
-                f"{name} & {views} & {fw} & {bw} & {steps} & {tot:.1f} & -- \\\\")
-write("tab_compute.tex", "\\begin{tabular}{lcccrcc}\n\\toprule\n & \\multicolumn{3}{c}{per step} & & \\multicolumn{2}{c}{reference budget} \\\\\n"
-      "\\cmidrule(lr){2-4}\\cmidrule(lr){6-7}\nmethod & augmented views & forward passes & backward passes & steps & forward passes ($10^6$) & minutes \\\\\n"
+    rows.append(f"{name} & {views} & {fw} & {bw} & {steps} & {vtot:.1f} & {tot:.1f} & {f'{t.min():.0f}' if len(t) else '--'} & {note} \\\\")
+write("tab_compute.tex", "\\begin{tabular}{lcccrcccl}\n\\toprule\n & \\multicolumn{3}{c}{per step} & & \\multicolumn{3}{c}{whole run} & \\\\\n"
+      "\\cmidrule(lr){2-4}\\cmidrule(lr){6-8}\nmethod & augmented views & forward passes & backward passes & steps & views ($10^6$) & "
+      "forward passes ($10^6$) & minutes & matched to the reference on \\\\\n"
       "\\midrule\n" + "\n".join(rows) + "\n\\bottomrule\n\\end{tabular}")
 
 # ----------------------------------------------------------------------------
@@ -1007,6 +1227,40 @@ if regs:
     M["reg:range"] = f"{min(r[0] for r in regs):.1f}--{max(r[0] for r in regs):.1f}"
     # largest drop from the best checkpoint to the end of the run, over all regularised and default runs
     M["reg:knndrop"] = f"{max(max(a for _, a in RUN[n]['knn_curve']) - RUN[n]['metrics']['knn_acc'] for _, c in REG for n in (f'{c}_s{s}' for s in seeds(c))):.1f}"
+# value of the unlabeled images measured against the best SimCLR-sub budget that was run (reviewer minor 3)
+_sub = [(mean(f"simclr_sub_f0.1_e{E}", "lp50"), E) for E in (10, 25, 50, 100, 200, 400, 1000) if nseeds(f"simclr_sub_f0.1_e{E}")]
+if _sub:
+    _bv, _bE = max(_sub)
+    M["subbest:steps"], M["subbest:lp50"] = f"{97 * _bE:,}", f"{_bv:.1f}"
+    for E in (100, 200, 400, 1000):
+        diffmacro(f"simclr-subbest:lp50:e{E}", f"simclr_all_e{E}", "lp50", f"simclr_sub_f0.1_e{_bE}", "lp50")
+# SupCon+U at 1% labels with the labeled share scaled to keep the oversampling of the 10% setting (reviewer minor 1)
+for c in ("union_f0.01_sh0.03_e400", "union_f0.01_e400"):
+    for proto, tag in (("lp50", "lpall"), ("lpf:0.01", "lpf"), ("ft", "ftf")):
+        v = V(c, proto)
+        if not len(v) and proto == "lpf:0.01":
+            v = V(c, "linear_lab_acc")
+        if len(v):
+            M[f"{c}:{tag}"] = f"{v.mean():.1f}"
+_s = frac_val("simclr", 0.01, 400, "budget")
+if "union_f0.01_sh0.03_e400:lpf" in M and np.isfinite(_s):
+    M["d:simclr-union:f0.01:sh0.03:lpf"] = f"{_s - float(M['union_f0.01_sh0.03_e400:lpf']):.1f}"
+# how much the oracle-label probe overstates a label-using encoder relative to SimCLR, against a label-budget
+# fine-tuning protocol: (X - SimCLR under LP-50k) - (X - SimCLR under the protocol)
+for k, tmpl in (("supcon", "supcon_lab_f0.1_e{E}"), ("union", "union_f0.1_e{E}")):
+    for E in (100, 200):
+        x, s_ = tmpl.format(E=E), f"simclr_all_e{E}"
+        for p_ in ("ft", "fts", "fto"):
+            v = (mean(x, "lp50") - mean(s_, "lp50")) - (mean(x, p_) - mean(s_, p_))
+            if np.isfinite(v):
+                M[f"ov:{k}:e{E}:{p_}"] = f"{v:.1f}"
+for E in (100, 200):      # the uniform-batch variant of SupCon+U against SimCLR (reviewer comment 7)
+    for p_ in ("lp50", "ft"):
+        diffmacro(f"simclr-unionunif:{p_}:e{E}", f"simclr_all_e{E}", p_, f"unionunif_f0.1_e{E}", p_)
+for _a, _b in (("hold_union_f0.1_e200", "union_f0.1_e200"), ("hold_supcon_f0.1_e200", "supcon_lab_f0.1_e200")):
+    _x, _y = V(_a, "lp5ho", only=(0, 1, 2)), V(_b, "lp5", only=(0, 1, 2))   # the seeds of tab_heldout
+    if len(_x) and len(_y):
+        M[f"d:{_a.split('_')[1]}-hold:lp5"] = f"{_x.mean() - _y.mean():+.1f}"
 diffmacro("dist-ft:simclr", "simclr_all_e200", "dist", "simclr_all_e200", "ft")
 diffmacro("fm-b3:simclr", "simclr_all_e200", "fm", "fixmatch_b3_f0.1", "clf")
 diffmacro("fm-b3:supcon", "supcon_lab_f0.1_e200", "fm", "fixmatch_b3_f0.1", "clf")

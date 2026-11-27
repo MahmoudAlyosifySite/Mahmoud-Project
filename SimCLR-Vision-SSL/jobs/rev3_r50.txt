@@ -1,0 +1,8 @@
+# Third revision: SupCon+U with a ResNet-50 at 19,400 steps (three seeds) and its fine-tuning
+# parallel: 1
+--name r50_union_f0.1_e200_s0 --backbone resnet50 --method supcon --pool all --temperature_unlabeled 0.5 --labeled_share 0.25 --label_fraction 0.1 --epochs 200 --seed 0
+--name r50_union_f0.1_e200_s1 --backbone resnet50 --method supcon --pool all --temperature_unlabeled 0.5 --labeled_share 0.25 --label_fraction 0.1 --epochs 200 --seed 1
+--name r50_union_f0.1_e200_s2 --backbone resnet50 --method supcon --pool all --temperature_unlabeled 0.5 --labeled_share 0.25 --label_fraction 0.1 --epochs 200 --seed 2
+-m dlt.finetune --name ft_r50_union_f0.1_e200_s0 --from_run r50_union_f0.1_e200_s0 --backbone resnet50 --label_fraction 0.1 --seed 0
+-m dlt.finetune --name ft_r50_union_f0.1_e200_s1 --from_run r50_union_f0.1_e200_s1 --backbone resnet50 --label_fraction 0.1 --seed 1
+-m dlt.finetune --name ft_r50_union_f0.1_e200_s2 --from_run r50_union_f0.1_e200_s2 --backbone resnet50 --label_fraction 0.1 --seed 2

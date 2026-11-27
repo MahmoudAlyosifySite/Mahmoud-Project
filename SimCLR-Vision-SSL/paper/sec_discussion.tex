@@ -6,15 +6,18 @@ For a practitioner with a small labeled set, a large unlabeled set and a contras
 our results support three rules.
 \begin{enumerate}[leftmargin=1.6em]
 \item \emph{Do not spend scarce labels in a \supcon-style loss from the start; keep them for fine-tuning or
-for semi-supervised training.} A brief \supcon stage after label-free pretraining is a good use of them. If
-semi-supervised training follows pretraining, the choice of pretraining matters little, and with a fixed
-compute budget semi-supervised training alone was the best option we found.
+for semi-supervised training.} If the encoder will be used frozen with a linear head, a brief \supcon stage
+after label-free pretraining is a good use of them; it does not help when the whole network is fine-tuned
+or trained with FixMatch afterwards. If semi-supervised training follows pretraining, the choice of
+pretraining matters little, and with a fixed compute budget semi-supervised training alone was as good as
+any pretrained start we tried.
 \item \emph{If pretraining compute is very limited, labels in the loss are the faster route, unless they are very
 few.} Below roughly 5,000 steps, \supcon on the labeled subset is ahead under every protocol we ran with 5--50\%
 of the CIFAR-10 labels; with 1\% (50 images per class) it is already behind at 2,425 steps
 (\cref{sec:fractions}).
 \item \emph{Evaluate with the labels you have.} Report a label-budget protocol next to the all-label probe,
-and state budgets in steps or processed images.
+say how its hyper-parameters were chosen (an encoder that used the labels cannot be tuned on them; hold some
+out before pretraining), and state budgets in steps or processed images.
 \end{enumerate}
 These rules are supported for class-balanced data, unlabeled images from the same or a broader distribution
 (CIFAR, STL-10, Tiny-ImageNet), ResNet-18 and ResNet-50 encoders, label fractions around 1--20\% and budgets up to
@@ -42,8 +45,9 @@ contrastive loss. Methods that add pseudo-labels or a class-conditional instance
 \citep{li2021comatch,zheng2022simmatch,chen2022perfectly} address exactly the weakness we measure, and our
 negative result for \union does not extend to them.
 
-\emph{Fine-tuning.} The recipe search of \cref{sec:protocol} covers 72 recipes for one architecture. A wider
-search, or augmentation policies such as RandAugment \citep{cubuk2020randaugment}, could move the
+\emph{Fine-tuning.} The recipe search of \cref{sec:protocol} covers 72 recipes for one architecture, 120 for
+the label-using encoders at 19,400 steps, where widening the grid changed the best accuracy by at most a few
+tenths of a point. Augmentation policies such as RandAugment \citep{cubuk2020randaugment} could still move the
 fine-tuning numbers of all encoders.
 
 \emph{Statistics.} Three to five seeds give a coarse estimate of the between-seed variance; several
@@ -56,8 +60,11 @@ We asked whether scarce labels should go inside a contrastive loss or be used af
 and removed the two confounds that make the question hard: unequal compute and evaluation with labels that
 are not available. At equal steps, labels inside the loss give a fast start and an early plateau, and
 label-free pretraining on all images overtakes them. Which method looks better at the crossover depends on
-the protocol: the all-label probe favours the label-using methods, and every protocol that respects the label
-budget favours label-free pretraining, strongly under supervised fine-tuning and weakly under semi-supervised
-fine-tuning. The reason is visible in the geometry of the features, where the
-labels tighten the labeled images and leave the others unchanged. Within contrastive pretraining the labels
+the protocol: the all-label probe favours the label-using methods, and the protocols that respect the label
+budget favour label-free pretraining, strongly under supervised fine-tuning with a recipe a practitioner can
+choose and weakly under semi-supervised fine-tuning; only with the best fine-tuning recipe for each encoder,
+chosen on test data, are the encoders level at the crossover. With longer training label-free pretraining
+leads under every probe and fine-tuning recipe, while after semi-supervised fine-tuning the encoders are
+equivalent. The geometry of the features is consistent with this: the labels tighten the labeled images
+far more than any other images. Within contrastive pretraining the labels
 are best spent last; across all methods we tested, they are best spent in semi-supervised training.

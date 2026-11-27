@@ -58,7 +58,7 @@ the labeled set, and \citet{newell2020useful} note that linear evaluation does n
 performance. \citet{kumar2022lpft} show that fine-tuning can distort pretrained features and propose to
 start from a linear probe. For reference, the solo-learn library reports CIFAR-10 linear accuracies between
 88.7\% and 92.9\% for eleven self-supervised methods trained much longer than our reference budget
-(\citealp{dacosta2022sololearn}, Table~1).
+\citep[Table~1]{dacosta2022sololearn}.
 
 \paragraph{What is new here}
 \Cref{tab:novelty} places each of our findings next to the closest earlier evidence. The individual
@@ -91,7 +91,7 @@ semi-supervised alternatives \\
 The evaluation protocol can change conclusions &
 Unrealistic validation sets in semi-supervised learning \citep{oliver2018realistic}; linear evaluation does
 not predict fine-tuning \citep{newell2020useful} &
-A documented ranking reversal between the all-label probe and label-budget protocols for the same encoders \\
+The size of the overstatement for the same encoders, against default, selectable and oracle fine-tuning recipes and with labels held out for selection \\
 \addlinespace
 Tight classes on training data need not generalise &
 Collapse on train but not on test \citep{hui2022limitations}; class collapse in \supcon hurts transfer

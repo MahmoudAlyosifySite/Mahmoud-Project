@@ -1,4 +1,4 @@
-name: spend-labels-last
+name: scarce-labels
 channels:
   - conda-forge
 dependencies:

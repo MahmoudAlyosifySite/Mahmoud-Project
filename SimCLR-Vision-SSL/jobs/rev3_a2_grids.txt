@@ -1,0 +1,13 @@
+# Third revision, recipe grids (replaces rev3_a_grids.txt after its first two searches, whose workers keep running):
+# the widened grid is searched only for the label-using encoders (SimCLR keeps the 72-recipe grid, which can only
+# favour the label-using encoders); at 9,700 steps the search covers the region of their best recipes
+# parallel: 2
+# retries: 3
+-m scripts.ft_search --name ftorx_supcon_lab_f0.1_e100_s0 --from_run supcon_lab_f0.1_e100_s0 --seed 0 --oracle --grid focus --skip_default --worker 0
+-m scripts.ft_search --name ftorx_supcon_lab_f0.1_e100_s0 --from_run supcon_lab_f0.1_e100_s0 --seed 0 --oracle --grid focus --skip_default --worker 1
+-m scripts.ft_search --name ftorx_supcon_lab_f0.1_e100_s0 --from_run supcon_lab_f0.1_e100_s0 --seed 0 --oracle --grid focus --skip_default --worker 2
+-m scripts.ft_search --name ftorx_supcon_lab_f0.1_e100_s0 --from_run supcon_lab_f0.1_e100_s0 --seed 0 --oracle --grid focus --skip_default --worker 3
+-m scripts.ft_search --name ftorx_union_f0.1_e100_s0 --from_run union_f0.1_e100_s0 --seed 0 --oracle --grid focus --skip_default --worker 0
+-m scripts.ft_search --name ftorx_union_f0.1_e100_s0 --from_run union_f0.1_e100_s0 --seed 0 --oracle --grid focus --skip_default --worker 1
+-m scripts.ft_search --name ftorx_union_f0.1_e100_s0 --from_run union_f0.1_e100_s0 --seed 0 --oracle --grid focus --skip_default --worker 2
+-m scripts.ft_search --name ftorx_union_f0.1_e100_s0 --from_run union_f0.1_e100_s0 --seed 0 --oracle --grid focus --skip_default --worker 3

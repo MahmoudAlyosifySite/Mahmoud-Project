@@ -1,0 +1,44 @@
+{
+ "name": "fttx_union_f0.1_e100_s4",
+ "args": {
+  "name": "fttx_union_f0.1_e100_s4",
+  "from_run": "union_f0.1_e100_s4",
+  "ckpt_dir": "/home/jovyan/simclr_store/ckpt",
+  "out": "results/runs",
+  "config_from": "ftsearch_simclr_all_e200_s0",
+  "data_dir": "/home/jovyan/simclr_store/data",
+  "dataset": "cifar10",
+  "backbone": "resnet18",
+  "label_fraction": 0.1,
+  "seed": 4,
+  "final_only": "{\"head\": \"lp\", \"lr\": 0.01, \"epochs\": 30, \"reg\": \"ls\"}",
+  "no_test_per_config": false,
+  "oracle": false,
+  "grid": "full",
+  "reuse_from": null,
+  "worker": 0,
+  "skip_default": true
+ },
+ "from_run": "union_f0.1_e100_s4",
+ "n_labeled": 5000,
+ "grid": [],
+ "best": {
+  "head": "lp",
+  "lr": 0.01,
+  "epochs": 30,
+  "reg": "ls"
+ },
+ "default": {
+  "head": "lp",
+  "lr": 0.01,
+  "epochs": 60,
+  "reg": "none"
+ },
+ "train_time_s": 353.5755457878113,
+ "oracle": false,
+ "grid_name": "full",
+ "n_recipes": 0,
+ "metrics": {
+  "finetune_tuned_acc": 81.00000023841858
+ }
+}

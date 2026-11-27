@@ -1,0 +1,5 @@
+# Third revision E: the SimCLR->SupCon stage that the validation split selects (485 steps, lr 0.005), on the test set
+# parallel: 3
+--name twostage_simclr200_supcon5_lr0.005_s0 --init_run simclr_all_e200_s0 --method supcon --pool labeled --label_fraction 0.1 --epochs 5 --lr 0.005 --seed 0
+--name twostage_simclr200_supcon5_lr0.005_s1 --init_run simclr_all_e200_s1 --method supcon --pool labeled --label_fraction 0.1 --epochs 5 --lr 0.005 --seed 1
+--name twostage_simclr200_supcon5_lr0.005_s2 --init_run simclr_all_e200_s2 --method supcon --pool labeled --label_fraction 0.1 --epochs 5 --lr 0.005 --seed 2

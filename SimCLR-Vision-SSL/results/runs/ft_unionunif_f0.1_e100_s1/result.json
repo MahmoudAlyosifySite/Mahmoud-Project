@@ -1,0 +1,27 @@
+{
+ "name": "ft_unionunif_f0.1_e100_s1",
+ "args": {
+  "name": "ft_unionunif_f0.1_e100_s1",
+  "from_run": "unionunif_f0.1_e100_s1",
+  "out": "results/runs",
+  "ckpt_dir": "/home/jovyan/simclr_store/ckpt",
+  "data_dir": "/home/jovyan/simclr_store/data",
+  "dataset": "cifar10",
+  "backbone": "resnet18",
+  "label_fraction": 0.1,
+  "seed": 1,
+  "epochs": 60.0,
+  "batch_size": 128,
+  "lr": 0.01,
+  "wd": 0.0005,
+  "holdout": 0,
+  "force": false
+ },
+ "n_labeled": 5000,
+ "steps": 2344,
+ "train_time_s": 385.45937633514404,
+ "metrics": {
+  "finetune_acc": 83.5099995136261,
+  "linear_lab_acc": 82.34999775886536
+ }
+}

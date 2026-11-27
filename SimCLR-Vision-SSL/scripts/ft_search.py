@@ -6,11 +6,17 @@ For one pretrained encoder, every configuration of the grid
     epochs      {30, 60, 120}         (passes over the labeled images)
     regulariser {none, label smoothing 0.1, mixup alpha 0.2}
 is trained on 80% of the labeled images and scored on the other 20% -- the test set and the
-unlabeled labels are never used for selection. The best configuration is then retrained on all
+unlabeled labels are never used for selection. ``--grid ext`` widens the grid to lr up to 0.3 and up to
+240 passes (120 recipes). The best configuration is then retrained on all
 labeled images and evaluated on the test set (the test accuracy of every configuration is
 also stored, for transparency, but is not used to choose).
 
     python scripts/ft_search.py --from_run simclr_all_e200_s0 --ckpt_dir <dir> --label_fraction 0.1 --seed 0
+
+Every recipe result is cached in <out>/<name>/recipes/, so a search can be interrupted, can reuse the recipes
+of an earlier search of the same encoder (``--reuse_from``), and can be shared by several processes started
+with the same arguments (each claims recipes that no other live process is working on; the first to see the
+grid complete runs the final step, the others wait for it).
 """
 import argparse
 import itertools
@@ -32,6 +38,48 @@ from dlt.models import Classifier, extract_features                    # noqa: E
 
 GRID = {"head": ["lp", "random"], "lr": [0.003, 0.01, 0.03, 0.1], "epochs": [30, 60, 120],
         "reg": ["none", "ls", "mixup"]}
+GRID_EXT = {"head": ["lp", "random"], "lr": [0.003, 0.01, 0.03, 0.1, 0.3], "epochs": [30, 60, 120, 240],
+            "reg": ["none", "ls", "mixup"]}
+GRID_SMALL = {"head": ["lp", "random"], "lr": [0.01, 0.03, 0.1], "epochs": [30, 60], "reg": ["none", "mixup"]}
+# the region of the widened grid where the label-using encoders had their best recipes (36 recipes)
+GRID_FOCUS = {"head": ["lp", "random"], "lr": [0.03, 0.1, 0.3], "epochs": [60, 120, 240], "reg": ["ls", "mixup"]}
+KEYS = ("head", "lr", "epochs", "reg")
+
+
+def recipe_key(cfg):
+    return f"{cfg['head']}_lr{cfg['lr']}_ep{cfg['epochs']}_{cfg['reg']}"
+
+
+def _alive(pid):
+    try:
+        os.kill(pid, 0)
+        return True
+    except ProcessLookupError:
+        return False
+    except PermissionError:
+        return True
+
+
+def claim(path):
+    """Create ``path`` exclusively (holding our pid); a lock left by a dead process is taken over."""
+    for _ in range(2):
+        try:
+            fd = os.open(path, os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+            os.write(fd, str(os.getpid()).encode())
+            os.close(fd)
+            return True
+        except FileExistsError:
+            try:
+                pid = int(open(path).read().strip() or 0)
+            except (OSError, ValueError):
+                pid = 0
+            if pid and _alive(pid):
+                return False
+            try:
+                os.remove(path)
+            except FileNotFoundError:
+                pass
+    return False
 
 
 def finetune(enc_sd, backbone, data, fit_idx, eval_x, eval_y, cfg, seed, dev="cuda", batch=128):
@@ -104,8 +152,14 @@ def main():
     p.add_argument("--oracle", action="store_true",
                    help="score every recipe on the TEST set after training on all labeled images. This is not a "
                         "legitimate selection rule; it gives an upper bound on what recipe selection can achieve")
-    p.add_argument("--grid", default="full", choices=["full", "small"],
-                   help="small: 2 heads x lr {0.01, 0.03, 0.1} x {30, 60} epochs x {none, mixup}")
+    p.add_argument("--grid", default="full", choices=["full", "small", "ext", "focus"],
+                   help="small: 2 heads x lr {0.01, 0.03, 0.1} x {30, 60} epochs x {none, mixup}; "
+                        "ext: the full grid widened to lr 0.3 and 240 passes (120 recipes)")
+    p.add_argument("--reuse_from", default=None,
+                   help="finished search of the same encoder, seed and mode whose recipe scores are reused")
+    p.add_argument("--worker", type=int, default=0, help="only labels the process; workers share the cache")
+    p.add_argument("--skip_default", action="store_true",
+                   help="do not also fine-tune with the default recipe (when another run already measured it)")
     args = p.parse_args()
     out_dir = os.path.join(args.out, args.name)
     os.makedirs(out_dir, exist_ok=True)
@@ -136,31 +190,71 @@ def main():
     if args.final_only:
         best = json.loads(args.final_only)
     else:
-        grid = GRID if args.grid == "full" else {"head": ["lp", "random"], "lr": [0.01, 0.03, 0.1], "epochs": [30, 60],
-                                                 "reg": ["none", "mixup"]}
-        for head, lr, ep, reg in itertools.product(grid["head"], grid["lr"], grid["epochs"], grid["reg"]):
-            cfg = {"head": head, "lr": lr, "epochs": ep, "reg": reg}
-            if args.oracle:
-                acc, _ = finetune(enc_sd, args.backbone, data, labeled, data["test_x"], data["test_y"], cfg, args.seed)
-                rows.append({**cfg, "test_acc": acc, "val_acc": acc})
-                print(f"{args.from_run} {cfg} test {acc:.2f} ({time.time() - t0:.0f}s)", flush=True)
-                continue
-            val_acc, _ = finetune(enc_sd, args.backbone, data, fit_idx, data["train_x"][vi], data["train_y"][vi], cfg, args.seed)
-            rows.append({**cfg, "val_acc": val_acc})
-            print(f"{args.from_run} {cfg} val {val_acc:.2f} ({time.time() - t0:.0f}s)", flush=True)
+        grid = {"full": GRID, "small": GRID_SMALL, "ext": GRID_EXT, "focus": GRID_FOCUS}[args.grid]
+        cache = os.path.join(out_dir, "recipes")
+        os.makedirs(cache, exist_ok=True)
+        if args.reuse_from:   # scores of an earlier search of the same encoder (same code, seed and split)
+            prev = json.load(open(os.path.join(args.out, args.reuse_from, "result.json")))
+            assert prev["from_run"] == args.from_run and bool(prev.get("oracle")) == bool(args.oracle), args.reuse_from
+            for r in prev["grid"]:
+                f = os.path.join(cache, recipe_key(r) + ".json")
+                if not os.path.exists(f):
+                    json.dump({**{k: r[k] for k in KEYS}, **{k: r[k] for k in ("val_acc", "test_acc") if k in r},
+                               "reused_from": args.reuse_from}, open(f, "w"))
+        cfgs = [dict(zip(KEYS, v)) for v in itertools.product(*(grid[k] for k in KEYS))]
+        while True:
+            for cfg in cfgs:
+                f = os.path.join(cache, recipe_key(cfg) + ".json")
+                if os.path.exists(f) or not claim(f[:-5] + ".lock"):
+                    continue
+                if os.path.exists(f):   # finished by another worker between the two checks
+                    os.remove(f[:-5] + ".lock")
+                    continue
+                if args.oracle:
+                    acc, _ = finetune(enc_sd, args.backbone, data, labeled, data["test_x"], data["test_y"], cfg, args.seed)
+                    row = {**cfg, "test_acc": acc, "val_acc": acc}
+                else:
+                    acc, _ = finetune(enc_sd, args.backbone, data, fit_idx, data["train_x"][vi], data["train_y"][vi], cfg,
+                                      args.seed)
+                    row = {**cfg, "val_acc": acc}
+                json.dump(row, open(f + ".tmp", "w"))
+                os.replace(f + ".tmp", f)
+                os.remove(f[:-5] + ".lock")
+                print(f"{args.from_run} [w{args.worker}] {cfg} {'test' if args.oracle else 'val'} {acc:.2f} "
+                      f"({time.time() - t0:.0f}s)", flush=True)
+            missing = [c for c in cfgs if not os.path.exists(os.path.join(cache, recipe_key(c) + ".json"))]
+            if not missing:
+                break
+            if not any(os.path.exists(os.path.join(cache, recipe_key(c) + ".lock")) for c in missing):
+                continue                      # a worker died and left recipes undone: take them over
+            time.sleep(20)                    # other workers are still training their recipes
+        rows = [json.load(open(os.path.join(cache, recipe_key(c) + ".json"))) for c in cfgs]
         best = max(rows, key=lambda r: r["val_acc"])
-        best = {k: best[k] for k in ("head", "lr", "epochs", "reg")}
+        best = {k: best[k] for k in KEYS}
+        # one process runs the final step; the others wait for its result (or take over if it died)
+        while not claim(os.path.join(out_dir, "final.lock")):
+            if os.path.exists(out_path):
+                print("[done by another worker]", out_path)
+                return
+            time.sleep(20)
+        if os.path.exists(out_path):
+            os.remove(os.path.join(out_dir, "final.lock"))
+            return
     test_acc, pred = finetune(enc_sd, args.backbone, data, labeled, data["test_x"], data["test_y"], best, args.seed)
     default = {"head": "lp", "lr": 0.01, "epochs": 60, "reg": "none"}
-    default_acc, _ = finetune(enc_sd, args.backbone, data, labeled, data["test_x"], data["test_y"], default, args.seed)
+    default_acc = None if args.skip_default else \
+        finetune(enc_sd, args.backbone, data, labeled, data["test_x"], data["test_y"], default, args.seed)[0]
     res = {"name": args.name, "args": vars(args), "from_run": args.from_run, "n_labeled": int(len(labeled)),
            "grid": rows, "best": best, "default": default, "train_time_s": time.time() - t0,
-           "oracle": bool(args.oracle),
+           "oracle": bool(args.oracle), "grid_name": args.grid, "n_recipes": len(rows),
            "metrics": {("finetune_oracle_acc" if args.oracle else "finetune_tuned_acc"): test_acc,
-                       "finetune_default_acc": default_acc}}
+                       **({} if default_acc is None else {"finetune_default_acc": default_acc})}}
     np.savez_compressed(os.path.join(out_dir, "preds.npz"), finetune_tuned=pred.cpu().numpy().astype(np.int16))
-    json.dump(res, open(out_path, "w"), indent=1)
-    print(f"[done] {args.from_run}: best {best} -> test {test_acc:.2f} (default recipe {default_acc:.2f})", flush=True)
+    json.dump(res, open(out_path + ".tmp", "w"), indent=1)
+    os.replace(out_path + ".tmp", out_path)
+    if os.path.exists(os.path.join(out_dir, "final.lock")):
+        os.remove(os.path.join(out_dir, "final.lock"))
+    print(f"[done] {args.from_run}: best {best} -> test {test_acc:.2f} (default recipe {default_acc})", flush=True)
 
 
 if __name__ == "__main__":

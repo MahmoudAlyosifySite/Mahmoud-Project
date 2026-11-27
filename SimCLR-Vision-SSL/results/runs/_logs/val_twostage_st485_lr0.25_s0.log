@@ -1,0 +1,10 @@
+[run] val_twostage_st485_lr0.25_s0: supcon | pool 4500 | labeled 4500 | 485 steps | lr 0.25 wd 0.0001 tau 0.1
+[init] val_simclr_all_s0: loaded 128 tensors, 0 left at initialisation
+  step     61/485  loss 6.0158  knn 73.52  (74s)
+  step    121/485  loss 5.6889  knn 75.46  (122s)
+  step    182/485  loss 5.5046  knn 79.62  (176s)
+  step    242/485  loss 5.3211  knn 81.88  (229s)
+  step    303/485  loss 5.1447  knn 82.94  (286s)
+  step    364/485  loss 5.0072  knn 83.94  (339s)
+  step    424/485  loss 4.9784  knn 84.36  (393s)
+[done] val_twostage_st485_lr0.25_s0: linear_acc 86.26  knn_acc 84.90  linear_lab_acc 84.10  | train 7.4 min

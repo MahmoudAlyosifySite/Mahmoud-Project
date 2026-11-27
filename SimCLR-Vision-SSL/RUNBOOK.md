@@ -72,8 +72,35 @@ TOST); new related work, audit of budget reporting, journal statements, elsartic
 
 All 438 runs of `jobs/phases.txt` are finished (2026-11-24) and in the paper; no `\pending` text is left.
 
+Third revision (referee report 3, 2026-11-26): widened fine-tuning grid for SupCon/SupCon+U (120 recipes; best
+accuracy changes by at most 0.3 points), oracle and selected recipes at 9,700 steps (with the best recipe for each
+encoder the three main encoders are level there; the paper now says that the oracle-label probe overstates
+label-using encoders instead of "the protocol reverses the ranking"), the held-out-labels arm (4,000 labels in the
+loss, 1,000 for selection; SimCLR stays 2.3/3.8 points ahead after fine-tuning), the SimCLR->SupCon stage checked on
+the validation split, uniform-batch SupCon+U with three seeds, SupCon+U at 1% labels with a 3% labeled share, and
+SupCon+U with a ResNet-50 at 19,400 steps. The point-by-point answer is `paper/RESPONSE_REVIEW3.md` (internal; not
+copied to the public repository).
+
 Before submission (authors' decisions, see `paper/SUBMISSION.md`): CRediT roles, funding, the journal's
 generative-AI declaration, JCR quartile check, Zenodo DOI for the code, the journal's Guide for Authors.
+
+## Third revision (referee report 3, 2026-11-26)
+
+New runs answer the referee's comments 1-3 and 7 and minor comment 6 (job files `jobs/rev3_*.txt`, listed in
+`jobs/phases_rev3_{grid,pre,r50}.txt`; `rev3_a_grids.txt` and `rev3_p_pre.txt` were the first plan, replaced
+after their first searches and runs had started):
+
+| queue | what | comment |
+|-------|------|---------|
+| grid | fine-tuning recipe grid widened to lr 0.3 and 240 passes (`scripts/ft_search.py --grid ext`, 120 recipes) for the two label-using encoders at 19,400 steps (oracle selection; the 72 recipes already run are reused), the region of their best recipes at 9,700 steps (`--grid focus`, 36 recipes), and the chosen recipes applied to the other seeds (`ftorx_*`, `ftsx_*`, `fttx_*`). SimCLR keeps the 72-recipe grid, which can only favour the label-using encoders | 1, 2 |
+| pre | A: SupCon and SupCon+U with 1,000 of the 5,000 labels held out of the loss (`hold_*`; pools from `scripts/make_holdout_pools.py`); B/C: their recipe selection on the held-out labels (`ftsearch_hold_*`), the SimCLR->SupCon stage chosen on the validation split (`val_*`), SupCon+U uniform batches seeds 1-2; D: SupCon+U at 1% labels with a 3% labeled share | 3, 7, minor 1 |
+| r50 | SupCon+U with a ResNet-50 at 19,400 steps, three seeds (paused while the others run) | minor 6 |
+
+Start or restart all three with `bash scripts/resume_rev3.sh` (finished runs are skipped). It also starts a CUDA MPS
+daemon (pipes in `$STORE/mps`): without it the GPU time-slices between the eight recipe workers and each uses less
+than a fifth of the GPU. After the runs: `python scripts/holdout_eval.py --ckpt_dir $STORE/ckpt --runs hold_supcon_f0.1_e200_s{0,1,2} hold_union_f0.1_e200_s{0,1,2} simclr_all_e200_s{0,1,2} supcon_lab_f0.1_e200_s{0,1,2} union_f0.1_e200_s{0,1,2}`,
+then `scripts/reeval.py` and `scripts/make_assets.py` as above. The point-by-point answer to the report is
+`paper/RESPONSE_REVIEW3.md`.
 
 ## Archive on Zenodo (checkpoints are not on GitHub)
 

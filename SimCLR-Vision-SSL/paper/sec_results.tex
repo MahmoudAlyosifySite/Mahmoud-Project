@@ -15,8 +15,10 @@ because it is the protocol used in most of the literature, and come back to the 
 \caption{CIFAR-10, 10\% labels, ResNet-18: test accuracy against the number of gradient steps for the four
 arms of the $2\times2$ design. Mean and standard deviation over seeds (five at 9,700 and 19,400 steps,
 three elsewhere). (a) With the oracle-label probe, \supcon is far ahead early, level with \simclr at 9,700
-steps and behind afterwards. (b, c) With the 5,000 labels only, \simclr is ahead of both label-using methods
-from 9,700 steps on. Fine-tuning was run from 9,700 steps on.}
+steps and behind afterwards. (b) With \lpfive, the three are within about a point at 9,700 steps and \simclr is
+ahead of both label-using methods from 19,400 steps on. (c) After fine-tuning with the default recipe,
+\simclr is ahead from 9,700 steps on (with the best recipe for each encoder the three are level at 9,700 steps;
+\cref{sec:protocol}). Fine-tuning was run from 9,700 steps on.}
 \label{fig:budget}
 \end{figure}
 
@@ -41,8 +43,9 @@ two are level: the difference is \R{cmp:simclr-supcon:lp50:e100:sdiff}\pt (95\% 
 loss reach a given accuracy with much less compute.
 
 \paragraph{The lead does not last}
-\supcon stops improving early, because once its 5,000 images are separated by class the loss has little
-left to learn from them (\cref{sec:geometry}). It is at \R{supcon_lab_f0.1_e25:lp50}\% after 2,425 steps, \R{supcon_lab_f0.1_e200:lp50}\% after 19,400 and
+\supcon stops improving early. A likely reason, consistent with the class tightness measured in
+\cref{sec:geometry} but not proven by it, is that once its 5,000 images are separated by class the loss has
+little left to learn from them. It is at \R{supcon_lab_f0.1_e25:lp50}\% after 2,425 steps, \R{supcon_lab_f0.1_e200:lp50}\% after 19,400 and
 \R{supcon_lab_f0.1_e400:lp50}\% after 38,800. \simclr keeps climbing: \R{simclr_all_e100:lp50}\% at 9,700 steps,
 \R{simclr_all_e200:lp50}\% at 19,400 and \R{simclr_all_e400:lp50}\% at 38,800. It is ahead by
 \R{cmp:simclr-supcon:lp50:e200:diff}\pt at 19,400 steps (\R{cmp:simclr-supcon:lp50:e200:ci},
@@ -53,7 +56,7 @@ widens as training gets longer. At 97,000 steps \supcon is still at \R{supcon_la
 (\R{cmp:simclr-supcon:lp50:e1000:ci}); after fine-tuning on the 5,000 labels the lead is
 \R{cmp:simclr-supcon:ft:e1000:diff}\pt (\R{simclr_all_e1000:ft}\% against \R{supcon_lab_f0.1_e1000:ft}\%,
 \R{cmp:simclr-supcon:ft:e1000:ci}). \union, which also sees all images, keeps improving too (\R{union_f0.1_e400:lp50}\% at 38,800
-steps and \R{union_f0.1_e1000:lp50}\% at 97,000), because three quarters of each of its batches are unlabeled
+steps and \R{union_f0.1_e1000:lp50}\% at 97,000), likely because three quarters of each of its batches are unlabeled
 images trained by instance discrimination; it stays \R{d:simclr-union:lp50:e1000}\pt behind \simclr.
 
 \paragraph{Reading the $2\times2$}
@@ -63,7 +66,13 @@ The two columns of the design answer what the unlabeled images are worth. Withou
 because \simclrsub gets \emph{worse} with more steps (\R{simclr_sub_f0.1_e100:lp50}\% $\to$
 \R{simclr_sub_f0.1_e200:lp50}\% $\to$ \R{simclr_sub_f0.1_e1000:lp50}\% at 97,000 steps). With 5,000 images, each one returns in every tenth batch, and instance
 discrimination can then be solved with features that identify individual images rather than features shared
-within a class: more steps lower the loss on the pool without improving the representation. With labels the unlabeled
+within a class: more steps lower the loss on the pool without improving the representation. Part of the
+growing value of the unlabeled images is therefore the decline of the baseline. Measured against the best
+\simclrsub budget we ran (\R{subbest:lp50}\% at \R{subbest:steps} steps), the gain of \simclr is
+\R{d:simclr-subbest:lp50:e200}\pt at 19,400 steps and \R{d:simclr-subbest:lp50:e1000}\pt at 97,000, instead of
+\R{cmp:simclr-sub:lp50:e200:diff} and \R{cmp:simclr-sub:lp50:e1000:diff}\pt against \simclrsub at the same budget:
+the unlabeled images are worth more with longer training either way, but less than the same-budget
+comparison suggests. With labels the unlabeled
 images help less: \union beats \supcon by \R{cmp:union-supcon:lp50:e100:diff}\pt and
 \R{cmp:union-supcon:lp50:e200:diff}\pt.
 
@@ -125,7 +134,9 @@ fine-tuning the whole network on these labels (FT-$f$).
 label-using method is ahead, and the colours saturate at $\pm12$ points. LP-all is the oracle-label probe;
 LP-$f$ uses the same fraction of labels as pretraining; FT-$f$ fine-tunes on these labels (not run with all
 labels). The label-using arms and fine-tuning use one seed except at $f=10\%$; the \simclr encoders have
-three to five seeds. The numbers behind the chart are in \cref{tab:fraction}.}
+three to five seeds. At $f=1\%$ the default fine-tuning recipe fails for \simclr (FT-$f$ below LP-$f$), so the
+first column of (c) and (f) mostly reflects the recipe. The numbers behind the chart are in
+\cref{tab:fraction}.}
 \label{fig:wins}
 \end{figure}
 
@@ -148,7 +159,10 @@ over \supcon at 50\%), and at 9,700 steps the break-even fraction for \supcon li
 labels on, and then by at most \R{grid:supcon:ftf:e25:max} points, against up to
 \R{grid:supcon:lpf:e25:max} under LP-$f$. Fine-tuning gives the \simclr encoder the class information that
 \supcon put into its features during pretraining, so what remains is the quality of the features themselves,
-which favours the encoder trained on all images once the budget allows it.
+which favours the encoder trained on all images once the budget allows it. The column of 1\% is the exception
+that says more about the recipe than about the encoders: there the default fine-tuning recipe fails for
+\simclr (FT-$f$ \R{grid:simclr:ftf:e400:f0.01:acc}\% against \R{grid:simclr:lpf:e400:f0.01:acc}\% for LP-$f$ at
+38,800 steps), so the 1\% cells of panels (c) and (f) mostly measure that failure.
 
 \union follows the same pattern under LP-all, with a much smaller deficit at 1\% of the labels
 (\R{grid:union:lpall:e400:f0.01:abs} points at 38,800 steps, against \R{grid:supcon:lpall:e400:f0.01:abs}
@@ -159,7 +173,13 @@ between the two probes is concentrated at the smallest fraction and grows with t
 effect of \cref{sec:protocol} in its strongest form. \union draws a quarter of every batch from the labeled
 images, so with 500 of them each labeled image is seen about 33 times as often as an unlabeled one, and the
 LP-$f$ probe is fitted on exactly these images, which are likely collapsed far more tightly than test images
-(the seen/unseen gap of \cref{sec:geometry}).
+(the seen/unseen gap of \cref{sec:geometry}). To separate this oversampling from the use of labels, we ran
+\union at $f=1\%$ for 38,800 steps with a labeled share of 3\%, which keeps the oversampling of the 10\% setting
+(about three times; one seed). LP-$f$ rises from \R{union_f0.01_e400:lpf}\% to \R{union_f0.01_sh0.03_e400:lpf}\%,
+LP-all from \R{union_f0.01_e400:lpall}\% to \R{union_f0.01_sh0.03_e400:lpall}\% and FT-$f$ from
+\R{union_f0.01_e400:ftf}\% to \R{union_f0.01_sh0.03_e400:ftf}\%. The oversampling therefore accounts for much of the
+deficit at 1\%, but not all of it: under LP-$f$ the scaled variant still trails \simclr by
+\R{d:simclr-union:f0.01:sh0.03:lpf}\pt (\R{grid:simclr:lpf:e400:f0.01:acc}\%).
 
 \subsection{Other datasets and a larger encoder}
 \label{sec:datasets}
@@ -270,7 +290,10 @@ steps \supcon is still slightly ahead (\R{r50_supcon_lab_f0.1_e100:lp50}\% again
 (\R{r50_simclr_all_e200:lp50:pm}\% against \R{r50_supcon_lab_f0.1_e200:lp50:pm}\%, three seeds). Under \ftfive
 \simclr is ahead already at 9,700 steps (\R{r50_simclr_all_e100:ft}\% against
 \R{r50_supcon_lab_f0.1_e100:ft}\%, one seed), and at 19,400 steps by \R{d:r50:simclr-supcon:ft:e200}\pt
-(\R{r50_simclr_all_e200:ft:pm}\% against \R{r50_supcon_lab_f0.1_e200:ft:pm}\%). The larger encoder also makes very short budgets fragile: at 900 steps
+(\R{r50_simclr_all_e200:ft:pm}\% against \R{r50_supcon_lab_f0.1_e200:ft:pm}\%). \union at 19,400 steps
+(\R{r50_union_f0.1_e200:lp50:n} seeds) repeats the pattern of the ResNet-18: it lies between the two under the oracle-label
+probe (\R{r50_union_f0.1_e200:lp50:pm}\%) and is last under \lpfive (\R{r50_union_f0.1_e200:lp5:pm}\%) and \ftfive
+(\R{r50_union_f0.1_e200:ft:pm}\%). The larger encoder also makes very short budgets fragile: at 900 steps
 \supcon reaches \R{r50_supcon_lab_f0.1_steps900:lp50}\% with learning rate 0.25 but only
 \R{r50_supcon_lab_f0.1_steps900_lr0.05:lp50}\% with 0.05 (\cref{tab:r50}): with so few steps and a cosine
 schedule, the smaller learning rate leaves the larger network far from convergence.

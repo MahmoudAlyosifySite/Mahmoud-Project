@@ -1,0 +1,1 @@
+[done] simclr_all_e100_s2: best {'head': 'lp', 'lr': 0.01, 'epochs': 120, 'reg': 'ls'} -> test 87.00 (default recipe None)

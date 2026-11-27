@@ -1,0 +1,1 @@
+{"head": "random", "lr": 0.3, "epochs": 240, "reg": "ls", "test_acc": 85.4699969291687, "val_acc": 85.4699969291687}

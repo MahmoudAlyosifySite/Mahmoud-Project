@@ -1,0 +1,10 @@
+[run] val_twostage_st9700_lr0.02_s0: supcon | pool 4500 | labeled 4500 | 9700 steps | lr 0.02 wd 0.0001 tau 0.1
+[init] val_simclr_all_s0: loaded 128 tensors, 0 left at initialisation
+  step   1212/9700  loss 4.7699  knn 85.06  (954s)
+  step   2425/9700  loss 4.7561  knn 83.90  (1671s)
+  step   3638/9700  loss 4.7142  knn 84.72  (2137s)
+  step   4850/9700  loss 4.7135  knn 84.96  (2578s)
+  step   6062/9700  loss 4.6726  knn 84.86  (3019s)
+  step   7275/9700  loss 4.6636  knn 85.12  (3733s)
+  step   8488/9700  loss 4.6569  knn 85.22  (4432s)
+[done] val_twostage_st9700_lr0.02_s0: linear_acc 86.40  knn_acc 85.24  linear_lab_acc 84.74  | train 83.2 min

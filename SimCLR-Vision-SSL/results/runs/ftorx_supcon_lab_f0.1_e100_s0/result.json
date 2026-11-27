@@ -1,0 +1,333 @@
+{
+ "name": "ftorx_supcon_lab_f0.1_e100_s0",
+ "args": {
+  "name": "ftorx_supcon_lab_f0.1_e100_s0",
+  "from_run": "supcon_lab_f0.1_e100_s0",
+  "ckpt_dir": "/home/jovyan/simclr_store/ckpt",
+  "out": "results/runs",
+  "config_from": null,
+  "data_dir": "/home/jovyan/simclr_store/data",
+  "dataset": "cifar10",
+  "backbone": "resnet18",
+  "label_fraction": 0.1,
+  "seed": 0,
+  "final_only": null,
+  "no_test_per_config": false,
+  "oracle": true,
+  "grid": "focus",
+  "reuse_from": null,
+  "worker": 0,
+  "skip_default": true
+ },
+ "from_run": "supcon_lab_f0.1_e100_s0",
+ "n_labeled": 5000,
+ "grid": [
+  {
+   "head": "lp",
+   "lr": 0.03,
+   "epochs": 60,
+   "reg": "ls",
+   "test_acc": 84.78999733924866,
+   "val_acc": 84.78999733924866
+  },
+  {
+   "head": "lp",
+   "lr": 0.03,
+   "epochs": 60,
+   "reg": "mixup",
+   "test_acc": 85.50999760627747,
+   "val_acc": 85.50999760627747
+  },
+  {
+   "head": "lp",
+   "lr": 0.03,
+   "epochs": 120,
+   "reg": "ls",
+   "test_acc": 85.4099988937378,
+   "val_acc": 85.4099988937378
+  },
+  {
+   "head": "lp",
+   "lr": 0.03,
+   "epochs": 120,
+   "reg": "mixup",
+   "test_acc": 86.32999658584595,
+   "val_acc": 86.32999658584595
+  },
+  {
+   "head": "lp",
+   "lr": 0.03,
+   "epochs": 240,
+   "reg": "ls",
+   "test_acc": 85.44999957084656,
+   "val_acc": 85.44999957084656
+  },
+  {
+   "head": "lp",
+   "lr": 0.03,
+   "epochs": 240,
+   "reg": "mixup",
+   "test_acc": 86.84999942779541,
+   "val_acc": 86.84999942779541
+  },
+  {
+   "head": "lp",
+   "lr": 0.1,
+   "epochs": 60,
+   "reg": "ls",
+   "test_acc": 86.14999651908875,
+   "val_acc": 86.14999651908875
+  },
+  {
+   "head": "lp",
+   "lr": 0.1,
+   "epochs": 60,
+   "reg": "mixup",
+   "test_acc": 86.24999523162842,
+   "val_acc": 86.24999523162842
+  },
+  {
+   "head": "lp",
+   "lr": 0.1,
+   "epochs": 120,
+   "reg": "ls",
+   "test_acc": 86.01999878883362,
+   "val_acc": 86.01999878883362
+  },
+  {
+   "head": "lp",
+   "lr": 0.1,
+   "epochs": 120,
+   "reg": "mixup",
+   "test_acc": 86.73999905586243,
+   "val_acc": 86.73999905586243
+  },
+  {
+   "head": "lp",
+   "lr": 0.1,
+   "epochs": 240,
+   "reg": "ls",
+   "test_acc": 86.75000071525574,
+   "val_acc": 86.75000071525574
+  },
+  {
+   "head": "lp",
+   "lr": 0.1,
+   "epochs": 240,
+   "reg": "mixup",
+   "test_acc": 86.87999844551086,
+   "val_acc": 86.87999844551086
+  },
+  {
+   "head": "lp",
+   "lr": 0.3,
+   "epochs": 60,
+   "reg": "ls",
+   "test_acc": 85.7699990272522,
+   "val_acc": 85.7699990272522
+  },
+  {
+   "head": "lp",
+   "lr": 0.3,
+   "epochs": 60,
+   "reg": "mixup",
+   "test_acc": 86.34999990463257,
+   "val_acc": 86.34999990463257
+  },
+  {
+   "head": "lp",
+   "lr": 0.3,
+   "epochs": 120,
+   "reg": "ls",
+   "test_acc": 85.43999791145325,
+   "val_acc": 85.43999791145325
+  },
+  {
+   "head": "lp",
+   "lr": 0.3,
+   "epochs": 120,
+   "reg": "mixup",
+   "test_acc": 86.69999837875366,
+   "val_acc": 86.69999837875366
+  },
+  {
+   "head": "lp",
+   "lr": 0.3,
+   "epochs": 240,
+   "reg": "ls",
+   "test_acc": 85.96000075340271,
+   "val_acc": 85.96000075340271
+  },
+  {
+   "head": "lp",
+   "lr": 0.3,
+   "epochs": 240,
+   "reg": "mixup",
+   "test_acc": 86.24999523162842,
+   "val_acc": 86.24999523162842
+  },
+  {
+   "head": "random",
+   "lr": 0.03,
+   "epochs": 60,
+   "reg": "ls",
+   "test_acc": 84.29999947547913,
+   "val_acc": 84.29999947547913
+  },
+  {
+   "head": "random",
+   "lr": 0.03,
+   "epochs": 60,
+   "reg": "mixup",
+   "test_acc": 85.71999669075012,
+   "val_acc": 85.71999669075012
+  },
+  {
+   "head": "random",
+   "lr": 0.03,
+   "epochs": 120,
+   "reg": "ls",
+   "test_acc": 85.03999710083008,
+   "val_acc": 85.03999710083008
+  },
+  {
+   "head": "random",
+   "lr": 0.03,
+   "epochs": 120,
+   "reg": "mixup",
+   "test_acc": 86.22999787330627,
+   "val_acc": 86.22999787330627
+  },
+  {
+   "head": "random",
+   "lr": 0.03,
+   "epochs": 240,
+   "reg": "ls",
+   "test_acc": 85.6000006198883,
+   "val_acc": 85.6000006198883
+  },
+  {
+   "head": "random",
+   "lr": 0.03,
+   "epochs": 240,
+   "reg": "mixup",
+   "test_acc": 86.73999905586243,
+   "val_acc": 86.73999905586243
+  },
+  {
+   "head": "random",
+   "lr": 0.1,
+   "epochs": 60,
+   "reg": "ls",
+   "test_acc": 85.69999933242798,
+   "val_acc": 85.69999933242798
+  },
+  {
+   "head": "random",
+   "lr": 0.1,
+   "epochs": 60,
+   "reg": "mixup",
+   "test_acc": 86.93999648094177,
+   "val_acc": 86.93999648094177
+  },
+  {
+   "head": "random",
+   "lr": 0.1,
+   "epochs": 120,
+   "reg": "ls",
+   "test_acc": 86.59999966621399,
+   "val_acc": 86.59999966621399
+  },
+  {
+   "head": "random",
+   "lr": 0.1,
+   "epochs": 120,
+   "reg": "mixup",
+   "test_acc": 87.12999820709229,
+   "val_acc": 87.12999820709229
+  },
+  {
+   "head": "random",
+   "lr": 0.1,
+   "epochs": 240,
+   "reg": "ls",
+   "test_acc": 86.3099992275238,
+   "val_acc": 86.3099992275238
+  },
+  {
+   "head": "random",
+   "lr": 0.1,
+   "epochs": 240,
+   "reg": "mixup",
+   "test_acc": 86.85999512672424,
+   "val_acc": 86.85999512672424
+  },
+  {
+   "head": "random",
+   "lr": 0.3,
+   "epochs": 60,
+   "reg": "ls",
+   "test_acc": 85.62999963760376,
+   "val_acc": 85.62999963760376
+  },
+  {
+   "head": "random",
+   "lr": 0.3,
+   "epochs": 60,
+   "reg": "mixup",
+   "test_acc": 85.78000068664551,
+   "val_acc": 85.78000068664551
+  },
+  {
+   "head": "random",
+   "lr": 0.3,
+   "epochs": 120,
+   "reg": "ls",
+   "test_acc": 85.87999939918518,
+   "val_acc": 85.87999939918518
+  },
+  {
+   "head": "random",
+   "lr": 0.3,
+   "epochs": 120,
+   "reg": "mixup",
+   "test_acc": 86.36999726295471,
+   "val_acc": 86.36999726295471
+  },
+  {
+   "head": "random",
+   "lr": 0.3,
+   "epochs": 240,
+   "reg": "ls",
+   "test_acc": 86.33999824523926,
+   "val_acc": 86.33999824523926
+  },
+  {
+   "head": "random",
+   "lr": 0.3,
+   "epochs": 240,
+   "reg": "mixup",
+   "test_acc": 86.22999787330627,
+   "val_acc": 86.22999787330627
+  }
+ ],
+ "best": {
+  "head": "random",
+  "lr": 0.1,
+  "epochs": 120,
+  "reg": "mixup"
+ },
+ "default": {
+  "head": "lp",
+  "lr": 0.01,
+  "epochs": 60,
+  "reg": "none"
+ },
+ "train_time_s": 22041.585434913635,
+ "oracle": true,
+ "grid_name": "focus",
+ "n_recipes": 36,
+ "metrics": {
+  "finetune_oracle_acc": 86.58999800682068
+ }
+}

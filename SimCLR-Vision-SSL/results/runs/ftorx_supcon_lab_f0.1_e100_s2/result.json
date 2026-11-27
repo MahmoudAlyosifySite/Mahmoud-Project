@@ -1,0 +1,44 @@
+{
+ "name": "ftorx_supcon_lab_f0.1_e100_s2",
+ "args": {
+  "name": "ftorx_supcon_lab_f0.1_e100_s2",
+  "from_run": "supcon_lab_f0.1_e100_s2",
+  "ckpt_dir": "/home/jovyan/simclr_store/ckpt",
+  "out": "results/runs",
+  "config_from": "ftorx_supcon_lab_f0.1_e100_s0",
+  "data_dir": "/home/jovyan/simclr_store/data",
+  "dataset": "cifar10",
+  "backbone": "resnet18",
+  "label_fraction": 0.1,
+  "seed": 2,
+  "final_only": "{\"head\": \"random\", \"lr\": 0.1, \"epochs\": 120, \"reg\": \"mixup\"}",
+  "no_test_per_config": false,
+  "oracle": false,
+  "grid": "full",
+  "reuse_from": null,
+  "worker": 0,
+  "skip_default": true
+ },
+ "from_run": "supcon_lab_f0.1_e100_s2",
+ "n_labeled": 5000,
+ "grid": [],
+ "best": {
+  "head": "random",
+  "lr": 0.1,
+  "epochs": 120,
+  "reg": "mixup"
+ },
+ "default": {
+  "head": "lp",
+  "lr": 0.01,
+  "epochs": 60,
+  "reg": "none"
+ },
+ "train_time_s": 509.3696415424347,
+ "oracle": false,
+ "grid_name": "full",
+ "n_recipes": 0,
+ "metrics": {
+  "finetune_tuned_acc": 86.11999750137329
+ }
+}

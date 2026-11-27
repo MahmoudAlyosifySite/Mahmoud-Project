@@ -1,0 +1,1 @@
+[done] ft_twostage_simclr200_supcon5_lr0.005_s1: finetune_acc 88.42 (linear probe on the same labels 87.97)

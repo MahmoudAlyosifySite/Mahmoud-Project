@@ -33,9 +33,10 @@ in a labeled--unlabeled pair: the pair is weighted with $\tau_\ell$ when the lab
 with $\tau_u$ when the unlabeled one is. \union is close to SuNCEt \citep{assran2020suncet} and to the
 generalised loss of \citet{inoue2020semi}. Its temperatures and the share of labeled images per batch (25\%)
 were chosen on a validation split of the training set before any test number was computed
-(\cref{app:pilot}). Temperature is thus a second difference between the label-free and the label-using
+(\ref{app:pilot}); on the test set, the second-best variant of that comparison (uniform batches) later turned out
+to fine-tune better, without changing any conclusion (\ref{app:pilot}). Temperature is thus a second difference between the label-free and the label-using
 rows of our design; \cref{sec:plateau} shows that swapping the temperatures does not change the picture.
-Our implementation of \cref{eq:loss} agrees with the official \supcon code to $10^{-6}$ (\cref{app:impl}).
+Our implementation of \cref{eq:loss} agrees with the official \supcon code to $10^{-6}$ (\ref{app:impl}).
 
 \subsection{The \texorpdfstring{$2\times2$}{2x2} design}
 With a labeled fraction $f$ (10\% unless stated), the label-scarce setting couples two things: the
@@ -62,6 +63,15 @@ labels used in the loss & \supcon & \union \\
 
 \subsection{Compute accounting}
 \label{sec:compute}
+\paragraph{The unit of compute}
+We measure compute in \emph{augmented views processed}, that is, images passed forward and backward through the
+encoder. A contrastive step processes 1,024 views (two of each of 512 images), so the reference budget of
+9,700 steps is 9.9 million views, and ``the same compute'' means the same number of views unless
+\cref{tab:compute} says otherwise. Four exceptions are flagged there: BYOL processes the same views but needs
+twice the forward passes (its target network), MixMatch is matched on views but needs 1.67 times the forward
+passes (its label guessing), cross-entropy training is matched on steps and therefore processes half the
+views (one view per image), and fine-tuning and self-distillation come on top of the pretraining budget.
+
 \paragraph{Steps, not epochs}
 Every contrastive run performs $T=E\cdot\lfloor N/B\rfloor$ gradient steps with batch size $B=512$, where $N$
 is the size of the \emph{full} training set, whatever the size of the method's own pool. On CIFAR
@@ -74,24 +84,28 @@ The distinction matters. If each method were instead given ``100 epochs'' over i
 images, and the effect of supervision would be mixed with an eleven-fold difference in compute. In our
 experiments this alone moves \supcon by \R{d:steps900}\pt (\R{supcon_lab_f0.1_steps900:lp50} at 900 steps
 against \R{supcon_lab_f0.1_e100:lp50} at 9,700). We do not claim that the confusion is widespread: in the
-audit of \cref{app:audit}, 7 of 17 applicable papers matched or accounted for the difference, 2 compared
+audit of \ref{app:audit}, 7 of 16 applicable papers matched or accounted for the difference, one compared
 arms at equal epochs over pools of different size, and 5 did not state the budget of one arm in a way a
 reader can check. Stating budgets in steps or in images processed removes the ambiguity.
 
 \paragraph{Cost per step}
 \Cref{tab:compute} lists, for every method, the number of augmented views, forward passes and backward
-passes per step, the number of steps at the reference budget and the wall-clock time on one NVIDIA A40.
-The three contrastive methods have identical cost. BYOL adds a forward pass through its target network. The
-semi-supervised baselines are given the same number of processed views as a 9,700-step contrastive run
-unless stated; their per-step composition differs, so we report it explicitly.
+passes per step, the number of steps at the reference budget, the totals, and the wall-clock time on one
+NVIDIA A40. The three contrastive methods have identical cost. The semi-supervised baselines are given the
+same number of views as a 9,700-step contrastive run unless stated; their per-step composition differs, so
+we report it explicitly.
 
 \begin{table}[t]
 \centering
 \small
-\caption{Compute accounting on CIFAR-10 with a ResNet-18. ``Reference budget'' is the budget labeled 9,700
-steps in the text. FixMatch processes 64 labeled, 448 weakly and 448 strongly augmented unlabeled views per
-step; MixMatch needs an extra forward pass to guess labels. Minutes are wall-clock training time on one
-NVIDIA A40 with no other job on the GPU.}
+\caption{Compute accounting on CIFAR-10 with a ResNet-18. The unit of compute is the number of augmented
+views processed; the reference is the contrastive budget labeled 9,700 steps in the text (9.9 million views).
+FixMatch processes 64 labeled, 448 weakly and 448 strongly augmented unlabeled views per step. The last
+column says on what each method is matched to the reference, and flags the exceptions: $^a$the target network
+of BYOL adds a forward pass per view; $^b$cross-entropy sees each image once per step; $^c$MixMatch guesses
+labels with an extra forward pass over two augmentations of the unlabeled images; $^d$the teacher labels each
+view with a forward pass, and the 9,700 steps add half the views of the reference budget. Minutes are
+wall-clock training time on one NVIDIA A40 with no other job on the GPU.}
 \label{tab:compute}
 \begin{adjustbox}{max width=\linewidth}
 \input{generated/tab_compute.tex}
@@ -106,7 +120,7 @@ name the protocols once and use the names throughout.
 \item \textbf{\lpall, the oracle-label probe.} A linear classifier trained on the features of all
 50,000 training images with all their labels \citep{chen2020simclr}. It is the standard measure of
 representation quality, but it uses ten times more labels than the setting provides. We also report a
-weighted $k$NN classifier with the same 50,000 labels ($k$NN-50k; \citealp{wu2018instance}).
+weighted $k$NN classifier with the same 50,000 labels \citep{wu2018instance}, which we call $k$NN-50k.
 \item \textbf{\lpfive.} The same linear probe trained only on the 5,000 labeled images, the ones the
 label-using methods saw during pretraining.
 \item \textbf{\ftfive.} Fine-tuning of the whole network on the 5,000 labeled images. The default recipe
@@ -125,7 +139,9 @@ shows that the two can disagree about which encoder is better.
 
 The linear probes are $\ell_2$-regularised multinomial logistic regressions on standardised features, fitted
 with L-BFGS; the regularisation strength is selected on a stratified 20\% of the labels available to the
-probe. No design decision in this paper was taken on test data.
+probe. Design decisions were taken on a validation split of the training set (\ref{app:pilot}), with one
+exception: the length and learning rate of the \simclr{}$\to$\supcon stage of \cref{sec:where} were first chosen
+by comparing test accuracies; we have since repeated that choice on the validation split, and report both.
 
 \subsection{Data, models and training}
 \paragraph{Datasets}
@@ -146,7 +162,7 @@ official \supcon code, in mixed precision with the loss computed in float32. The
 recipe of \citet{chen2020simclr}: random resized crop (scale 0.2--1), horizontal flip, colour jitter of
 strength 0.5 applied with probability 0.8, and random grayscale with probability 0.2. Baselines (BYOL,
 SimSiam, cross-entropy, FixMatch, MixMatch) and all remaining hyper-parameters are described in
-\cref{app:hparams}.
+\ref{app:hparams}.
 
 \subsection{Statistics}
 \label{sec:stats}

@@ -22,14 +22,16 @@ method and an evaluation that uses only the labels that exist; the standard all-
 satisfy both with a compute-matched $2\times2$ design that varies the use of labels and the pretraining pool independently, on
 CIFAR-10, CIFAR-100, STL-10 and Tiny-ImageNet with ResNet-18 and ResNet-50 encoders. Labels inside the loss buy
 speed, not a better end point: with 10\% of the CIFAR-10 labels, SupCon leads SimCLR by 13.3 points after 970
-steps and trails it by 6.6 points after 97,000. The evaluation protocol decides the ranking: the all-label
-linear probe and fine-tuning on the available labels order the same encoders in opposite ways. A seen/unseen
-measurement of class tightness explains the reversal. All claims rest on three to five seeds with a
+steps and trails it by 6.6 points after 97,000. The all-label linear probe overstates encoders that use labels in
+pretraining: after 9,700 steps it puts a semi-supervised SupCon 1.9 points ahead of SimCLR, whereas fine-tuning on
+the 5,000 available labels puts it 3.9 points behind with the default recipe and only level with the best recipe
+for each encoder; holding out labels for recipe selection does not close the gap. A seen/unseen measurement of
+class tightness is consistent with this. All claims rest on three to five seeds with a
 hierarchical bootstrap, Holm correction and equivalence tests, and the code, job files and per-run results
 are public.
 
 We believe the paper fits the scope of \emph{Neural Networks} on learning systems and deep learning: it
-concerns how representation learning objectives use supervision, and how their evaluation can reverse
+concerns how representation learning objectives use supervision, and how their evaluation can change
 conclusions about them.
 
 The manuscript is original, has not been published, and is not under consideration by another journal. A

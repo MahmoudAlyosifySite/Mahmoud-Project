@@ -1,0 +1,1 @@
+{"head": "lp", "lr": 0.01, "epochs": 30, "reg": "none", "val_acc": 79.6000063419342}

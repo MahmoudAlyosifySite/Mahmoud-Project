@@ -1,0 +1,16 @@
+# Third revision, pretraining: held-out labels arm (19,400 steps; 4,000 labels in the loss, 1,000 held out),
+# uniform-batch SupCon+U seeds 1-2, SupCon+U at 1% labels with a scaled labeled share, validation-split base
+# encoder for choosing the SimCLR->SupCon stage
+# parallel: 2
+--name hold_supcon_f0.1_e200_s0 --method supcon --pool labeled --pool_file results/pools/holdout_fit_f0.1_s0.npy --label_fraction 0.1 --epochs 200 --seed 0
+--name hold_union_f0.1_e200_s0 --method supcon --pool all --temperature_unlabeled 0.5 --labeled_share 0.25 --pool_file results/pools/holdout_fit_f0.1_s0.npy --label_fraction 0.1 --epochs 200 --seed 0
+--name hold_supcon_f0.1_e200_s1 --method supcon --pool labeled --pool_file results/pools/holdout_fit_f0.1_s1.npy --label_fraction 0.1 --epochs 200 --seed 1
+--name hold_union_f0.1_e200_s1 --method supcon --pool all --temperature_unlabeled 0.5 --labeled_share 0.25 --pool_file results/pools/holdout_fit_f0.1_s1.npy --label_fraction 0.1 --epochs 200 --seed 1
+--name hold_supcon_f0.1_e200_s2 --method supcon --pool labeled --pool_file results/pools/holdout_fit_f0.1_s2.npy --label_fraction 0.1 --epochs 200 --seed 2
+--name hold_union_f0.1_e200_s2 --method supcon --pool all --temperature_unlabeled 0.5 --labeled_share 0.25 --pool_file results/pools/holdout_fit_f0.1_s2.npy --label_fraction 0.1 --epochs 200 --seed 2
+--name val_simclr_all_s0 --method simclr --pool all --holdout 5000 --epochs 222.9885 --seed 0
+--name unionunif_f0.1_e100_s1 --method supcon --pool all --temperature_unlabeled 0.5 --label_fraction 0.1 --epochs 100 --seed 1
+--name unionunif_f0.1_e200_s1 --method supcon --pool all --temperature_unlabeled 0.5 --label_fraction 0.1 --epochs 200 --seed 1
+--name unionunif_f0.1_e100_s2 --method supcon --pool all --temperature_unlabeled 0.5 --label_fraction 0.1 --epochs 100 --seed 2
+--name unionunif_f0.1_e200_s2 --method supcon --pool all --temperature_unlabeled 0.5 --label_fraction 0.1 --epochs 200 --seed 2
+--name union_f0.01_sh0.03_e400_s0 --method supcon --pool all --temperature_unlabeled 0.5 --labeled_share 0.03 --label_fraction 0.01 --epochs 400 --curve_points 16 --seed 0

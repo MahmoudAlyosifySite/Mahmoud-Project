@@ -1,0 +1,1 @@
+[done] union_f0.1_e100_s1: best {'head': 'lp', 'lr': 0.03, 'epochs': 240, 'reg': 'mixup'} -> test 86.04 (default recipe None)

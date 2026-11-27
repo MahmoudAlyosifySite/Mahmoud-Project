@@ -1,0 +1,5 @@
+# Third revision D: fine-tuning of the 19,400-step uniform-batch encoders (SupCon+U at 1% labels with a 3% labeled share
+# and the ResNet-50 runs were started by hand when the GPU had room: scripts in /home/jovyan/simclr_store)
+# parallel: 3
+-m dlt.finetune --name ft_unionunif_f0.1_e200_s1 --from_run unionunif_f0.1_e200_s1 --label_fraction 0.1 --seed 1
+-m dlt.finetune --name ft_unionunif_f0.1_e200_s2 --from_run unionunif_f0.1_e200_s2 --label_fraction 0.1 --seed 2

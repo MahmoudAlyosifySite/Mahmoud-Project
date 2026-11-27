@@ -36,8 +36,15 @@ a small learning rate (0.02) and for a short time. Five passes of the full-data 
 (\R{cmp:twostage-simclr:lp5:e200:ci}) and \lpall from \R{simclr_all_e200:lp50}\% to
 \R{twostage_simclr200_supcon5:lp50}\%. Longer second stages are worse (\R{twostage_simclr200_supcon25:lp5}\%
 \lpfive after 2,425 steps), and with the first-stage learning rate of 0.25 the benefit of pretraining is
-largely lost. The second stage optimises only the 5,000 labeled images, so the longer or stronger it is,
-the more it overwrites features learned from the other 45,000, which no term of its loss maintains. The
+largely lost. These settings were first chosen by comparing test accuracies. Repeating the choice on the
+validation split of \ref{app:pilot} (one seed; \cref{tab:valstage}) confirms the length: 485 steps are better than
+2,425 and 9,700 at every learning rate. It prefers a learning rate of 0.005 to 0.02, by
+\R{d:valstage:lr}\pt of \lpfive on the validation images; on the test set the stage with 0.005 reaches
+\R{twostage_simclr200_supcon5_lr0.005:lp5:pm}\% \lpfive (three seeds), against
+\R{twostage_simclr200_supcon5:lp5:pm}\% with 0.02, so the choice does not affect our conclusions, and we keep the
+setting of the earlier version. The second stage optimises only the 5,000 labeled images, so the longer or
+stronger it is, the more it overwrites features learned from the other 45,000, which no term of its loss
+maintains. The
 labels thus help inside a contrastive loss when they arrive late and briefly; the same
 loss applied from the first step ends \R{d:twostage-supcon:lp5}\pt lower. The short stage helps the linear
 probe but not fine-tuning: fine-tuning after it gives \R{twostage_simclr200_supcon5:ft:pm}\% with the default
@@ -60,25 +67,30 @@ twice the pretraining budget. Pretraining does help FixMatch when its cost is no
 \simclr encoder, FixMatch reaches \R{simclr_all_e200:fm:pm}\%, \R{d:fm-scratch:simclr}\pt above FixMatch from
 scratch with the same FixMatch budget. At equal \emph{total} compute the picture changes. 19,400 pretraining
 steps followed by FixMatch process three times the views of the reference budget (\cref{tab:compute}), and
-FixMatch from scratch with three times its budget reaches \R{fixmatch_b3_f0.1:clf:pm}\%,
-\R{cmp:fmb3-fmsimclr:diff}\pt more than \simclr followed by FixMatch (\R{cmp:fmb3-fmsimclr:ci}). A short
+FixMatch from scratch with three times its budget reaches \R{fixmatch_b3_f0.1:clf:pm}\%, which matches \simclr
+followed by FixMatch: the difference is \R{cmp:fmb3-fmsimclr:sdiff}\pt (\R{cmp:fmb3-fmsimclr:ci},
+\R{cmp:fmb3-fmsimclr:p:expr} after correction), and the equivalence test accepts a margin of $\pm1$ point
+(\R{cmp:fmb3-fmsimclr:tost:expr}). A short
 \supcon stage between \simclr and FixMatch gives \R{twostage_simclr200_supcon25:fm:pm}\%, and BYOL as the
 starting point gives \R{byol_all_e200:fm:pm}\%, so no pretrained encoder we tested beats FixMatch from
-scratch at the same total compute. The \supcon stage adds nothing because FixMatch's pseudo-labels already
-impose class structure on all images. BYOL falls behind because its features are sensitive to the learning
-rate: its best fine-tuning recipe uses 0.003 (\cref{tab:ftsearch}), while FixMatch uses 0.03. That FixMatch
-from scratch wins at equal compute is most likely because it optimises the classification of all 50,000
-images directly; given enough steps it learns the features that pretraining would supply, whereas pretraining
-spends two thirds of the budget on an objective that is only indirectly related to the task.
+scratch at the same total compute. The \supcon stage likely adds nothing because FixMatch's pseudo-labels
+already impose class structure on all images. BYOL is the strongest label-free encoder under most protocols of
+\cref{tab:protocol} but the weakest start for FixMatch, and we did not test why. One possibility is the learning
+rate: its best fine-tuning recipe uses 0.003 (\cref{tab:ftsearch}), whereas FixMatch uses 0.03, a value that
+suits the other encoders but may not suit it. That pretraining brings no gain at equal total compute is most likely because
+FixMatch optimises the classification of all 50,000 images directly; given enough steps it learns the
+features that pretraining would supply, whereas pretraining spends two thirds of the budget on an objective
+that is only indirectly related to the task.
 
 \paragraph{Summary}
 The answer to the question in the title is: not inside a contrastive loss from the first step. Within the pipelines that end with supervised
-fine-tuning, the labels are better kept out of the contrastive loss until a label-free encoder exists, and
-a short \supcon stage is the best way to put them into a contrastive loss. When semi-supervised training
+fine-tuning, the labels are better kept out of the contrastive loss until a label-free encoder exists; a
+short \supcon stage is the best way to put them into a contrastive loss, but it helps only a frozen encoder
+with a linear head. When semi-supervised training
 follows, the choice of encoder matters by less than a point. Overall, the best place for scarce labels in
 our experiments is not a contrastive loss at all but a pseudo-labeling objective: FixMatch is the strongest
-method at every budget we ran, and at equal total compute it does slightly better from scratch than after
-contrastive pretraining. This is consistent with the semi-supervised
+method at every budget we ran, and at equal total compute it does as well from scratch as after contrastive
+pretraining. This is consistent with the semi-supervised
 literature \citep{sohn2020fixmatch,li2021comatch,zheng2022simmatch,wang2022usb}, and it bounds the claim of
 this paper: we compare ways of using labels around contrastive pretraining, and we do not claim that
 contrastive pretraining is the best use of a label budget.

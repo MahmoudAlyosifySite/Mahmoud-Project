@@ -1,0 +1,249 @@
+hold_supcon_f0.1_e200_s0 [w10] {'head': 'lp', 'lr': 0.003, 'epochs': 30, 'reg': 'none'} val 79.80 (189s)
+hold_supcon_f0.1_e200_s0 [w11] {'head': 'lp', 'lr': 0.003, 'epochs': 30, 'reg': 'ls'} val 79.00 (199s)
+hold_supcon_f0.1_e200_s0 [w10] {'head': 'lp', 'lr': 0.003, 'epochs': 30, 'reg': 'mixup'} val 80.30 (351s)
+hold_supcon_f0.1_e200_s0 [w11] {'head': 'lp', 'lr': 0.003, 'epochs': 60, 'reg': 'none'} val 79.40 (488s)
+hold_supcon_f0.1_e200_s0 [w10] {'head': 'lp', 'lr': 0.003, 'epochs': 60, 'reg': 'ls'} val 79.70 (626s)
+hold_supcon_f0.1_e200_s0 [w11] {'head': 'lp', 'lr': 0.003, 'epochs': 60, 'reg': 'mixup'} val 81.80 (714s)
+hold_supcon_f0.1_e200_s0 [w10] {'head': 'lp', 'lr': 0.003, 'epochs': 120, 'reg': 'none'} val 79.60 (1172s)
+hold_supcon_f0.1_e200_s0 [w11] {'head': 'lp', 'lr': 0.003, 'epochs': 120, 'reg': 'mixup'} val 82.80 (1375s)
+hold_supcon_f0.1_e200_s0 [w1] {'head': 'lp', 'lr': 0.003, 'epochs': 120, 'reg': 'ls'} val 80.40 (678s)
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/jovyan/Mahmoud-Project/SimCLR-Vision-SSL/scripts/ft_search.py", line 261, in <module>
+    main()
+  File "/home/jovyan/Mahmoud-Project/SimCLR-Vision-SSL/scripts/ft_search.py", line 222, in main
+    os.remove(f[:-5] + ".lock")
+FileNotFoundError: [Errno 2] No such file or directory: 'results/runs/ftsearch_hold_supcon_f0.1_e200_s0/recipes/lp_lr0.003_ep120_ls.lock'
+hold_supcon_f0.1_e200_s0 [w0] {'head': 'lp', 'lr': 0.01, 'epochs': 30, 'reg': 'none'} val 79.60 (194s)
+hold_supcon_f0.1_e200_s0 [w0] {'head': 'lp', 'lr': 0.01, 'epochs': 30, 'reg': 'ls'} val 80.60 (376s)
+hold_supcon_f0.1_e200_s0 [w0] {'head': 'lp', 'lr': 0.01, 'epochs': 30, 'reg': 'mixup'} val 83.30 (557s)
+hold_supcon_f0.1_e200_s0 [w0] {'head': 'lp', 'lr': 0.01, 'epochs': 60, 'reg': 'none'} val 80.80 (879s)
+hold_supcon_f0.1_e200_s0 [w10] {'head': 'lp', 'lr': 0.003, 'epochs': 240, 'reg': 'none'} val 79.70 (2407s)
+hold_supcon_f0.1_e200_s0 [w0] {'head': 'lp', 'lr': 0.01, 'epochs': 60, 'reg': 'ls'} val 80.70 (1215s)
+hold_supcon_f0.1_e200_s0 [w11] {'head': 'lp', 'lr': 0.003, 'epochs': 240, 'reg': 'ls'} val 80.80 (2685s)
+hold_supcon_f0.1_e200_s0 [w1] {'head': 'lp', 'lr': 0.003, 'epochs': 240, 'reg': 'mixup'} val 82.70 (1994s)
+hold_supcon_f0.1_e200_s0 [w10] {'head': 'lp', 'lr': 0.01, 'epochs': 60, 'reg': 'mixup'} val 82.00 (2746s)
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/jovyan/Mahmoud-Project/SimCLR-Vision-SSL/scripts/ft_search.py", line 261, in <module>
+    main()
+  File "/home/jovyan/Mahmoud-Project/SimCLR-Vision-SSL/scripts/ft_search.py", line 217, in main
+    acc, _ = finetune(enc_sd, args.backbone, data, fit_idx, data["train_x"][vi], data["train_y"][vi], cfg,
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jovyan/Mahmoud-Project/SimCLR-Vision-SSL/scripts/ft_search.py", line 96, in finetune
+    ftr = extract_features(model.encoder, X[fi], aug.normalize)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/conda/lib/python3.12/site-packages/torch/utils/_contextlib.py", line 124, in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jovyan/Mahmoud-Project/SimCLR-Vision-SSL/dlt/models.py", line 115, in extract_features
+    h = encoder(xb)
+        ^^^^^^^^^^^
+  File "/opt/conda/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1779, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/conda/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1790, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/conda/lib/python3.12/site-packages/torchvision/models/resnet.py", line 285, in forward
+    return self._forward_impl(x)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/conda/lib/python3.12/site-packages/torchvision/models/resnet.py", line 273, in _forward_impl
+    x = self.layer1(x)
+        ^^^^^^^^^^^^^^
+  File "/opt/conda/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1779, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/conda/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1790, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/conda/lib/python3.12/site-packages/torch/nn/modules/container.py", line 253, in forward
+    input = module(input)
+            ^^^^^^^^^^^^^
+  File "/opt/conda/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1779, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/conda/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1790, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/conda/lib/python3.12/site-packages/torchvision/models/resnet.py", line 93, in forward
+    out = self.bn1(out)
+          ^^^^^^^^^^^^^
+  File "/opt/conda/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1779, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/conda/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1790, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/conda/lib/python3.12/site-packages/torch/nn/modules/batchnorm.py", line 194, in forward
+    return F.batch_norm(
+           ^^^^^^^^^^^^^
+  File "/opt/conda/lib/python3.12/site-packages/torch/nn/functional.py", line 2846, in batch_norm
+    return torch.batch_norm(
+           ^^^^^^^^^^^^^^^^^
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 250.00 MiB. GPU 0 has a total capacity of 44.42 GiB of which 175.75 MiB is free. Process 165919 has 30.00 MiB memory in use. Process 172406 has 2.00 GiB memory in use. Process 172405 has 2.00 GiB memory in use. Process 196707 has 1.84 GiB memory in use. Process 196706 has 1.84 GiB memory in use. Process 196704 has 1.84 GiB memory in use. Process 196705 has 1.84 GiB memory in use. Process 198391 has 3.12 GiB memory in use. Process 198390 has 3.07 GiB memory in use. Process 198387 has 1.84 GiB memory in use. Process 198388 has 1.82 GiB memory in use. Process 198389 has 1.84 GiB memory in use. Process 200210 has 1.84 GiB memory in use. Process 203191 has 1.29 GiB memory in use. Including non-PyTorch memory, this process has 1.39 GiB memory in use. Process 203185 has 3.73 GiB memory in use. Process 203187 has 1.64 GiB memory in use. Process 203192 has 1.39 GiB memory in use. Process 203188 has 1.39 GiB memory in use. Process 203189 has 3.71 GiB memory in use. Process 203190 has 1.15 GiB memory in use. Process 203193 has 3.71 GiB memory in use. Of the allocated memory 1.05 GiB is allocated by PyTorch, and 40.11 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/docs/stable/notes/cuda.html#optimizing-memory-usage-with-pytorch-cuda-alloc-conf)
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/jovyan/Mahmoud-Project/SimCLR-Vision-SSL/scripts/ft_search.py", line 261, in <module>
+    main()
+  File "/home/jovyan/Mahmoud-Project/SimCLR-Vision-SSL/scripts/ft_search.py", line 217, in main
+    acc, _ = finetune(enc_sd, args.backbone, data, fit_idx, data["train_x"][vi], data["train_y"][vi], cfg,
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jovyan/Mahmoud-Project/SimCLR-Vision-SSL/scripts/ft_search.py", line 96, in finetune
+    ftr = extract_features(model.encoder, X[fi], aug.normalize)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/conda/lib/python3.12/site-packages/torch/utils/_contextlib.py", line 124, in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jovyan/Mahmoud-Project/SimCLR-Vision-SSL/dlt/models.py", line 115, in extract_features
+    h = encoder(xb)
+        ^^^^^^^^^^^
+  File "/opt/conda/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1779, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/conda/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1790, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/conda/lib/python3.12/site-packages/torchvision/models/resnet.py", line 285, in forward
+    return self._forward_impl(x)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/conda/lib/python3.12/site-packages/torchvision/models/resnet.py", line 273, in _forward_impl
+    x = self.layer1(x)
+        ^^^^^^^^^^^^^^
+  File "/opt/conda/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1779, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/conda/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1790, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/conda/lib/python3.12/site-packages/torch/nn/modules/container.py", line 253, in forward
+    input = module(input)
+            ^^^^^^^^^^^^^
+  File "/opt/conda/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1779, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/conda/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1790, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/conda/lib/python3.12/site-packages/torchvision/models/resnet.py", line 93, in forward
+    out = self.bn1(out)
+          ^^^^^^^^^^^^^
+  File "/opt/conda/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1779, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/conda/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1790, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/conda/lib/python3.12/site-packages/torch/nn/modules/batchnorm.py", line 194, in forward
+    return F.batch_norm(
+           ^^^^^^^^^^^^^
+  File "/opt/conda/lib/python3.12/site-packages/torch/nn/functional.py", line 2846, in batch_norm
+    return torch.batch_norm(
+           ^^^^^^^^^^^^^^^^^
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 250.00 MiB. GPU 0 has a total capacity of 44.42 GiB of which 215.75 MiB is free. Process 165919 has 30.00 MiB memory in use. Process 172406 has 2.00 GiB memory in use. Process 172405 has 2.00 GiB memory in use. Process 196707 has 1.84 GiB memory in use. Process 196706 has 1.84 GiB memory in use. Process 196704 has 1.84 GiB memory in use. Process 196705 has 1.84 GiB memory in use. Process 198391 has 3.12 GiB memory in use. Process 198390 has 3.07 GiB memory in use. Process 198387 has 1.84 GiB memory in use. Process 198388 has 1.82 GiB memory in use. Process 198389 has 1.84 GiB memory in use. Process 200210 has 1.84 GiB memory in use. Process 203191 has 1.15 GiB memory in use. Process 203186 has 1.39 GiB memory in use. Process 203185 has 3.73 GiB memory in use. Process 203187 has 1.64 GiB memory in use. Process 203192 has 1.39 GiB memory in use. Including non-PyTorch memory, this process has 1.39 GiB memory in use. Process 203189 has 3.71 GiB memory in use. Process 203190 has 1.15 GiB memory in use. Process 203193 has 3.71 GiB memory in use. Of the allocated memory 1.05 GiB is allocated by PyTorch, and 40.11 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/docs/stable/notes/cuda.html#optimizing-memory-usage-with-pytorch-cuda-alloc-conf)
+hold_supcon_f0.1_e200_s0 [w0] {'head': 'lp', 'lr': 0.01, 'epochs': 120, 'reg': 'none'} val 80.40 (1889s)
+hold_supcon_f0.1_e200_s0 [w11] {'head': 'lp', 'lr': 0.01, 'epochs': 120, 'reg': 'ls'} val 81.40 (3432s)
+hold_supcon_f0.1_e200_s0 [w1] {'head': 'lp', 'lr': 0.01, 'epochs': 120, 'reg': 'mixup'} val 83.50 (2753s)
+hold_supcon_f0.1_e200_s0 [w0] {'head': 'lp', 'lr': 0.03, 'epochs': 30, 'reg': 'none'} val 82.40 (2108s)
+hold_supcon_f0.1_e200_s0 [w11] {'head': 'lp', 'lr': 0.03, 'epochs': 30, 'reg': 'ls'} val 81.40 (3668s)
+hold_supcon_f0.1_e200_s0 [w1] {'head': 'lp', 'lr': 0.03, 'epochs': 30, 'reg': 'mixup'} val 83.00 (2991s)
+hold_supcon_f0.1_e200_s0 [w0] {'head': 'lp', 'lr': 0.03, 'epochs': 60, 'reg': 'none'} val 82.00 (2531s)
+hold_supcon_f0.1_e200_s0 [w11] {'head': 'lp', 'lr': 0.03, 'epochs': 60, 'reg': 'ls'} val 82.30 (4118s)
+hold_supcon_f0.1_e200_s0 [w1] {'head': 'lp', 'lr': 0.03, 'epochs': 60, 'reg': 'mixup'} val 83.10 (3443s)
+hold_supcon_f0.1_e200_s0 [w10] {'head': 'lp', 'lr': 0.01, 'epochs': 240, 'reg': 'none'} val 80.10 (4257s)
+hold_supcon_f0.1_e200_s0 [w14] {'head': 'lp', 'lr': 0.01, 'epochs': 240, 'reg': 'mixup'} val 83.20 (1713s)
+hold_supcon_f0.1_e200_s0 [w15] {'head': 'lp', 'lr': 0.01, 'epochs': 240, 'reg': 'ls'} val 81.70 (1732s)
+hold_supcon_f0.1_e200_s0 [w0] {'head': 'lp', 'lr': 0.03, 'epochs': 120, 'reg': 'none'} val 81.10 (3350s)
+hold_supcon_f0.1_e200_s0 [w0] {'head': 'lp', 'lr': 0.1, 'epochs': 30, 'reg': 'none'} val 81.00 (3572s)
+hold_supcon_f0.1_e200_s0 [w11] {'head': 'lp', 'lr': 0.03, 'epochs': 120, 'reg': 'ls'} val 82.60 (4986s)
+hold_supcon_f0.1_e200_s0 [w1] {'head': 'lp', 'lr': 0.03, 'epochs': 120, 'reg': 'mixup'} val 83.60 (4317s)
+hold_supcon_f0.1_e200_s0 [w0] {'head': 'lp', 'lr': 0.1, 'epochs': 30, 'reg': 'ls'} val 83.70 (3806s)
+hold_supcon_f0.1_e200_s0 [w11] {'head': 'lp', 'lr': 0.1, 'epochs': 30, 'reg': 'mixup'} val 84.30 (5224s)
+hold_supcon_f0.1_e200_s0 [w1] {'head': 'lp', 'lr': 0.1, 'epochs': 60, 'reg': 'none'} val 81.60 (4739s)
+hold_supcon_f0.1_e200_s0 [w0] {'head': 'lp', 'lr': 0.1, 'epochs': 60, 'reg': 'ls'} val 83.50 (4254s)
+hold_supcon_f0.1_e200_s0 [w11] {'head': 'lp', 'lr': 0.1, 'epochs': 60, 'reg': 'mixup'} val 83.00 (5674s)
+hold_supcon_f0.1_e200_s0 [w10] {'head': 'lp', 'lr': 0.03, 'epochs': 240, 'reg': 'none'} val 82.40 (5870s)
+hold_supcon_f0.1_e200_s0 [w1] {'head': 'lp', 'lr': 0.1, 'epochs': 120, 'reg': 'none'} val 82.80 (5561s)
+hold_supcon_f0.1_e200_s0 [w14] {'head': 'lp', 'lr': 0.03, 'epochs': 240, 'reg': 'ls'} val 83.10 (3411s)
+hold_supcon_f0.1_e200_s0 [w15] {'head': 'lp', 'lr': 0.03, 'epochs': 240, 'reg': 'mixup'} val 85.30 (3463s)
+hold_supcon_f0.1_e200_s0 [w0] {'head': 'lp', 'lr': 0.1, 'epochs': 120, 'reg': 'ls'} val 83.30 (5127s)
+hold_supcon_f0.1_e200_s0 [w11] {'head': 'lp', 'lr': 0.1, 'epochs': 120, 'reg': 'mixup'} val 85.20 (6551s)
+hold_supcon_f0.1_e200_s0 [w15] {'head': 'lp', 'lr': 0.3, 'epochs': 30, 'reg': 'none'} val 80.60 (3682s)
+hold_supcon_f0.1_e200_s0 [w0] {'head': 'lp', 'lr': 0.3, 'epochs': 30, 'reg': 'ls'} val 81.60 (5359s)
+hold_supcon_f0.1_e200_s0 [w11] {'head': 'lp', 'lr': 0.3, 'epochs': 30, 'reg': 'mixup'} val 81.10 (6784s)
+hold_supcon_f0.1_e200_s0 [w15] {'head': 'lp', 'lr': 0.3, 'epochs': 60, 'reg': 'none'} val 82.80 (4094s)
+hold_supcon_f0.1_e200_s0 [w0] {'head': 'lp', 'lr': 0.3, 'epochs': 60, 'reg': 'ls'} val 82.00 (5783s)
+hold_supcon_f0.1_e200_s0 [w11] {'head': 'lp', 'lr': 0.3, 'epochs': 60, 'reg': 'mixup'} val 84.10 (7205s)
+hold_supcon_f0.1_e200_s0 [w10] {'head': 'lp', 'lr': 0.1, 'epochs': 240, 'reg': 'none'} val 82.40 (7426s)
+hold_supcon_f0.1_e200_s0 [w15] {'head': 'lp', 'lr': 0.3, 'epochs': 120, 'reg': 'none'} val 82.20 (4850s)
+hold_supcon_f0.1_e200_s0 [w1] {'head': 'lp', 'lr': 0.1, 'epochs': 240, 'reg': 'ls'} val 83.60 (7195s)
+hold_supcon_f0.1_e200_s0 [w14] {'head': 'lp', 'lr': 0.1, 'epochs': 240, 'reg': 'mixup'} val 85.70 (5038s)
+hold_supcon_f0.1_e200_s0 [w0] {'head': 'lp', 'lr': 0.3, 'epochs': 120, 'reg': 'ls'} val 83.30 (6600s)
+hold_supcon_f0.1_e200_s0 [w11] {'head': 'lp', 'lr': 0.3, 'epochs': 120, 'reg': 'mixup'} val 83.90 (8030s)
+hold_supcon_f0.1_e200_s0 [w14] {'head': 'random', 'lr': 0.003, 'epochs': 30, 'reg': 'none'} val 81.40 (5233s)
+hold_supcon_f0.1_e200_s0 [w0] {'head': 'random', 'lr': 0.003, 'epochs': 30, 'reg': 'ls'} val 81.20 (6815s)
+hold_supcon_f0.1_e200_s0 [w11] {'head': 'random', 'lr': 0.003, 'epochs': 30, 'reg': 'mixup'} val 81.90 (8245s)
+hold_supcon_f0.1_e200_s0 [w14] {'head': 'random', 'lr': 0.003, 'epochs': 60, 'reg': 'none'} val 82.20 (5632s)
+hold_supcon_f0.1_e200_s0 [w0] {'head': 'random', 'lr': 0.003, 'epochs': 60, 'reg': 'ls'} val 81.80 (7248s)
+hold_supcon_f0.1_e200_s0 [w11] {'head': 'random', 'lr': 0.003, 'epochs': 60, 'reg': 'mixup'} val 82.30 (8681s)
+hold_supcon_f0.1_e200_s0 [w10] {'head': 'lp', 'lr': 0.3, 'epochs': 240, 'reg': 'none'} val 82.30 (9029s)
+hold_supcon_f0.1_e200_s0 [w14] {'head': 'random', 'lr': 0.003, 'epochs': 120, 'reg': 'none'} val 81.70 (6431s)
+hold_supcon_f0.1_e200_s0 [w0] {'head': 'random', 'lr': 0.003, 'epochs': 120, 'reg': 'ls'} val 81.00 (8113s)
+hold_supcon_f0.1_e200_s0 [w15] {'head': 'lp', 'lr': 0.3, 'epochs': 240, 'reg': 'ls'} val 83.40 (6584s)
+hold_supcon_f0.1_e200_s0 [w11] {'head': 'random', 'lr': 0.003, 'epochs': 120, 'reg': 'mixup'} val 81.90 (9548s)
+hold_supcon_f0.1_e200_s0 [w1] {'head': 'lp', 'lr': 0.3, 'epochs': 240, 'reg': 'mixup'} val 83.70 (8946s)
+hold_supcon_f0.1_e200_s0 [w15] {'head': 'random', 'lr': 0.01, 'epochs': 30, 'reg': 'none'} val 81.70 (6788s)
+hold_supcon_f0.1_e200_s0 [w11] {'head': 'random', 'lr': 0.01, 'epochs': 30, 'reg': 'ls'} val 80.80 (9765s)
+hold_supcon_f0.1_e200_s0 [w1] {'head': 'random', 'lr': 0.01, 'epochs': 30, 'reg': 'mixup'} val 82.50 (9163s)
+hold_supcon_f0.1_e200_s0 [w15] {'head': 'random', 'lr': 0.01, 'epochs': 60, 'reg': 'none'} val 81.60 (7192s)
+hold_supcon_f0.1_e200_s0 [w11] {'head': 'random', 'lr': 0.01, 'epochs': 60, 'reg': 'ls'} val 81.10 (10197s)
+hold_supcon_f0.1_e200_s0 [w1] {'head': 'random', 'lr': 0.01, 'epochs': 60, 'reg': 'mixup'} val 82.60 (9599s)
+hold_supcon_f0.1_e200_s0 [w10] {'head': 'random', 'lr': 0.003, 'epochs': 240, 'reg': 'none'} val 81.60 (10652s)
+hold_supcon_f0.1_e200_s0 [w15] {'head': 'random', 'lr': 0.01, 'epochs': 120, 'reg': 'none'} val 81.30 (8003s)
+hold_supcon_f0.1_e200_s0 [w14] {'head': 'random', 'lr': 0.003, 'epochs': 240, 'reg': 'ls'} val 81.00 (8140s)
+hold_supcon_f0.1_e200_s0 [w11] {'head': 'random', 'lr': 0.01, 'epochs': 120, 'reg': 'ls'} val 81.10 (11060s)
+hold_supcon_f0.1_e200_s0 [w1] {'head': 'random', 'lr': 0.01, 'epochs': 120, 'reg': 'mixup'} val 83.60 (10467s)
+hold_supcon_f0.1_e200_s0 [w0] {'head': 'random', 'lr': 0.003, 'epochs': 240, 'reg': 'mixup'} val 82.40 (9856s)
+hold_supcon_f0.1_e200_s0 [w11] {'head': 'random', 'lr': 0.03, 'epochs': 30, 'reg': 'none'} val 81.90 (11263s)
+hold_supcon_f0.1_e200_s0 [w1] {'head': 'random', 'lr': 0.03, 'epochs': 30, 'reg': 'ls'} val 81.60 (10684s)
+hold_supcon_f0.1_e200_s0 [w0] {'head': 'random', 'lr': 0.03, 'epochs': 30, 'reg': 'mixup'} val 82.10 (10075s)
+hold_supcon_f0.1_e200_s0 [w11] {'head': 'random', 'lr': 0.03, 'epochs': 60, 'reg': 'none'} val 81.90 (11667s)
+hold_supcon_f0.1_e200_s0 [w1] {'head': 'random', 'lr': 0.03, 'epochs': 60, 'reg': 'ls'} val 82.00 (11117s)
+hold_supcon_f0.1_e200_s0 [w0] {'head': 'random', 'lr': 0.03, 'epochs': 60, 'reg': 'mixup'} val 83.40 (10512s)
+hold_supcon_f0.1_e200_s0 [w10] {'head': 'random', 'lr': 0.01, 'epochs': 240, 'reg': 'none'} val 81.60 (12273s)
+hold_supcon_f0.1_e200_s0 [w11] {'head': 'random', 'lr': 0.03, 'epochs': 120, 'reg': 'none'} val 81.70 (12475s)
+hold_supcon_f0.1_e200_s0 [w1] {'head': 'random', 'lr': 0.03, 'epochs': 120, 'reg': 'ls'} val 82.00 (11979s)
+hold_supcon_f0.1_e200_s0 [w15] {'head': 'random', 'lr': 0.01, 'epochs': 240, 'reg': 'ls'} val 81.80 (9733s)
+hold_supcon_f0.1_e200_s0 [w14] {'head': 'random', 'lr': 0.01, 'epochs': 240, 'reg': 'mixup'} val 83.50 (9861s)
+hold_supcon_f0.1_e200_s0 [w0] {'head': 'random', 'lr': 0.03, 'epochs': 120, 'reg': 'mixup'} val 84.40 (11383s)
+hold_supcon_f0.1_e200_s0 [w15] {'head': 'random', 'lr': 0.1, 'epochs': 30, 'reg': 'none'} val 83.00 (9935s)
+hold_supcon_f0.1_e200_s0 [w14] {'head': 'random', 'lr': 0.1, 'epochs': 30, 'reg': 'ls'} val 83.10 (10075s)
+hold_supcon_f0.1_e200_s0 [w0] {'head': 'random', 'lr': 0.1, 'epochs': 30, 'reg': 'mixup'} val 83.90 (11601s)
+hold_supcon_f0.1_e200_s0 [w15] {'head': 'random', 'lr': 0.1, 'epochs': 60, 'reg': 'none'} val 82.20 (10332s)
+hold_supcon_f0.1_e200_s0 [w14] {'head': 'random', 'lr': 0.1, 'epochs': 60, 'reg': 'ls'} val 83.20 (10488s)
+hold_supcon_f0.1_e200_s0 [w0] {'head': 'random', 'lr': 0.1, 'epochs': 60, 'reg': 'mixup'} val 84.50 (12021s)
+hold_supcon_f0.1_e200_s0 [w10] {'head': 'random', 'lr': 0.03, 'epochs': 240, 'reg': 'none'} val 83.00 (13819s)
+hold_supcon_f0.1_e200_s0 [w15] {'head': 'random', 'lr': 0.1, 'epochs': 120, 'reg': 'none'} val 83.10 (11043s)
+hold_supcon_f0.1_e200_s0 [w11] {'head': 'random', 'lr': 0.03, 'epochs': 240, 'reg': 'ls'} val 83.20 (14079s)
+hold_supcon_f0.1_e200_s0 [w14] {'head': 'random', 'lr': 0.1, 'epochs': 120, 'reg': 'ls'} val 84.10 (11228s)
+hold_supcon_f0.1_e200_s0 [w0] {'head': 'random', 'lr': 0.1, 'epochs': 120, 'reg': 'mixup'} val 84.30 (12773s)
+hold_supcon_f0.1_e200_s0 [w1] {'head': 'random', 'lr': 0.03, 'epochs': 240, 'reg': 'mixup'} val 83.70 (13563s)
+hold_supcon_f0.1_e200_s0 [w14] {'head': 'random', 'lr': 0.3, 'epochs': 30, 'reg': 'none'} val 78.60 (11399s)
+hold_supcon_f0.1_e200_s0 [w0] {'head': 'random', 'lr': 0.3, 'epochs': 30, 'reg': 'ls'} val 83.90 (12957s)
+hold_supcon_f0.1_e200_s0 [w1] {'head': 'random', 'lr': 0.3, 'epochs': 30, 'reg': 'mixup'} val 83.60 (13741s)
+hold_supcon_f0.1_e200_s0 [w14] {'head': 'random', 'lr': 0.3, 'epochs': 60, 'reg': 'none'} val 81.80 (11722s)
+hold_supcon_f0.1_e200_s0 [w0] {'head': 'random', 'lr': 0.3, 'epochs': 60, 'reg': 'ls'} val 82.80 (13305s)
+hold_supcon_f0.1_e200_s0 [w1] {'head': 'random', 'lr': 0.3, 'epochs': 60, 'reg': 'mixup'} val 84.50 (14090s)
+hold_supcon_f0.1_e200_s0 [w10] {'head': 'random', 'lr': 0.1, 'epochs': 240, 'reg': 'none'} val 82.80 (15128s)
+hold_supcon_f0.1_e200_s0 [w14] {'head': 'random', 'lr': 0.3, 'epochs': 120, 'reg': 'none'} val 82.00 (12328s)
+hold_supcon_f0.1_e200_s0 [w0] {'head': 'random', 'lr': 0.3, 'epochs': 120, 'reg': 'ls'} val 82.50 (13943s)
+hold_supcon_f0.1_e200_s0 [w15] {'head': 'random', 'lr': 0.1, 'epochs': 240, 'reg': 'ls'} val 82.10 (12391s)
+hold_supcon_f0.1_e200_s0 [w11] {'head': 'random', 'lr': 0.1, 'epochs': 240, 'reg': 'mixup'} val 85.50 (15398s)
+hold_supcon_f0.1_e200_s0 [w1] {'head': 'random', 'lr': 0.3, 'epochs': 120, 'reg': 'mixup'} val 83.90 (14691s)
+hold_supcon_f0.1_e200_s0 [w10] {'head': 'random', 'lr': 0.3, 'epochs': 240, 'reg': 'none'} val 82.50 (15813s)
+hold_supcon_f0.1_e200_s0 [w2] {'head': 'random', 'lr': 0.3, 'epochs': 240, 'reg': 'ls'} val 83.50 (710s)
+hold_supcon_f0.1_e200_s0 [w14] {'head': 'random', 'lr': 0.3, 'epochs': 240, 'reg': 'mixup'} val 84.00 (12943s)
+[done] hold_supcon_f0.1_e200_s0: best {'head': 'lp', 'lr': 0.1, 'epochs': 240, 'reg': 'mixup'} -> test 87.31 (default recipe 82.40000009536743)

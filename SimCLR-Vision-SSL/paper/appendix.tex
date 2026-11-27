@@ -63,9 +63,38 @@ The two design choices of \union (temperatures and the share of labeled images p
 validation split: 5,000 training images were held out, the methods were trained for 4,850 steps on the
 remaining 45,000, and the probes were evaluated on the held-out images (\cref{tab:pilot}, one seed). The
 test set was not used. Uniform batches, in which about 10\% of the images are labeled, were the second-best
-variant; we kept it as an ablation, and at 9,700 and 19,400 steps on the test set it reaches
-\R{unionunif_f0.1_e100:lp50}\% and \R{unionunif_f0.1_e200:lp50}\% \lpall and \R{unionunif_f0.1_e100:ft}\% and
-\R{unionunif_f0.1_e200:ft}\% \ftfive (one seed), which does not change any conclusion.
+variant, and we kept it as an ablation. On the test set, with three seeds, it reaches \R{unionunif_f0.1_e100:lp50:pm}\%
+and \R{unionunif_f0.1_e200:lp50:pm}\% \lpall at 9,700 and 19,400 steps (the chosen variant:
+\R{union_f0.1_e100:lp50:pm}\% and \R{union_f0.1_e200:lp50:pm}\%) and \R{unionunif_f0.1_e100:ft:pm}\% and
+\R{unionunif_f0.1_e200:ft:pm}\% \ftfive (\R{union_f0.1_e100:ft:pm}\% and \R{union_f0.1_e200:ft:pm}\%). Under the
+oracle-label probe the two variants are close (\R{cmp:unionunif-union:lp50:e100:sdiff}\pt at 9,700 steps,
+\R{cmp:unionunif-union:lp50:e100:ci}, equivalent within one point; \R{cmp:unionunif-union:lp50:e200:sdiff}\pt at
+19,400), but after fine-tuning the uniform variant is better at both budgets
+(\R{cmp:unionunif-union:ft:e100:sdiff}\pt, \R{cmp:unionunif-union:ft:e100:ci}, and
+\R{cmp:unionunif-union:ft:e200:sdiff}\pt, \R{cmp:unionunif-union:ft:e200:ci}). The validation comparison scored the
+variants with linear probes, which hardly separate them, so it could not anticipate this. A likely reason for the
+difference is that uniform batches give about 90\% instead of 75\% of every batch to instance discrimination over
+all images, the part of the loss that keeps improving the label-free arm. No conclusion changes: after fine-tuning
+the uniform variant stays \R{d:simclr-unionunif:ft:e100}\pt (9,700 steps) and \R{d:simclr-unionunif:ft:e200}\pt
+(19,400 steps) below \simclr, while under the oracle-label probe at 9,700 steps it is
+\R{d:simclr-unionunif:lp50:e100}\pt above it, so with this variant the oracle-label probe would overstate
+\union even more.
+
+The same validation split was used, after the second revision, to check the length and learning rate of the
+\simclr{}$\to$\supcon stage of \cref{sec:where}, which had been chosen on test accuracies. A \simclr encoder was
+trained on the 45,000 remaining images for 19,400 steps, continued with \supcon on their 10\% labeled subset (4,500
+images) for 485, 2,425 or 9,700 steps with three learning rates, and probed on the 5,000 held-out images
+(\cref{tab:valstage}). The best setting is 485 steps with learning rate \R{valstage:best:lr}.
+
+\begin{table}[h]
+\centering
+\small
+\caption{Choosing the \simclr{}$\to$\supcon stage on the validation split (45,000 training images, 4,500 labels, one
+seed; accuracy in \% on 5,000 held-out training images; the test set is not used). ``LP (4,500 labels)'' is the
+counterpart of \lpfive, ``LP (45,000 labels)'' of \lpall.}
+\label{tab:valstage}
+\input{generated/tab_valstage.tex}
+\end{table}
 
 \begin{table}[h]
 \centering
@@ -106,7 +135,7 @@ The class means of the encoder features in \cref{sec:geometry} are also used for
 statistics that we report in the repository: the deviation from a simplex equiangular tight frame,
 $\frac{1}{C(C-1)}\sum_{c\neq c'}\bigl|\cos(\tilde\mu_c,\tilde\mu_{c'})+\tfrac{1}{C-1}\bigr|$ with
 $\tilde\mu_c=\mu_c-\frac1C\sum_{k}\mu_k$, and the coefficient of variation of the norms
-$\lVert\tilde\mu_c\rVert$ (both are zero for a simplex ETF; \citealp{papyan2020neural}).
+$\lVert\tilde\mu_c\rVert$ (both are zero for a simplex ETF \citep{papyan2020neural}).
 
 \paragraph{Reference spaces}
 The \simclr reference encoder was trained on all images for 9,700 steps (seed 0) and never saw a label. The
@@ -137,8 +166,19 @@ accuracies obtained on them.
 
 \paragraph{Pool size}
 For random pools the spread is flat in the pool size while the coverage radius decreases monotonically from
-1\% of the data to all of it, in both reference spaces and in pixel space. Spread therefore cannot explain
-why a larger pool is better; the coverage radius can.
+1\% of the data to all of it, in both reference spaces and in pixel space (\cref{tab:poolsize}). Spread therefore
+cannot explain why a larger pool is better; the coverage radius can.
+
+\begin{table}[h]
+\centering
+\small
+\caption{Coverage radius and spread of random class-balanced pools of increasing size (CIFAR-10, mean over
+seeds; cosine distances in the two reference spaces and in pixel space).}
+\label{tab:poolsize}
+\begin{adjustbox}{max width=\linewidth}
+\input{generated/tab_poolsize.tex}
+\end{adjustbox}
+\end{table}
 
 \section{Additional results}
 \label{app:extra}
@@ -197,7 +237,8 @@ labels.}
 \centering
 \small
 \caption{Choosing the fine-tuning recipe (CIFAR-10, 5,000 labels, encoders at 19,400 steps; grid of 72
-recipes). ``Label split'': recipe chosen on 1,000 of the 5,000 labels; the selection score is the validation
+recipes, widened to 120 recipes, with learning rates up to 0.3 and up to 240 passes, for the oracle choice of
+\supcon and \union). ``Label split'': recipe chosen on 1,000 of the 5,000 labels; the selection score is the validation
 accuracy. ``Test set (oracle)'': recipe chosen on the test set of seed 0, an upper bound; the selection score
 is the test accuracy of seed 0, and the last column reports the other two seeds. ``Recipe of \simclr'': the
 label-split choice for \simclr applied to another encoder. Test accuracy is the mean $\pm$ standard deviation
@@ -234,7 +275,7 @@ accuracy over the checkpoints of the run, an upper bound on early stopping.}
 encoder reaches \R{simclr_exp2_e100:lp50}\% and loses most of it when the test images are converted to
 grayscale (\R{simclr_exp2_e100:linear_acc_gray}\%); its features are closer to the colour histogram of the
 image than to the class label (linear CKA \R{simclr_exp2_e100:cka_hist} against
-\R{simclr_exp2_e100:cka_label}; \citealp{kornblith2019cka}). A linear classifier on the $8^3$-bin colour
+\R{simclr_exp2_e100:cka_label} \citep{kornblith2019cka}). A linear classifier on the $8^3$-bin colour
 histogram alone reaches \R{histprobe}\%. Random grayscale removes most of the dependence on colour, and
 colour jitter and grayscale together give the default accuracy. These runs use one seed and confirm earlier
 reports \citep{chen2020simclr,chen2021intriguing,robinson2021can,geirhos2020shortcut}.
@@ -256,15 +297,18 @@ explained by a ridge regression on the features.}
 \label{app:audit}
 To see whether unequal compute is a problem in practice, we read the experimental sections of 26 papers
 (2019--2025) in which one arm is trained on a labeled subset, or with a labeled subset, and is compared with
-an arm trained on a larger pool. Nine papers turned out not to make such a comparison. \Cref{tab:audit}
-classifies the other 17. The reading was done from the text of the papers only, without their code, by one
-reader; ``unclear'' means that we could not recover the budget of at least one arm from the paper, not that
-the comparison is unfair.
+an arm trained on a larger pool. Ten papers turned out not to make such a comparison; among them is
+\citet{cole2022when}, whose pools of different size are all used for self-supervised pretraining without
+labels. \Cref{tab:audit} classifies the other 16. The reading was done from the text of the papers only,
+without their code, by one reader; ``unclear'' means that we could not recover the budget of at least one arm
+from the paper, not that the comparison is unfair. Because of the single reader, we do not name the paper
+in the category of unmatched comparisons; the evidence for its verdict (quotations with their location) is
+in the repository.
 
 \begin{table}[h]
 \centering
 \small
-\caption{Budget reporting in 17 published comparisons between a labeled-subset arm and a larger-pool arm.}
+\caption{Budget reporting in 16 published comparisons between a labeled-subset arm and a larger-pool arm.}
 \label{tab:audit}
 \begin{adjustbox}{max width=\linewidth}
 \begin{tabular}{p{0.20\linewidth} p{0.46\linewidth} p{0.30\linewidth}}
@@ -280,8 +324,8 @@ unequal but disclosed (3) &
 \citet{zhai2019s4l}, \citet{Cai2022SemiViT}, \citet{zoph2020rethinking} &
 epochs defined on the labeled set, or each arm trained to convergence \\
 \addlinespace
-equal epochs over pools of different size (2) &
-\citet{Benato2023Linking}, \citet{cole2022when} &
+equal epochs over pools of different size (1) &
+one application paper (not named; see the text) &
 the same number of epochs for every pool, no discussion of steps \\
 \addlinespace
 unclear (5) &
@@ -296,5 +340,5 @@ one ``epochs'' column without a definition, or no budget for the baseline \\
 The trap described in \cref{sec:compute} is therefore not common in this sample: most well-known papers
 match iterations or report the two budgets separately. The more frequent issue is that the unit of the
 budget is not stated in a way that lets a reader check the match. Our sample is small and leans towards
-widely cited self- and semi-supervised papers, so it says little about application papers, where
-\citet{Benato2023Linking} is an example of the unmatched comparison.
+widely cited self- and semi-supervised papers, so it says little about application papers, which is where
+we found the one unmatched comparison.

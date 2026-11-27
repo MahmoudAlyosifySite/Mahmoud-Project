@@ -1,0 +1,5 @@
+# Third revision E2: fine-tuning of the validation-chosen stage (after rev3_pE_stage.txt)
+# parallel: 3
+-m dlt.finetune --name ft_twostage_simclr200_supcon5_lr0.005_s0 --from_run twostage_simclr200_supcon5_lr0.005_s0 --label_fraction 0.1 --seed 0
+-m dlt.finetune --name ft_twostage_simclr200_supcon5_lr0.005_s1 --from_run twostage_simclr200_supcon5_lr0.005_s1 --label_fraction 0.1 --seed 1
+-m dlt.finetune --name ft_twostage_simclr200_supcon5_lr0.005_s2 --from_run twostage_simclr200_supcon5_lr0.005_s2 --label_fraction 0.1 --seed 2

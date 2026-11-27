@@ -1,15 +1,17 @@
 Supervised contrastive learning can use labels during pretraining, but in practice labels are scarce and
 unlabeled images are plentiful. Should the few labels go inside the contrastive loss, or be kept until
-after label-free pretraining? Two confounds make this hard to answer: the compute that each method
-receives, and evaluations that use labels the practitioner does not have. We remove both with a
-compute-matched $2\times2$ design that separates the use of labels from the choice of images: SimCLR and
-supervised contrastive learning (SupCon), each trained on the labeled subset or on all images, with the same
-number of gradient steps, on CIFAR-10, CIFAR-100, STL-10 and Tiny-ImageNet. Three results stand out. First, labels inside
+after label-free pretraining? Two confounds hide the answer: unequal compute, and evaluations that use labels
+the practitioner does not have. We remove both with a compute-matched $2\times2$ design: SimCLR and supervised
+contrastive learning (SupCon), each trained on the labeled subset or on all images for the same number of
+gradient steps, on CIFAR-10, CIFAR-100, STL-10 and Tiny-ImageNet. Three results stand out. First, labels inside
 the loss buy speed, not a better end point: with 10\% of the CIFAR-10 labels, SupCon leads SimCLR by
 \R{d:simclr-supcon:lp50:e10}\pt after 970 steps and trails it by \R{long:d:simclr-supcon}\pt after
-\R{long:steps}. Second, the evaluation protocol decides the ranking: the standard linear probe, trained with
-all labels, ranks a semi-supervised SupCon first, while fine-tuning on the same 5,000 labels ranks it last.
-Third, a simple diagnostic explains the reversal: encoders that use labels make classes tight on the labeled
-images, but not on images seen without a label or never seen. Within contrastive pretraining, scarce labels
-are better kept out of a SupCon-style loss and spent afterwards: in fine-tuning, in a short supervised
-contrastive stage or, best in our experiments, in semi-supervised training.
+\R{long:steps}. Second, the standard linear probe, trained with all labels, overstates label-using encoders:
+after 9,700 steps it puts a semi-supervised SupCon \R{cmp:simclr-union:lp50:e100:diff}\pt ahead of SimCLR, whereas
+fine-tuning on the same 5,000 labels puts it \R{cmp:simclr-union:ft:e100:diff}\pt behind, or level when each
+encoder gets its best recipe; with longer training SimCLR leads under every probe and recipe. Third, a seen/unseen
+diagnostic agrees: label-using encoders make classes several times tighter on their labeled images than on any
+other images. Within contrastive pretraining, scarce labels are better spent after label-free pretraining: in
+fine-tuning, in a short supervised contrastive stage for a frozen encoder or, best in our experiments, in
+semi-supervised training. Budgets should be counted in steps, and encoders evaluated with the available
+labels.
