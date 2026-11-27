@@ -302,8 +302,9 @@ def newversion(a):
         print(f"created draft of version 2.0: {state['html']}")
     dep = f"{API}/deposit/depositions/{state['id']}"
     replaced = (CODE_ARCHIVE, "README.md", "SHA256SUMS.txt", "checkpoint_index.json")
-    for f in call("GET", f"{dep}/files", tok).json():
-        if f["filename"] in replaced and f["filesize"] != os.path.getsize(os.path.join(a.staging, f["filename"])):
+    for f in call("GET", f"{dep}/files", tok).json():      # replaced files are compared by checksum, not size
+        local = os.path.join(a.staging, f["filename"])
+        if f["filename"] in replaced and f["checksum"].split(":")[-1] != hashlib.md5(open(local, "rb").read()).hexdigest():
             call("DELETE", f"{dep}/files/{f['id']}", tok)
             print(f"removed from the draft: {f['filename']} (version 1.0)")
     upload(a)
