@@ -1,5 +1,13 @@
 # Budget-reporting audit: do published label-efficiency comparisons equalise training budget?
 
+> **Third revision (2026-11-26).** On a second reading, Cole et al. (2022) do not meet the inclusion criterion: all
+> their pools of different size are used for self-supervised pretraining without labels, and their only
+> labeled-subset arm (supervised training from scratch, their Figure 2) is plotted against the number of labeled
+> images, not compared with a larger pretraining pool. The paper therefore counts 16 applicable papers: 7 matched or
+> accounted, 3 unequal but disclosed, 1 equal epochs over pools of different size, 5 unclear. The audit had a single
+> reader, so the paper does not name the paper in the "equal epochs" category; its evidence is the Benato et al.
+> (2023) paragraph below. The tables and counts further down are those of the first reading.
+
 Method: 26 papers read via ar5iv HTML (text search of setup/appendix sections, then reading hits). Limits: ar5iv strips some math/numbers; FixMatch (conversion failed) and Inoue & Goto 2020 (speaker-recognition, not images) were NOT audited; one reader, no code inspected (so "UNCLEAR" = not recoverable from text). BibTeX: DBLP is bot-walled for automated requests, so metadata is from the arXiv API and venues are given only when arXiv's own fields state them (see budget_audit.bib header).
 
 ## Table
