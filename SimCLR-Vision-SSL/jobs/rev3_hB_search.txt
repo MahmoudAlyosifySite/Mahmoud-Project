@@ -1,0 +1,13 @@
+# Third revision, round 2: recipe selection on the held-out 1,000 labels at 9,700 steps (widened grid, 120 recipes;
+# each search shared by 5 worker processes)
+# parallel: 10
+-m scripts.ft_search --name ftsearch_hold_supcon_f0.1_e100_s0 --from_run hold_supcon_f0.1_e100_s0 --seed 0 --grid ext --worker 0
+-m scripts.ft_search --name ftsearch_hold_supcon_f0.1_e100_s0 --from_run hold_supcon_f0.1_e100_s0 --seed 0 --grid ext --worker 1
+-m scripts.ft_search --name ftsearch_hold_supcon_f0.1_e100_s0 --from_run hold_supcon_f0.1_e100_s0 --seed 0 --grid ext --worker 2
+-m scripts.ft_search --name ftsearch_hold_supcon_f0.1_e100_s0 --from_run hold_supcon_f0.1_e100_s0 --seed 0 --grid ext --worker 3
+-m scripts.ft_search --name ftsearch_hold_supcon_f0.1_e100_s0 --from_run hold_supcon_f0.1_e100_s0 --seed 0 --grid ext --worker 4
+-m scripts.ft_search --name ftsearch_hold_union_f0.1_e100_s0 --from_run hold_union_f0.1_e100_s0 --seed 0 --grid ext --worker 0
+-m scripts.ft_search --name ftsearch_hold_union_f0.1_e100_s0 --from_run hold_union_f0.1_e100_s0 --seed 0 --grid ext --worker 1
+-m scripts.ft_search --name ftsearch_hold_union_f0.1_e100_s0 --from_run hold_union_f0.1_e100_s0 --seed 0 --grid ext --worker 2
+-m scripts.ft_search --name ftsearch_hold_union_f0.1_e100_s0 --from_run hold_union_f0.1_e100_s0 --seed 0 --grid ext --worker 3
+-m scripts.ft_search --name ftsearch_hold_union_f0.1_e100_s0 --from_run hold_union_f0.1_e100_s0 --seed 0 --grid ext --worker 4

@@ -36,13 +36,13 @@ a small learning rate (0.02) and for a short time. Five passes of the full-data 
 (\R{cmp:twostage-simclr:lp5:e200:ci}) and \lpall from \R{simclr_all_e200:lp50}\% to
 \R{twostage_simclr200_supcon5:lp50}\%. Longer second stages are worse (\R{twostage_simclr200_supcon25:lp5}\%
 \lpfive after 2,425 steps), and with the first-stage learning rate of 0.25 the benefit of pretraining is
-largely lost. These settings were first chosen by comparing test accuracies. Repeating the choice on the
-validation split of \ref{app:pilot} (one seed; \cref{tab:valstage}) confirms the length: 485 steps are better than
+largely lost. These settings were chosen by comparing test accuracies. The same choice made on the validation
+split of \ref{app:pilot} (one seed; \cref{tab:valstage}) confirms the length: 485 steps are better than
 2,425 and 9,700 at every learning rate. It prefers a learning rate of 0.005 to 0.02, by
 \R{d:valstage:lr}\pt of \lpfive on the validation images; on the test set the stage with 0.005 reaches
 \R{twostage_simclr200_supcon5_lr0.005:lp5:pm}\% \lpfive (three seeds), against
-\R{twostage_simclr200_supcon5:lp5:pm}\% with 0.02, so the choice does not affect our conclusions, and we keep the
-setting of the earlier version. The second stage optimises only the 5,000 labeled images, so the longer or
+\R{twostage_simclr200_supcon5:lp5:pm}\% with 0.02, so the choice does not affect our conclusions; we report the
+stage with 0.02 throughout. The second stage optimises only the 5,000 labeled images, so the longer or
 stronger it is, the more it overwrites features learned from the other 45,000, which no term of its loss
 maintains. The
 labels thus help inside a contrastive loss when they arrive late and briefly; the same

@@ -1,0 +1,9 @@
+[run] hold_union_f0.1_e100_s2: supcon | pool 50000 | labeled 4000 | 9700 steps | lr 0.25 wd 0.0001 tau 0.1
+  step   1212/9700  loss 5.8082  knn 77.19  (519s)
+  step   2425/9700  loss 5.4839  knn 79.76  (1020s)
+  step   3638/9700  loss 5.3024  knn 80.58  (1521s)
+  step   4850/9700  loss 5.0827  knn 80.81  (2022s)
+  step   6062/9700  loss 4.9931  knn 81.39  (2523s)
+  step   7275/9700  loss 4.9552  knn 81.95  (3024s)
+  step   8488/9700  loss 4.8817  knn 82.00  (3526s)
+[done] hold_union_f0.1_e100_s2: linear_acc 84.38  knn_acc 82.10  linear_lab_acc 79.03  | train 66.9 min

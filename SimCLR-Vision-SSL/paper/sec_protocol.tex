@@ -1,4 +1,4 @@
-\section{Results II: the oracle-label probe overstates label-using encoders}
+\section{Results II: the protocol and the use of the labels change the comparison}
 \label{sec:protocol}
 
 The comparison of \cref{sec:results} used a probe that sees 50,000 labels. A practitioner with a 5,000-label
@@ -97,10 +97,10 @@ of seed 0, took the best one for each encoder, and applied it to the other seeds
 reaches \R{supcon_lab_f0.1_e200:fto:pm}\%, \R{d:fto-ft:supcon_lab_f0.1_e200}\pt above the default; for \union the
 best recipe (\R{ftx:fto:union_f0.1_e200:recipe}) reaches \R{union_f0.1_e200:fto:pm}\%, and for \simclr
 (\R{ftgrid:simclr_all_e200:recipe}) \R{simclr_all_e200:fto:pm}\%. Widening the grid barely matters: on seed 0 the
-best of the 48 new recipes differs from the best of the original 72 by \R{ftx:fto:supcon_lab_f0.1_e200:gain}\pt for
+best of the 48 recipes outside the 72-recipe grid differs from the best inside it by \R{ftx:fto:supcon_lab_f0.1_e200:gain}\pt for
 \supcon and \R{ftx:fto:union_f0.1_e200:gain}\pt for \union. A learning rate of 0.3 is worse than 0.1 for both, and
 240 passes add at most a few tenths of a point to 120, so the accuracy has saturated in both directions, although
-the best recipes now use the largest number of passes. The concern is therefore partly justified: starting from the linear probe
+the best recipes use the largest number of passes. The concern is therefore partly justified: starting from the linear probe
 without regularisation under-uses the label-using encoders, and about half of their fine-tuning deficit is the
 recipe. With the best recipe for each encoder, the advantage of \simclr over \supcon shrinks from
 \R{cmp:simclr-supcon:ft:e200:diff}\pt to \R{cmp:simclr-supcon:fto:e200:diff}\pt (\R{cmp:simclr-supcon:fto:e200:ci}),
@@ -114,8 +114,8 @@ the three encoders are level (\cref{tab:reversal}): \simclr reaches \R{simclr_al
 \R{supcon_lab_f0.1_e100:fto:pm}\% and \union \R{union_f0.1_e100:fto:pm}\%, and both differences lie within the
 $\pm1$-point equivalence margin (\simclr $-$ \supcon \R{cmp:simclr-supcon:fto:e100:sdiff}\pt, TOST
 \R{cmp:simclr-supcon:fto:e100:tost:expr}; \simclr $-$ \union \R{cmp:simclr-union:fto:e100:sdiff}\pt, TOST
-\R{cmp:simclr-union:fto:e100:tost:expr}). The reversal at this budget therefore rests on the recipes that a
-practitioner can actually select, not on the best recipe that exists. What survives every recipe is that the
+\R{cmp:simclr-union:fto:e100:tost:expr}). When all labels went into pretraining, the reversal at this budget
+therefore rests on the recipes that a practitioner can actually select, not on the best recipe that exists. What survives every recipe is that the
 oracle-label probe overstates \union: it puts \union \R{cmp:simclr-union:lp50:e100:diff}\pt ahead
 of \simclr, whereas with the 5,000 labels \union is at best level with \simclr (oracle recipe) and
 \R{cmp:simclr-union:ft:e100:diff}--\R{cmp:simclr-union:fts:e100:diff}\pt behind it with the default or the selected
@@ -123,38 +123,52 @@ recipe.
 
 \paragraph{Holding out labels for selection}
 The failure of the label-budget selection is a property of how the labels were spent, and a practitioner can
-avoid it by holding out some labels before pretraining. We pretrained \supcon and \union for 19,400 steps with
-4,000 of the 5,000 labels in the loss and used the other 1,000, which the encoder saw at most as unlabeled
-images, to choose the fine-tuning recipe (on the widened grid of 120 recipes) and the regularisation strength of
-\lpfive; the final probe and fine-tuning use all 5,000 labels (\cref{tab:heldout}, three seeds). The held-out
-images behave like unseen images (CDNV \R{hold:hold_supcon_f0.1_e200:cdnv_heldout} for \supcon, against
+avoid it by holding out some labels before pretraining. We pretrained \supcon and \union for 9,700 and for 19,400
+steps with 4,000 of the 5,000 labels in the loss and used the other 1,000, which the encoder saw at most as unlabeled
+images, to choose the fine-tuning recipe (on the widened grid of 120 recipes, on seed 0, applied to the other seeds as
+for the selected recipe of \simclr) and the regularisation strength of \lpfive; the final probe and fine-tuning
+use all 5,000 labels (\cref{tab:heldout}, three seeds). The held-out
+images behave like unseen images (at 19,400 steps CDNV \R{hold:hold_supcon_f0.1_e200:cdnv_heldout} for \supcon, against
 \R{hold:hold_supcon_f0.1_e200:cdnv_fit} on the 4,000 labels in the loss and \R{hold:hold_supcon_f0.1_e200:cdnv_test}
 on test images), so the validation score is informative again: it ranges up to
 \R{hold:hold_supcon_f0.1_e200:valmax}\% for \supcon and \R{hold:hold_union_f0.1_e200:valmax}\% for \union, instead of
-100\%. With the recipe chosen this way, \supcon reaches \R{hold_supcon_f0.1_e200:ftt:pm}\% and \union
-\R{hold_union_f0.1_e200:ftt:pm}\% after fine-tuning, against \R{simclr_all_e200:fts:pm}\% for \simclr with its own
-label-budget selection (\simclr $-$ \supcon \R{cmp:simclr-holdsupcon:ftt:sdiff}\pt,
-\R{cmp:simclr-holdsupcon:ftt:ci}; \simclr $-$ \union \R{cmp:simclr-holdunion:ftt:sdiff}\pt,
-\R{cmp:simclr-holdunion:ftt:ci}). Under \lpfive, with the regularisation chosen on the held-out labels, they reach
-\R{hold_supcon_f0.1_e200:lp5ho:pm}\% and \R{hold_union_f0.1_e200:lp5ho:pm}\%, against \R{simclr_all_e200:lp5:pm}\% for
-\simclr. On the same seeds, \union with all 5,000 labels in the loss, whose probe regularisation was chosen on
-labels it had seen, reaches \R{s3:union_f0.1_e200:lp5}\% (\cref{tab:heldout}); the difference
-(\R{d:union-hold:lp5}\pt) is below one point and within the spread of three seeds, so we cannot tell whether part
-of its \lpfive penalty came from how the regularisation was chosen. \supcon, which loses a fifth of its labeled
-images, ends lower than with all of them (\R{s3:supcon_lab_f0.1_e200:lp5}\%). Holding out labels thus restores the selection, at the price of a fifth of the labels in the loss
-(\lpall falls from \R{s3:supcon_lab_f0.1_e200:lp50}\% to \R{s3:hold_supcon_f0.1_e200:lp50}\% for \supcon on the same seeds), and it does
-not close the gap to label-free pretraining at this budget.
+100\%.
+
+The outcome depends on the budget. At 9,700 steps, where the best recipes are level, the recipe chosen on the held-out
+labels gives \supcon \R{hold_supcon_f0.1_e100:ftt:pm}\% and \union \R{hold_union_f0.1_e100:ftt:pm}\% after fine-tuning,
+against \R{simclr_all_e100:fts:pm}\% for \simclr with its own label-budget selection: \supcon is ahead (\simclr $-$
+\supcon \R{cmp:simclr-holdsupcon:ftt:e100:sdiff}\pt, \R{cmp:simclr-holdsupcon:ftt:e100:ci},
+\R{cmp:simclr-holdsupcon:ftt:e100:p:expr} after correction) and \union is equivalent to \simclr
+(\R{cmp:simclr-holdunion:ftt:e100:sdiff}\pt, TOST \R{cmp:simclr-holdunion:ftt:e100:tost:expr}). The fine-tuning deficit
+of the label-using encoders at this budget therefore comes from the impossibility of choosing their recipe, not
+from their features. At 19,400 steps holding out labels does not close the gap: \supcon reaches
+\R{hold_supcon_f0.1_e200:ftt:pm}\% and \union \R{hold_union_f0.1_e200:ftt:pm}\%, against \R{simclr_all_e200:fts:pm}\% for
+\simclr (\simclr $-$ \supcon \R{cmp:simclr-holdsupcon:ftt:sdiff}\pt, \R{cmp:simclr-holdsupcon:ftt:ci}; \simclr $-$ \union
+\R{cmp:simclr-holdunion:ftt:sdiff}\pt, \R{cmp:simclr-holdunion:ftt:ci}). This is the speed-versus-end-point pattern of
+\cref{sec:main} once more: \supcon reaches its plateau early, and by 19,400 steps \simclr has moved past it by more than
+recipe selection can recover. Under \lpfive, with the regularisation chosen on the held-out labels, \simclr stays ahead of
+\supcon at both budgets (\R{cmp:simclr-holdsupcon:lp5ho:e100:diff}\pt at 9,700 steps,
+\R{cmp:simclr-holdsupcon:lp5ho:diff}\pt at 19,400) and ahead of \union at 19,400 steps
+(\R{cmp:simclr-holdunion:lp5ho:diff}\pt); at 9,700 steps its lead over \union
+(\R{cmp:simclr-holdunion:lp5ho:e100:diff}\pt, \R{cmp:simclr-holdunion:lp5ho:e100:ci}) is not significant after
+correction. At 19,400 steps
+\union with all 5,000 labels in the loss, whose probe regularisation was chosen on labels it had seen, reaches
+\R{s3:union_f0.1_e200:lp5}\% on the same seeds; the difference from the held-out arm (\R{d:union-hold:lp5}\pt) is below
+one point and within the spread of three seeds, so we cannot tell whether part of its \lpfive penalty came from how
+the regularisation was chosen. Holding out labels costs a fifth of the labels in the loss (at 19,400 steps \lpall falls
+from \R{s3:supcon_lab_f0.1_e200:lp50}\% to \R{s3:hold_supcon_f0.1_e200:lp50}\% for \supcon on the same seeds).
 
 \begin{table}[t]
 \centering
 \small
-\caption{Holding out labels for selection (CIFAR-10, ResNet-18, 19,400 steps; test accuracy in \%, mean $\pm$
+\caption{Holding out labels for selection (CIFAR-10, ResNet-18, 9,700 and 19,400 steps; test accuracy in \%, mean $\pm$
 standard deviation over three seeds). In the rows marked ``1,000 held out'', 4,000 labels enter the pretraining
 loss and the other 1,000 are used to choose the regularisation of \lpfive and the fine-tuning recipe (widened
 grid, 120 recipes); the final probe and fine-tuning use all 5,000 labels. For \simclr, which uses no labels,
 the probe and the recipe are chosen on a split of the 5,000 labels. In the rows with all 5,000 labels in the
-loss, the selected recipe is chosen on 1,000 of those labels, which the encoder has already separated. ``Best
-validation score'': the highest accuracy on the 1,000 validation labels over the recipe grid (seed 0).}
+loss, the selected recipe is the one selected for \simclr, because a selection on 1,000 of their own labels fails:
+the encoder has already separated them (``best validation score'' 100\%; not run at 9,700 steps). ``Best validation
+score'': the highest accuracy on the 1,000 validation labels over the recipe grid (seed 0).}
 \label{tab:heldout}
 \begin{adjustbox}{max width=\linewidth}
 \input{generated/tab_heldout.tex}
@@ -185,4 +199,9 @@ recipes and vanishes against the best recipe. We recommend
 reporting at least one label-budget protocol next to the oracle-label probe whenever the pretraining method
 itself uses labels, saying which one is meant and how its hyper-parameters were chosen: in our experiments the
 gap between encoders is largest with \lpfive and \ftfive with a selectable recipe and smallest with the oracle
-recipe and with FixMatch-init.
+recipe and with FixMatch-init. How the labels are split matters as much as the protocol: when a label-using
+method keeps some labels out of the loss to choose its recipe, its fine-tuning result can change sign
+(at 9,700 steps, on the same three seeds, \supcon fine-tunes to \R{s3:supcon_lab_f0.1_e100:ftx}\% with all labels
+in the loss and to \R{s3:hold_supcon_f0.1_e100:ftt}\% with 1,000 held out, against \R{s3:simclr_all_e100:fts}\% for
+\simclr), so the split of the labels belongs to the protocol, and a
+comparison that varies the pretraining budget can find different winners at different budgets.

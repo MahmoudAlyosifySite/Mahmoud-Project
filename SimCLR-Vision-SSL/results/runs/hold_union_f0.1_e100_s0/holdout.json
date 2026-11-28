@@ -1,0 +1,12 @@
+{
+ "linear_heldout": 78.54999899864197,
+ "linear_heldout_l2": 1e-05,
+ "heldout_val_acc": 78.80000472068787,
+ "fit_train_acc": 100.0,
+ "linear_std": 81.15999698638916,
+ "linear_std_l2": 0.1,
+ "cdnv_fit": 0.45391296055159547,
+ "cdnv_heldout": 1.5937880245646776,
+ "cdnv_rest": 1.5664321102519063,
+ "cdnv_test": 1.5513010509038263
+}

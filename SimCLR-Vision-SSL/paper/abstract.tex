@@ -6,12 +6,12 @@ contrastive learning (SupCon), each trained on the labeled subset or on all imag
 gradient steps, on CIFAR-10, CIFAR-100, STL-10 and Tiny-ImageNet. Three results stand out. First, labels inside
 the loss buy speed, not a better end point: with 10\% of the CIFAR-10 labels, SupCon leads SimCLR by
 \R{d:simclr-supcon:lp50:e10}\pt after 970 steps and trails it by \R{long:d:simclr-supcon}\pt after
-\R{long:steps}. Second, the standard linear probe, trained with all labels, overstates label-using encoders:
-after 9,700 steps it puts a semi-supervised SupCon \R{cmp:simclr-union:lp50:e100:diff}\pt ahead of SimCLR, whereas
-fine-tuning on the same 5,000 labels puts it \R{cmp:simclr-union:ft:e100:diff}\pt behind, or level when each
-encoder gets its best recipe; with longer training SimCLR leads under every probe and recipe. Third, a seen/unseen
-diagnostic agrees: label-using encoders make classes several times tighter on their labeled images than on any
-other images. Within contrastive pretraining, scarce labels are better spent after label-free pretraining: in
-fine-tuning, in a short supervised contrastive stage for a frozen encoder or, best in our experiments, in
-semi-supervised training. Budgets should be counted in steps, and encoders evaluated with the available
+\R{long:steps}. Second, the protocol and the use of the labels change the comparison: after 9,700 steps the
+standard all-label linear probe puts a semi-supervised SupCon \R{cmp:simclr-union:lp50:e100:diff}\pt
+ahead of SimCLR, fine-tuning puts it \R{cmp:simclr-union:ft:e100:diff}\pt behind when all 5,000 labels went into
+pretraining, and level when 1,000 are held out to choose the recipe; with longer training SimCLR leads under every
+probe and recipe. Third, a seen/unseen
+diagnostic shows that label-using encoders make classes several times tighter on their labeled images than on any
+other images. Given enough pretraining, scarce labels are better kept out of the contrastive loss and spent
+afterwards, best of all in semi-supervised training. Budgets should be counted in steps, and encoders evaluated with the available
 labels.

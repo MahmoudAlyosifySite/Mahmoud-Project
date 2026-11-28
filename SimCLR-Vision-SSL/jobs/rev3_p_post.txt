@@ -1,0 +1,26 @@
+# Third revision, after rev3_p_pre: SimCLR->SupCon stage variants on the validation split (45,000 training
+# images, 4,500 labels; the probe is scored on 5,000 held-out training images, the test set is not used);
+# fine-tuning of the new encoders; recipe selection on the held-out 1,000 labels
+# parallel: 3
+--name val_twostage_st485_lr0.005_s0 --init_run val_simclr_all_s0 --method supcon --pool labeled --label_fraction 0.1 --holdout 5000 --epochs 5.5747 --lr 0.005 --seed 0
+--name val_twostage_st485_lr0.02_s0 --init_run val_simclr_all_s0 --method supcon --pool labeled --label_fraction 0.1 --holdout 5000 --epochs 5.5747 --lr 0.02 --seed 0
+--name val_twostage_st485_lr0.25_s0 --init_run val_simclr_all_s0 --method supcon --pool labeled --label_fraction 0.1 --holdout 5000 --epochs 5.5747 --lr 0.25 --seed 0
+--name val_twostage_st2425_lr0.005_s0 --init_run val_simclr_all_s0 --method supcon --pool labeled --label_fraction 0.1 --holdout 5000 --epochs 27.8736 --lr 0.005 --seed 0
+--name val_twostage_st2425_lr0.02_s0 --init_run val_simclr_all_s0 --method supcon --pool labeled --label_fraction 0.1 --holdout 5000 --epochs 27.8736 --lr 0.02 --seed 0
+--name val_twostage_st2425_lr0.25_s0 --init_run val_simclr_all_s0 --method supcon --pool labeled --label_fraction 0.1 --holdout 5000 --epochs 27.8736 --lr 0.25 --seed 0
+--name val_twostage_st9700_lr0.005_s0 --init_run val_simclr_all_s0 --method supcon --pool labeled --label_fraction 0.1 --holdout 5000 --epochs 111.494 --lr 0.005 --seed 0
+--name val_twostage_st9700_lr0.02_s0 --init_run val_simclr_all_s0 --method supcon --pool labeled --label_fraction 0.1 --holdout 5000 --epochs 111.494 --lr 0.02 --seed 0
+--name val_twostage_st9700_lr0.25_s0 --init_run val_simclr_all_s0 --method supcon --pool labeled --label_fraction 0.1 --holdout 5000 --epochs 111.494 --lr 0.25 --seed 0
+-m dlt.finetune --name ft_unionunif_f0.1_e100_s1 --from_run unionunif_f0.1_e100_s1 --label_fraction 0.1 --seed 1
+-m dlt.finetune --name ft_unionunif_f0.1_e200_s1 --from_run unionunif_f0.1_e200_s1 --label_fraction 0.1 --seed 1
+-m dlt.finetune --name ft_unionunif_f0.1_e100_s2 --from_run unionunif_f0.1_e100_s2 --label_fraction 0.1 --seed 2
+-m dlt.finetune --name ft_unionunif_f0.1_e200_s2 --from_run unionunif_f0.1_e200_s2 --label_fraction 0.1 --seed 2
+-m dlt.finetune --name ft_union_f0.01_sh0.03_e400_s0 --from_run union_f0.01_sh0.03_e400_s0 --label_fraction 0.01 --seed 0
+-m scripts.ft_search --name ftsearch_hold_supcon_f0.1_e200_s0 --from_run hold_supcon_f0.1_e200_s0 --seed 0 --grid ext --worker 0
+-m scripts.ft_search --name ftsearch_hold_supcon_f0.1_e200_s0 --from_run hold_supcon_f0.1_e200_s0 --seed 0 --grid ext --worker 1
+-m scripts.ft_search --name ftsearch_hold_supcon_f0.1_e200_s0 --from_run hold_supcon_f0.1_e200_s0 --seed 0 --grid ext --worker 2
+-m scripts.ft_search --name ftsearch_hold_supcon_f0.1_e200_s0 --from_run hold_supcon_f0.1_e200_s0 --seed 0 --grid ext --worker 3
+-m scripts.ft_search --name ftsearch_hold_union_f0.1_e200_s0 --from_run hold_union_f0.1_e200_s0 --seed 0 --grid ext --worker 0
+-m scripts.ft_search --name ftsearch_hold_union_f0.1_e200_s0 --from_run hold_union_f0.1_e200_s0 --seed 0 --grid ext --worker 1
+-m scripts.ft_search --name ftsearch_hold_union_f0.1_e200_s0 --from_run hold_union_f0.1_e200_s0 --seed 0 --grid ext --worker 2
+-m scripts.ft_search --name ftsearch_hold_union_f0.1_e200_s0 --from_run hold_union_f0.1_e200_s0 --seed 0 --grid ext --worker 3

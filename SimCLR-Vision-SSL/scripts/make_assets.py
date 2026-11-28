@@ -321,6 +321,8 @@ for _p, _q, _n in (("lp5", "lp5ho", "LP-5k"), ("fts", "ftt", "FT-5k (selected re
     for _k, _t in (("supcon", r"\supcon"), ("union", r"\union")):
         FAMILY.append((f"simclr-hold{_k}:{_q}", f"{_n}, 1,000 labels held out from the label-using loss, 19,400 steps",
                        rf"\simclr $-$ {_t} (held out)", "simclr_all_e200", _p, f"hold_{_k}_f0.1_e200", _q))
+        FAMILY.append((f"simclr-hold{_k}:{_q}:e100", f"{_n}, 1,000 labels held out from the label-using loss, 9,700 steps",
+                       rf"\simclr $-$ {_t} (held out)", "simclr_all_e100", _p, f"hold_{_k}_f0.1_e100", _q))
 for E, steps in ((100, "9,700"), (200, "19,400")):      # the uniform-batch variant of SupCon+U (reviewer comment 7)
     for _p, _n in (("lp50", "LP-50k"), ("ft", "FT-5k")):
         FAMILY.append((f"unionunif-union:{_p}:e{E}", f"SupCon+U variants, {_n}, {steps} steps",
@@ -716,30 +718,36 @@ write("tab_reversal.tex", "\\begin{tabular}{lccccc}\n\\toprule\n & oracle labels
 # ----------------------------------------------------------------------------
 # Table: labels held out from pretraining for selection (reviewer comment 3)
 # ----------------------------------------------------------------------------
-HOLD = [(r"\simclr", "none", "simclr_all_e200", "lp5", "fts"),
-        (r"\supcon", "all 5,000", "supcon_lab_f0.1_e200", "lp5", "ftt"),
-        (r"\supcon", "4,000 (1,000 held out)", "hold_supcon_f0.1_e200", "lp5ho", "ftt"),
-        (r"\union", "all 5,000", "union_f0.1_e200", "lp5", "ftt"),
-        (r"\union", "4,000 (1,000 held out)", "hold_union_f0.1_e200", "lp5ho", "ftt")]
 rows = []
-for name, lab, c, plp, pft in HOLD:
-    if not nseeds(c):
+for E, steps in ((100, "9,700"), (200, "19,400")):
+    HOLD = [(r"\simclr", "none", f"simclr_all_e{E}", "lp5", "fts"),
+            (r"\supcon", "all 5,000", f"supcon_lab_f0.1_e{E}", "lp5", "ftx"),
+            (r"\supcon", "4,000 (1,000 held out)", f"hold_supcon_f0.1_e{E}", "lp5ho", "ftt"),
+            (r"\union", "all 5,000", f"union_f0.1_e{E}", "lp5", "ftx"),
+            (r"\union", "4,000 (1,000 held out)", f"hold_union_f0.1_e{E}", "lp5ho", "ftt")]
+    if not nseeds(HOLD[2][2]):
         continue
-    srch = RUN.get(f"{source_prefix(c, 'ftt')}{c}_s0")
-    vmax = f"{max(x['val_acc'] for x in srch['grid']):.1f}" if srch and srch.get("grid") else "--"
-    M[f"hold:{c}:valmax"] = vmax
-    def MS3(cfg, proto):      # every column of this table on the three seeds that all its arms have
-        v = V(cfg, proto, only=(0, 1, 2))
-        return "--" if not len(v) else f"{v.mean():.1f}" + (rf"{{\scriptsize$\,\pm\,${v.std(ddof=1):.1f}}}" if len(v) > 1 else "")
-    rows.append(f"{name} & {lab} & {MS3(c, 'lp50')} & {MS3(c, plp)} & {MS3(c, 'ftd')} & {MS3(c, pft)} & {vmax} \\\\")
-    for p_ in ("lp50", plp, "ftd", pft):      # the same three seeds, for the text
-        v = V(c, p_, only=(0, 1, 2))
-        if len(v):
-            M[f"s3:{c}:{p_}"] = f"{v.mean():.1f}"
-    for k in ("cdnv_fit", "cdnv_heldout", "cdnv_test", "fit_train_acc", "heldout_val_acc", "linear_std"):
-        v = V(c, "ho:" + k)
-        if len(v):
-            M[f"hold:{c}:{k}"] = f"{v.mean():.2f}" if "cdnv" in k else f"{v.mean():.1f}"
+    rows.append(rf"\multicolumn{{7}}{{l}}{{\emph{{{steps} steps}}}} \\")
+    for name, lab, c, plp, pft in HOLD:
+        if not nseeds(c):
+            continue
+        srch = RUN.get(f"{source_prefix(c, 'ftt')}{c}_s0")      # for the all-5,000 rows: their own (failed) label split
+        vmax = f"{max(x['val_acc'] for x in srch['grid']):.1f}" if srch and srch.get("grid") else "--"
+        M[f"hold:{c}:valmax"] = vmax
+
+        def MS3(cfg, proto):      # every column of this table on the three seeds that all its arms have
+            v = V(cfg, proto, only=(0, 1, 2))
+            return "--" if not len(v) else f"{v.mean():.1f}" + (rf"{{\scriptsize$\,\pm\,${v.std(ddof=1):.1f}}}" if len(v) > 1 else "")
+        rows.append(f"\\quad {name} & {lab} & {MS3(c, 'lp50')} & {MS3(c, plp)} & {MS3(c, 'ftd' if pft != 'ftx' else 'ft')} & "
+                    f"{MS3(c, pft)} & {vmax} \\\\")
+        for p_ in ("lp50", plp, "ftd", "ft", pft):      # the same three seeds, for the text
+            v = V(c, p_, only=(0, 1, 2))
+            if len(v):
+                M[f"s3:{c}:{p_}"] = f"{v.mean():.1f}"
+        for k in ("cdnv_fit", "cdnv_heldout", "cdnv_test", "fit_train_acc", "heldout_val_acc", "linear_std"):
+            v = V(c, "ho:" + k)
+            if len(v):
+                M[f"hold:{c}:{k}"] = f"{v.mean():.2f}" if "cdnv" in k else f"{v.mean():.1f}"
 write("tab_heldout.tex", "\\begin{tabular}{llccccc}\n\\toprule\n & & oracle labels & \\multicolumn{3}{c}{label budget (5,000 labels)} & \\\\\n"
       "\\cmidrule(lr){3-3}\\cmidrule(lr){4-6}\nencoder & labels in the loss & LP-50k & LP-5k & FT-5k (default) & "
       "FT-5k (selected) & best validation score \\\\\n\\midrule\n" + ("\n".join(rows) if rows else r"\multicolumn{7}{c}{--} \\")
@@ -1031,8 +1039,8 @@ OFF = {"supcon": {"mixkcenter25": (0, 8, "center"), "mixkcenter50": (4, 3, "left
                   "kcenter": (-5, 4, "right"), "mixcluster5025": (4, -3, "left"), "mixcluster5050": (4, -3, "left"),
                   "mixcluster5075": (4, -3, "left"), "cluster10": (-5, -3, "right"), "cluster50": (-5, 3, "right")},
        "sub": {"mixkcenter25": (4, -2, "left"), "mixkcenter50": (4, -2, "left"), "mixkcenter75": (4, -2, "left"),
-               "kcenter": (-5, 3, "right"), "mixcluster5025": (0, -10, "center"), "mixcluster5050": (0, 6, "center"),
-               "mixcluster5075": (0, 6, "center"), "cluster10": (0, -10, "center"), "cluster50": (-5, 5, "right")}}
+               "kcenter": (-5, 3, "right"), "mixcluster5025": (-3, 8, "center"), "mixcluster5050": (2, 8, "center"),
+               "mixcluster5075": (0, 8, "center"), "cluster10": (6, -12, "left"), "cluster50": (-5, 7, "right")}}
 for ax, (yk, title) in zip(axes, (("supcon", "(a) SupCon trained on the pool"), ("sub", "(b) SimCLR trained on the pool"))):
     pts_ = {}
     for kind, label, _ in KINDS:

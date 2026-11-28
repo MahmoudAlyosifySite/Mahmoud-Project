@@ -46,15 +46,16 @@ images. It shows that labels inside the loss mainly buy speed. \supcon on the la
 \R{d:simclr-supcon:lp50:e10}\pt ahead of \simclr after 970 steps, statistically equivalent to it after 9,700
 steps, and \R{long:d:simclr-supcon}\pt behind after \R{long:steps} steps
 (\cref{sec:results}).
-\item \textbf{Evidence that the oracle-label probe overstates label-using encoders.} At 9,700 steps the
-oracle-label probe puts a semi-supervised \supcon that trains on all images (\union)
-\R{cmp:simclr-union:lp50:e100:diff}\pt ahead of \simclr; fine-tuning on the 5,000 labels puts it
-\R{cmp:simclr-union:ft:e100:diff}\pt behind with the default recipe and \R{cmp:simclr-union:fts:e100:diff}\pt behind
-with the recipe a practitioner can select, and level with \simclr when each encoder gets its best recipe,
-chosen on the test set (\cref{sec:protocol}). With longer training \simclr leads under every probe and fine-tuning recipe, including
-that upper bound. Holding out labels before pretraining makes recipe selection possible for the label-using
-encoders but does not close the gap, and semi-supervised fine-tuning shrinks all differences to less than one
-point.
+\item \textbf{Evidence that the evaluation protocol and the use of the labels change the comparison.} At 9,700
+steps the oracle-label probe puts a semi-supervised \supcon that trains on all images (\union)
+\R{cmp:simclr-union:lp50:e100:diff}\pt ahead of \simclr. A practitioner who put all 5,000 labels into pretraining
+cannot select a fine-tuning recipe for it, and fine-tuning then puts it \R{cmp:simclr-union:ft:e100:diff}\pt
+behind with the default recipe and \R{cmp:simclr-union:fts:e100:diff}\pt behind with the recipe selected for
+\simclr. With the best recipe for each encoder (chosen on the test set) the three encoders are level, and a
+practitioner who held out 1,000 labels to choose the recipe obtains \supcon \R{cmp:simclr-holdsupcon:ftt:e100:diff}\pt
+above \simclr and \union level with it (\cref{sec:protocol}). At 19,400 steps \simclr leads under every probe and
+fine-tuning recipe, including selection on held-out labels (by \R{cmp:simclr-holdsupcon:ftt:diff} and
+\R{cmp:simclr-holdunion:ftt:diff}\pt). Semi-supervised fine-tuning shrinks all differences to less than one point.
 \item \textbf{A seen/unseen diagnostic.} Comparing the tightness of classes on the labeled images, on the
 other training images and on test images shows where the label information ends up. Encoders that use
 labels make the labeled images several times tighter than any other images; for \union, the images it trains
@@ -64,7 +65,8 @@ on without labels are no tighter than test images (\cref{sec:analysis}).
 \paragraph{What the results mean in practice}
 Within contrastive pretraining, and in the setting we tested (balanced data, in-distribution or mildly
 out-of-distribution unlabeled images, small ResNets), scarce labels should not be spent in a \supcon-style
-loss. Pretraining without labels on all images and using the labels afterwards is better, whether
+loss unless pretraining is short: with enough pretraining, pretraining without labels on all images and using the
+labels afterwards is better, whether
 ``afterwards'' means fine-tuning, a short \supcon stage (which helps a frozen encoder with a linear head, not
 fine-tuning), or semi-supervised training. The last option is
 the strongest overall: FixMatch and MixMatch \citep{sohn2020fixmatch,berthelot2019mixmatch} beat every

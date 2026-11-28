@@ -1,0 +1,1 @@
+{"head": "lp", "lr": 0.01, "epochs": 240, "reg": "mixup", "val_acc": 84.00000333786011}

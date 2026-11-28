@@ -1,0 +1,3 @@
+jobs/rev3_hA_pre.txt
+jobs/rev3_hB_search.txt
+jobs/rev3_hC_apply.txt

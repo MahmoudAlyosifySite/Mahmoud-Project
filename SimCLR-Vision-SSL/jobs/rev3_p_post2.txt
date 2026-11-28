@@ -1,0 +1,6 @@
+# Third revision, after rev3_p_post: the held-out arm's recipe applied to seeds 1-2
+# parallel: 4
+-m scripts.ft_search --name ftsearch_hold_supcon_f0.1_e200_s1 --from_run hold_supcon_f0.1_e200_s1 --seed 1 --config_from ftsearch_hold_supcon_f0.1_e200_s0
+-m scripts.ft_search --name ftsearch_hold_supcon_f0.1_e200_s2 --from_run hold_supcon_f0.1_e200_s2 --seed 2 --config_from ftsearch_hold_supcon_f0.1_e200_s0
+-m scripts.ft_search --name ftsearch_hold_union_f0.1_e200_s1 --from_run hold_union_f0.1_e200_s1 --seed 1 --config_from ftsearch_hold_union_f0.1_e200_s0
+-m scripts.ft_search --name ftsearch_hold_union_f0.1_e200_s2 --from_run hold_union_f0.1_e200_s2 --seed 2 --config_from ftsearch_hold_union_f0.1_e200_s0

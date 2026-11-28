@@ -49,7 +49,10 @@ $k$NN & cosine similarity, $k=200$, weights $\exp(s/0.1)$ \\
 \ftfive (default) & linear-probe initialisation, SGD-Nesterov lr 0.01, weight decay $5\times10^{-4}$, batch 128, \\
  & 60 passes over the labeled images, crop with padding + flip \\
 \ftfive (tuned) & head: LP or random; lr: 0.003, 0.01, 0.03, 0.1; passes: 30, 60, 120; regulariser: none, label smoothing 0.1, \\
- & mixup ($\alpha=0.2$); selected on 1,000 of the 5,000 labels, retrained on all 5,000 \\
+ & mixup ($\alpha=0.2$) (72 recipes); widened grid: lr also 0.3 and passes also 240 (120 recipes), used for \supcon \\
+ & and \union and for the held-out arm; at 9,700 steps the oracle search of \supcon and \union uses heads LP and random, \\
+ & lr 0.03, 0.1, 0.3, passes 60, 120, 240 and label smoothing or mixup (36 recipes); selected on 1,000 of the \\
+ & 5,000 labels (or chosen on the test set of seed 0 for the oracle recipe), retrained on all 5,000 \\
 self-distillation & teacher: \ftfive (default); student: same architecture, initialised from the pretrained encoder; \\
  & 9,700 steps on all images, batch 512, lr 0.1, weight decay $5\times10^{-4}$, temperature 1 \\
 \bottomrule
@@ -80,8 +83,8 @@ the uniform variant stays \R{d:simclr-unionunif:ft:e100}\pt (9,700 steps) and \R
 \R{d:simclr-unionunif:lp50:e100}\pt above it, so with this variant the oracle-label probe would overstate
 \union even more.
 
-The same validation split was used, after the second revision, to check the length and learning rate of the
-\simclr{}$\to$\supcon stage of \cref{sec:where}, which had been chosen on test accuracies. A \simclr encoder was
+The same validation split serves to check the length and learning rate of the \simclr{}$\to$\supcon stage of
+\cref{sec:where}, which were chosen on test accuracies. A \simclr encoder was
 trained on the 45,000 remaining images for 19,400 steps, continued with \supcon on their 10\% labeled subset (4,500
 images) for 485, 2,425 or 9,700 steps with three learning rates, and probed on the 5,000 held-out images
 (\cref{tab:valstage}). The best setting is 485 steps with learning rate \R{valstage:best:lr}.

@@ -5,8 +5,8 @@
 For a practitioner with a small labeled set, a large unlabeled set and a contrastive pretraining pipeline,
 our results support three rules.
 \begin{enumerate}[leftmargin=1.6em]
-\item \emph{Do not spend scarce labels in a \supcon-style loss from the start; keep them for fine-tuning or
-for semi-supervised training.} If the encoder will be used frozen with a linear head, a brief \supcon stage
+\item \emph{Given enough pretraining, do not spend scarce labels in a \supcon-style loss from the start; keep
+them for fine-tuning or for semi-supervised training.} If the encoder will be used frozen with a linear head, a brief \supcon stage
 after label-free pretraining is a good use of them; it does not help when the whole network is fine-tuned
 or trained with FixMatch afterwards. If semi-supervised training follows pretraining, the choice of
 pretraining matters little, and with a fixed compute budget semi-supervised training alone was as good as
@@ -14,7 +14,10 @@ any pretrained start we tried.
 \item \emph{If pretraining compute is very limited, labels in the loss are the faster route, unless they are very
 few.} Below roughly 5,000 steps, \supcon on the labeled subset is ahead under every protocol we ran with 5--50\%
 of the CIFAR-10 labels; with 1\% (50 images per class) it is already behind at 2,425 steps
-(\cref{sec:fractions}).
+(\cref{sec:fractions}). At 9,700 steps the answer depends on how the labels are split: with all 5,000 labels in
+the loss, fine-tuning favours \simclr; with 1,000 held out to choose the recipe, \supcon is
+\R{cmp:simclr-holdsupcon:ftt:e100:diff}\pt ahead and \union level (\cref{sec:protocol}). By 19,400 steps
+\simclr leads either way.
 \item \emph{Evaluate with the labels you have.} Report a label-budget protocol next to the all-label probe,
 say how its hyper-parameters were chosen (an encoder that used the labels cannot be tuned on them; hold some
 out before pretraining), and state budgets in steps or processed images.
@@ -61,9 +64,9 @@ and removed the two confounds that make the question hard: unequal compute and e
 are not available. At equal steps, labels inside the loss give a fast start and an early plateau, and
 label-free pretraining on all images overtakes them. Which method looks better at the crossover depends on
 the protocol: the all-label probe favours the label-using methods, and the protocols that respect the label
-budget favour label-free pretraining, strongly under supervised fine-tuning with a recipe a practitioner can
-choose and weakly under semi-supervised fine-tuning; only with the best fine-tuning recipe for each encoder,
-chosen on test data, are the encoders level at the crossover. With longer training label-free pretraining
+budget favour label-free pretraining when all labels went into pretraining, strongly under supervised fine-tuning
+with a recipe a practitioner can choose and weakly under semi-supervised fine-tuning. Holding out a fifth of the
+labels to choose the fine-tuning recipe changes this at the crossover: \supcon is then ahead and \union level. With longer training label-free pretraining
 leads under every probe and fine-tuning recipe, while after semi-supervised fine-tuning the encoders are
 equivalent. The geometry of the features is consistent with this: the labels tighten the labeled images
 far more than any other images. Within contrastive pretraining the labels

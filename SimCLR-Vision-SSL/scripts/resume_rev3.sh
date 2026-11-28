@@ -15,7 +15,7 @@ mkdir -p "$CUDA_MPS_PIPE_DIRECTORY" "$CUDA_MPS_LOG_DIRECTORY"
 if ! ps -eo args | grep -v grep | grep -q "nvidia-cuda-mps-control -d"; then
   nvidia-cuda-mps-control -d && echo "MPS daemon: started"
 fi
-for q in ${@:-grid pre r50 stage}; do
+for q in ${@:-grid pre r50 stage hold100}; do
   ph=jobs/phases_rev3_$q.txt
   if ps -ww -eo args | grep -v grep | grep -q "scripts/run_phases.sh $ph"; then
     echo "$q: already running"
