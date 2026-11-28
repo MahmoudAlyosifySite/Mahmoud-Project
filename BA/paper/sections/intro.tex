@@ -19,7 +19,7 @@ three seeds its CER and speaker similarity cannot be distinguished from \cbthree
 nothing in the standard metrics favours it. When texts and voices are resampled, selecting the base by lowest CER, by
 highest similarity or by highest predicted quality lands on a model below the dialect bar in
 \R{sel:eligible:cer:fail1}, \R{sel:eligible:ecapa:fail1} and \R{sel:eligible:dnsmos:fail1} of resamples. Our own
-selection rule, committed before any model ran, ranked by CER and chose \cbthree; we amended it, in public and with the
+selection rule, committed before any model ran, ranked by CER and chose \cbthree; we amended it, with a dated record of the
 reason, before building on the result (\cref{sec:protocol}).
 
 We then build \BA on the model that a dialect-aware rule selects, without training: an Egyptian number and
@@ -39,8 +39,8 @@ a consent statement.
   fails a dialect bar calibrated on real colloquial speech. We quantify this with a bootstrap over texts and voices,
   two dialect classifiers trained on different data, three seeds, and a control for the dialect of the reference
   voice (\cref{sec:dissociation}).
-  \item \textbf{A dialect-aware evaluation protocol} for dialectal voice cloning, with gates committed to a public
-  repository before any model ran, every metric calibrated on real speech, and a dated record of the one gate
+  \item \textbf{A dialect-aware evaluation protocol} for dialectal voice cloning, with gates committed to version control
+  before any model ran, every metric calibrated on real speech, and a dated record of the one gate
   amendment (\cref{sec:protocol}).
   \item \textbf{A licence-provenance audit} of the open Egyptian-capable systems, which shows that most cannot be
   built on commercially, including one whose permissive label hides a non-commercial parent (\cref{sec:systems}).
@@ -60,7 +60,7 @@ personal things a person has, and \BA exists to let people speak, in their own v
 letter \ar{beh} is read \emph{ba}; the project's mark draws it with a voice wave.
 
 \paragraph{Openness}
-Code, evaluation texts, per-utterance scores and all scripts that produce the paper's numbers are public (\repo;
-archived at \zenodo).
+Code, evaluation texts, per-utterance scores and all scripts that produce the paper's numbers are archived at \zenodo;
+the engine source also ships with the demo.
 The model is at \hfmodel and the demo at \hfspace. Reference voices from FLEURS \citep{conneau2023fleurs} are used for
 measurement only; neither they nor their clones are redistributed (\cref{sec:release}).
