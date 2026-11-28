@@ -67,7 +67,7 @@ the 45,000 images and gaining nothing for a probe restricted to the 5,000, altho
 show that the one causes the other.
 
 \emph{The diagnostic is a relative measure.} Across methods, the CDNV of test images does not track accuracy.
-\supcon is tighter on test images than \simclr (\R{supcon_lab_f0.1_e200:cdnv_test} against
+At 19,400 steps \supcon is tighter on test images than \simclr (\R{supcon_lab_f0.1_e200:cdnv_test} against
 \R{simclr_all_e200:cdnv_test}) and less accurate under every probe and fine-tuning recipe, and cross-entropy on the 5,000 labels has
 by far the largest ratio between test and labeled images (\cref{tab:geometry}) and is still at least as
 accurate as \supcon followed by fine-tuning (\cref{tab:where}). We therefore read the split within a method, as an indication of

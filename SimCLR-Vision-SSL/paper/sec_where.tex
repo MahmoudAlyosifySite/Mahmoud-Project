@@ -84,7 +84,9 @@ that is only indirectly related to the task.
 
 \paragraph{Summary}
 The answer to the question in the title is: not inside a contrastive loss from the first step. Within the pipelines that end with supervised
-fine-tuning, the labels are better kept out of the contrastive loss until a label-free encoder exists; a
+fine-tuning, at the 19,400 pretraining steps of this section, the labels are better kept out of the contrastive loss
+until a label-free encoder exists (with shorter pretraining, \cref{sec:protocol} shows that holding some labels out of
+the loss to choose the recipe can favour \supcon); a
 short \supcon stage is the best way to put them into a contrastive loss, but it helps only a frozen encoder
 with a linear head. When semi-supervised training
 follows, the choice of encoder matters by less than a point. Overall, the best place for scarce labels in

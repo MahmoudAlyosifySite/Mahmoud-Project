@@ -24,7 +24,7 @@ CIFAR-10, CIFAR-100, STL-10 and Tiny-ImageNet with ResNet-18 and ResNet-50 encod
 speed, not a better end point: with 10\% of the CIFAR-10 labels, SupCon leads SimCLR by 13.3 points after 970
 steps and trails it by 6.6 points after 97,000. The protocol and the use of the labels change the
 comparison: after 9,700 steps the all-label linear probe puts a semi-supervised SupCon 1.9 points ahead of SimCLR;
-fine-tuning on the 5,000 available labels puts it 3.9 points behind when all of them went into pretraining, and
+fine-tuning on the 5,000 available labels with the default recipe puts it 3.9 points behind when all of them went into pretraining, and
 level when 1,000 are held out to choose the recipe. After 19,400 steps SimCLR leads under every probe and
 fine-tuning recipe, also when labels are held out (by 2.3 and 3.8 points). A seen/unseen measurement of
 class tightness is consistent with this. All claims rest on three to five seeds with a

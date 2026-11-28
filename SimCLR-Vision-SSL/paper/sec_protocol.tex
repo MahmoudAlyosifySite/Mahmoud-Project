@@ -4,7 +4,8 @@
 The comparison of \cref{sec:results} used a probe that sees 50,000 labels. A practitioner with a 5,000-label
 budget cannot run it. \Cref{tab:protocol} evaluates the same encoders at 19,400 steps with every protocol of
 \cref{sec:protocols}, \cref{tab:reversal} compares the three main encoders at 9,700 and 19,400 steps with three
-fine-tuning recipes, and \cref{tab:main} gives \lpfive and \ftfive for the other budgets.
+fine-tuning recipes, \cref{tab:heldout} repeats the label-using encoders with 1,000 labels held out of pretraining
+to choose the recipe, and \cref{tab:main} gives \lpfive and \ftfive for the other budgets.
 
 \begin{table}[t]
 \centering
@@ -41,7 +42,8 @@ The clearest case is the pair \simclr and \union at 9,700 steps. The oracle-labe
 \simclr (\simclr $-$ \union: \R{cmp:simclr-union:lp50:e100:sdiff}\pt, \R{cmp:simclr-union:lp50:e100:ci}); fine-tuning
 on the 5,000 labels with the default recipe puts it behind (\R{cmp:simclr-union:ft:e100:sdiff}\pt,
 \R{cmp:simclr-union:ft:e100:ci}), and so does fine-tuning with the recipe a practitioner can select
-(\R{cmp:simclr-union:fts:e100:sdiff}\pt, \R{cmp:simclr-union:fts:e100:ci}). \supcon lies between the two: it is
+(\R{cmp:simclr-union:fts:e100:sdiff}\pt, \R{cmp:simclr-union:fts:e100:ci}). Both fine-tuning results assume that all
+5,000 labels went into pretraining; with 1,000 held out to choose the recipe, \union is level with \simclr (below). \supcon lies between the two: it is
 equivalent to \simclr under the oracle-label probe (TOST \R{cmp:simclr-supcon:lp50:e100:tost:expr}) and behind it
 after fine-tuning (\R{cmp:simclr-supcon:ft:e100:sdiff}\pt, \R{cmp:simclr-supcon:ft:e100:ci}), and after fine-tuning
 it is not separated from \union (\R{cmp:union-supcon:ft:e100:sdiff}\pt, \R{cmp:union-supcon:ft:e100:p:expr}). At

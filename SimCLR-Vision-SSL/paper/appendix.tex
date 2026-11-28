@@ -17,10 +17,12 @@ absolute difference is $0$ when all images are labeled (\supcon), $4.8\times10^{
 and $9.5\times10^{-7}$ when half of the batch is labeled (\union, compared with the official code and an
 explicit mask).
 
+\needspace{0.45\textheight}
 \section{Hyper-parameters}
 \label{app:hparams}
+\Cref{tab:hparams} lists the hyper-parameters of every method and evaluation protocol.
 
-\begin{table}[h]
+\begin{table}[!h]
 \centering
 \small
 \caption{Hyper-parameters of all methods (ResNet-18 on CIFAR unless stated). One contrastive step processes
@@ -203,7 +205,8 @@ standard deviation over seeds).}
 \caption{Planned comparisons (CIFAR-10 with 10\% labels unless the group names STL-10; ResNet-18). $\Delta$ is the
 difference in mean test accuracy with its hierarchical-bootstrap 95\% interval (100,000 replicates over seeds and
 test images); $p$-values are Holm-adjusted over the whole table; the last column is the result of the equivalence
-test with a margin of $\pm1$ point.}
+test with a margin of $\pm1$ point. $\Delta$ is computed from unrounded means, so it can differ by 0.1 from the
+difference of the rounded means in other tables.}
 \label{tab:stats}\\
 \toprule
 comparison & seeds & $\Delta$ (points) & 95\% CI & $p$ (Holm) & equiv.? \\

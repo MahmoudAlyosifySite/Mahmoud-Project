@@ -1,11 +1,14 @@
-% Elsevier "Highlights" file (3-5 bullets, at most 85 characters each)
-\documentclass[preprint,12pt]{elsarticle}
+% Elsevier "Highlights" file (3-5 bullets, at most 85 characters each); submitted as a separate editable file
+\documentclass[12pt]{article}
+\usepackage[margin=2.5cm]{geometry}
+\pagestyle{empty}
 \begin{document}
-\begin{highlights}
+\section*{Highlights}
+\begin{itemize}
 \item Compute-matched 2x2 design separates the use of labels from the choice of images
 \item Labels inside a contrastive loss speed up pretraining but saturate early
 \item The evaluation protocol and the split of the labels change which encoder wins
-\item Tight classes on labeled images do not carry over to images without labels
-\item Scarce labels are better spent after label-free pretraining than inside the loss
-\end{highlights}
+\item Label-using encoders tighten classes far more on labeled than on other images
+\item Given enough pretraining, scarce labels are best spent after it, not in the loss
+\end{itemize}
 \end{document}
