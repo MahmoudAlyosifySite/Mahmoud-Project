@@ -25,6 +25,50 @@ unwatermarked clips passed through the same processing.}
 \end{adjustbox}
 \end{table}
 
+\section{Listening test: design, analysis and deviations from the protocol}\label{app:listening}
+The protocol (\texttt{BA/paper/human\_eval/listening\_test\_protocol.md}) was fixed before any rating was collected.
+
+\paragraph{Design}
+Four systems (\BA, \vox, \cbthree, NAMAA) and real speech, on held-out sentences never used for tuning. Each of 12
+counterbalanced lists has two practice clips (not analysed), 24 generated clips on 24 different sentences (six per
+system; sentence $k$ of list $l$ is spoken by system $(k+l) \bmod 4$, and the voice rotates with $l$), four real
+colloquial clips from the calibration set as a hidden anchor, two repeats of generated clips, and four
+speaker-similarity pairs (one per system, on sentences outside the list, against a second real clip of the cloned
+speaker). Every clip is trimmed of leading and trailing silence and normalised to $-23$\,LUFS. For each clip the
+listener rates how Egyptian it sounds (1, not Egyptian at all, to 5, a native Egyptian speaker) and how natural it is
+(1, clearly machine, to 5, completely natural), and says whether a word was wrong, missing or garbled; for each pair,
+whether the speaker is the same (1 to 5). Names are hidden and the order is random per listener.
+
+\paragraph{Listeners and exclusions}
+Adults who grew up in Egypt and speak Egyptian Arabic natively, recruited through the authors' personal networks; the
+page asks for age band, gender, governorate and listening device, and no name. Of the sessions started,
+\R{mlt:unfinished} were not finished and one was the first author's own test of the page; both are excluded. The
+quality checks of the protocol were made concrete for this design before any system score was computed: the
+real-speech check passes when at least two of the four real clips are rated 4 or more on both scales, the consistency
+check when at least one of the two repeats is rated within one point of its first rating on both scales, and a
+listener failing both is excluded (\R{mlt:excl} of \R{mlt:complete}). The \R{mlt:n} remaining listeners come from
+\R{mlt:govs} governorates and completed \R{mlt:lists} of the 12 lists.
+
+\paragraph{Analysis}
+As pre-specified: cumulative-link mixed models (logit link, R package \texttt{ordinal}) of each rating on the system
+with random intercepts for listener, voice and sentence; the contrasts \BA $-$ \vox, \BA $-$ \cbthree and \vox $-$
+\cbthree on both scales, Holm-corrected over the six; mean scores with two-way (listener and sentence) bootstrap
+intervals; Krippendorff's $\alpha$ with the ordinal metric; and the rank correlation of the per-system Egyptian rating
+with both classifiers and with CER. Script: \texttt{BA/eval/scripts/listening\_analysis.py}; aggregate results:
+\texttt{BA/eval/results/listening\_multi.json}. Individual answers and the audio stay private, as the consent text
+promises.
+
+\paragraph{Deviations from the protocol}
+(i) The cloned voices are the six FLEURS speakers of the held-out set (three women, three men), so the listeners
+rated the clips on which the
+automatic measures of \cref{sec:dissociation,sec:results} were computed; the protocol planned recordings of six to ten
+consenting volunteers, which were not collected. (ii) The design above replaces the protocol's sketch of about 60 clips
+(four repeats, two real clips) with 36 ratings per listener, to keep a session near 12 minutes. (iii) The protocol asked
+for headphones; the page also accepted earbuds and loudspeakers, and the results by device are reported in
+\cref{sec:dissociation}. (iv) Listening stopped at 20 complete sessions of listeners not involved in the project, the
+upper end of the planned 12--20; lists were assigned in turn to every session started, so the lists of unfinished
+sessions stayed empty.
+
 \section{Claim-to-results map}\label{app:claims}
 
 Every number in the paper is produced by \texttt{BA/paper/scripts/make\_assets.py} from the files below, each of which
@@ -37,7 +81,8 @@ Section & Results files (\texttt{BA/eval/results/}) \\
 \midrule
 \Cref{sec:protocol} (calibration) & \texttt{bakeoff.json}, \texttt{dialect\_classifier2.json} \\
 \Cref{sec:dissociation} & \texttt{bakeoff.json}, \texttt{bakeoff\_utterances.csv}, \texttt{dialect\_classifier2.json}, \\
- & \texttt{selection.json}, \texttt{uncertainty.json}, \texttt{listening\_test.json} \\
+ & \texttt{selection.json}, \texttt{uncertainty.json}, \texttt{listening\_test.json}, \\
+ & \texttt{listening\_multi.json} \\
 \Cref{sec:engine} & \texttt{codeswitch\_policy.json}, \texttt{asr\_check.json}, \texttt{chunk\_length.json}, \\
  & \texttt{reference\_thresholds.json}, \texttt{engine.json} \\
 \Cref{sec:results} & \texttt{uncertainty.json}, \texttt{ablations.json}, \texttt{engine.json}, \texttt{long\_form.json}, \\

@@ -7,7 +7,8 @@ fails the dialect bar in \R{sel:eligible:cer:fail1}, \R{sel:eligible:ecapa:fail1
 of bootstrap resamples over texts and voices. Over three seeds on held-out sentences, \vox and \cbthree cannot be told
 apart by CER or speaker similarity, and predicted quality prefers \cbthree, yet a dialect classifier labels
 \R{s3:voxcpm2:egy_main:c1} of \vox's outputs Egyptian and \R{s3:cb-v3:egy_main:c1} of \cbthree's; a second classifier,
-trained on different data, agrees. Our own selection rule, committed before any model ran, ranked by CER and chose the
+trained on different data, agrees, and so do \R{mlt:n} native listeners in a blind test (\R{mlt:cb-v3:egy} against
+\R{mlt:voxcpm2:egy} on a five-point Egyptian scale). Our own selection rule, committed before any model ran, ranked by CER and chose the
 non-Egyptian model; we report its amendment. On \vox we build \BA, an engine that leaves the weights unchanged and adds
 Egyptian number normalisation, a loanword policy, automatic reference transcription, reference screening and checked
 long-text generation. On held-out sentences \BA lowers CER from \R{s3:voxcpm2:egy_main:cer_best} to

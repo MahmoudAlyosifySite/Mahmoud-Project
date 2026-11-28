@@ -103,12 +103,38 @@ voices per group make these intervals wide (\texttt{selection.md}); the directio
 colloquial reference helps a model without Egyptian training data is a question for colloquial reference recordings
 (\cref{sec:limitations}).
 
-\paragraph{The ear agrees, informally}
-In an informal check of six sentences per system, with names hidden and order shuffled, the author, a native Egyptian
-speaker, rated both Chatterbox bases ``not Egyptian'' on \R{lt:cb-v3:not} sentences, and \vox ``not Egyptian'' on none
-(Egyptian on \R{lt:voxcpm2:egy}, partly on \R{lt:voxcpm2:mid}). One listener who knew the hypothesis, rating six
-sentences, settles nothing; we report the check because it agrees with both classifiers on the decision that matters,
-and we do not count it as evidence on its own. A multi-listener test is the next step (\cref{sec:limitations}).
+\paragraph{Native listeners agree}
+In a blind listening test, \R{mlt:complete} native Egyptian listeners who were not involved in the project each rated
+24 generated sentences (six per system, in a Latin square over sentences and voices), four real colloquial clips as a
+hidden anchor, two repeated clips and four speaker-similarity pairs (\cref{app:listening}); \R{mlt:excl} failed both
+pre-specified quality checks, which leaves \R{mlt:n}. \Cref{tab:listening} gives the scores. Listeners heard \cbthree
+as much less Egyptian than \vox and \BA, \R{mlt:cb-v3:egy} against \R{mlt:voxcpm2:egy} and \R{mlt:ba:egy} on a
+five-point scale, and as less natural (\R{mlt:cb-v3:nat} against \R{mlt:voxcpm2:nat}). In a cumulative-link mixed
+model with random effects for listener, voice and sentence, the difference between \vox and \cbthree is
+\R{mlt:c:voxcpm2-cb-v3:egy:est} on the log-odds scale for Egyptian-ness (CI \R{mlt:c:voxcpm2-cb-v3:egy:ci},
+\R{mlt:c:voxcpm2-cb-v3:egy:p} after Holm correction over the six planned contrasts) and
+\R{mlt:c:voxcpm2-cb-v3:nat:est} for naturalness (CI \R{mlt:c:voxcpm2-cb-v3:nat:ci}). Listeners also reported a wrong,
+missing or garbled word in \R{mlt:cb-v3:ww} of \cbthree's clips, the most of any system, although its CER is among the
+lowest: words that a recogniser trained mostly on MSA accepts can still sound wrong to an Egyptian listener. Per system,
+the mean Egyptian rating orders the four systems exactly as both classifiers do (Spearman \R{mlt:rho:c1} and
+\R{mlt:rho:c2}, four systems) and not as CER does (\R{mlt:rho:cer}). The result holds both for the
+\R{mlt:dev:phones} listeners who used headphones or earbuds (\cbthree \R{mlt:dev:headphones_or_earbuds:cb-v3:egy},
+\vox \R{mlt:dev:headphones_or_earbuds:voxcpm2:egy}) and for the \R{mlt:dev:speaker} who used loudspeakers
+(\R{mlt:dev:loudspeaker:cb-v3:egy} and \R{mlt:dev:loudspeaker:voxcpm2:egy}). Real speech is rated
+\R{mlt:real:egy}, no higher than the Egyptian systems; the real clips are spontaneous recordings of varying quality.
+Agreement between listeners is moderate (Krippendorff's ordinal $\alpha$ \R{mlt:alpha:egy} for Egyptian-ness and
+\R{mlt:alpha:nat} for naturalness, over \R{mlt:alpha:units} clips rated at least twice).
+
+\begin{table}[t]
+\centering\small
+\caption{Blind listening test (\R{mlt:n} native Egyptian listeners after quality control). Mean ratings with
+listener-and-sentence bootstrap 95\% intervals; ``wrong word heard'': share of clips for which the listener reported a
+wrong, missing or garbled word; ``same speaker'': similarity to a second real clip of the cloned speaker (four pairs
+per listener, one per system; intervals in \texttt{listening\_multi.md}). Systems and real speech were presented in a
+random order with hidden names.}
+\label{tab:listening}
+\input{generated/tab_listening.tex}
+\end{table}
 
 \paragraph{Why}
 The pattern fits the training data rather than the architecture. The three Chatterbox-based systems without documented

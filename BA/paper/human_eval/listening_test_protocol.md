@@ -33,3 +33,13 @@ the correlation of per-system Egyptian-ness with both dialect classifiers and wi
 
 **Delivery.** A private web page (one link per listener) plays the clips and stores answers; no audio or answers are
 public. Clips of a volunteer are published only if they ticked the optional box.
+
+**Deviations recorded after data collection (2026-11-28; the analysis is in `BA/eval/scripts/listening_analysis.py`).**
+(i) The test ran on the held-out outputs of the six FLEURS voices (the clips behind the automatic measures), not on
+volunteers' recordings, which were not collected. (ii) Design as built by `listening_test/scripts/build_stimuli.py`: 12
+lists of 24 generated clips (6 per system, Latin square), 4 real-speech clips, 2 repeats and 4 similarity pairs, about 12
+minutes. (iii) The quality checks made concrete for this design before any system score was computed: real-speech check
+passed if >= 2 of the 4 real clips score >= 4 on both scales; consistency check passed if >= 1 of the 2 repeats is
+within 1 point on both scales; listeners failing both are excluded. (iv) Loudspeakers were accepted besides headphones
+(results reported by device). (v) The first author's own test session is excluded; collection stopped at 20 complete
+sessions of listeners not involved in the project.
