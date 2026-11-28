@@ -1,0 +1,7 @@
+package/
+*.aux
+*.log
+*.out
+*.bbl
+*.blg
+vardial2027_source.zip
