@@ -301,10 +301,17 @@ def newversion(a):
         json.dump(state, open(state_path, "w"), indent=1)
         print(f"created draft of version 2.0: {state['html']}")
     dep = f"{API}/deposit/depositions/{state['id']}"
-    replaced = (CODE_ARCHIVE, "README.md", "SHA256SUMS.txt", "checkpoint_index.json")
+    replaced = (CODE_ARCHIVE, "README.md", "SHA256SUMS.txt", "checkpoint_index.json", "checkpoints_third_revision.tar")
+
+    def md5(path):
+        h = hashlib.md5()
+        with open(path, "rb") as fh:
+            for block in iter(lambda: fh.read(1 << 20), b""):
+                h.update(block)
+        return h.hexdigest()
     for f in call("GET", f"{dep}/files", tok).json():      # replaced files are compared by checksum, not size
         local = os.path.join(a.staging, f["filename"])
-        if f["filename"] in replaced and f["checksum"].split(":")[-1] != hashlib.md5(open(local, "rb").read()).hexdigest():
+        if f["filename"] in replaced and f["checksum"].split(":")[-1] != md5(local):
             call("DELETE", f"{dep}/files/{f['id']}", tok)
             print(f"removed from the draft: {f['filename']} (version 1.0)")
     upload(a)
