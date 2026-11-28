@@ -159,6 +159,12 @@ write("tab_bakeoff.tex", "\\begin{tabular}{@{}lrcrrrrc@{}}\n\\toprule\n"
       "\\cmidrule(lr){2-3}\\cmidrule(lr){4-5}\n"
       "System & CER & 95\\% CI & clf.~1 & clf.~2 & ECAPA & DNSMOS & E/P/N \\\\\n\\midrule\n" + "\n".join(rows) +
       "\n\\bottomrule\n\\end{tabular}\n")
+# the same table without the author's unblinded check (the short version reports only the blind test)
+write("tab_bakeoff_short.tex", "\\begin{tabular}{@{}lrcrrrr@{}}\n\\toprule\n"
+      " & \\multicolumn{2}{c}{Intelligibility} & \\multicolumn{2}{c}{Labelled Egyptian} & & \\\\\n"
+      "\\cmidrule(lr){2-3}\\cmidrule(lr){4-5}\n"
+      "System & CER & 95\\% CI & clf.~1 & clf.~2 & ECAPA & DNSMOS \\\\\n\\midrule\n"
+      + "\n".join(r if r == "\\midrule" else r.rsplit(" & ", 1)[0] + " \\\\" for r in rows) + "\n\\bottomrule\n\\end{tabular}\n")
 
 # ---------------------------------------------------------------- figure 1: CER vs Egyptian share
 # Colour = base-model family (validated categorical slots 1-3, light surface; every point is direct-labelled because
@@ -571,6 +577,68 @@ if ml:
     write("tab_listening.tex", "\\begin{tabular}{@{}lcccc@{}}\n\\toprule\n"
           "system & Egyptian (1--5) & natural (1--5) & wrong word heard & same speaker (1--5) \\\\\n\\midrule\n"
           + "\n".join(rows) + "\n\\bottomrule\n\\end{tabular}\n")
+
+# ---------------------------------------------------------------- clip-level check of the listening test (post hoc)
+mc = load("listening_clips.json")
+if mc:
+    put("mlc:clips", str(mc["clips"]))
+    put("mlc:ratings", str(mc["ratings"]))
+    put("mlc:perclip", f"{mc['ratings_per_clip']:.1f}")
+    for k, v in mc["stats"].items():
+        fm = f2 if k.startswith("mean:") else (lambda z: f"{z:+.2f}")      # correlations and differences carry a sign
+        put(f"mlc:{k}", fm(v["est"]))
+        put(f"mlc:{k}:ci", f"[{fm(v['lo'])}, {fm(v['hi'])}]")
+
+# ---------------------------------------------------------------- dialect features: jiim as [g], [q] per qaaf (post hoc)
+dfe = load("dialect_features.json")
+if dfe:
+    from scipy.stats import spearmanr as _spr
+    FNAME = dict(NAMES, **{"lahgtna_eg": "Real colloquial Egyptian (lahgtna-v2)", "fleurs_ar_eg": "Egyptian speakers, MSA text (FLEURS)",
+                           "niletts": "Synthetic colloquial (NileTTS)", "ba (held-out)": "\\BA", "voxcpm2 (held-out)": "VoxCPM2"})
+    tag = lambda s: s.replace(" (held-out)", "-ho")
+    for s, v in dfe["sets"].items():
+        put(f"df:{tag(s)}:jiim", pct(v["jiim_g"]["est"]))
+        put(f"df:{tag(s)}:jiim:ci", f"[{pct(v['jiim_g']['ci'][0]).replace(chr(92) + '%', '')}, {pct(v['jiim_g']['ci'][1])}]")
+        put(f"df:{tag(s)}:qaaf", f2(v["qaaf_q"]["est"]))
+        put(f"df:{tag(s)}:qaaf:ci", f"[{f2(v['qaaf_q']['ci'][0])}, {f2(v['qaaf_q']['ci'][1])}]")
+    for k, v in dfe["differences"].items():
+        a, b = (tag(x.strip()) for x in k.split(" - "))
+        put(f"df:d:{a}-{b}:jiim", f"{100 * v['jiim_g']['est']:+.0f}")
+        put(f"df:d:{a}-{b}:jiim:ci", f"[{100 * v['jiim_g']['ci'][0]:+.0f}, {100 * v['jiim_g']['ci'][1]:+.0f}]")
+        put(f"df:d:{a}-{b}:qaaf", f"{v['qaaf_q']['est']:+.2f}")
+        put(f"df:d:{a}-{b}:qaaf:ci", f"[{v['qaaf_q']['ci'][0]:+.2f}, {v['qaaf_q']['ci'][1]:+.2f}]")
+    put("df:clips", str(dfe["sets"]["cb-v3"]["clips"]))
+    put("df:jiimletters", str(dfe["sets"]["cb-v3"]["jiim_letters"]))
+    put("df:qaafletters", str(dfe["sets"]["cb-v3"]["qaaf_letters"]))
+    # across the nine configurations: jiim-as-[g] against the classifier shares
+    jg = [dfe["sets"][s]["jiim_g"]["est"] for s in ORDER]
+    for key, vals in (("c1", [bk["systems"][s]["conditions"]["egy_main"]["dialect_egyptian_share"] for s in ORDER]),
+                      ("c2", [d2["systems"][s]["egy_main"]["share_c2"]["mean"] for s in ORDER]),
+                      ("cer", [bk["systems"][s]["conditions"]["egy_main"]["cer_mean"] for s in ORDER])):
+        put(f"df:rho:{key}", f"{_spr(jg, vals).statistic:+.2f}")
+    rows = []
+    cell = lambda v, f: f"{f(v['est'])} {{\\scriptsize[{f(v['ci'][0])}, {f(v['ci'][1])}]}}"
+    P0 = lambda z: f"{100 * z:.0f}"
+    for group, sets in (("Real and reference speech", ["lahgtna_eg", "fleurs_ar_eg", "niletts"]),
+                        ("Bake-off (32 sentences $\\times$ 3 voices)", [s for s in ORDER if s != "cb-v3-pypi"]),
+                        ("Held-out sentences (24 $\\times$ 3)", ["voxcpm2 (held-out)", "ba (held-out)"])):
+        rows.append(f"\\multicolumn{{3}}{{@{{}}l}}{{\\emph{{{group}}}}} \\\\")
+        for s in sets:
+            v = dfe["sets"][s]
+            rows.append(f"{FNAME[s]} & {cell(v['jiim_g'], P0)} & {cell(v['qaaf_q'], f2)} \\\\")
+    write("tab_features.tex", "\\begin{tabular}{@{}lcc@{}}\n\\toprule\n"
+          " & jiim as [g] (\\%) & [q] per qaaf \\\\\n\\midrule\n" + "\n".join(rows) + "\n\\bottomrule\n\\end{tabular}\n")
+
+# consistency: the main bake-off table, the appendix table with intervals and the figure read the same shares
+if un and "bakeoff_one_seed" in un:
+    for s in ORDER:
+        d = un["bakeoff_one_seed"].get(s)
+        if not d:
+            continue
+        a1 = bk["systems"][s]["conditions"]["egy_main"]["dialect_egyptian_share"]
+        a2 = d2["systems"][s]["egy_main"]["share_c2"]["mean"]
+        assert abs(a1 - d["egy_main"]["c1"]["mean"]) < 1e-9 and abs(a2 - d["egy_main"]["c2"]["mean"]) < 1e-9, \
+            f"classifier shares of {s} differ between bakeoff.json/dialect_classifier2.json and uncertainty.json"
 
 # ---------------------------------------------------------------- output
 with open(os.path.join(GEN, "numbers.tex"), "w") as f:

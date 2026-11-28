@@ -28,10 +28,13 @@ BA = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DESIGN = os.path.join(BA, "paper", "human_eval", "listening_test", "design", "design.json")
 EXPORT = os.path.expanduser("~/ba-work/listening/export/latest.json")
 RES = os.path.join(BA, "eval", "results")
-EXCLUDE = {"b77b2d56-0313-41c0-8916-4726bbd624e6": "the first author, testing the site (knew the hypothesis)"}
+EXCLUDE = {"b77b2d56-0313-41c0-8916-4726bbd624e6": "the author, testing the site (knew the hypothesis)"}
 SYSTEMS = ["ba", "voxcpm2", "cb-v3", "namaa"]
 CONTRASTS = [("ba", "voxcpm2"), ("ba", "cb-v3"), ("voxcpm2", "cb-v3")]
 N_BOOT = 10000
+# trial ids: p = practice (not analysed), g = rated generated clip, a = real speech (anchor), r = repeat of a g trial
+# (consistency check only, not analysed), s = speaker-similarity pair
+TRIAL_KIND = {"p": "practice", "g": "generated", "a": "real", "r": "repeat", "s": "similarity"}
 
 
 def load():
@@ -56,8 +59,11 @@ def load():
         if s is None:
             continue
         c = clips[a["clip"]]
+        # the role of a rating comes from its trial, not from its clip: one audio file can serve as a rated clip in one
+        # list and as one side of a similarity pair in another, and design.json records a single kind per file
+        kind = TRIAL_KIND[a["trial_id"][0]]
         rows.append({"listener": a["session_id"], "list": s["list_id"], "trial": a["trial_id"], "clip": a["clip"],
-                     "system": c["system"], "kind": c["kind"], "text": c.get("text_id"), "voice": c.get("voice_id", "real"),
+                     "system": c["system"], "kind": kind, "text": c.get("text_id"), "voice": c.get("voice_id", "real"),
                      "egy": a["egy"], "nat": a["nat"], "words_wrong": a["words_wrong"], "sim": a["sim"]})
     return d, x, clips, lists, sessions, rows, dropped
 

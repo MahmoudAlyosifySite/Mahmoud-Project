@@ -6,7 +6,7 @@ cd "$(dirname "$0")"
 rm -rf package && mkdir -p package/generated/ar package/figures
 cp acl.sty acl_natbib.bst package/
 cp ../refs.bib package/
-cp ../generated/numbers.tex ../generated/tab_{bakeoff,selection,listening,seeds,ablation,calibration}.tex package/generated/
+cp ../generated/numbers.tex ../generated/tab_{bakeoff_short,selection,listening,seeds,ablation,calibration,features}.tex package/generated/
 cp ../generated/ar/*.pdf package/generated/ar/
 cp ../figures/dissociation.pdf package/figures/
 sed -e 's#\\graphicspath{{../}}#\\graphicspath{{./}}#' -e 's#\.\./generated/#generated/#g' -e 's#\\bibliography{\.\./refs}#\\bibliography{refs}#' \

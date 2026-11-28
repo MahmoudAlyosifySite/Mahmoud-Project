@@ -13,10 +13,22 @@ and NileTTS \citep{khamis2026niletts} are public datasets; FLEURS reference clip
 redistributed (\cref{sec:release}).
 
 \section*{Ethics}
-The listening check was done by the author. Reference voices come from FLEURS, released for
-speech research. No new recordings of people are used in this version.
+\emph{Listening test.} Native Egyptian adults took part in the blind listening test (\cref{sec:dissociation},
+\cref{app:listening}) as unpaid volunteers. The first page of the test stated the purpose of the study, that taking part was
+voluntary and could be stopped at any time by closing the page, what would be stored, and that the results would be
+published only in aggregate, and it gave a contact address; listeners confirmed that they were 18 or older and agreed to
+take part before the first clip. The test asked for no name or contact details and its database stored no IP address:
+each session holds a random identifier, the ratings and four coarse descriptors (age band, gender, governorate,
+listening device). Individual answers are not published. Listeners heard speech cloned from FLEURS speakers, released for
+speech research, and real clips from the public lahgtna-v2 corpus; they were asked not to record or share the clips, and
+no new recordings of people were made. No institutional ethics review was sought: taking part was anonymous, voluntary and unpaid, consisted only of listening to short clips and rating them, carried no foreseeable risk beyond those of everyday life, and collected no information that identifies a person.
+
+\emph{Voice cloning.} Voice cloning can impersonate people. The safeguards of the release (a consent statement in the
+demo, no storage of uploads, an AudioSeal watermark on every output) and their limits are described in
+\cref{sec:release}.
 
 \section*{Declaration of generative AI and AI-assisted technologies in the manuscript preparation process}
-During the preparation of this work, the author used Claude (Anthropic) in order to help draft and edit the text and
-to write code for the experiments and for producing the tables and figures. After using this tool, the author
-reviewed and edited the content as needed and takes full responsibility for the content of the published article.
+During the preparation of this work, the author used Claude (Anthropic) to help write the code of the experiments and
+analyses and to draft and edit parts of the text. After using this tool, the author reviewed and edited the content as
+needed and takes full responsibility for the content of the published article; every number in the paper is produced by
+the released scripts from the released results.

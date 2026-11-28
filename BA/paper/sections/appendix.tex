@@ -40,9 +40,9 @@ listener rates how Egyptian it sounds (1, not Egyptian at all, to 5, a native Eg
 whether the speaker is the same (1 to 5). Names are hidden and the order is random per listener.
 
 \paragraph{Listeners and exclusions}
-Adults who grew up in Egypt and speak Egyptian Arabic natively, recruited through the authors' personal networks; the
+Adults who grew up in Egypt and speak Egyptian Arabic natively, recruited through the author's personal networks and unpaid; the
 page asks for age band, gender, governorate and listening device, and no name. Of the sessions started,
-\R{mlt:unfinished} were not finished and one was the first author's own test of the page; both are excluded. The
+\R{mlt:unfinished} were not finished and one was the author's own test of the page; both are excluded. The
 quality checks of the protocol were made concrete for this design before any system score was computed: the
 real-speech check passes when at least two of the four real clips are rated 4 or more on both scales, the consistency
 check when at least one of the two repeats is rated within one point of its first rating on both scales, and a
@@ -54,8 +54,13 @@ As pre-specified: cumulative-link mixed models (logit link, R package \texttt{or
 with random intercepts for listener, voice and sentence; the contrasts \BA $-$ \vox, \BA $-$ \cbthree and \vox $-$
 \cbthree on both scales, Holm-corrected over the six; mean scores with two-way (listener and sentence) bootstrap
 intervals; Krippendorff's $\alpha$ with the ordinal metric; and the rank correlation of the per-system Egyptian rating
-with both classifiers and with CER. Script: \texttt{BA/eval/scripts/listening\_analysis.py}; aggregate results:
-\texttt{BA/eval/results/listening\_multi.json}. Individual answers and the audio stay private, as the consent text
+with both classifiers and with CER. Each listener contributes the ratings of the 24 generated clips of the list; the
+practice clips and the two repeats (used only for the consistency check) are not analysed. Script:
+\texttt{BA/eval/scripts/listening\_analysis.py}; aggregate results: \texttt{BA/eval/results/listening\_multi.json}.
+Added after the test and not in the protocol: the clip-level correlation of \cref{sec:dissociation}, between the mean
+rating of each generated clip and its CER and classifier probabilities, with intervals from the same two-way bootstrap
+(the per-clip means recomputed in each resample) and, for the within-system values, every measure and rating centred
+on its system mean (\texttt{BA/eval/scripts/listening\_clip\_level.py}, \texttt{BA/eval/results/listening\_clips.json}). Individual answers and the audio stay private, as the consent text
 promises.
 
 \paragraph{Deviations from the protocol}
@@ -82,7 +87,7 @@ Section & Results files (\texttt{BA/eval/results/}) \\
 \Cref{sec:protocol} (calibration) & \texttt{bakeoff.json}, \texttt{dialect\_classifier2.json} \\
 \Cref{sec:dissociation} & \texttt{bakeoff.json}, \texttt{bakeoff\_utterances.csv}, \texttt{dialect\_classifier2.json}, \\
  & \texttt{selection.json}, \texttt{uncertainty.json}, \texttt{listening\_test.json}, \\
- & \texttt{listening\_multi.json} \\
+ & \texttt{listening\_multi.json}, \texttt{listening\_clips.json}, \texttt{dialect\_features.json} \\
 \Cref{sec:engine} & \texttt{codeswitch\_policy.json}, \texttt{asr\_check.json}, \texttt{chunk\_length.json}, \\
  & \texttt{reference\_thresholds.json}, \texttt{engine.json} \\
 \Cref{sec:results} & \texttt{uncertainty.json}, \texttt{ablations.json}, \texttt{engine.json}, \texttt{long\_form.json}, \\

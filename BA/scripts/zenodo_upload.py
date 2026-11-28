@@ -7,6 +7,11 @@ the paper sources and PDF, documentation, demo code and tests.
     python3 BA/scripts/zenodo_upload.py verify     # compare the draft's files (size, MD5) with the staged ones
     python3 BA/scripts/zenodo_upload.py publish    # publish the draft: irreversible, the files can no longer be removed
 
+New version of the published record (same concept DOI, which the paper cites): prepare into a new staging folder,
+then `newversion` creates the draft of the next version (once) and replaces all its files; verify and publish as above.
+    python3 BA/scripts/zenodo_upload.py prepare --staging ~/ba-work/zenodo_v2
+    python3 BA/scripts/zenodo_upload.py newversion --staging ~/ba-work/zenodo_v2
+
 Order: reserve -> put the DOI into the paper and README and commit -> prepare -> upload -> verify -> publish.
 
 Not included, on purpose: generated audio and the FLEURS reference clips (third-party voices are never redistributed),
@@ -25,11 +30,12 @@ TITLE = ("BA: Right Words, Wrong Dialect. Egyptian Arabic voice cloning: engine 
 CREATORS = [{"name": "Alyosify, Mahmoud", "affiliation": "Queen's University", "orcid": "0009-0005-1336-2726"}]
 KEYWORDS = ["voice cloning", "zero-shot text-to-speech", "Egyptian Arabic", "dialect identification",
             "speech synthesis evaluation", "audio watermarking"]
-GITHUB = "https://github.com/MahmoudAlyosifySite/Mahmoud-Project/tree/main/BA"
 HF_MODEL = "https://huggingface.co/mahmoudalyosify/BA"
 HF_SPACE = "https://huggingface.co/spaces/mahmoudalyosify/BA"
 LICENSE_ID = "other-nc"          # BA Community License 1.0 (non-commercial); the full text is LICENSE in the archive
-VERSION = "paper-v1 (BA 0.1.0)"
+VERSION = "paper-v2 (BA 0.1.0)"
+V1_RECORD = 24517175           # first published version; its concept DOI is 10.5281/zenodo.24517174
+CONCEPT_DOI = "10.5281/zenodo.24517174"
 ARCHIVE = "BA_code_eval_paper.zip"
 
 
@@ -58,16 +64,20 @@ def readme(commit, doi):
         "is an inference-time engine on the unchanged VoxCPM2 weights (Egyptian number and symbol normalisation, a "
         "loanword policy, automatic reference transcription, reference screening, checked long-text generation and an "
         "AudioSeal watermark on every output).", "",
-        f"Code repository: {GITHUB} (this archive: commit {commit[:12]}). Model: {HF_MODEL}. Demo: {HF_SPACE}."
-        + (f" DOI of this archive: {doi}." if doi else ""), "",
+        f"This archive: the `BA/` folder at commit {commit[:12]} of the author's repository. Model: {HF_MODEL}. "
+        f"Demo: {HF_SPACE}." + (f" DOI of this version: {doi}." if doi else "")
+        + f" DOI of all versions (cited in the paper): {CONCEPT_DOI}.", "",
+        "Version 2 adds the blind listening test with native Egyptian listeners (aggregate results only; the individual "
+        "answers stay private, as the consent text promised), a clip-level comparison of the listener ratings with the "
+        "automatic measures, and a phonetic analysis of two Egyptian dialect markers (jiim and qaaf) in the outputs.", "",
         "## Contents", "",
         f"`{ARCHIVE}` holds the `BA/` folder of the repository at that commit:", "",
         "- `src/ba_tts/`: the engine (normalisers and lexicons, reference preparation, transcription, chunking, "
         "watermark, CLI); `tests/`: its tests; `pyproject.toml`.",
         "- `eval/`: evaluation texts (`texts/`, `refs.jsonl`, `calib.jsonl`), every evaluation script (`scripts/`), and "
         "the results with per-utterance scores (`results/`: bake-off, dialect classifiers, seeds and uncertainty, "
-        "ablations, long-form, selection analysis, watermark robustness, listening check). Each results file records the "
-        "command that produced it.",
+        "ablations, long-form, selection analysis, watermark robustness, listening test, dialect markers). Each results "
+        "file records the command that produced it.",
         "- `paper/`: LaTeX sources, generated numbers, tables and figure, `main.pdf`, the plan, the internal review "
         "(`REVIEW.md`), and the human-evaluation materials (consent form, recording instructions, listening-test protocol). "
         "`python3 BA/paper/scripts/make_assets.py && bash BA/paper/build.sh` rebuilds every number from `eval/results/`.",
@@ -116,7 +126,6 @@ def metadata(a, doi=None):
         "description": "<pre>" + desc.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;") + "</pre>",
         "access_right": "open", "license": LICENSE_ID, "version": VERSION, "prereserve_doi": True,
         "related_identifiers": [
-            {"identifier": GITHUB, "relation": "isSupplementTo", "resource_type": "software"},
             {"identifier": HF_MODEL, "relation": "isSupplementTo", "resource_type": "software"},
             {"identifier": HF_SPACE, "relation": "isSupplementTo", "resource_type": "software"}]}}
 
@@ -211,9 +220,31 @@ def publish(a):
     print(f"published: {d['links'].get('record_html', d['links'].get('html'))}  DOI {d.get('doi')}")
 
 
+def newversion(a):
+    """Create (once) the draft of the next version of the published record, then replace all of its files."""
+    tok = token()
+    os.makedirs(a.staging, exist_ok=True)
+    st = json.load(open(state_path(a))) if os.path.exists(state_path(a)) else {}
+    if "id" not in st:
+        r = call("POST", f"{API}/deposit/depositions/{V1_RECORD}/actions/newversion", tok)
+        if r.status_code not in (200, 201):
+            sys.exit(f"could not create the new version: {r.status_code} {r.text[:500]}")
+        d = call("GET", r.json()["links"]["latest_draft"], tok).json()
+        st = {"id": d["id"], "bucket": d["links"]["bucket"], "html": d["links"]["html"]}
+        json.dump(st, open(state_path(a), "w"), indent=1)
+        print(f"created the draft of the new version: {st['html']}")
+    upload(a)                    # replaces every staged file; files of the previous version not staged are removed below
+    dep = f"{API}/deposit/depositions/{st['id']}"
+    for f in call("GET", f"{dep}/files", tok).json():
+        if f["filename"] not in files(a):
+            call("DELETE", f"{dep}/files/{f['id']}", tok)
+            print(f"removed {f['filename']} (previous version)")
+
+
 if __name__ == "__main__":
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument("command", choices=["reserve", "prepare", "upload", "verify", "publish"])
+    p.add_argument("command", choices=["reserve", "prepare", "upload", "verify", "publish", "newversion"])
     p.add_argument("--staging", default="/home/jovyan/ba-work/zenodo")
     a = p.parse_args()
-    {"reserve": reserve, "prepare": prepare, "upload": upload, "verify": verify, "publish": publish}[a.command](a)
+    {"reserve": reserve, "prepare": prepare, "upload": upload, "verify": verify, "publish": publish,
+     "newversion": newversion}[a.command](a)

@@ -25,6 +25,8 @@
 \newcommand{\BA}{BA\xspace}
 \newcommand{\vox}{VoxCPM2\xspace}
 \newcommand{\cbthree}{Chatterbox~V3\xspace}
+\usepackage{xcolor}
+\usepackage[safe]{tipa}
 
 \title{Right Words, Wrong Dialect: Standard Metrics Pick the Wrong Model\\ for Egyptian Arabic Voice Cloning}
 \author{Anonymous submission}
@@ -41,8 +43,10 @@ dialect bar set relative to real speech in \R{sel:eligible:cer:fail1}, \R{sel:el
 \R{sel:eligible:dnsmos:fail1} of bootstrap resamples. Over three seeds, \vox and \cbthree cannot be told apart by CER or
 similarity, yet two dialect classifiers trained on different data label \R{s3:voxcpm2:egy_main:c1} and
 \R{s3:cb-v3:egy_main:c1} of their outputs Egyptian, and \R{mlt:n} native listeners in a blind test rate them
-\R{mlt:voxcpm2:egy} and \R{mlt:cb-v3:egy} on a five-point Egyptian scale. On \vox we build an inference-time engine that
-reaches the lowest CER of all systems and is heard as Egyptian as its base. Dialect evaluation of speech generation needs
+\R{mlt:voxcpm2:egy} and \R{mlt:cb-v3:egy} on a five-point Egyptian scale. A phone recogniser shows what is lost:
+\cbthree pronounces the Egyptian jiim as [g] in \R{df:cb-v3:jiim} of cases, against \R{df:lahgtna_eg:jiim} in real
+colloquial speech. On \vox we build an inference-time engine that
+reaches the lowest CER of all systems and is rated as Egyptian as its base. Dialect evaluation of speech generation needs
 a dialect measure calibrated on real dialectal speech, and native listeners.
 \end{abstract}
 
@@ -66,10 +70,10 @@ selection rule that the authors fixed before any model ran ranked by CER and cho
 (1)~A \emph{dissociation stated as a selection failure}: on seven open models, CER, similarity and predicted quality are
 blind to the dialect, and selecting by any of them picks a base that fails a dialect bar calibrated on real colloquial
 speech, under a bootstrap over texts and voices, two classifiers trained on different data, three seeds and a control
-for the dialect of the reference voice (\cref{sec:dissociation}). (2)~A \emph{blind test with native listeners}, in
-which listeners rank the systems exactly as both classifiers do and hear the lowest-CER model as far less Egyptian
-(\cref{sec:listeners}). (3)~A \emph{dialect-aware protocol} for dialectal speech generation, with every metric
-calibrated on real speech and the bar fixed relative to it (\cref{sec:setup}). (4)~An \emph{inference-time engine} on
+for the dialect of the reference voice; two phonetic markers show what the low-CER models lose (\cref{sec:dissociation}). (2)~A \emph{blind test with native listeners}, in
+which listeners rank the systems exactly as both classifiers do and hear the lowest-CER model as far less Egyptian; across
+the rated clips, the classifiers' scores follow the ratings and CER does not (\cref{sec:listeners}). (3)~A \emph{dialect-aware protocol} for dialectal speech generation, with every metric
+calibrated on real speech and the bar fixed relative to it (\cref{sec:setup,sec:recommendations}). (4)~An \emph{inference-time engine} on
 unmodified \vox weights that reaches the lowest CER of the comparison while keeping the dialect (\cref{sec:engine}).
 
 \section{Related work}
@@ -150,8 +154,8 @@ MGB-3 ADI-5 broadcast speech) and classifier~2 (HuBERT fine-tuned on ADI-17 YouT
 The \emph{dialect bar} is 60\% of the share on real colloquial speech (\R{sel:bar:c1} and \R{sel:bar:c2}). Intervals come
 from a two-way bootstrap over texts and voices (10,000 resamples).
 
-\paragraph{A pre-registered rule, and its amendment}
-The protocol, its thresholds and the rule for choosing a base were written down before any model was run. The rule,
+\paragraph{A rule fixed in advance, and its amendment}
+The protocol, its thresholds and the rule for choosing a base were written down and committed to version control before any model was run. The rule,
 G1, chose among licence-eligible systems with at most 5\% failures the one with the lowest Egyptian CER. Applied as
 written, it selected \cbthree, whose Egyptian outputs fall below the dialect bar (\R{bk:cb-v3:c1pct} against
 \R{g1:bar} under classifier~1, the only classifier used at the time). We amended G1 to apply the dialect bar before
@@ -165,13 +169,11 @@ test were all added afterwards, as tests of it.
 \begin{table*}[t]
 \centering\small
 \begin{adjustbox}{max width=\textwidth}
-\rawinput{../generated/tab_bakeoff.tex}
+\rawinput{../generated/tab_bakeoff_short.tex}
 \end{adjustbox}
 \caption{Bake-off on colloquial Egyptian text (32 sentences $\times$ 3 voices per system; one seed). CER with a two-way
 bootstrap interval. ``Labelled Egyptian'': share of outputs labelled Egyptian by each classifier (real colloquial speech:
-\R{cal:lahgtna:c1pct} and \R{cal:lahgtna:c2pct}; bar \R{sel:bar:c1} and \R{sel:bar:c2}). Listener: an informal check by
-one of the authors (six sentences per system), superseded by the blind test of \cref{tab:listening}. $^\dagger$Non-commercial
-weights, reference only. Below the line: a diagnostic loader of \cbthree.}
+\R{cal:lahgtna:c1pct} and \R{cal:lahgtna:c2pct}; bar \R{sel:bar:c1} and \R{sel:bar:c2}). $^\dagger$Non-commercial weights, reference only. Below the line: a diagnostic loader of \cbthree.}
 \label{tab:bakeoff}
 \end{table*}
 
@@ -241,6 +243,34 @@ references it labels \cbthree Egyptian \R{ref:cb-v3:egy:c2} of the time against 
 gap than with MSA references. Per utterance the two classifiers agree moderately (Cohen's $\kappa=\R{kappa:gen}$ on
 generated speech), so we rely on system-level shares.
 
+\paragraph{Which features are lost}
+The classifiers say that the dialect is wrong, not what is wrong. After the main results we therefore looked at two
+textbook markers of Egyptian Arabic: jiim, [g] in Egyptian and [\textipa{dZ}] or [\textipa{Z}] in MSA and the Levantine
+and Gulf dialects, and qaaf, a glottal stop in Egyptian (as in urban Levantine) and [q] in MSA. A multilingual phone
+recogniser \citep{xu2022phoneme} transcribes every clip; we count the share of [g] among the recognised [g],
+[\textipa{dZ}] and [\textipa{Z}] in clips whose text contains jiim, and the recognised [q] per qaaf letter
+(\cref{tab:features}). As the counts are not aligned to the letters, they are calibrated on real speech: real colloquial
+Egyptian has jiim as [g] \R{df:lahgtna_eg:jiim} of the time and \R{df:lahgtna_eg:qaaf} [q] per qaaf, while Egyptian
+speakers reading the mostly MSA FLEURS texts keep the [g] (\R{df:fleurs_ar_eg:jiim}) but say qaaf as [q]
+(\R{df:fleurs_ar_eg:qaaf}). \cbthree and Chatterbox~V2 say jiim as [g] only \R{df:cb-v3:jiim} and \R{df:cb-v2:jiim} of
+the time and keep [q] for qaaf (\R{df:cb-v3:qaaf} and \R{df:cb-v2:qaaf}); \vox is at the level of real colloquial speech
+(\R{df:voxcpm2:jiim} and \R{df:voxcpm2:qaaf}; \vox $-$ \cbthree \R{df:d:voxcpm2-cb-v3:jiim} points for jiim, CI
+\R{df:d:voxcpm2-cb-v3:jiim:ci}). Across the nine configurations the jiim measure orders the systems like the classifiers
+(Spearman \R{df:rho:c1} and \R{df:rho:c2}) and not like CER (\R{df:rho:cer}). The Chatterbox outputs thus combine a
+non-Egyptian jiim with an MSA qaaf, which fits the Levantine, Gulf and MSA labels they receive.
+
+\begin{table}[t]
+\centering\small
+\begin{adjustbox}{max width=\linewidth}
+\rawinput{../generated/tab_features.tex}
+\end{adjustbox}
+\caption{Two markers of Egyptian Arabic in the outputs, from a phone recogniser: share of [g] among recognised [g],
+[\textipa{dZ}] and [\textipa{Z}] in clips whose text has jiim (Egyptian [g]), and recognised [q] per qaaf letter
+(Egyptian [\textipa{P}], MSA [q]). Two-way bootstrap 95\% intervals (real speech: over clips). Added after the main
+results.}
+\label{tab:features}
+\end{table}
+
 \paragraph{Why}
 The pattern fits the training data rather than the architecture: the Chatterbox systems without documented Egyptian
 training data are labelled Levantine more than anything else, while NAMAA, a Chatterbox fine-tune on Egyptian speech, is
@@ -272,7 +302,20 @@ difference is \R{mlt:c:voxcpm2-cb-v3:egy:est} on the log-odds scale for Egyptian
 naturalness. Listeners also reported a wrong, missing or garbled word in \R{mlt:cb-v3:ww} of \cbthree's clips, the most of
 any system, although its CER is among the lowest: words that a recogniser trained mostly on MSA accepts can still sound
 wrong to an Egyptian listener. The mean Egyptian rating orders the four systems exactly as both classifiers do (Spearman
-\R{mlt:rho:c1} and \R{mlt:rho:c2}) and not as CER does (\R{mlt:rho:cer}). The result holds for the listeners who used
+\R{mlt:rho:c1} and \R{mlt:rho:c2}) and not as CER does (\R{mlt:rho:cer}).
+
+\paragraph{Clip by clip}
+Four systems are few for a rank correlation, so after the test we also asked, in an analysis the protocol did not plan,
+whether the measures of each clip follow its ratings. Across the \R{mlc:clips} rated generated clips (\R{mlc:perclip}
+ratings per clip on average), the probability of Egyptian under either classifier correlates with the mean Egyptian
+rating (Spearman \R{mlc:rho:egy:p1}, CI \R{mlc:rho:egy:p1:ci}, and \R{mlc:rho:egy:p2}, CI \R{mlc:rho:egy:p2:ci};
+listener-and-sentence bootstrap), and CER does not (\R{mlc:rho:egy:cer}, CI \R{mlc:rho:egy:cer:ci}). Clips that
+classifier~1 labels Egyptian are rated \R{mlc:mean:egy:egy1:yes} on average, the others \R{mlc:mean:egy:egy1:no}. Within a
+system the classifiers follow the listeners only weakly (\R{mlc:rhow:egy:p1} and \R{mlc:rhow:egy:p2}, with intervals that
+include zero): they measure the dialect of a system, not of a single utterance, which is how we use them.
+
+\paragraph{Robustness}
+The result holds for the listeners who used
 headphones or earbuds (\cbthree \R{mlt:dev:headphones_or_earbuds:cb-v3:egy}, \vox
 \R{mlt:dev:headphones_or_earbuds:voxcpm2:egy}) and for those who used loudspeakers (\R{mlt:dev:loudspeaker:cb-v3:egy}
 and \R{mlt:dev:loudspeaker:voxcpm2:egy}). Real speech is rated \R{mlt:real:egy}, no higher than the Egyptian systems; the real clips are spontaneous
@@ -317,7 +360,8 @@ reading of a number as the same digits, a second instance of the same blind spot
 base (\R{mlt:ba:egy} and \R{mlt:voxcpm2:egy}; \R{mlt:c:ba-voxcpm2:egy:est}, CI \R{mlt:c:ba-voxcpm2:egy:ci},
 \R{mlt:c:ba-voxcpm2:egy:p}) and somewhat less natural (\R{mlt:ba:nat} against \R{mlt:voxcpm2:nat};
 \R{mlt:c:ba-voxcpm2:nat:p}); neither difference is significant, and the intervals do not exclude a small loss of
-naturalness. They reported a wrong word less often for \BA than for any other system (\R{mlt:ba:ww}).
+naturalness. They reported a wrong word less often for \BA than for any other system (\R{mlt:ba:ww}), and the engine
+keeps the Egyptian jiim of its base (\R{df:ba-ho:jiim} against \R{df:voxcpm2-ho:jiim}; \cref{tab:features}).
 
 \begin{table}[t]
 \centering\small
@@ -338,6 +382,19 @@ recogniser: on one passage Whisper rewrites the colloquial opening into MSA and 
 (CER \R{lfw:clip:ba:arz05:win} and \R{lfw:clip:voxcpm2:arz05:win}), so we draw no conclusion about long-form Egyptian CER.
 In English and French the engine passes every bar of the protocol (WER \R{ho:ba:en:wer} and \R{ho:ba:fr:wer}).
 
+\section{Recommendations}\label{sec:recommendations}
+For the evaluation of speech generation in a dialect, our results suggest five practices, each cheap next to training a
+model. (i) \emph{Calibrate every metric on real dialectal speech}, including CER and predicted quality, so that a score
+can be read against what real speakers obtain (\cref{tab:calibration}). (ii) \emph{Fix a dialect bar relative to real
+speech before the first model is run}, and apply it before ranking on any other metric; a rule that ranks first and
+checks the dialect afterwards picks the wrong model (\cref{tab:selection}). (iii) \emph{Use at least two dialect
+classifiers trained on different data}, and read them at the level of systems, where they agree with each other and
+with listeners, not of single utterances. (iv) \emph{Check named markers of the dialect}, such as the Egyptian jiim,
+with a phone recogniser calibrated on real speech: they show what is wrong and give developers something to fix
+(\cref{tab:features}). (v) \emph{Let native listeners check the decision} in a blind test with real-speech anchors,
+repeats and quality criteria fixed in advance; \R{mlt:n} listeners were enough to confirm a large difference
+(\cref{tab:listening}).
+
 \section{Conclusion}
 For Egyptian Arabic voice cloning, intelligibility, speaker similarity and predicted quality do not see the dialect. Used
 to choose a base among licence-eligible open models, each of them picks a model that fails a dialect bar calibrated on
@@ -354,15 +411,28 @@ of the held-out set rather than consenting volunteers, loudspeakers were accepte
 change with the device), and three of twelve counterbalanced lists have no complete session. The reference voices are
 read FLEURS speech in an MSA register, and six voices make every interval wide; colloquial references would show how much
 a colloquial reference helps each model. Two classifiers were used, both trained on broadcast or web speech; the second
-was added after the first results. The work covers one dialect, short sentences and long passages in three languages,
+was added after the first results, and the clip-level analysis after the listening test. The work covers one dialect, short sentences and long passages in three languages,
 and models available in November 2026.
 
 \section*{Ethical considerations}
+\paragraph{Listening test}
+Native Egyptian adults took part as unpaid volunteers. The first page of the test stated the purpose of the study, that taking
+part was voluntary and could be stopped at any time by closing the page, what would be stored, and that results would be
+published only in aggregate, and it gave a contact address; listeners confirmed that they were 18 or older and agreed to
+take part before the first clip. The test asked for no name or contact details and stored no IP address, only a random
+session identifier, the ratings and four coarse descriptors (age band, gender, governorate, listening device);
+individual answers are not published. Listeners heard speech cloned from FLEURS speakers and real clips from a public
+corpus, and no new recordings of people were made. No institutional ethics review was sought: taking part was anonymous, voluntary and unpaid, consisted only of listening to short clips and rating them, carried no foreseeable risk beyond those of everyday life, and collected no information that identifies a person.
+
+\paragraph{Voice cloning}
 Voice cloning can impersonate people. The engine's public demo requires a consent statement, does not store uploads, and
 watermarks every output with AudioSeal \citep{sanroman2024audioseal}; FLEURS reference clips and the audio cloned from
-them are used for measurement only and are not redistributed. Listeners gave informed consent on the test page, answered
-anonymously (age band, gender, governorate and listening device only), and their individual answers are not published. An AI assistant (Claude) was used to help draft and edit the text and to write code for the experiments, tables and
-figures; the authors reviewed all content and take responsibility for it.
+them are used for measurement only and are not redistributed.
+
+\paragraph{Use of AI assistants}
+An AI assistant (Claude) helped write the code of the experiments and analyses and draft and edit parts of the text. The
+authors reviewed all of it and take full responsibility for the content; every number is produced by scripts from the
+results files.
 
 \bibliography{../refs}
 
@@ -385,13 +455,16 @@ four real colloquial clips, two repeats of generated clips and four speaker-simi
 silence and normalised to $-23$\,LUFS; names are hidden and the order is random. Listeners rate how Egyptian a clip sounds
 (1, not Egyptian at all, to 5, a native Egyptian speaker) and how natural it is (1, clearly machine, to 5, completely
 natural), and say whether a word was wrong, missing or garbled. Listeners were adults who grew up in Egypt and speak
-Egyptian Arabic natively, recruited through personal networks. Unfinished sessions (\R{mlt:unfinished}) and one test
+Egyptian Arabic natively, recruited through personal networks and unpaid. Unfinished sessions (\R{mlt:unfinished}) and one test
 session by an author are excluded. The quality checks, made concrete before any system score was computed: the
 real-speech check passes when at least two of the four real clips are rated 4 or more on both scales, the consistency
 check when at least one repeat is within one point of its first rating on both scales; a listener failing both is
 excluded. Analysis as pre-specified: cumulative-link mixed models (R package \texttt{ordinal}) with random intercepts for
 listener, voice and sentence, Holm correction over six contrasts, two-way bootstrap intervals and Krippendorff's ordinal
-$\alpha$. Deviations from the protocol: the voices are the six FLEURS speakers of the held-out set rather than volunteers'
+$\alpha$. Each listener contributes the 24 generated clips of the list; practice clips and repeats (used only for the
+consistency check) are not analysed. The clip-level analysis of \cref{sec:listeners} was added after the test: the mean
+rating of each clip against its CER and classifier probabilities, with intervals from the same two-way bootstrap, and for
+the within-system values every measure and rating centred on its system mean. Deviations from the protocol: the voices are the six FLEURS speakers of the held-out set rather than volunteers'
 recordings; 36 ratings per listener instead of the sketched 60; loudspeakers accepted; collection stopped at 20 complete
 sessions, with lists assigned in turn to every session started.
 

@@ -38,7 +38,9 @@ a consent statement.
   speaker similarity and predicted quality are blind to the dialect, and selecting by any of them picks a base that
   fails a dialect bar calibrated on real colloquial speech. We quantify this with a bootstrap over texts and voices,
   two dialect classifiers trained on different data, three seeds, and a control for the dialect of the reference
-  voice (\cref{sec:dissociation}).
+  voice; native listeners confirm it, and two phonetic markers show what the low-CER models lose: \cbthree pronounces
+  the Egyptian jiim as [g] in \R{df:cb-v3:jiim} of cases, against \R{df:lahgtna_eg:jiim} in real colloquial speech
+  (\cref{sec:dissociation}).
   \item \textbf{A dialect-aware evaluation protocol} for dialectal voice cloning, with gates committed to version control
   before any model ran, every metric calibrated on real speech, and a dated record of the one gate
   amendment (\cref{sec:protocol}).
@@ -51,7 +53,7 @@ a consent statement.
 \end{enumerate}
 \BA is not a new acoustic model, and we do not claim one: the paper's evidence concerns how such systems should be
 chosen and evaluated for a dialect, and how far an engine around an unchanged model can go. A blind test with
-\R{mlt:n} native Egyptian listeners confirms the dialect finding and finds \BA as Egyptian as its base model
+\R{mlt:n} native Egyptian listeners confirms the dialect finding and rates \BA as Egyptian as its base model (no significant difference)
 (\cref{sec:dissociation,sec:results}).
 
 \paragraph{The name}

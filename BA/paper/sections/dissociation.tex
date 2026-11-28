@@ -118,7 +118,15 @@ model with random effects for listener, voice and sentence, the difference betwe
 missing or garbled word in \R{mlt:cb-v3:ww} of \cbthree's clips, the most of any system, although its CER is among the
 lowest: words that a recogniser trained mostly on MSA accepts can still sound wrong to an Egyptian listener. Per system,
 the mean Egyptian rating orders the four systems exactly as both classifiers do (Spearman \R{mlt:rho:c1} and
-\R{mlt:rho:c2}, four systems) and not as CER does (\R{mlt:rho:cer}). The result holds both for the
+\R{mlt:rho:c2}, four systems) and not as CER does (\R{mlt:rho:cer}). Four systems are few for a rank correlation, so
+after the test we also asked, in an analysis the protocol did not plan, whether the measures of each clip follow its
+ratings. Across the \R{mlc:clips} rated generated clips (\R{mlc:perclip} ratings per clip on average), the probability
+of Egyptian under either classifier correlates with the mean Egyptian rating (Spearman \R{mlc:rho:egy:p1}, CI
+\R{mlc:rho:egy:p1:ci}, and \R{mlc:rho:egy:p2}, CI \R{mlc:rho:egy:p2:ci}; listener-and-sentence bootstrap) and CER does not
+(\R{mlc:rho:egy:cer}, CI \R{mlc:rho:egy:cer:ci}); clips that classifier~1 labels Egyptian are rated
+\R{mlc:mean:egy:egy1:yes} on average and the others \R{mlc:mean:egy:egy1:no}. Within a system the classifiers follow the
+listeners only weakly (\R{mlc:rhow:egy:p1} and \R{mlc:rhow:egy:p2}, intervals that include zero): they measure the
+dialect of a system, not of a single utterance. The result holds both for the
 \R{mlt:dev:phones} listeners who used headphones or earbuds (\cbthree \R{mlt:dev:headphones_or_earbuds:cb-v3:egy},
 \vox \R{mlt:dev:headphones_or_earbuds:voxcpm2:egy}) and for the \R{mlt:dev:speaker} who used loudspeakers
 (\R{mlt:dev:loudspeaker:cb-v3:egy} and \R{mlt:dev:loudspeaker:voxcpm2:egy}). Real speech is rated
@@ -137,6 +145,35 @@ random order with hidden names.}
 \input{generated/tab_listening.tex}
 \end{table}
 
+\paragraph{Which features are lost}
+The classifiers say that the dialect is wrong, not what is wrong. We therefore looked, after the main results, at two
+textbook markers of Egyptian Arabic: jiim, pronounced [g] in Egyptian and [\textipa{dZ}] or [\textipa{Z}] in MSA and the Levantine and Gulf
+dialects, and qaaf, a glottal stop in Egyptian (as in urban Levantine) and [q] in MSA. A multilingual phone recogniser
+(wav2vec2 XLSR-53 fine-tuned on CommonVoice phones \citep{xu2022phoneme}) transcribes every clip, and we count the
+share of [g] among the recognised [g], [\textipa{dZ}] and [\textipa{Z}] in clips whose text contains jiim, and the recognised [q] per qaaf
+letter (\cref{tab:features}). The counts are not aligned to the letters, so they are calibrated on real speech like every
+other measure: real colloquial Egyptian has jiim as [g] \R{df:lahgtna_eg:jiim} of the time and \R{df:lahgtna_eg:qaaf} [q]
+per qaaf, while Egyptian speakers reading the mostly MSA FLEURS texts keep the [g] (\R{df:fleurs_ar_eg:jiim}) but say
+qaaf as [q] (\R{df:fleurs_ar_eg:qaaf}). \cbthree and Chatterbox~V2 pronounce jiim as [g] only \R{df:cb-v3:jiim} and
+\R{df:cb-v2:jiim} of the time and keep [q] for qaaf (\R{df:cb-v3:qaaf} and \R{df:cb-v2:qaaf}), whereas \vox is at the
+level of real colloquial speech (\R{df:voxcpm2:jiim} and \R{df:voxcpm2:qaaf}; \vox $-$ \cbthree
+\R{df:d:voxcpm2-cb-v3:jiim} points for jiim, CI \R{df:d:voxcpm2-cb-v3:jiim:ci}). Across the nine configurations the jiim
+measure orders the systems like the classifiers (Spearman \R{df:rho:c1} and \R{df:rho:c2}) and not like CER
+(\R{df:rho:cer}). The Chatterbox outputs thus combine a non-Egyptian jiim with an MSA qaaf, which fits the Levantine,
+Gulf and MSA labels they receive; the lahgtna fine-tune has the Egyptian qaaf (\R{df:lahgtna:qaaf}) but not the jiim
+(\R{df:lahgtna:jiim}). On the held-out sentences \BA keeps the features of its base (jiim \R{df:ba-ho:jiim} against
+\R{df:voxcpm2-ho:jiim}).
+
+\begin{table}[t]
+\centering\small
+\caption{Two markers of Egyptian Arabic in the outputs, from a multilingual phone recogniser: the share of [g] among the
+recognised [g], [\textipa{dZ}] and [\textipa{Z}] in clips whose text contains jiim (Egyptian [g]; MSA, Levantine and Gulf [\textipa{dZ}] or [\textipa{Z}]), and
+recognised [q] per qaaf letter (Egyptian [\textipa{P}]; MSA [q]). Two-way bootstrap 95\% intervals over sentences and voices
+(real and reference speech: over clips). Added after the main results.}
+\label{tab:features}
+\input{generated/tab_features.tex}
+\end{table}
+
 \paragraph{Why}
 The pattern fits the training data rather than the architecture. The three Chatterbox-based systems without documented
 Egyptian training data (V3, V2 and the lahgtna fine-tune) are labelled Levantine more than anything else
@@ -147,7 +184,7 @@ difference. Accent may even help CER, since speech closer to the recogniser's tr
 transcribe. Our data cannot separate these explanations, but neither rescues CER as a selection criterion.
 
 \paragraph{Consequence for model selection}
-A selection rule that ranks by intelligibility, similarity or predicted quality, as our own pre-registered gate G1 did
+A selection rule that ranks by intelligibility, similarity or predicted quality, as our own pre-specified gate G1 did
 with CER, picks a base without regard to the dialect. For any product whose purpose is to speak a dialect, these
 metrics have to be paired with a dialect measure calibrated on real dialectal speech and, where possible, native
 listeners, and the bar should be fixed relative to the same measure on real speech, since classifiers differ in how
